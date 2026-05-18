@@ -43,6 +43,7 @@ demographics:
 
 triage_category: 3
 initial_state: triaged
+bay: triage
 
 history:
   - id: hx_pain

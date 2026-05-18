@@ -26,6 +26,7 @@ demographics:
 
 triage_category: 4
 initial_state: stable
+bay: minors
 
 differential:
   - diagnosis: Uncomplicated laceration

@@ -16,6 +16,14 @@ export const PALETTE = {
   text: 0xe8e8e8,
   muted: 0x8a93a3,
   accent: 0x7adb7a,
+  // Patient-state colours for hub view (Milestone 8+ post)
+  patient_stable: 0x7adb7a,
+  patient_deteriorating: 0xe1a247,
+  patient_arrested: 0xd96b5c,
+  patient_admitted: 0x5ea4d4,
+  patient_discharged: 0x5ea4d4,
+  patient_unseen: 0x4a5263,
+  patient_triaged: 0xb8b8b8,
 } as const;
 
 export interface Zone {

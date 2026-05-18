@@ -135,6 +135,16 @@ describe('Case', () => {
     expect(Case.safeParse(minimalCase).success).toBe(true);
   });
 
+  it('accepts a valid bay value', () => {
+    for (const bay of ['resus', 'majors', 'minors', 'paeds', 'relatives', 'ambulatory', 'triage']) {
+      expect(Case.safeParse({ ...minimalCase, bay }).success).toBe(true);
+    }
+  });
+
+  it('rejects an unknown bay value', () => {
+    expect(Case.safeParse({ ...minimalCase, bay: 'corridor' }).success).toBe(false);
+  });
+
   it('rejects case with bad id format', () => {
     const bad = { ...minimalCase, id: 'NotACaseId' };
     expect(Case.safeParse(bad).success).toBe(false);

@@ -8,6 +8,7 @@ import {
   type SimSpeedKey,
 } from '../../state/sim';
 import { ShiftBoardScreen } from './ShiftBoardScreen';
+import { ShiftHubScreen } from './ShiftHubScreen';
 import { EpisodeDebriefScreen } from './EpisodeDebriefScreen';
 import { EncounterScreen, type Phase } from '../encounter/EncounterScreen';
 
@@ -15,7 +16,7 @@ interface Props {
   onExit: () => void;
 }
 
-type ShiftViewMode = 'board' | 'encounter' | 'episode_debrief';
+export type ShiftViewMode = 'board' | 'hub' | 'encounter' | 'episode_debrief';
 
 export function ShiftView({ onExit }: Props) {
   useSim((s) => s.tick);
@@ -110,10 +111,24 @@ export function ShiftView({ onExit }: Props) {
     );
   }
 
+  if (mode === 'hub') {
+    return (
+      <ShiftHubScreen
+        onEnterCase={enterCase}
+        onFinishShift={finishShift}
+        onSwitchToBoard={() => setMode('board')}
+        onExit={onExit}
+        speedKey={speedKey}
+        onSpeedChange={setSpeedKey}
+      />
+    );
+  }
+
   return (
     <ShiftBoardScreen
       onEnterCase={enterCase}
       onFinishShift={finishShift}
+      onSwitchToHub={() => setMode('hub')}
       onExit={onExit}
       speedKey={speedKey}
       onSpeedChange={setSpeedKey}

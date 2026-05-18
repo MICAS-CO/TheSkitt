@@ -578,6 +578,27 @@ a {
   justify-content: flex-end;
 }
 
+.hub {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 880px) {
+  .hub {
+    grid-template-columns: 1fr;
+  }
+}
+.hub__phaser {
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+.hub__phaser .phaser-root {
+  margin: 0;
+}
+
 .board__subtitle {
   margin: 18px 0 4px;
   font-size: 12px;

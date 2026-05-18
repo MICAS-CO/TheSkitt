@@ -5,13 +5,19 @@
  */
 
 import Phaser from 'phaser';
-import { EDScene } from './scenes/EDScene';
+import { EDScene, type EDSceneData } from './scenes/EDScene';
 import { GAME_HEIGHT, GAME_WIDTH, PALETTE } from './layout';
 
-export async function bootGame(parent: HTMLElement): Promise<Phaser.Game> {
-  return new Phaser.Game({
+export interface BootOptions {
+  parent: HTMLElement;
+  /** Patient list and click handler for the live hub view. Empty array → static layout. */
+  sceneData?: EDSceneData;
+}
+
+export async function bootGame(opts: BootOptions): Promise<Phaser.Game> {
+  const game = new Phaser.Game({
     type: Phaser.AUTO,
-    parent,
+    parent: opts.parent,
     width: GAME_WIDTH,
     height: GAME_HEIGHT,
     backgroundColor: numberToCssColor(PALETTE.bg),
@@ -22,6 +28,12 @@ export async function bootGame(parent: HTMLElement): Promise<Phaser.Game> {
     },
     scene: [EDScene],
   });
+
+  // Start the scene with the provided data — Phaser merges init data when
+  // scene.start(key, data) is called after AUTO boot.
+  game.scene.start('ed', opts.sceneData ?? { patients: [] });
+
+  return game;
 }
 
 function numberToCssColor(n: number): string {

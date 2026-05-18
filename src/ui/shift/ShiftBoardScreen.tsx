@@ -4,6 +4,7 @@ import type { CaseRuntime, LogEntry } from '../../sim/kernel';
 interface Props {
   onEnterCase: (caseId: string) => void;
   onFinishShift: () => void;
+  onSwitchToHub?: () => void;
   onExit: () => void;
   speedKey: SimSpeedKey;
   onSpeedChange: (k: SimSpeedKey) => void;
@@ -12,6 +13,7 @@ interface Props {
 export function ShiftBoardScreen({
   onEnterCase,
   onFinishShift,
+  onSwitchToHub,
   onExit,
   speedKey,
   onSpeedChange,
@@ -47,9 +49,10 @@ export function ShiftBoardScreen({
             {ks.clockMin}m / {ks.shiftDurationMin}m
           </div>
         </div>
-        <button className="enc__exit" onClick={onExit}>
-          ← menu
-        </button>
+        <div className="enc__head-actions">
+          {onSwitchToHub && <button onClick={onSwitchToHub}>↥ department view</button>}
+          <button onClick={onExit}>← menu</button>
+        </div>
       </header>
 
       <ClockBar

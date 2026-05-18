@@ -55,6 +55,7 @@ demographics:
 
 triage_category: 2
 initial_state: deteriorating
+bay: resus
 
 history:
   - id: hx_paramedics

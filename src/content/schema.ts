@@ -305,6 +305,10 @@ export const Case = z.object({
   demographics: Demographics,
   triage_category: TriageCategory,
   initial_state: CaseState,
+  /** Where in the ED the patient sits — drives hub-view layout. */
+  bay: z
+    .enum(['resus', 'majors', 'minors', 'paeds', 'relatives', 'ambulatory', 'triage'])
+    .optional(),
 
   // Clinical content (Kosoko-style template — see DECISIONS D-006)
   history: z.array(HistoryItem).default([]),
@@ -510,3 +514,4 @@ export type CaseStateT = z.infer<typeof CaseState>;
 export type TransitionTriggerT = z.infer<typeof TransitionTrigger>;
 export type ArcRevealTriggerT = z.infer<typeof ArcRevealTrigger>;
 export type ArcEffectT = z.infer<typeof ArcEffect>;
+export type BayT = 'resus' | 'majors' | 'minors' | 'paeds' | 'relatives' | 'ambulatory' | 'triage';

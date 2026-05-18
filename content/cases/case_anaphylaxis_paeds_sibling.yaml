@@ -30,6 +30,7 @@ demographics:
 
 triage_category: 2
 initial_state: deteriorating
+bay: paeds
 
 history:
   - id: hx_arrival

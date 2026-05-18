@@ -43,6 +43,7 @@ demographics:
 
 triage_category: 3
 initial_state: stable
+bay: minors
 
 history:
   - id: hx_paramedics

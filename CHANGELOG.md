@@ -4,6 +4,33 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Hub → encounter wire-up (diegetic UI)
+
+- Schema (`src/content/schema.ts`): new optional `bay` field on Case
+  — enum `resus | majors | minors | paeds | relatives | ambulatory |
+  triage`. All seven authored cases tagged with a bay inferred from
+  the vignette.
+- `src/game/scenes/EDScene.ts` rewritten to accept `EDSceneData`
+  (`patients`, `clockLabel`, `onCaseClick`) via Phaser's `init()`
+  hook. Patient cards render inside their bay, colour-coded by
+  state, with a pulse tween on `deteriorating` and `arrested`.
+  Card click fires `onCaseClick(caseId)`.
+- `src/game/boot.ts` takes `BootOptions { parent, sceneData }` and
+  starts the ED scene with the data.
+- `src/ui/PhaserGame.tsx` now accepts a `sceneData` prop; on prop
+  change it calls `game.scene.start('ed', data)` to re-render the
+  bay layout.
+- New `src/ui/shift/ShiftHubScreen.tsx` — the department-view mode
+  that mounts PhaserGame, watches the kernel via `tick`, and routes
+  patient clicks back to `kernel.enterCase()` + the shift's
+  encounter flow.
+- `ShiftView` gains a `'hub'` mode and a "↥ department view" toggle
+  on the shift board. From the hub you can return with "↥ board
+  view". Clock controls and shift log mirror across both views.
+- Tests: 3 new schema tests (`bay` validation) + 8 hub tests
+  asserting every authored case has a valid bay. 121 / 121 total
+  passing. All gates green.
+
 ### Polish: better next labels + Escape returns to board
 
 - Encounter "next →" buttons now show the next phase name —

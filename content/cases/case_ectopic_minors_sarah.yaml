@@ -55,6 +55,7 @@ demographics:
 
 triage_category: 3
 initial_state: unseen
+bay: minors
 
 history:
   - id: hx_pain
