@@ -1,10 +1,12 @@
 # Resume — current state
 
-Last activity: 2026-05-18 ~22:00 UTC. All 8 build-prompt milestones plus
+Last activity: 2026-05-18 ~22:30 UTC. All 8 build-prompt milestones plus
 substantial post-milestone work shipped on `claude/add-necessary-files-4THUA`.
-The branch is now **30 commits ahead of main**, including a full
-clinical-accuracy audit pass and two new Tier-1 cases (status
-epilepticus + head injury with DOAC reasoning).
+The branch is now **34 commits ahead of main**. Recent work: full
+clinical-accuracy audit, two new Tier-1 cases (status epilepticus +
+head injury with DOAC reasoning), a11y pass, red-flag finding
+rendering, and a UX fix that stopped the differential / disposition
+pickers from leaking the answer key.
 
 ---
 
@@ -47,11 +49,26 @@ epilepticus + head injury with DOAC reasoning).
 - `6e28902` **Status epilepticus solo with SAH twist** — 9th case +
   7th episode + new menu card. NICE NG217 (2022 update), RCEM Best
   Practice 2024, MHRA Valproate PPP, RCOG GTG 10A.
-- _(pending commit)_ **Head injury — DOAC reasoning** — 10th case +
-  8th episode. NICE NG232 + NICE TA697 (andexanet alfa) + BSH 2024
-  DOAC reversal + Canadian C-spine Rule. Pairs thematically with
-  Williams (stroke on apixaban) — together they cover the
+- `c7899e7` **Head injury — DOAC reasoning** — 10th case + 8th
+  episode. NICE NG232 + NICE TA697 (andexanet alfa) + BSH 2024 DOAC
+  reversal + Canadian C-spine Rule. Pairs thematically with Williams
+  (stroke on apixaban) — together they cover the
   ischaemic-vs-haemorrhagic ends of the DOAC-on-board spectrum.
+- `ee7032d` **A11y pass** — prefers-reduced-motion media query,
+  ARIA progressbar on all three clock bars, encounter PhaseProgress
+  gets aria-current="step", darkened arrested/deceased chip
+  background for WCAG-AA contrast.
+- `cf0ddc6` **Surface red_flag exam findings** — `ExamFinding.red_flag`
+  schema field was unused by the UI. Now wired to render a "⚠ red
+  flag" chip + left-border accent. Backfilled across Beth, Williams,
+  Morrison, Marcus. All 10 cases now demonstrate the feature.
+- `93a972b` **UX: stop revealing answers in pickers** — differential
+  hid likelihood chip until pick; disposition hid criteria text
+  until pick. Genuine assessment restored. Correct/wrong borders
+  reveal feedback after pick.
+- _(pending commit)_ Menu copy refresh: resume banner uses the
+  episode title (not raw id); subtitle updated; menu copy points at
+  the showcase shifts.
 
 ### Numbers
 

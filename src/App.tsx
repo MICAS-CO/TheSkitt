@@ -184,7 +184,7 @@ export function App() {
         <h1 className="app__title">The Skitt</h1>
         <p className="app__subtitle">
           {view === 'menu'
-            ? 'Episodic EM RPG — milestone 5'
+            ? 'Episodic UK FRCEM study RPG · 8 shifts, 10 cases'
             : view === 'shift'
               ? 'Shift in progress'
               : 'ED hub (preview)'}
@@ -260,13 +260,14 @@ function MenuView({
       <div className="menu__inner">
         <h2 className="menu__title">Shift menu</h2>
         <p className="menu__copy">
-          Pick a shift. The hen-do shift is the milestone-5 build — two cases on one clock with a
-          narrative arc connecting them.
+          Pick a shift. Each runs on a 20-minute simulated clock. <strong>The hen-do</strong> and{' '}
+          <strong>First seizure</strong> are the showcase shifts;{' '}
+          <strong>Family anaphylaxis</strong> is the paeds + adult parallel-dose-bands lesson.
         </p>
         {saved && (
           <div className="menu__resume">
             <div className="menu__resume-body">
-              <strong>Shift in progress</strong> — {saved.snapshot.episodeId} at T+
+              <strong>Shift in progress</strong> — {savedShiftTitle(saved.snapshot.episodeId)} at T+
               {saved.snapshot.clockMin}m. Saved {timeAgo(saved.savedAt)}.
             </div>
             <div className="menu__resume-actions">
@@ -349,6 +350,16 @@ function MenuView({
       </div>
     </div>
   );
+}
+
+function savedShiftTitle(episodeId: string): string {
+  const make = KNOWN_SHIFTS[episodeId];
+  if (!make) return episodeId;
+  try {
+    return make().episode.title;
+  } catch {
+    return episodeId;
+  }
 }
 
 function timeAgo(ts: number): string {
