@@ -1,6 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { create } from 'zustand';
-import { SimKernel, type CaseRuntime, type KernelState } from '../sim/kernel';
+import {
+  SimKernel,
+  type CaseRuntime,
+  type KernelState,
+  type SerializedKernelSnapshot,
+} from '../sim/kernel';
 import type { CaseStateT, CitationT } from '../content/schema';
 
 interface SimStore {
@@ -18,8 +23,14 @@ export const useSim = create<SimStore>((set, get) => ({
   tick: 0,
   init: (kernel) => {
     get().unsub?.();
-    const unsub = kernel.subscribe(() => set((s) => ({ tick: s.tick + 1 })));
+    const unsub = kernel.subscribe(() => {
+      set((s) => ({ tick: s.tick + 1 }));
+      // Auto-save every kernel notification — localStorage writes are
+      // microseconds and dwarfed by the React re-render that follows.
+      saveShift(kernel);
+    });
     set({ kernel, unsub, tick: 0 });
+    saveShift(kernel); // save initial state too
   },
   destroy: () => {
     get().unsub?.();
@@ -33,6 +44,44 @@ export const useSim = create<SimStore>((set, get) => ({
  * Tunable per UI; kernel itself is speed-agnostic.
  */
 export const DEFAULT_SIM_SPEED_MIN_PER_SEC = 1 / 3;
+
+// ─── Save / resume (localStorage) ────────────────────────────────────────────
+
+const SAVE_KEY = 'theSkitt.shift.v1';
+
+export interface SavedShift {
+  savedAt: number;
+  snapshot: SerializedKernelSnapshot;
+}
+
+export function saveShift(kernel: SimKernel): void {
+  try {
+    const data: SavedShift = { savedAt: Date.now(), snapshot: kernel.serialize() };
+    window.localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+  } catch {
+    // localStorage may be unavailable (private mode, quota); fail silently.
+  }
+}
+
+export function loadShift(): SavedShift | null {
+  try {
+    const raw = window.localStorage.getItem(SAVE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw) as SavedShift;
+    if (!data?.snapshot || data.snapshot.v !== 1) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+export function clearSavedShift(): void {
+  try {
+    window.localStorage.removeItem(SAVE_KEY);
+  } catch {
+    // ignore
+  }
+}
 
 /**
  * Hook that drives `kernel.advance` from a real-time rAF loop.

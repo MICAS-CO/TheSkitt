@@ -4,6 +4,26 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Save / resume (localStorage)
+
+- Kernel gains `serialize()` returning a `SerializedKernelSnapshot`
+  (versioned, JSON-safe — Maps and Sets converted to arrays) and a
+  `restore?: SerializedKernelSnapshot` option on construction. Episode
+  identity is checked on restore so a snapshot can't be applied to the
+  wrong shift.
+- `src/state/sim.ts` adds `saveShift`, `loadShift`, `clearSavedShift`
+  helpers backed by `localStorage` under key `theSkitt.shift.v1`.
+- `useSim.init` auto-saves on every kernel notification — every player
+  action, every clock tick. Closing the tab or hard-refreshing during
+  a shift no longer loses state.
+- App menu shows a "Shift in progress" banner with **Resume** /
+  **Discard** buttons when a saved shift is detected. Starting a new
+  shift clears the previous save.
+- Tests (`tests/save-restore.test.ts`, 4 tests): round-trip a clean
+  snapshot, preserve actions/asked/ix/arc-reveals across restore,
+  restored kernel continues advancing deterministically, throws on
+  episode mismatch. 111 / 111 tests passing.
+
 ### Post-milestone polish (perf · CI · a11y · mobile · E2E)
 
 - Add Playwright end-to-end smoke (the build-prompt M1 deliverable

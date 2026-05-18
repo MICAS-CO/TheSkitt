@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { parse as parseYaml } from 'yaml';
 import { PhaserGame } from './ui/PhaserGame';
 import { ShiftView } from './ui/shift/ShiftView';
-import { useSim } from './state/sim';
+import { useSim, loadShift, clearSavedShift, type SavedShift } from './state/sim';
 import { Arc, Case, Episode, type ArcT, type CaseT, type EpisodeT } from './content/schema';
 import { SimKernel } from './sim/kernel';
 
@@ -44,12 +44,24 @@ const HENDO_SHIFT: () => ShiftPack = () => ({
   arcs: [Arc.parse(parseYaml(arcYaml))],
 });
 
+const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
+  ep_anaphylaxis_solo: SOLO_SHIFT,
+  ep_hendo_shift: HENDO_SHIFT,
+};
+
 export function App() {
   const [view, setView] = useState<View>('menu');
+  const [saved, setSaved] = useState<SavedShift | null>(null);
   const initSim = useSim((s) => s.init);
   const destroySim = useSim((s) => s.destroy);
 
+  // Look for a saved shift on mount and after every menu return.
+  useEffect(() => {
+    if (view === 'menu') setSaved(loadShift());
+  }, [view]);
+
   function startShift(pack: ShiftPack) {
+    clearSavedShift();
     const kernel = new SimKernel({
       episode: pack.episode,
       cases: new Map(pack.cases.map((c) => [c.id, c])),
@@ -59,9 +71,33 @@ export function App() {
     setView('shift');
   }
 
+  function resumeSavedShift() {
+    if (!saved) return;
+    const make = KNOWN_SHIFTS[saved.snapshot.episodeId];
+    if (!make) {
+      clearSavedShift();
+      setSaved(null);
+      return;
+    }
+    const pack = make();
+    const kernel = new SimKernel({
+      episode: pack.episode,
+      cases: new Map(pack.cases.map((c) => [c.id, c])),
+      arcs: new Map(pack.arcs.map((a) => [a.id, a])),
+      restore: saved.snapshot,
+    });
+    initSim(kernel);
+    setView('shift');
+  }
+
   function exitShift() {
     destroySim();
     setView('menu');
+  }
+
+  function clearAndForget() {
+    clearSavedShift();
+    setSaved(null);
   }
 
   return (
@@ -83,6 +119,9 @@ export function App() {
             onStartHendo={() => startShift(HENDO_SHIFT())}
             onStartSolo={() => startShift(SOLO_SHIFT())}
             onShowHub={() => setView('hub')}
+            saved={saved}
+            onResume={resumeSavedShift}
+            onClearSave={clearAndForget}
           />
         )}
         {view === 'shift' && <ShiftView onExit={exitShift} />}
@@ -109,10 +148,16 @@ function MenuView({
   onStartHendo,
   onStartSolo,
   onShowHub,
+  saved,
+  onResume,
+  onClearSave,
 }: {
   onStartHendo: () => void;
   onStartSolo: () => void;
   onShowHub: () => void;
+  saved: SavedShift | null;
+  onResume: () => void;
+  onClearSave: () => void;
 }) {
   return (
     <div className="menu">
@@ -122,6 +167,20 @@ function MenuView({
           Pick a shift. The hen-do shift is the milestone-5 build — two cases on one clock with a
           narrative arc connecting them.
         </p>
+        {saved && (
+          <div className="menu__resume">
+            <div className="menu__resume-body">
+              <strong>Shift in progress</strong> — {saved.snapshot.episodeId} at T+
+              {saved.snapshot.clockMin}m. Saved {timeAgo(saved.savedAt)}.
+            </div>
+            <div className="menu__resume-actions">
+              <button className="enc__primary" onClick={onResume}>
+                Resume
+              </button>
+              <button onClick={onClearSave}>Discard</button>
+            </div>
+          </div>
+        )}
         <div className="menu__cards">
           <button className="menu__card menu__card--primary" onClick={onStartHendo}>
             <span className="menu__card-eyebrow">Shift · ST3 · 20 min · 2 cases · 1 arc</span>
@@ -147,4 +206,14 @@ function MenuView({
       </div>
     </div>
   );
+}
+
+function timeAgo(ts: number): string {
+  const secs = Math.max(0, Math.floor((Date.now() - ts) / 1000));
+  if (secs < 60) return `${secs}s ago`;
+  const mins = Math.floor(secs / 60);
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
 }

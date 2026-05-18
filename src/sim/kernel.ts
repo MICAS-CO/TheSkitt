@@ -79,6 +79,38 @@ export interface SimKernelOpts {
   episode: EpisodeT;
   cases: Map<string, CaseT>;
   arcs?: Map<string, ArcT>;
+  /** Restore the kernel from a previously-saved snapshot. */
+  restore?: SerializedKernelSnapshot;
+}
+
+/** Plain-object snapshot of mutable kernel state, safe to JSON.stringify. */
+export interface SerializedCaseRuntime {
+  caseId: string;
+  state: CaseStateT;
+  enteredAt: number | null;
+  actions: string[];
+  asked: string[];
+  examined: string[];
+  ordered: [string, number][];
+  resulted: string[];
+  workingDx: string | null;
+  disposition: string | null;
+  reasons: string[];
+  unlockedHistoryIds: string[];
+  unlockedFindingIds: string[];
+}
+
+export interface SerializedKernelSnapshot {
+  v: 1;
+  clockMin: number;
+  isRunning: boolean;
+  isShiftOver: boolean;
+  episodeId: string;
+  cases: SerializedCaseRuntime[];
+  revealedArcIds: string[];
+  firedEventIds: string[];
+  unfiredEventIds: string[];
+  log: LogEntry[];
 }
 
 export class SimKernel {
@@ -118,6 +150,73 @@ export class SimKernel {
       firedEventIds: new Set(),
       log: [{ t_min: 0, level: 'info', text: 'Shift handover received.' }],
     };
+    if (opts.restore) {
+      this.applySnapshot(opts.restore);
+    }
+  }
+
+  /** Returns a JSON-safe snapshot of mutable state for persistence. */
+  serialize(): SerializedKernelSnapshot {
+    return {
+      v: 1,
+      clockMin: this.state.clockMin,
+      isRunning: this.state.isRunning,
+      isShiftOver: this.state.isShiftOver,
+      episodeId: this.state.episode.id,
+      cases: [...this.state.cases.values()].map((cs) => ({
+        caseId: cs.caseId,
+        state: cs.state,
+        enteredAt: cs.enteredAt,
+        actions: [...cs.actions],
+        asked: [...cs.asked],
+        examined: [...cs.examined],
+        ordered: [...cs.ordered.entries()],
+        resulted: [...cs.resulted],
+        workingDx: cs.workingDx,
+        disposition: cs.disposition,
+        reasons: [...cs.reasons],
+        unlockedHistoryIds: [...cs.unlockedHistoryIds],
+        unlockedFindingIds: [...cs.unlockedFindingIds],
+      })),
+      revealedArcIds: [...this.state.revealedArcIds],
+      firedEventIds: [...this.state.firedEventIds],
+      unfiredEventIds: this.state.unfiredEvents.map((e) => e.id),
+      log: [...this.state.log],
+    };
+  }
+
+  private applySnapshot(snap: SerializedKernelSnapshot): void {
+    if (snap.episodeId !== this.state.episode.id) {
+      throw new Error(
+        `Snapshot is for episode "${snap.episodeId}" but kernel was constructed for "${this.state.episode.id}".`,
+      );
+    }
+    this.state.clockMin = snap.clockMin;
+    this.state.isRunning = snap.isRunning;
+    this.state.isShiftOver = snap.isShiftOver;
+    for (const sc of snap.cases) {
+      const cs = this.state.cases.get(sc.caseId);
+      if (!cs) continue;
+      cs.state = sc.state;
+      cs.enteredAt = sc.enteredAt;
+      cs.actions = new Set(sc.actions);
+      cs.asked = new Set(sc.asked);
+      cs.examined = new Set(sc.examined);
+      cs.ordered = new Map(sc.ordered);
+      cs.resulted = new Set(sc.resulted);
+      cs.workingDx = sc.workingDx;
+      cs.disposition = sc.disposition;
+      cs.reasons = [...sc.reasons];
+      cs.unlockedHistoryIds = new Set(sc.unlockedHistoryIds);
+      cs.unlockedFindingIds = new Set(sc.unlockedFindingIds);
+    }
+    this.state.revealedArcIds = new Set(snap.revealedArcIds);
+    this.state.firedEventIds = new Set(snap.firedEventIds);
+    this.state.unfiredEvents = this.state.episode.scheduled_events.filter((e) =>
+      snap.unfiredEventIds.includes(e.id),
+    );
+    this.state.unfiredEvents.sort((a, b) => a.t_min - b.t_min);
+    this.state.log = [...snap.log];
   }
 
   // ─── Read API ─────────────────────────────────────────────────────────────
