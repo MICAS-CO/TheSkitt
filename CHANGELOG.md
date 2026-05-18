@@ -4,6 +4,23 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### A11y: reduced-motion + WCAG-AA contrast + ARIA progressbar
+
+- `@media (prefers-reduced-motion: reduce)` collapses all animations
+  and transitions for users who set the OS-level preference. Targets
+  the existing clock-bar `width` transition and any future motion.
+- Darkened the "arrested / deceased" state chip background from
+  `--danger` (#d96b5c → 3.2:1 on white) to `#b94434` (≈5:1 on white)
+  to clear WCAG AA for normal-size text.
+- Encounter clock bar in all three views (encounter, shift board,
+  hub) now exposes ARIA `role="progressbar"` with `aria-valuenow` /
+  `aria-valuemin` / `aria-valuemax` / `aria-label` so screen readers
+  announce shift time as it advances.
+- `<ol>` phase progress now has `aria-label="Encounter phase N of M"`;
+  the active `<li>` carries `aria-current="step"` and the numeric
+  prefix is hidden from assistive tech (`aria-hidden`) since the
+  label text already conveys position.
+
 ### Content: head injury solo with DOAC reasoning
 
 - `content/cases/case_head_injury_doac_brennan.yaml` — 78y/o Mrs

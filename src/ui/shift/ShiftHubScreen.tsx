@@ -141,7 +141,14 @@ function ClockBar({
   const pct = Math.min(100, Math.round((clockMin / shiftDurationMin) * 100));
   return (
     <div className="enc__clock">
-      <div className="enc__clock-bar" aria-hidden>
+      <div
+        className="enc__clock-bar"
+        role="progressbar"
+        aria-valuenow={clockMin}
+        aria-valuemin={0}
+        aria-valuemax={shiftDurationMin}
+        aria-label={`Shift clock: ${clockMin} of ${shiftDurationMin} minutes`}
+      >
         <div className="enc__clock-bar-fill" style={{ width: `${pct}%` }} />
       </div>
       <div className="enc__clock-row">

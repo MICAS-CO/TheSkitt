@@ -230,7 +230,14 @@ function ClockControls({
   const pct = Math.min(100, Math.round((clockMin / shiftDurationMin) * 100));
   return (
     <div className="enc__clock">
-      <div className="enc__clock-bar" aria-hidden>
+      <div
+        className="enc__clock-bar"
+        role="progressbar"
+        aria-valuenow={clockMin}
+        aria-valuemin={0}
+        aria-valuemax={shiftDurationMin}
+        aria-label={`Shift clock: ${clockMin} of ${shiftDurationMin} minutes`}
+      >
         <div className="enc__clock-bar-fill" style={{ width: `${pct}%` }} />
       </div>
       <div className="enc__clock-row">
@@ -268,10 +275,19 @@ function ClockControls({
 function PhaseProgress({ phase }: { phase: Phase }) {
   const idx = PHASE_ORDER.indexOf(phase);
   return (
-    <ol className="enc__progress">
+    <ol
+      className="enc__progress"
+      aria-label={`Encounter phase ${idx + 1} of ${PHASE_ORDER.length}`}
+    >
       {PHASE_ORDER.map((p, i) => (
-        <li key={p} className={i === idx ? 'is-active' : i < idx ? 'is-done' : ''}>
-          <span className="enc__progress-num">{i + 1}</span>
+        <li
+          key={p}
+          className={i === idx ? 'is-active' : i < idx ? 'is-done' : ''}
+          aria-current={i === idx ? 'step' : undefined}
+        >
+          <span className="enc__progress-num" aria-hidden="true">
+            {i + 1}
+          </span>
           <span className="enc__progress-label">{PHASE_LABELS[p]}</span>
         </li>
       ))}
