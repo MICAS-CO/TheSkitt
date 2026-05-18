@@ -436,6 +436,184 @@ button:disabled {
   color: var(--warn);
 }
 
+.board__finish {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ─── Episode debrief (Milestone 6) ──────────────────────────────────────── */
+
+.ep-debrief {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.ep-debrief__overall {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 24px;
+  align-items: center;
+  padding: 20px 24px;
+  background: var(--panel);
+  border: 1px solid var(--border-2);
+  border-radius: 8px;
+}
+.ep-debrief__overall--excellent {
+  border-color: var(--accent);
+}
+.ep-debrief__overall--good {
+  border-color: var(--info);
+}
+.ep-debrief__overall--borderline {
+  border-color: var(--warn);
+}
+.ep-debrief__overall--unsafe {
+  border-color: var(--danger);
+}
+.ep-debrief__big {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.ep-debrief__pct {
+  font-size: 44px;
+  font-weight: bold;
+  line-height: 1;
+}
+.ep-debrief__band {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.ep-debrief__overall-meta {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 6px 16px;
+  font-size: 13px;
+}
+.ep-debrief__warn {
+  color: var(--danger);
+}
+
+.ep-debrief__section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+.ep-debrief__section h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ep-debrief__case-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ep-debrief__case {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.ep-debrief__case--excellent {
+  border-color: var(--accent);
+}
+.ep-debrief__case--good {
+  border-color: var(--info);
+}
+.ep-debrief__case--borderline {
+  border-color: var(--warn);
+}
+.ep-debrief__case--unsafe {
+  border-color: var(--danger);
+}
+.ep-debrief__case-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.ep-debrief__case-title {
+  font-weight: 600;
+  flex: 1;
+}
+.ep-debrief__case-band {
+  font-size: 12px;
+  color: var(--muted);
+}
+.ep-debrief__case-band--excellent {
+  color: var(--accent);
+}
+.ep-debrief__case-band--unsafe {
+  color: var(--danger);
+}
+.ep-debrief__case-meta {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.ep-debrief__case-stats {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ep-debrief__arc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ep-debrief__arc {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-left: 3px solid var(--accent);
+  font-size: 13px;
+}
+.ep-debrief__arc.is-missed {
+  border-color: var(--warn);
+  color: var(--muted);
+}
+.ep-debrief__arc-status {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ep-debrief__notes {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.ep-debrief__notes li {
+  border-left: 2px solid var(--info);
+  padding-left: 10px;
+}
+
 .enc__progress {
   display: flex;
   gap: 6px;

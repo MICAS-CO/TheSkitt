@@ -3,10 +3,11 @@ import type { CaseRuntime, LogEntry } from '../../sim/kernel';
 
 interface Props {
   onEnterCase: (caseId: string) => void;
+  onFinishShift: () => void;
   onExit: () => void;
 }
 
-export function ShiftBoardScreen({ onEnterCase, onExit }: Props) {
+export function ShiftBoardScreen({ onEnterCase, onFinishShift, onExit }: Props) {
   useSim((s) => s.tick);
   const kernel = useSim((s) => s.kernel);
   if (!kernel) return null;
@@ -14,6 +15,12 @@ export function ShiftBoardScreen({ onEnterCase, onExit }: Props) {
   const ks = kernel.getState();
   const visible = [...ks.cases.values()].filter((c) => c.state !== 'unseen');
   const unseen = [...ks.cases.values()].filter((c) => c.state === 'unseen').length;
+
+  const focusCases = ks.episode.focus_cases
+    .map((id) => ks.cases.get(id))
+    .filter((c): c is CaseRuntime => !!c);
+  const allDispositioned = focusCases.every((c) => c.disposition !== null);
+  const allEntered = focusCases.every((c) => c.enteredAt !== null);
 
   return (
     <div className="enc">
@@ -61,6 +68,23 @@ export function ShiftBoardScreen({ onEnterCase, onExit }: Props) {
               {unseen} more patient{unseen === 1 ? '' : 's'} expected to triage.
             </p>
           )}
+
+          <div className="board__finish">
+            <button
+              className="enc__primary"
+              onClick={onFinishShift}
+              disabled={!allEntered && !allDispositioned}
+              title={
+                allDispositioned
+                  ? 'Everyone has a disposition — end the shift.'
+                  : allEntered
+                    ? "You've at least seen every case — end early if you're done."
+                    : "Cases you haven't seen yet remain on the board."
+              }
+            >
+              {allDispositioned ? 'End shift — debrief' : 'End shift early — debrief'}
+            </button>
+          </div>
         </main>
 
         <ShiftLog log={ks.log} />

@@ -1,32 +1,37 @@
 import { useEffect, useState } from 'react';
 import { useSim, useRealTimeClock } from '../../state/sim';
 import { ShiftBoardScreen } from './ShiftBoardScreen';
+import { EpisodeDebriefScreen } from './EpisodeDebriefScreen';
 import { EncounterScreen, type Phase } from '../encounter/EncounterScreen';
 
 interface Props {
   onExit: () => void;
 }
 
+type ShiftViewMode = 'board' | 'encounter' | 'episode_debrief';
+
 export function ShiftView({ onExit }: Props) {
   useSim((s) => s.tick);
   const kernel = useSim((s) => s.kernel);
   const [focusedCaseId, setFocusedCaseId] = useState<string | null>(null);
   const [phases, setPhases] = useState<Record<string, Phase>>({});
+  const [mode, setMode] = useState<ShiftViewMode>('board');
 
   const ks = kernel?.getState();
   const isRunning = ks?.isRunning ?? false;
   const isShiftOver = ks?.isShiftOver ?? false;
 
-  // Drive the real-time clock at the shift level so it keeps running
-  // across board/encounter navigation.
   useRealTimeClock(kernel, isRunning && !isShiftOver);
 
-  // When shift ends, force the focused case to debrief
+  // Auto-jump to episode debrief when the shift ends.
   useEffect(() => {
-    if (isShiftOver && focusedCaseId) {
-      setPhases((p) => (p[focusedCaseId] === 'debrief' ? p : { ...p, [focusedCaseId]: 'debrief' }));
+    if (isShiftOver && mode !== 'episode_debrief') {
+      // Pause the kernel just in case.
+      kernel?.pause();
+      setMode('episode_debrief');
+      setFocusedCaseId(null);
     }
-  }, [isShiftOver, focusedCaseId]);
+  }, [isShiftOver, mode, kernel]);
 
   if (!kernel || !ks) {
     return (
@@ -40,23 +45,39 @@ export function ShiftView({ onExit }: Props) {
   function enterCase(id: string) {
     if (kernel) kernel.enterCase(id);
     setFocusedCaseId(id);
+    setMode('encounter');
   }
 
   function setPhaseFor(id: string, phase: Phase) {
     setPhases((p) => ({ ...p, [id]: phase }));
   }
 
-  if (focusedCaseId) {
+  function backToBoard() {
+    setFocusedCaseId(null);
+    setMode('board');
+  }
+
+  function finishShift() {
+    kernel?.pause();
+    setFocusedCaseId(null);
+    setMode('episode_debrief');
+  }
+
+  if (mode === 'episode_debrief') {
+    return <EpisodeDebriefScreen onExit={onExit} />;
+  }
+
+  if (mode === 'encounter' && focusedCaseId) {
     return (
       <EncounterScreen
         caseId={focusedCaseId}
         phase={phases[focusedCaseId] ?? 'vignette'}
         onPhaseChange={(p) => setPhaseFor(focusedCaseId, p)}
-        onBackToBoard={() => setFocusedCaseId(null)}
+        onBackToBoard={backToBoard}
         onExit={onExit}
       />
     );
   }
 
-  return <ShiftBoardScreen onEnterCase={enterCase} onExit={onExit} />;
+  return <ShiftBoardScreen onEnterCase={enterCase} onFinishShift={finishShift} onExit={onExit} />;
 }

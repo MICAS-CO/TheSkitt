@@ -4,6 +4,38 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Milestone 6 — Episode-level debrief & scoring
+
+- Add `scoreEpisode(KernelState) → EpisodeReport` in `src/state/sim.ts`:
+  - Per-case reports (final state, curriculum tags, SLOs, per-case score, attended flag).
+  - Per-arc reports (revealed bool, reveal-time, effects applied).
+  - Aggregates: lives saved, lives lost, unsafe-band count, per-case
+    average %, and an overall % (average minus 25 pp per dead patient).
+  - Overall band downgrades to `unsafe` if any case is unsafe or any
+    patient died, matching the per-case rule.
+  - Auto-generates `examinerNotes` ("must-do missed", "patient-safety
+    trap picked", "arc never revealed", "textbook performance against
+    the guideline", etc.) so the debrief reads like a structured SAQ
+    examiner critique.
+  - De-duplicates source citations across cases.
+- Add `src/ui/shift/EpisodeDebriefScreen.tsx` — banded overall score
+  card, per-case outcome cards (state chip + score band + must-do hit
+  rate + working-dx and disposition correctness + attended flag), arc
+  panel showing reveal status and time, examiner notes, aggregated
+  sources, study-tool disclaimer.
+- `ShiftView` now routes to the episode debrief either automatically
+  when the shift clock ends or manually via a new "End shift — debrief"
+  button on the shift board. The button is enabled once every focus
+  case has been at least attended; the label switches to "End shift
+  early" if not all dispositioned.
+- Tests (`tests/episode-debrief.test.ts`, 5 tests): excellent band for
+  a perfect two-case run; unsafe band + lives-lost count when both
+  cases neglected; unrevealed arcs surfaced in examiner notes;
+  source de-duplication across cases; `attended=false` for cases the
+  player never entered.
+- 92 / 92 tests passing. Typecheck, lint, format, validator
+  (4 cases / 3 episodes / 2 arcs), prod build all green.
+
 ### Milestone 5 — Second case + first intersecting arc
 
 - Author `content/cases/case_ectopic_minors_sarah.yaml` — Sarah Mendez, 30,
