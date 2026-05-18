@@ -81,7 +81,11 @@ history:
     response: |
       "She's been getting hayfever worse the last few summers. Carries
       antihistamine tablets in her bag. There was that Thai place two
-      years ago — I always wondered. We don't have an EpiPen."
+      years ago — I always wondered. We don't have an EpiPen.
+
+      Oh — her friend Sarah came in the ambulance with her. The
+      bride-to-be. She was a bit quiet, said her belly was crampy.
+      Has she been seen? I think she went to triage when we got here."
 
   - id: hx_eaten_today
     source: patient
