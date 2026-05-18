@@ -4,6 +4,59 @@ Architectural notes and explicit trade-offs. Newest first.
 
 ---
 
+## D-018 · Phaser is dynamically imported
+
+**Date:** 2026-05-18
+
+`src/game/boot.ts` is the entry point for the Phaser game and is
+dynamically imported by `src/ui/PhaserGame.tsx`. Result: the initial
+JS chunk dropped from ~1.9 MB to ~479 KB (gzip 145 KB). Phaser ships
+in a separate `boot-*.js` chunk that only downloads when the player
+opens the ED hub preview. The encounter UI uses no Phaser, so most
+sessions never load the chunk.
+
+Trade-off: a tiny load delay the first time the hub opens. The
+fallback path renders a `role="alert"` message if the import fails.
+
+## D-019 · Ambient cases use the same Case schema
+
+**Date:** 2026-05-18
+
+The build-prompt milestone-8 stretch (ambient board pressure) doesn't
+need a separate `AmbientCase` schema. Ambient cases use the same Case
+schema, sit in `Episode.ambient_cases`, and react to the same
+scheduled events (`new_arrival`, `news2_escalation`,
+`deterioration_if_not_x_by_t`) as focus cases.
+
+The split lives in the episode/score level, not the case level:
+
+- `EpisodeReport.cases` = focus per-case reports.
+- `EpisodeReport.ambientCases` = ambient per-case reports.
+- Both contribute to `livesLost` / `unsafeCases` / `averagePercent`.
+- UI renders them in separate board/debrief sections.
+
+Why: keeps the kernel uniform. An ambient case that gets escalated
+(player attends, brings it from `stable` to `admitted`) is just a
+case that the player happened to act on — no special promotion
+mechanic needed at the kernel level.
+
+## D-020 · Playwright is a smoke, not a coverage tool
+
+**Date:** 2026-05-18
+
+`e2e/hendo-shift.spec.ts` is one Playwright test that boots the
+production preview and walks menu → board → encounter → back to
+board. It exercises the React boot, kernel wire-up, and multi-case
+routing — proves the app renders end-to-end. It does NOT replace
+Vitest unit coverage for scoring/kernel logic, which lives in
+`tests/*.test.ts`.
+
+Why one smoke instead of many: Playwright tests are slow (browser
+boot + page render per test) and brittle (timing on real-time clock,
+DOM selectors). The unit tests get to drive `kernel.advance(N)`
+deterministically; the E2E only needs to confirm the React shell
+doesn't break the chain.
+
 ## D-015 · Arc reveals are kernel-side; UI just reads the unlock set
 
 **Date:** 2026-05-18
