@@ -4,6 +4,20 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### UX quality (speed control · spacebar pause · ARIA live log)
+
+- Sim speed selector: 0.5× / 1× / 2× / 4× available in both the shift
+  board and the encounter clock-control bars. 1× (default) is 20-min
+  shift in 60 real-seconds; 4× is 15 real-seconds for testing; 0.5×
+  is more humane for first-time players. Persists in localStorage as
+  `theSkitt.speed.v1`.
+- Spacebar toggles play/pause when not focused on a form control.
+  Buttons get a `title` attribute reflecting the shortcut.
+- Shift log gets an `aria-live="polite"` channel announcing the latest
+  log entry to screen readers (visually-hidden, so it doesn't affect
+  layout).
+- Add `.visually-hidden` utility class.
+
 ### Save / resume (localStorage)
 
 - Kernel gains `serialize()` returning a `SerializedKernelSnapshot`

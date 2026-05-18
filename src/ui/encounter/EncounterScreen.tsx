@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { useSim, scoreCase, type ScoreReport } from '../../state/sim';
+import { useSim, scoreCase, SIM_SPEEDS, type ScoreReport, type SimSpeedKey } from '../../state/sim';
 import type { CitationT } from '../../content/schema';
 import type { CaseRuntime, LogEntry } from '../../sim/kernel';
 
@@ -41,9 +41,19 @@ interface Props {
   onPhaseChange: (p: Phase) => void;
   onBackToBoard: () => void;
   onExit: () => void;
+  speedKey: SimSpeedKey;
+  onSpeedChange: (k: SimSpeedKey) => void;
 }
 
-export function EncounterScreen({ caseId, phase, onPhaseChange, onBackToBoard, onExit }: Props) {
+export function EncounterScreen({
+  caseId,
+  phase,
+  onPhaseChange,
+  onBackToBoard,
+  onExit,
+  speedKey,
+  onSpeedChange,
+}: Props) {
   useSim((s) => s.tick);
   const kernel = useSim((s) => s.kernel);
   const cs = kernel?.getState().cases.get(caseId) ?? null;
@@ -94,6 +104,8 @@ export function EncounterScreen({ caseId, phase, onPhaseChange, onBackToBoard, o
         onPlay={() => kernel.start()}
         onPause={() => kernel.pause()}
         onSkip={() => kernel.advance(1)}
+        speedKey={speedKey}
+        onSpeedChange={onSpeedChange}
       />
 
       <PhaseProgress phase={phase} />
@@ -190,6 +202,8 @@ function ClockControls({
   onPlay,
   onPause,
   onSkip,
+  speedKey,
+  onSpeedChange,
 }: {
   clockMin: number;
   shiftDurationMin: number;
@@ -198,6 +212,8 @@ function ClockControls({
   onPlay: () => void;
   onPause: () => void;
   onSkip: () => void;
+  speedKey: SimSpeedKey;
+  onSpeedChange: (k: SimSpeedKey) => void;
 }) {
   const pct = Math.min(100, Math.round((clockMin / shiftDurationMin) * 100));
   return (
@@ -210,8 +226,26 @@ function ClockControls({
           T+{clockMin}m / {shiftDurationMin}m {isShiftOver ? '· shift over' : ''}
         </span>
         <div className="enc__clock-buttons">
-          {!isRunning && !isShiftOver && <button onClick={onPlay}>▶ start</button>}
-          {isRunning && !isShiftOver && <button onClick={onPause}>❚❚ pause</button>}
+          <label className="enc__speed">
+            <span className="enc__speed-label">speed</span>
+            <select value={speedKey} onChange={(e) => onSpeedChange(e.target.value as SimSpeedKey)}>
+              {Object.entries(SIM_SPEEDS).map(([k, v]) => (
+                <option key={k} value={k}>
+                  {v.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          {!isRunning && !isShiftOver && (
+            <button onClick={onPlay} title="Start (spacebar)">
+              ▶ start
+            </button>
+          )}
+          {isRunning && !isShiftOver && (
+            <button onClick={onPause} title="Pause (spacebar)">
+              ❚❚ pause
+            </button>
+          )}
           {!isShiftOver && <button onClick={onSkip}>+1m</button>}
         </div>
       </div>
@@ -234,9 +268,14 @@ function PhaseProgress({ phase }: { phase: Phase }) {
 }
 
 function ShiftLog({ log, caseId }: { log: LogEntry[]; caseId: string }) {
+  // Most-recent entry announced via aria-live; the full list is below.
+  const latest = log[log.length - 1];
   return (
     <aside className="enc__log" aria-label="Shift log">
       <h3 className="enc__log-title">Shift log</h3>
+      <div className="visually-hidden" aria-live="polite" aria-atomic="true">
+        {latest ? `T+${latest.t_min} minutes — ${latest.text}` : ''}
+      </div>
       <ol className="enc__log-list">
         {log.map((e, i) => (
           <li

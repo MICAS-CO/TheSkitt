@@ -1,13 +1,21 @@
-import { useSim } from '../../state/sim';
+import { useSim, SIM_SPEEDS, type SimSpeedKey } from '../../state/sim';
 import type { CaseRuntime, LogEntry } from '../../sim/kernel';
 
 interface Props {
   onEnterCase: (caseId: string) => void;
   onFinishShift: () => void;
   onExit: () => void;
+  speedKey: SimSpeedKey;
+  onSpeedChange: (k: SimSpeedKey) => void;
 }
 
-export function ShiftBoardScreen({ onEnterCase, onFinishShift, onExit }: Props) {
+export function ShiftBoardScreen({
+  onEnterCase,
+  onFinishShift,
+  onExit,
+  speedKey,
+  onSpeedChange,
+}: Props) {
   useSim((s) => s.tick);
   const kernel = useSim((s) => s.kernel);
   if (!kernel) return null;
@@ -52,6 +60,8 @@ export function ShiftBoardScreen({ onEnterCase, onFinishShift, onExit }: Props) 
         onPlay={() => kernel.start()}
         onPause={() => kernel.pause()}
         onSkip={() => kernel.advance(1)}
+        speedKey={speedKey}
+        onSpeedChange={onSpeedChange}
       />
 
       <div className="enc__split">
@@ -136,6 +146,8 @@ function ClockBar({
   onPlay,
   onPause,
   onSkip,
+  speedKey,
+  onSpeedChange,
 }: {
   clockMin: number;
   shiftDurationMin: number;
@@ -144,6 +156,8 @@ function ClockBar({
   onPlay: () => void;
   onPause: () => void;
   onSkip: () => void;
+  speedKey: SimSpeedKey;
+  onSpeedChange: (k: SimSpeedKey) => void;
 }) {
   const pct = Math.min(100, Math.round((clockMin / shiftDurationMin) * 100));
   return (
@@ -156,12 +170,42 @@ function ClockBar({
           T+{clockMin}m / {shiftDurationMin}m {isShiftOver ? '· shift over' : ''}
         </span>
         <div className="enc__clock-buttons">
-          {!isRunning && !isShiftOver && <button onClick={onPlay}>▶ start</button>}
-          {isRunning && !isShiftOver && <button onClick={onPause}>❚❚ pause</button>}
+          <SpeedSelect value={speedKey} onChange={onSpeedChange} />
+          {!isRunning && !isShiftOver && (
+            <button onClick={onPlay} title="Start (spacebar)">
+              ▶ start
+            </button>
+          )}
+          {isRunning && !isShiftOver && (
+            <button onClick={onPause} title="Pause (spacebar)">
+              ❚❚ pause
+            </button>
+          )}
           {!isShiftOver && <button onClick={onSkip}>+1m</button>}
         </div>
       </div>
     </div>
+  );
+}
+
+function SpeedSelect({
+  value,
+  onChange,
+}: {
+  value: SimSpeedKey;
+  onChange: (k: SimSpeedKey) => void;
+}) {
+  return (
+    <label className="enc__speed">
+      <span className="enc__speed-label">speed</span>
+      <select value={value} onChange={(e) => onChange(e.target.value as SimSpeedKey)}>
+        {Object.entries(SIM_SPEEDS).map(([k, v]) => (
+          <option key={k} value={k}>
+            {v.label}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }
 
@@ -213,9 +257,13 @@ function CaseCard({
 }
 
 function ShiftLog({ log }: { log: LogEntry[] }) {
+  const latest = log[log.length - 1];
   return (
     <aside className="enc__log" aria-label="Shift log">
       <h3 className="enc__log-title">Shift log</h3>
+      <div className="visually-hidden" aria-live="polite" aria-atomic="true">
+        {latest ? `T+${latest.t_min} minutes — ${latest.text}` : ''}
+      </div>
       <ol className="enc__log-list">
         {log.map((e, i) => (
           <li key={i} className={`enc__log-entry enc__log-entry--${e.level}`}>

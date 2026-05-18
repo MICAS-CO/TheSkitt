@@ -39,11 +39,40 @@ export const useSim = create<SimStore>((set, get) => ({
 }));
 
 /**
- * Default sim speed: 1 simulated minute per 3 real seconds.
- * → A 20-minute shift takes 60 real seconds to elapse.
- * Tunable per UI; kernel itself is speed-agnostic.
+ * Sim speed presets. The kernel itself is speed-agnostic; this is purely
+ * a UI knob telling `useRealTimeClock` how many sim-minutes to add per
+ * real-second.
  */
-export const DEFAULT_SIM_SPEED_MIN_PER_SEC = 1 / 3;
+export const SIM_SPEEDS = {
+  slow: { label: '0.5×', value: 1 / 6 }, // 20 sim-min in 120 real-sec
+  normal: { label: '1×', value: 1 / 3 }, // 20 sim-min in 60 real-sec
+  fast: { label: '2×', value: 2 / 3 }, // 20 sim-min in 30 real-sec
+  veryFast: { label: '4×', value: 4 / 3 }, // 20 sim-min in 15 real-sec
+} as const;
+
+export type SimSpeedKey = keyof typeof SIM_SPEEDS;
+
+export const DEFAULT_SIM_SPEED_MIN_PER_SEC = SIM_SPEEDS.normal.value;
+
+const SPEED_KEY = 'theSkitt.speed.v1';
+
+export function loadSavedSpeed(): SimSpeedKey {
+  try {
+    const v = window.localStorage.getItem(SPEED_KEY);
+    if (v && v in SIM_SPEEDS) return v as SimSpeedKey;
+  } catch {
+    /* ignore */
+  }
+  return 'normal';
+}
+
+export function saveSpeed(k: SimSpeedKey): void {
+  try {
+    window.localStorage.setItem(SPEED_KEY, k);
+  } catch {
+    /* ignore */
+  }
+}
 
 // ─── Save / resume (localStorage) ────────────────────────────────────────────
 

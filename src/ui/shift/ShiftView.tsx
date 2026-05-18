@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useSim, useRealTimeClock } from '../../state/sim';
+import {
+  useSim,
+  useRealTimeClock,
+  loadSavedSpeed,
+  saveSpeed,
+  SIM_SPEEDS,
+  type SimSpeedKey,
+} from '../../state/sim';
 import { ShiftBoardScreen } from './ShiftBoardScreen';
 import { EpisodeDebriefScreen } from './EpisodeDebriefScreen';
 import { EncounterScreen, type Phase } from '../encounter/EncounterScreen';
@@ -16,12 +23,34 @@ export function ShiftView({ onExit }: Props) {
   const [focusedCaseId, setFocusedCaseId] = useState<string | null>(null);
   const [phases, setPhases] = useState<Record<string, Phase>>({});
   const [mode, setMode] = useState<ShiftViewMode>('board');
+  const [speedKey, setSpeedKey] = useState<SimSpeedKey>(() => loadSavedSpeed());
 
   const ks = kernel?.getState();
   const isRunning = ks?.isRunning ?? false;
   const isShiftOver = ks?.isShiftOver ?? false;
 
-  useRealTimeClock(kernel, isRunning && !isShiftOver);
+  useRealTimeClock(kernel, isRunning && !isShiftOver, SIM_SPEEDS[speedKey].value);
+
+  // Persist speed when it changes.
+  useEffect(() => {
+    saveSpeed(speedKey);
+  }, [speedKey]);
+
+  // Spacebar toggles play/pause when not focused on form controls.
+  useEffect(() => {
+    if (!kernel) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.code !== 'Space') return;
+      const tag = (e.target as HTMLElement | null)?.tagName ?? '';
+      if (['INPUT', 'TEXTAREA', 'BUTTON', 'A', 'SELECT'].includes(tag)) return;
+      if (!kernel || kernel.getState().isShiftOver) return;
+      e.preventDefault();
+      if (kernel.getState().isRunning) kernel.pause();
+      else kernel.start();
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [kernel]);
 
   // Auto-jump to episode debrief when the shift ends.
   useEffect(() => {
@@ -75,9 +104,19 @@ export function ShiftView({ onExit }: Props) {
         onPhaseChange={(p) => setPhaseFor(focusedCaseId, p)}
         onBackToBoard={backToBoard}
         onExit={onExit}
+        speedKey={speedKey}
+        onSpeedChange={setSpeedKey}
       />
     );
   }
 
-  return <ShiftBoardScreen onEnterCase={enterCase} onFinishShift={finishShift} onExit={onExit} />;
+  return (
+    <ShiftBoardScreen
+      onEnterCase={enterCase}
+      onFinishShift={finishShift}
+      onExit={onExit}
+      speedKey={speedKey}
+      onSpeedChange={setSpeedKey}
+    />
+  );
 }
