@@ -1,0 +1,98 @@
+# Single-case 20-min shift built around Priya's first-seizure-of-life
+# status presentation. The pacing engine: she has already been seizing
+# pre-hospital for 14 minutes, paramedics gave one dose of lorazepam,
+# and she lands in resus actively convulsing. Player has roughly
+# 5–10 minutes before second benzo + 2nd-line agent + anaesthetic
+# escalation is needed. CT comes back at T+10 with the SAH twist.
+
+schema_version: 1
+id: ep_seizure_solo
+title: 'First seizure — status pathway'
+
+learning_objectives:
+  - 'Apply the NICE NG217 (2022) status-epilepticus pathway: 2 benzos max → IV levetiracetam → anaesthetic-led RSI.'
+  - 'In a woman of childbearing age, get urine βhCG before any IV anti-epileptic — valproate is contraindicated in pregnancy (MHRA PPP).'
+  - 'Recognise that first seizure of life mandates imaging; pivot the working diagnosis when the CT shows a structural cause (here: SAH).'
+  - 'Escalate to anaesthetics early in refractory status — RSI for safe imaging, ICU transfer for ongoing seizure management.'
+
+curriculum_tags: [NeuP3, NeuC3]
+difficulty_band: ST3
+shift_duration_min: 20
+
+focus_cases:
+  - case_status_epilepticus_priya
+
+ambient_cases: []
+
+scheduled_events:
+  # T+5 — if no second benzo + IV access + βhCG by 5 min, seizures continue
+  # and patient deteriorates. The kernel logs whether requirements were met.
+  - id: ev_priya_no_2nd_benzo
+    type: deterioration_if_not_x_by_t
+    t_min: 5
+    case_id: case_status_epilepticus_priya
+    required_action_ids: [mx_lorazepam_2, mx_iv_access_bloods]
+    new_state: deteriorating
+
+  # T+8 — urine βhCG result returns; surfaces the pregnancy + safeguarding pivot.
+  - id: ev_priya_hcg_back
+    type: results_back
+    t_min: 8
+    case_id: case_status_epilepticus_priya
+    investigation_id: ix_hcg_urine
+
+  # T+10 — VBG returns. Drives the mixed-acidosis pearl.
+  - id: ev_priya_vbg_back
+    type: results_back
+    t_min: 10
+    case_id: case_status_epilepticus_priya
+    investigation_id: ix_vbg
+
+  # T+12 — if 2nd-line agent not given + anaesthetics not called, deteriorate
+  # toward refractory-status airway compromise.
+  - id: ev_priya_no_2nd_line
+    type: deterioration_if_not_x_by_t
+    t_min: 12
+    case_id: case_status_epilepticus_priya
+    required_action_ids: [mx_levetiracetam_iv, mx_call_anaesthetics]
+    new_state: arrested
+
+  # T+15 — CT head results return with the SAH twist.
+  - id: ev_priya_ct_back
+    type: results_back
+    t_min: 15
+    case_id: case_status_epilepticus_priya
+    investigation_id: ix_ct_head
+
+  # T+11 — flatmate has been waiting in relatives' room.
+  - id: ev_priya_flatmate_relatives
+    type: family_arrival
+    t_min: 11
+    case_id: case_status_epilepticus_priya
+    npc: 'Flatmate Anna (also needs to know about the pregnancy)'
+
+  # T+16 — bed manager presses for disposition once CT shows the pivot.
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 16
+    severity: firm
+
+arcs: []
+
+author_notes: |
+  Solo Tier-1 shift. The teaching points stack:
+
+  - Stage 1/2 (benzos): paramedics gave one dose, player gives the
+    second within 5 min of arrival.
+  - Stage 3 (2nd-line): IV levetiracetam — the 2022 NICE NG217 update
+    moved levetiracetam ahead of phenytoin. Trap: choosing valproate
+    in a woman who's pregnant.
+  - Stage 4 (refractory): anaesthetic RSI by T+12 or game-over via
+    cumulative acidosis + aspiration cardiac arrest.
+
+  The CT-comes-back-with-SAH twist at T+15 forces the player to update
+  the working diagnosis, involve neurosurg + obstetrics, and avoid the
+  classic trap of LP-before-CT in someone with raised ICP.
+
+  No arc — single-case shift designed for high-density NICE NG217
+  rehearsal.

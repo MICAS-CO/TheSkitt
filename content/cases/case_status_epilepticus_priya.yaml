@@ -1,0 +1,611 @@
+# Convulsive status epilepticus — first-of-life seizure in a young
+# adult woman. Built against NICE NG217 (Epilepsies in children, young
+# people and adults; 2022 update changing 2nd-line to levetiracetam),
+# the Resuscitation Council UK ALS Algorithm, and the RCEM Best
+# Practice Guideline on the Emergency Management of Adults with First
+# Seizure (2024). hCG-before-valproate is the safeguarding pivot.
+
+schema_version: 1
+id: case_status_epilepticus_priya
+title: 'Status epilepticus — first seizure of life'
+chief_complaint: 'Prolonged convulsion'
+topic_id: status_epilepticus
+
+vignette: |
+  Resus, 21:14. Crash call alert two minutes ago.
+
+  Priya Sharma, 28 y/o, brought in by ambulance — convulsing on her
+  flatmate's living-room floor for 14 minutes before arrival.
+
+  Paramedics: "IV lorazepam 4 mg en route at T-6. Still seizing.
+  BM 4.8, on high-flow O2, suction caddy used twice."
+
+  As they wheel her into Bed 1 she is in active tonic-clonic — jaw
+  clenched, tongue obviously bitten, urinary incontinence, frothing.
+  No PMH known to flatmate. No medic-alert jewellery.
+
+  No epilepsy diagnosis on her GP summary. Bag handed over by her
+  flatmate contains a paracetamol packet (open) and a positive
+  pregnancy test on a stick.
+
+curriculum_tags: [NeuP3, NeuC3]
+slos: [1, 3, 5]
+difficulty_band: ST3
+paeds: false
+
+demographics:
+  age_value: 28
+  age_unit: years
+  sex: female
+  weight_kg: 65
+  pmh:
+    - 'No documented epilepsy'
+    - 'Migraine with aura'
+  medications:
+    - 'Combined oral contraceptive (own report from flatmate — unreliable)'
+  allergies: ['NKDA']
+  social: 'Software engineer; lives with flatmate; non-smoker; occasional wine.'
+
+triage_category: 1
+initial_state: deteriorating
+bay: resus
+
+# ─── History ──────────────────────────────────────────────────────────────
+history:
+  - id: hx_paramedic
+    source: paramedic
+    topic: 'Handover from the ambulance crew — full timeline.'
+    response: |
+      "T-14 — collapsed at the dinner table mid-sentence per flatmate.
+      Tonic-clonic from onset. No warning, no aura reported. Tongue
+      bite witnessed. T-6 — IV lorazepam 4 mg, BM 4.8 confirmed
+      capillary. T-3 — continuing tonic-clonic. T-0 — your door.
+
+      No trauma to head pre-event. No drugs in the flat that flatmate
+      knows about. She'd had two glasses of wine at dinner."
+
+  - id: hx_flatmate
+    source: family
+    topic: 'Speak to the flatmate at reception.'
+    response: |
+      "We were halfway through dinner. She said the lights looked weird
+      and then she just went stiff and slid off the chair. I've never
+      seen her have a seizure. She had a really bad migraine yesterday
+      and called in sick — said she could see flashing lights for an
+      hour. I thought it was just her migraine again.
+
+      She's normally so well. She told me last week she might be
+      pregnant — she's been off her birth-control pill since she's
+      been with her new boyfriend. I think she did a test at the
+      weekend, that's why it's in her bag. She didn't tell me the
+      result though."
+
+  - id: hx_recent_illness
+    source: family
+    topic: 'Any fever, headache, or recent illness?'
+    response: |
+      "She's had three days of really bad headache. Not the migraine
+      kind — she said it was different. Worst at night. She wasn't
+      keen on light. Took paracetamol for it. No vomiting that I
+      know of. No fever I felt."
+
+  - id: hx_pregnancy_status
+    source: family
+    topic: "Pregnancy — what's in the bag?"
+    response: |
+      "It's a positive test stick. She did the test on Saturday but
+      she didn't tell me the result, I just saw it in her wash bag
+      this morning. She must be… 8 weeks? Maybe 10?"
+
+  - id: hx_drug_screen
+    source: family
+    topic: 'Any drug use — recreational, prescription, supplements?'
+    response: |
+      "No drugs. She's got vitamin tablets in her bag and the open
+      paracetamol packet she's been taking for the headaches — maybe
+      six tablets over three days? Nothing else."
+
+  - id: hx_past_seizures
+    source: gp_letter
+    topic: 'Check the GP record / Summary Care Record.'
+    response: |
+      "Migraine with aura since age 19. Three migraine episodes a
+      year, last neurology review 2024 — discharged. Never any
+      seizure or fit. No anti-epileptic ever prescribed. COCP
+      (Microgynon) prescribed 4 years; last issue 6 months ago — not
+      requested since (may have stopped)."
+
+# ─── Examination ──────────────────────────────────────────────────────────
+examination:
+  - system: general
+    findings:
+      - name: 'Active tonic-clonic seizure'
+        value: 'symmetric, no focal onset visible; tongue bitten; incontinent of urine; frothy oral secretions'
+        present: true
+      - name: 'Peri-oral cyanosis'
+        value: 'present'
+        present: true
+        red_flag: true
+
+  - system: airway
+    findings:
+      - name: 'Airway'
+        value: 'clenched jaw, oral secretions; nasopharyngeal airway tolerable; bag-mask available'
+        present: true
+
+  - system: breathing
+    findings:
+      - name: 'Respiratory rate'
+        value: '26 (irregular, during clonic phase)'
+        present: true
+      - name: 'SpO2'
+        value: '91% on 15 L NRB'
+        present: true
+        red_flag: true
+
+  - system: circulation
+    findings:
+      - name: 'HR'
+        value: '128 sinus on monitor'
+        present: true
+      - name: 'BP'
+        value: '156/94 (peri-ictal autonomic surge)'
+        present: true
+      - name: 'Capillary refill'
+        value: '<2 s'
+        present: true
+
+  - system: disability
+    findings:
+      - name: 'GCS'
+        value: 'unscoreable mid-seizure; between bursts E1 V1 M3 = 5'
+        present: true
+        red_flag: true
+      - name: 'Capillary glucose (BM)'
+        value: '4.8 mmol/L (already documented by paramedics)'
+        present: true
+      - name: 'Pupils'
+        value: 'equal, reactive, 4 mm bilaterally'
+        present: true
+      - name: 'Focal neurology'
+        value: 'cannot assess mid-seizure; no lateralising tonic posturing'
+        present: false
+
+  - system: exposure
+    findings:
+      - name: 'Temperature'
+        value: '37.6°C (peri-ictal)'
+        present: true
+      - name: 'Skin / rash'
+        value: 'no petechial rash; no purpura'
+        present: false
+
+# ─── Investigations ───────────────────────────────────────────────────────
+investigations:
+  - id: ix_bm
+    name: 'Capillary blood glucose'
+    category: bedside
+    turnaround_min: 0
+    result_summary: |
+      **BM 4.8 mmol/L** — not hypo. (Paramedics already excluded
+      hypoglycaemia as the seizure trigger.)
+
+  - id: ix_hcg_urine
+    name: 'Urine βhCG (catheter sample)'
+    category: urine
+    turnaround_min: 5
+    result_summary: |
+      **POSITIVE.** This is the safeguarding pivot — sodium valproate
+      is contra-indicated in pregnancy (MHRA Valproate Pregnancy
+      Prevention Programme). Use levetiracetam as 2nd line; involve
+      obstetrics early; raise the eclampsia question.
+    abnormal: true
+    sources:
+      - {
+          type: rcog,
+          ref: 'MHRA Valproate Pregnancy Prevention Programme 2024 — valproate must not be used in pregnancy in any indication unless no alternative.',
+        }
+
+  - id: ix_vbg
+    name: 'Venous blood gas'
+    category: gas
+    turnaround_min: 5
+    result_summary: |
+      **pH 7.18 · pCO2 6.8 kPa · HCO3 18 · Lactate 6.2 · K+ 3.4
+      · Na 134 · Ca 2.18 · Mg 0.74 · Glucose 4.8.**
+
+      Mixed acidosis — respiratory (from breath-holding mid-seizure)
+      AND metabolic (lactate from sustained muscle activity). Expect
+      lactate to clear rapidly post-seizure if not septic.
+    abnormal: true
+
+  - id: ix_bloods
+    name: 'FBC, U&E, LFTs, CRP, Ca, Mg, Phos, coag, blood cultures'
+    category: blood
+    turnaround_min: 45
+    result_summary: |
+      WCC 12.4 (mild peri-ictal leukocytosis) · Hb 124 · Plt 248
+      · Na 134 · K 3.4 (mild hypoK — common post-seizure shift)
+      · Urea 4.8 · Cr 78 · LFTs normal · CRP 14 (mildly raised) ·
+      Mg 0.74 · Ca 2.18 (corrected) · INR normal.
+      No electrolyte cause for the seizure.
+    abnormal: true
+
+  - id: ix_ecg
+    name: '12-lead ECG'
+    category: ecg
+    turnaround_min: 5
+    result_summary: |
+      Sinus tachycardia 128. **QTc 432 ms** — normal range
+      (excludes long-QT-triggered seizure-mimic syncope).
+      No ischaemic change. No Brugada pattern.
+
+  - id: ix_ct_head
+    name: 'CT head (no contrast)'
+    category: imaging
+    turnaround_min: 30
+    result_summary: |
+      **Subtle hyperdensity in the left middle cerebral fissure
+      consistent with subarachnoid haemorrhage.** No mass effect. No
+      midline shift. Ventricles normal. No focal mass lesion.
+
+      A first seizure of life with a positive pregnancy test, a
+      preceding 3-day thunderclap-pattern headache, and SAH on CT —
+      this is now a different problem. Neurosurgery + obstetrics on
+      call, anaesthetic team for definitive airway, CT angiogram
+      (with informed-consent/risk-benefit because of pregnancy) to
+      look for an aneurysm.
+    abnormal: true
+    sources:
+      - { type: nice, id: 'NG217', ref: 'NICE NG217 — imaging in first seizure of life in adults' }
+      - { type: rcem, ref: 'RCEM Best Practice — First Seizure (2024)' }
+
+  - id: ix_lp
+    name: 'Lumbar puncture'
+    category: other
+    turnaround_min: 60
+    result_summary: |
+      **Deferred** — pre-test probability is now SAH on CT, and LP
+      would only be needed if the CT was negative within 6 hours of
+      onset to chase xanthochromia. Active seizure is also a
+      contraindication.
+    sources:
+      - {
+          type: textbook,
+          ref: 'Royal College of Physicians SAH guideline — LP for xanthochromia at 12 hours if CT negative within 6 hours.',
+        }
+
+  - id: ix_toxicology
+    name: 'Toxicology screen + paracetamol level'
+    category: blood
+    turnaround_min: 60
+    result_summary: |
+      Paracetamol 38 mg/L (sub-therapeutic; not relevant). Urine
+      tox screen negative. Alcohol level 22 mmol/L (≈100 mg/dL —
+      consistent with two glasses of wine).
+
+# ─── Differential ─────────────────────────────────────────────────────────
+differential:
+  - diagnosis: 'Convulsive status epilepticus secondary to subarachnoid haemorrhage'
+    likelihood: top
+    discriminator: |
+      First seizure of life + 3 days of progressive headache + SAH on
+      CT. Pregnancy raises aneurysm risk (vascular changes of
+      pregnancy + the puerperal aneurysm bleed pattern).
+
+  - diagnosis: 'Eclampsia (if >20 weeks gestation)'
+    likelihood: must_not_miss
+    discriminator: |
+      She is probably 8–10 weeks (per flatmate). Eclampsia is a
+      diagnosis of pregnancy >20 weeks (or up to 6 weeks postpartum)
+      — does not fit chronologically. But pregnancy must be
+      confirmed and gestation dated by obstetrics; magnesium has a
+      role both in eclampsia AND in SAH neuroprotection.
+
+  - diagnosis: 'Idiopathic generalised epilepsy — first presentation'
+    likelihood: worth_considering
+    discriminator: |
+      Most common cause of first-of-life seizure in this age band.
+      But the preceding 3-day headache and CT finding take this off
+      the top of the list — first seizure of life mandates imaging
+      to exclude a structural cause.
+
+  - diagnosis: 'Encephalitis (HSV)'
+    likelihood: worth_considering
+    discriminator: |
+      Headache + fever + altered mental state + seizure. Temp 37.6
+      could be peri-ictal; CRP 14 mildly raised. Worth aciclovir
+      cover if the SAH story doesn't pan out and the LP supports
+      encephalitis. Not first-line here.
+
+# ─── Management — NICE NG217 status algorithm ────────────────────────────
+working_diagnosis: |
+  Convulsive status epilepticus — first seizure of life. Pregnant
+  (urine βhCG positive). CT head shows subarachnoid haemorrhage. Needs
+  termination of seizure → anaesthetic / ICU airway → neurosurgery +
+  obstetrics joint decisions.
+
+management:
+  - id: mx_a_to_e
+    category: monitoring
+    name: 'ABCDE: airway adjuncts + suction + high-flow O2 + monitoring'
+    detail: |
+      Nasopharyngeal airway (oral airway not tolerated mid-seizure due
+      to clenched jaw); 15 L NRB; full SpO2 / ECG / NIBP / EtCO2;
+      large-bore IV × 2. Call anaesthetics early — RSI is on the
+      horizon if seizures don't terminate.
+    must_do: true
+    sources:
+      - { type: resus_council_uk, ref: 'Resuscitation Council UK ALS — initial assessment' }
+
+  - id: mx_lorazepam_2
+    category: drug
+    name: 'IV lorazepam 4 mg (second benzodiazepine dose)'
+    detail: |
+      Paramedics gave lorazepam 4 mg at T-6 — first dose. If still
+      seizing 5–10 min after the first benzo, give a second dose
+      (NICE NG217 stage 1 → stage 2 transition). Do NOT give a third
+      benzodiazepine: diminishing return, increasing risk of apnoea.
+    must_do: true
+    drug:
+      amount: '4 mg (0.1 mg/kg, max 4 mg)'
+      route: IV
+      frequency: 'single dose; repeat once if still seizing 5–10 min later'
+    sources:
+      - {
+          type: nice,
+          id: 'NG217',
+          ref: 'NICE NG217 — convulsive status epilepticus, adult stage 1 (benzodiazepines × 2 max)',
+        }
+
+  - id: mx_levetiracetam_iv
+    category: drug
+    name: 'IV levetiracetam 60 mg/kg over 10 min (max 4500 mg)'
+    detail: |
+      Per the 2022 NICE NG217 update (post-EcLiPSE / ESETT data), IV
+      levetiracetam is the preferred second-line agent after benzos.
+      Safe in pregnancy (Category C, but the safest of the IV AEDs).
+      Onset within ~10 min of completion of the infusion.
+    must_do: true
+    drug:
+      amount: '60 mg/kg IV (max 4500 mg) — for Priya at 65 kg = 3.9 g'
+      route: IV
+      frequency: 'over 10 min, single loading dose'
+    sources:
+      - {
+          type: nice,
+          id: 'NG217',
+          ref: 'NICE NG217 (2022 update) — IV levetiracetam preferred over phenytoin as 2nd-line; EcLiPSE & ESETT informed the change.',
+        }
+
+  - id: mx_phenytoin_alt
+    category: drug
+    name: 'IV phenytoin 20 mg/kg over 20 min (alternative 2nd-line)'
+    detail: |
+      Acceptable alternative if levetiracetam contraindicated /
+      unavailable. Requires continuous cardiac monitor — risk of
+      bradyarrhythmia and hypotension; do NOT give peripherally
+      faster than 50 mg/min. Pregnancy-class D (folate antagonist) —
+      not preferred in this patient.
+    drug:
+      amount: '20 mg/kg IV (max 2 g)'
+      route: IV
+      frequency: 'over 20 min on cardiac monitor; max rate 50 mg/min'
+    sources:
+      - { type: nice, id: 'NG217', ref: 'NICE NG217 — phenytoin loading dose' }
+
+  - id: mx_call_anaesthetics
+    category: referral
+    name: 'Anaesthetics + ICU early call'
+    detail: |
+      Seizures lasting >30 min from onset = refractory status →
+      RSI + GA (thiopental or propofol) + midazolam infusion +
+      continuous EEG. Call early; do not wait until seizures have
+      lasted 30 min to refer.
+    must_do: true
+    sources:
+      - { type: nice, id: 'NG217', ref: 'NICE NG217 — refractory status (stage 3)' }
+
+  - id: mx_call_obstetrics
+    category: referral
+    name: 'Obstetrics — pregnancy gestation, MEWS, eclampsia consideration'
+    detail: |
+      Date the pregnancy and confirm viability. Eclampsia is a
+      diagnosis of pregnancy >20 weeks; she is likely 8–10 weeks but
+      this must be confirmed. Magnesium has a role both for
+      eclampsia AND for SAH neuroprotection (some units use it).
+    must_do: true
+    sources:
+      - { type: rcog, ref: 'RCOG Green-top 10A — Severe pre-eclampsia / eclampsia (magnesium)' }
+
+  - id: mx_call_neurosurg
+    category: referral
+    name: 'Neurosurgery referral — SAH on CT, possible aneurysm'
+    detail: |
+      Discuss CT-angiogram timing (contrast in pregnancy: NICE
+      Imaging in Pregnancy — gadolinium avoided in first trimester,
+      iodinated contrast lower risk; shared decision).
+      Anti-fibrinolytic (tranexamic acid) for SAH is controversial
+      — neurosurgery decision.
+    must_do: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'British Society of Neurological Surgeons — Subarachnoid haemorrhage management 2023',
+        }
+
+  - id: mx_ct_head_action
+    category: monitoring
+    name: 'CT head once seizures controlled (or under anaesthetic if not)'
+    detail: |
+      First seizure of life mandates imaging. With ongoing seizures
+      she may need induction-then-scan; involve anaes for transfer.
+    must_do: true
+    sources:
+      - { type: nice, id: 'NG217', ref: 'NICE NG217 — investigation of first seizure' }
+
+  - id: mx_iv_access_bloods
+    category: procedure
+    name: 'IV access × 2 + bloods + urgent βhCG'
+    detail: 'βhCG before any anti-epileptic in a woman of childbearing age.'
+    must_do: true
+
+  - id: mx_thiamine_iv
+    category: drug
+    name: 'IV Pabrinex 1 pair if alcohol/malnutrition suspected'
+    detail: |
+      Defensible given the dinner-wine history, but not the priority
+      action — only if Wernicke-risk features (chronic alcohol
+      excess) elsewhere. Probably NOT indicated here.
+    drug:
+      amount: 'Pabrinex 1 pair'
+      route: IV
+      frequency: 'STAT then TDS × 3 days'
+
+  # ─── Examiner traps ────────────────────────────────────────────────────
+  - id: mx_no_third_benzo
+    category: drug
+    name: 'Third dose of lorazepam (or any further benzodiazepine)'
+    detail: |
+      ❌ NICE NG217 caps benzodiazepines at 2 doses total. A 3rd
+      benzo at this point causes apnoea / hypotension and delays
+      the move to a definitive 2nd-line agent.
+    must_not_do: true
+    sources:
+      - { type: nice, id: 'NG217', ref: 'NICE NG217 — max 2 benzo doses' }
+
+  - id: mx_no_valproate
+    category: drug
+    name: 'IV sodium valproate 40 mg/kg'
+    detail: |
+      ❌ Pregnant + woman of childbearing age. MHRA Valproate
+      Pregnancy Prevention Programme: valproate is contraindicated
+      in pregnancy in any indication unless no alternative is
+      effective. Levetiracetam IS an alternative.
+    must_not_do: true
+    sources:
+      - { type: rcog, ref: 'MHRA Valproate Pregnancy Prevention Programme 2024' }
+
+  - id: mx_no_diazepam_iv
+    category: drug
+    name: 'IV diazepam 10 mg as the in-hospital 1st-line benzo'
+    detail: |
+      ❌ Lorazepam is preferred IV benzo per NICE NG217 — longer
+      anti-seizure half-life, fewer redistribution recurrences.
+      Diazepam has a place pre-hospital PR / IV when lorazepam
+      unavailable, NOT in the ED with IV access established.
+    must_not_do: true
+    sources:
+      - { type: nice, id: 'NG217', ref: 'NICE NG217 — IV lorazepam preferred' }
+
+  - id: mx_no_intubate_without_anaes
+    category: procedure
+    name: 'Intubate at the bedside without anaesthetic team'
+    detail: |
+      ❌ This is a difficult airway (clenched jaw, secretions, full
+      stomach, possible raised ICP from SAH). RSI by anaesthetics
+      with neuro-protective induction.
+    must_not_do: true
+
+  - id: mx_no_immediate_lp
+    category: procedure
+    name: 'Lumbar puncture before CT'
+    detail: |
+      ❌ Active seizure + possible raised ICP from SAH = LP
+      contraindicated. CT first; LP only if CT negative ≥6 h after
+      headache onset and SAH still considered.
+    must_not_do: true
+
+# ─── Disposition ─────────────────────────────────────────────────────────
+disposition_options:
+  - label: 'Anaesthetic-led RSI then transfer to neurosurgical / ICU bed'
+    criteria: |
+      Refractory status + SAH on CT + pregnancy = needs intubation,
+      neuro-imaging (CTA), tertiary neurosurgical input, obstetric
+      MDT. ED is not the right home.
+    appropriate: true
+  - label: 'Admit AMU on a phenytoin loading dose'
+    criteria: |
+      Inadequate — refractory status warrants ICU / anaesthetic
+      input not AMU. Phenytoin also less preferred in pregnancy.
+    appropriate: false
+  - label: 'Discharge to neurology outpatient if seizures stop'
+    criteria: |
+      Unsafe — SAH on CT + pregnancy + first seizure of life all
+      mandate inpatient admission to a unit that can manage the
+      neurosurgical and obstetric dimensions.
+    appropriate: false
+
+# ─── State machine ──────────────────────────────────────────────────────
+state_machine:
+  states: [deteriorating, stable, arrested, admitted]
+  transitions:
+    - from: deteriorating
+      to: stable
+      trigger:
+        on: action
+        action_id: mx_levetiracetam_iv
+        note: 'Levetiracetam loading dose terminates seizures within ~10 min in the majority — case moves to post-ictal monitoring.'
+    - from: deteriorating
+      to: arrested
+      trigger:
+        on: inaction_by
+        min: 25
+        required_actions: [mx_lorazepam_2, mx_levetiracetam_iv, mx_call_anaesthetics]
+        note: 'Refractory status >30 min from onset (she has been seizing 14 min pre-hospital + 15 min in ED) without 2nd benzo + 2nd-line agent + anaesthetic involvement → hypoxic cardiac arrest from cumulative acidosis and aspiration.'
+    - from: stable
+      to: admitted
+      trigger:
+        on: action
+        action_id: mx_call_anaesthetics
+        note: 'Anaesthetic team takes the airway for safe CT transfer; admission to ICU under joint neuro / obs care.'
+
+# ─── Pearls + pitfalls ──────────────────────────────────────────────────
+pearls:
+  - 'Convulsive status = ≥5 min of continuous seizure OR ≥2 seizures without recovery between (definition changed from 30 min over the last decade as outcomes improved with earlier treatment).'
+  - 'NICE NG217 (2022): IV lorazepam ×2 → IV levetiracetam 60 mg/kg → anaesthetic RSI. Levetiracetam beat phenytoin in EcLiPSE & ESETT.'
+  - 'In a woman of childbearing age: urgent βhCG before any anti-epileptic. Valproate is forbidden in pregnancy (MHRA PPP).'
+  - 'First seizure of life mandates imaging — CT head looking for structural cause. SAH, tumour, abscess, vascular malformation are all on the list.'
+  - 'A pregnant woman with a first seizure: eclampsia >20 weeks gestation; SAH at any gestation (vascular changes raise aneurysm risk).'
+  - 'Diazepam IV is only first-line pre-hospital or if lorazepam unavailable. In the ED with IV access: lorazepam.'
+
+pitfalls:
+  - 'Skipping the pregnancy test before loading an anti-epileptic in a young woman.'
+  - 'Reaching for a third benzodiazepine instead of advancing to 2nd-line.'
+  - 'Choosing valproate in a woman of childbearing age (MHRA PPP).'
+  - 'Forgetting first-seizure-of-life mandates imaging.'
+  - 'Attempting LP before CT in a seizing patient (raised ICP + active seizure).'
+  - 'Late call to anaesthetics — by the time you decide RSI is needed you should have had them at the bedside for 15 minutes already.'
+
+sources:
+  - {
+      type: nice,
+      id: 'NG217',
+      ref: 'NICE NG217 — Epilepsies in children, young people and adults (2022 update — levetiracetam preferred 2nd-line)',
+    }
+  - { type: resus_council_uk, ref: 'Resuscitation Council UK ALS algorithm' }
+  - {
+      type: rcem,
+      ref: 'RCEM Best Practice — Emergency management of adults with a first seizure (2024)',
+    }
+  - { type: rcog, ref: 'MHRA Valproate Pregnancy Prevention Programme (2024)' }
+  - {
+      type: rcog,
+      ref: 'RCOG Green-top 10A — Management of severe pre-eclampsia / eclampsia (magnesium sulphate)',
+    }
+  - {
+      type: textbook,
+      ref: 'Oxford Handbook of Emergency Medicine 5e — Ch 7 Neurological emergencies',
+    }
+
+author_notes: |
+  This case is designed as the SAQ-classic "first seizure of life in
+  status, with a twist". The twist stack: (1) she's pregnant — urgent
+  hCG before any AED, (2) the index headache + CT finding pivots to
+  SAH, (3) refractory status mandates anaesthetic engagement early.
+
+  Built against NICE NG217 (2022 update), Resus Council UK ALS,
+  RCEM Best Practice First Seizure 2024, and MHRA Valproate PPP 2024.
+  All clinical claims carry inline source citations on the management
+  entry that asserts them. Pearls and pitfalls re-cite the headline
+  guidelines for revision use.

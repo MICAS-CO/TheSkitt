@@ -36,6 +36,10 @@ import birthdayEpYaml from '../content/episodes/ep_birthday_party.yaml?raw';
 import williamsYaml from '../content/cases/case_stroke_acute_williams.yaml?raw';
 import strokeEpYaml from '../content/episodes/ep_stroke_solo.yaml?raw';
 
+// Status epilepticus solo (with SAH twist)
+import priyaYaml from '../content/cases/case_status_epilepticus_priya.yaml?raw';
+import seizureEpYaml from '../content/episodes/ep_seizure_solo.yaml?raw';
+
 type View = 'menu' | 'shift' | 'hub';
 
 interface ShiftPack {
@@ -85,6 +89,12 @@ const STROKE_SOLO: () => ShiftPack = () => ({
   arcs: [],
 });
 
+const SEIZURE_SOLO: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(seizureEpYaml)),
+  cases: [Case.parse(parseYaml(priyaYaml))],
+  arcs: [],
+});
+
 const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
   ep_anaphylaxis_solo: SOLO_SHIFT,
   ep_hendo_shift: HENDO_SHIFT,
@@ -92,6 +102,7 @@ const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
   ep_overnight_metabolic: METABOLIC_SHIFT,
   ep_birthday_party: FAMILY_SHIFT,
   ep_stroke_solo: STROKE_SOLO,
+  ep_seizure_solo: SEIZURE_SOLO,
 };
 
 export function App() {
@@ -178,6 +189,7 @@ export function App() {
             onStartMetabolic={() => startShift(METABOLIC_SHIFT())}
             onStartFamily={() => startShift(FAMILY_SHIFT())}
             onStartStroke={() => startShift(STROKE_SOLO())}
+            onStartSeizure={() => startShift(SEIZURE_SOLO())}
             onShowHub={() => setView('hub')}
             saved={saved}
             onResume={resumeSavedShift}
@@ -211,6 +223,7 @@ function MenuView({
   onStartMetabolic,
   onStartFamily,
   onStartStroke,
+  onStartSeizure,
   onShowHub,
   saved,
   onResume,
@@ -222,6 +235,7 @@ function MenuView({
   onStartMetabolic: () => void;
   onStartFamily: () => void;
   onStartStroke: () => void;
+  onStartSeizure: () => void;
   onShowHub: () => void;
   saved: SavedShift | null;
   onResume: () => void;
@@ -287,6 +301,14 @@ function MenuView({
             <span className="menu__card-meta">
               Witnessed LMCA stroke on apixaban. NICE NG128 + DOAC contraindication + thrombectomy
               referral.
+            </span>
+          </button>
+          <button className="menu__card menu__card--secondary" onClick={onStartSeizure}>
+            <span className="menu__card-eyebrow">Shift · ST3 · 20 min · 1 case</span>
+            <span className="menu__card-title">First seizure — status pathway</span>
+            <span className="menu__card-meta">
+              Refractory status in a pregnant 28-y/o. NICE NG217 (2022) + MHRA Valproate PPP + a CT
+              twist.
             </span>
           </button>
           <button className="menu__card menu__card--secondary" onClick={onStartSolo}>

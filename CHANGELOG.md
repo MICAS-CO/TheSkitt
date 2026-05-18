@@ -4,6 +4,36 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Content: status epilepticus solo with SAH twist
+
+- `content/cases/case_status_epilepticus_priya.yaml` — 28y/o Priya
+  Sharma, in active tonic-clonic on arrival, paramedics already gave
+  one dose of IV lorazepam. Scaffolded by `pnpm new-case --topic
+status_epilepticus` then authored against:
+  - **NICE NG217** (2022 update — IV levetiracetam preferred over
+    phenytoin as 2nd-line after the EcLiPSE / ESETT trials)
+  - **Resuscitation Council UK ALS**
+  - **RCEM Best Practice — First Seizure (2024)**
+  - **MHRA Valproate Pregnancy Prevention Programme (2024)**
+  - **RCOG Green-top 10A** — magnesium for eclampsia
+- The twist stack: (1) urine βhCG comes back POSITIVE — valproate is
+  forbidden in pregnancy, locking in levetiracetam as 2nd-line;
+  (2) CT head returns at T+15 with subarachnoid haemorrhage — the
+  preceding 3-day "thunderclap-pattern" headache and the
+  first-seizure-of-life rule pivot the working diagnosis from
+  idiopathic-epilepsy to SAH. Player must then call neurosurgery +
+  obstetrics + anaesthetics simultaneously.
+- Five `must_not_do` traps: third benzodiazepine dose (NICE NG217
+  caps at 2); IV valproate (MHRA PPP); IV diazepam (lorazepam
+  preferred in-hospital); ED-bedside intubation without anaesthetics;
+  LP before CT in raised-ICP / active seizure.
+- `content/episodes/ep_seizure_solo.yaml` — 20-min single-case shift.
+  T+5 second-benzo deadline; T+8 βhCG result; T+11 flatmate arrives
+  in relatives' room; T+12 anaesthetic-escalation deadline; T+15 CT
+  result with the SAH pivot; T+16 bed-manager pressure.
+- New "First seizure — status pathway" entry on the shift menu.
+- 9 cases / 7 episodes / 2 arcs validate. 123 / 123 tests pass.
+
 ### Audit: clinical accuracy + narrative coherence pass
 
 Driven by a content-audit subagent over all 8 authored cases / 6
