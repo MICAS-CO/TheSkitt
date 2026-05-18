@@ -4,7 +4,15 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
-### Post-milestone polish (perf · CI · a11y · mobile)
+### Post-milestone polish (perf · CI · a11y · mobile · E2E)
+
+- Add Playwright end-to-end smoke (the build-prompt M1 deliverable
+  deferred until interactions existed). `e2e/hendo-shift.spec.ts`
+  boots the production preview, navigates menu → hen-do shift → shift
+  board → Beth's encounter and back to board, and asserts both Focus
+  and Ambient sections render. New `npm run test:e2e`.
+- CI now also installs Chromium and runs the E2E after build, with a
+  failure-time `playwright-report` artifact upload.
 
 - Code-split Phaser. `src/game/boot.ts` exports `bootGame(parent)` and
   is dynamically imported by `src/ui/PhaserGame.tsx` only when the

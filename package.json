@@ -16,7 +16,8 @@
     "format:check": "prettier --check .",
     "validate-content": "tsx scripts/validate-content.ts",
     "new-case": "tsx scripts/new-case.ts",
-    "new-episode": "tsx scripts/new-episode.ts"
+    "new-episode": "tsx scripts/new-episode.ts",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "phaser": "^3.87.0",
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.16.0",
+    "@playwright/test": "^1.60.0",
     "@types/node": "^25.9.0",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
