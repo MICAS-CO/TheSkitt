@@ -4,6 +4,58 @@ Architectural notes and explicit trade-offs. Newest first.
 
 ---
 
+## D-008 · Zod + YAML for content; one schema file, no codegen
+
+**Date:** 2026-05-18
+
+Adopted the stack proposed in the build prompt (Zod for runtime validation,
+YAML for human-friendly authoring). Schemas live in a single
+`src/content/schema.ts` rather than split per entity, because all the entity
+schemas reference shared primitives (`CurriculumCode`, `Citation`,
+`CaseState`, `ScheduledEvent` variants) and split files added import
+cyclomania without real benefit at this size.
+
+**No codegen** (no `zod-to-json-schema`, no generated TypeScript from a
+separate IDL). Zod is the single source of truth; TypeScript types are
+inferred via `z.infer<typeof X>`. If a future consumer needs JSON Schema
+(e.g. IDE YAML completion), generate it from the Zod schemas at that point.
+
+**Discriminated unions** are used heavily — `Citation` discriminates on
+`type`, `ScheduledEvent` on `type`, `TransitionTrigger` on `on`,
+`ArcRevealTrigger` on `on`. This catches authoring mistakes early (e.g. a
+`results_back` event missing `case_id` fails parse, not at runtime).
+
+**Citation taxonomy** enumerates real UK guideline bodies (NICE, NICE CKS,
+RCEM, Resus Council UK, BTS-SIGN, RCOG, BSPED, JBDS, TOXBASE, ESC, Renal
+Assoc, RCPCH, RCP, NHS, legislation, textbook, trend_uk, other). New types
+require a deliberate schema edit — prevents drift into vague citations.
+
+**Curriculum code regex** enumerates real RCEM Clinical Syllabus prefixes
+from the 2021 v1.5 syllabus. Catches typos. Will need bumping if RCEM adds
+new system prefixes in a future curriculum version; cost is small.
+
+## D-009 · Validator does two passes: schema then cross-ref
+
+**Date:** 2026-05-18
+
+`src/content/validator.ts` runs two phases:
+
+1. **Per-file schema validation** with Zod's `safeParse`. Errors are
+   collected per file with the JSON-pointer-style path so authors can
+   navigate straight to the problem field.
+2. **Cross-reference resolution** once all files are parsed — episode
+   `focus_cases` / `ambient_cases` / `arcs` references must resolve to
+   real case/arc files; arc `cases` and `reveals[].in_case_id` must
+   resolve too; scheduled events that name a `case_id` or `arc_id`
+   must resolve.
+
+Duplicate ids across files are caught in phase 1 by maintaining a
+`Map<id, file>` per entity bucket.
+
+Validator returns a `ValidationReport` (errors, warnings, counts) so the
+same logic can drive the CLI today and a Milestone-7 authoring TUI later
+without re-implementing.
+
 ## D-001 · Stack: Vite + TS + React 19 + Phaser 3 (Milestone 1)
 
 **Date:** 2026-05-18

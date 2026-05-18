@@ -28,7 +28,12 @@ source_calibration:
   - id: rcem_curriculum_2021_v1_5
     type: pdf
     citation: 'Royal College of Emergency Medicine. Emergency Medicine 2021 Curriculum, v1.5, August 2025. Approved by GMC.'
-    sections_consulted: ['3.2 SLOs (pp.17–58)', '3.3 Clinical Syllabus (pp.59–68)', '5 Programme of Assessment (pp.75–82)']
+    sections_consulted:
+      [
+        '3.2 SLOs (pp.17–58)',
+        '3.3 Clinical Syllabus (pp.59–68)',
+        '5 Programme of Assessment (pp.75–82)',
+      ]
   - id: rcemlearning_public
     type: web
     citation: 'RCEMLearning public catalogue (https://www.rcemlearning.co.uk). Public-facing surface only. No member content used.'
@@ -47,7 +52,11 @@ topics:
       - { type: resus_council_uk, ref: 'Anaphylaxis Guidelines 2021 (updated 2024)' }
       - { type: nice, id: 'CG134' }
       - { type: textbook, ref: 'Oxford Handbook of EM 5e, Ch 2 Life-threatening emergencies' }
-    arc_hooks: ['parent presenting with own anaphylaxis (familial atopy)', 'food-allergy paeds case where parent is in adjacent bay for unrelated cause']
+    arc_hooks:
+      [
+        'parent presenting with own anaphylaxis (familial atopy)',
+        'food-allergy paeds case where parent is in adjacent bay for unrelated cause',
+      ]
 
   - id: sepsis_adult
     label: Adult sepsis / septic shock
@@ -60,7 +69,10 @@ topics:
       - { type: nice, id: 'NG51' }
       - { type: rcem, ref: 'Best Practice — Septic Patient in the ED' }
       - { type: nhs, ref: 'NEWS2 (RCP)' }
-    arc_hooks: ['source unclear — UTI vs pneumonia vs intra-abdominal; biliary case in adjacent bay turns out to be the source']
+    arc_hooks:
+      [
+        'source unclear — UTI vs pneumonia vs intra-abdominal; biliary case in adjacent bay turns out to be the source',
+      ]
 
   - id: stemi
     label: STEMI / ACS
@@ -72,7 +84,10 @@ topics:
     sources:
       - { type: nice, id: 'NG185' }
       - { type: esc, ref: 'ESC ACS Guidelines 2023' }
-    arc_hooks: ['worried-relative arc: family member of the resus-bay STEMI is the one quietly deteriorating in minors']
+    arc_hooks:
+      [
+        'worried-relative arc: family member of the resus-bay STEMI is the one quietly deteriorating in minors',
+      ]
 
   - id: dka_adult
     label: Diabetic ketoacidosis (adult)
@@ -96,7 +111,8 @@ topics:
     sources:
       - { type: nice, id: 'NG128' }
       - { type: rcp, ref: 'National Clinical Guideline for Stroke 2023' }
-    arc_hooks: ['"funny turn" GP letter case in ambulatory turns out to be TIA; sentinel for next-day CVA']
+    arc_hooks:
+      ['"funny turn" GP letter case in ambulatory turns out to be TIA; sentinel for next-day CVA']
 
   - id: asthma_acute
     label: Acute severe asthma
@@ -122,7 +138,10 @@ topics:
       - { type: nice, id: 'NG40 (Fractures: complex)' }
       - { type: rcem, ref: 'Major Haemorrhage in the ED' }
       - { type: resus_council_uk, ref: 'ATLS / European Trauma Course principles' }
-    arc_hooks: ['SHARED-INCIDENT ARC: driver in resus, passenger in majors, child in paeds — different injury patterns from one RTC. Family identity reveals over time.']
+    arc_hooks:
+      [
+        'SHARED-INCIDENT ARC: driver in resus, passenger in majors, child in paeds — different injury patterns from one RTC. Family identity reveals over time.',
+      ]
 
   - id: status_epilepticus
     label: Status epilepticus
@@ -134,7 +153,10 @@ topics:
     sources:
       - { type: nice, id: 'NG217 (Epilepsies in children, young people and adults)' }
       - { type: resus_council_uk, ref: 'APLS / EPALS' }
-    arc_hooks: ['febrile convulsion in paeds with concerned parent; first seizure of life in adult with hidden alcohol withdrawal']
+    arc_hooks:
+      [
+        'febrile convulsion in paeds with concerned parent; first seizure of life in adult with hidden alcohol withdrawal',
+      ]
 
   - id: head_injury
     label: Head injury
@@ -145,7 +167,11 @@ topics:
     rationale: 'NICE NG232 CT head decision rules — Canadian CT Head / NICE criteria. Anticoagulated patient nuance. Paeds variant differs.'
     sources:
       - { type: nice, id: 'NG232' }
-    arc_hooks: ['minor fall in elderly on DOAC — looks well but on anticoag → CT decision', 'NAI consideration in paeds head injury (safeguarding arc)']
+    arc_hooks:
+      [
+        'minor fall in elderly on DOAC — looks well but on anticoag → CT decision',
+        'NAI consideration in paeds head injury (safeguarding arc)',
+      ]
 
   # ─── Tier 2 ───────────────────────────────────────────────────────────────
   - id: pe
@@ -170,7 +196,10 @@ topics:
     sources:
       - { type: nice, id: 'NG133' }
       - { type: rcog, ref: 'Green-top Guideline 10A (Severe pre-eclampsia/eclampsia management)' }
-    arc_hooks: ['pregnant patient with seizures presenting as "first fit" — true diagnosis hidden by ambulance handover error']
+    arc_hooks:
+      [
+        'pregnant patient with seizures presenting as "first fit" — true diagnosis hidden by ambulance handover error',
+      ]
 
   - id: ectopic_pregnancy
     label: Ectopic pregnancy
@@ -182,7 +211,10 @@ topics:
     sources:
       - { type: nice, id: 'NG126' }
       - { type: rcog, ref: 'Green-top Guideline 21 (Tubal Ectopic Pregnancy)' }
-    arc_hooks: ['young woman with "PV bleeding" in minors deteriorating while clinician is in resus — classic build-prompt example']
+    arc_hooks:
+      [
+        'young woman with "PV bleeding" in minors deteriorating while clinician is in resus — classic build-prompt example',
+      ]
 
   - id: paeds_dka
     label: Paediatric DKA
@@ -193,7 +225,8 @@ topics:
     rationale: 'BSPED 2020 — distinct from adult: cautious fluids (cerebral oedema risk), insulin start at 1 hour, no bolus unless shocked.'
     sources:
       - { type: bsped, ref: 'BSPED Paediatric DKA Guideline 2020' }
-    arc_hooks: ['first presentation with delayed diagnosis (vomiting initially attributed to gastro)']
+    arc_hooks:
+      ['first presentation with delayed diagnosis (vomiting initially attributed to gastro)']
 
   - id: bronchiolitis
     label: Bronchiolitis
@@ -228,7 +261,10 @@ topics:
       - { type: nice, id: 'NG10 (Violence and aggression)' }
       - { type: rcem, ref: 'Mental Health in the ED — RCEM Best Practice' }
       - { type: legislation, ref: 'Mental Health Act 1983 (s.5/4/2/3); Mental Capacity Act 2005' }
-    arc_hooks: ['frequent flyer with self-harm becomes the deteriorating patient if neglected — build-prompt explicit example']
+    arc_hooks:
+      [
+        'frequent flyer with self-harm becomes the deteriorating patient if neglected — build-prompt explicit example',
+      ]
 
   - id: paracetamol_od
     label: Paracetamol overdose
@@ -320,7 +356,10 @@ topics:
     rationale: 'Non-specific symptoms ("flu", headache). CO oximetry. Hyperbaric referral criteria. Shared-source potential (household / workplace).'
     sources:
       - { type: rcem, ref: 'RCEM Best Practice — Carbon Monoxide Poisoning' }
-    arc_hooks: ['SHARED-SOURCE ARC: multiple family members from same household present separately over the shift']
+    arc_hooks:
+      [
+        'SHARED-SOURCE ARC: multiple family members from same household present separately over the shift',
+      ]
 
   # ─── Tier 3 ───────────────────────────────────────────────────────────────
   - id: hyperemesis_gravidarum
@@ -329,7 +368,13 @@ topics:
     curriculum_codes: [ObC8]
     slos: [SLO1]
     paeds: no
-    sources: [{ type: rcog, ref: 'Green-top Guideline 69 (Nausea and Vomiting of Pregnancy and Hyperemesis Gravidarum)' }]
+    sources:
+      [
+        {
+          type: rcog,
+          ref: 'Green-top Guideline 69 (Nausea and Vomiting of Pregnancy and Hyperemesis Gravidarum)',
+        },
+      ]
     arc_hooks: ['hidden ectopic / molar pregnancy revealed by βhCG anomaly']
 
   - id: paeds_febrile_convulsion
@@ -361,7 +406,10 @@ topics:
     sources:
       - { type: nice, id: 'CG89 (When to suspect child maltreatment)' }
       - { type: rcpch, ref: 'Child Protection Companion (RCPCH)' }
-    arc_hooks: ['HIDDEN-IDENTITY ARC: presenting injury inconsistent with mechanism; parent in adjacent bay with DV markers']
+    arc_hooks:
+      [
+        'HIDDEN-IDENTITY ARC: presenting injury inconsistent with mechanism; parent in adjacent bay with DV markers',
+      ]
 
   - id: sickle_cell_crisis
     label: Sickle cell crisis
@@ -369,7 +417,13 @@ topics:
     curriculum_codes: [HC8]
     slos: [SLO1, SLO3]
     paeds: yes
-    sources: [{ type: nice, id: 'NG143 (Sickle cell disease: managing acute painful episodes in hospital)' }]
+    sources:
+      [
+        {
+          type: nice,
+          id: 'NG143 (Sickle cell disease: managing acute painful episodes in hospital)',
+        },
+      ]
     arc_hooks: []
 
   - id: hypoglycaemia
@@ -407,6 +461,6 @@ recommended_first_case:
         in upright posture (Pumphrey), refractory case glucagon, ACE-I
         bradykinin angioedema mimic.
   defer_after_milestone_3:
-    - sepsis_adult     # better second case — NEWS2 + Sepsis Six tests the simulation kernel
-    - paeds_dka        # good first paeds, links to safeguarding arc
-    - major_trauma     # earliest natural fit for the RTC shared-incident arc
+    - sepsis_adult # better second case — NEWS2 + Sepsis Six tests the simulation kernel
+    - paeds_dka # good first paeds, links to safeguarding arc
+    - major_trauma # earliest natural fit for the RTC shared-incident arc

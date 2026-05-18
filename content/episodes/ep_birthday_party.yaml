@@ -1,0 +1,50 @@
+# SAMPLE EPISODE — two focus cases + one ambient + one arc.
+# Exercises every Episode schema field. The shift clock + event scheduler
+# are NOT yet implemented (Milestone 4) — this is structural.
+
+schema_version: 1
+id: ep_birthday_party
+title: 'Birthday party'
+learning_objectives:
+  - 'Recognise and manage anaphylaxis per Resus Council UK 2021 algorithm.'
+  - 'Adjust adrenaline dose for paediatric age bands.'
+  - 'Recognise shared-incident arcs and pre-empt anticipated arrivals.'
+
+curriculum_tags: [RP2, AP1, AP2, AC1, TP10]
+difficulty_band: CT2
+shift_duration_min: 20
+
+focus_cases:
+  - case_anaphylaxis_adult_peanut
+  - case_anaphylaxis_paeds_sibling
+
+ambient_cases:
+  - case_minor_laceration_ambient
+
+scheduled_events:
+  - id: ev_paeds_arrival
+    type: new_arrival
+    t_min: 8
+    case_id: case_anaphylaxis_paeds_sibling
+  - id: ev_tryptase_back
+    type: results_back
+    t_min: 12
+    case_id: case_anaphylaxis_adult_peanut
+    investigation_id: ix_tryptase
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 15
+    severity: firm
+  - id: ev_arc_reveal
+    type: arc_reveal
+    t_min: 6
+    arc_id: arc_family_peanut_party
+    reveal_id: reveal_via_family_arrival
+
+arcs:
+  - arc_family_peanut_party
+
+author_notes: |
+  This episode is the schema exercise for Milestone 2 — proves the schema
+  can hold a 2-focus + 1-ambient + 1-arc shift. Real clinical authoring
+  for the focus cases is Milestones 3 and 5.

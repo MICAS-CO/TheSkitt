@@ -4,6 +4,7 @@ Captured verbatim from RCEM Curriculum 2021 v1.5, §3.3 (pp.59–68). This is th
 canonical taxonomy The Skitt's case YAMLs tag against (`Case.curriculum_tags`).
 
 **Code convention** (RCEM's own):
+
 - Codes ending in **P** = clinical Presentation (the chief complaint).
 - Codes ending in **C** = clinical Condition (the diagnosis).
 - A case typically tags one or more P-codes (what the patient looks like) and

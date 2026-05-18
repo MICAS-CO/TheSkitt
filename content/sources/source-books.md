@@ -10,8 +10,8 @@ as bibliographic metadata.
 
 ## 1. Oxford Handbook of Emergency Medicine, 5e
 
-**Citation:** Wyatt JP, Taylor RG, de Wit K, Hotton EJ. *Oxford Handbook of
-Emergency Medicine*, 5th edition. Oxford University Press, 2020.
+**Citation:** Wyatt JP, Taylor RG, de Wit K, Hotton EJ. _Oxford Handbook of
+Emergency Medicine_, 5th edition. Oxford University Press, 2020.
 ISBN 978-0-19-878419-7. 804 pages.
 
 **Status as a source:** Primary UK reference for the encounter loop. UK
@@ -23,23 +23,23 @@ listen to nagging doubts", "Never assume ↓GCS is due to alcohol alone
 
 **Top-level structure (verbatim from TOC, p.vii):**
 
-| Ch | Title | p. |
-|---|---|---|
-| 1 | General approach | 1 |
-| 2 | Life-threatening emergencies | 43 |
-| 3 | Medicine | 66 |
-| 4 | Toxicology | 187 |
-| 5 | Infectious diseases | 227 |
-| 6 | Environmental emergencies | 263 |
-| 7 | Analgesia and anaesthesia | 281 |
-| 8 | Major trauma | 328 |
-| 9 | Wounds, fractures, and orthopaedics | 408 |
-| 10 | Surgery | 519 |
-| 11 | Ophthalmology | 549 |
-| 12 | Ear, nose, and throat | 561 |
-| 13 | Obstetrics and gynaecology | 579 |
-| 14 | Psychiatry | 617 |
-| 15 | Paediatric emergencies | 646 |
+| Ch  | Title                               | p.  |
+| --- | ----------------------------------- | --- |
+| 1   | General approach                    | 1   |
+| 2   | Life-threatening emergencies        | 43  |
+| 3   | Medicine                            | 66  |
+| 4   | Toxicology                          | 187 |
+| 5   | Infectious diseases                 | 227 |
+| 6   | Environmental emergencies           | 263 |
+| 7   | Analgesia and anaesthesia           | 281 |
+| 8   | Major trauma                        | 328 |
+| 9   | Wounds, fractures, and orthopaedics | 408 |
+| 10  | Surgery                             | 519 |
+| 11  | Ophthalmology                       | 549 |
+| 12  | Ear, nose, and throat               | 561 |
+| 13  | Obstetrics and gynaecology          | 579 |
+| 14  | Psychiatry                          | 617 |
+| 15  | Paediatric emergencies              | 646 |
 
 Index: p.765.
 
@@ -57,8 +57,8 @@ lecturer.
 
 ## 2. Case Studies in Emergency Medicine (Wenzel, ed.)
 
-**Citation:** Wenzel V (ed.). *Case Studies in Emergency Medicine: A
-Collection of Memorable Clinically Relevant Cases with Clinical Pearls.*
+**Citation:** Wenzel V (ed.). _Case Studies in Emergency Medicine: A
+Collection of Memorable Clinically Relevant Cases with Clinical Pearls._
 Springer, 2023. ISBN 978-3-662-67248-8. 243 pages, 56 cases.
 
 **Status as a source:** **Narrative shape and atmosphere reference, not a
@@ -68,7 +68,7 @@ HEMS work as much as ED-floor care. UK drug names and guidelines do not
 necessarily align — clinical content must be cross-checked against UK
 sources before any fact lands in a case YAML.
 
-**What it's good for:** case *framing*. The chapter titles read like Skitt
+**What it's good for:** case _framing_. The chapter titles read like Skitt
 episode pitches:
 
 > 1. Forearm Fracture in Afghanistan
@@ -76,34 +76,34 @@ episode pitches:
 > 3. Serious Traffic Accident in Fog
 > 4. 80-Year-Old Patient with Devastating Chest Pain
 > 5. Unconscious in Industrial Area
-> 9. Buried Under Concrete Slabs
-> 13. Fall into Icy Water
-> 16. Unconscious Woman in Bathroom
-> 22. Fall into Garden Pond
-> 25. Child with Head Injury
-> 29. Status Epilepticus
-> 31. Collapse During Seniors' Hike
-> 36. A Nearly Deadly Tea
-> 37. Abandoned Newborn
-> 39. Avalanche Burial
-> 47. Cardiologist with Heart Attack
-> 53. Stop  (the title is the whole point)
-> 56. Quarantine
+> 6. Buried Under Concrete Slabs
+> 7. Fall into Icy Water
+> 8. Unconscious Woman in Bathroom
+> 9. Fall into Garden Pond
+> 10. Child with Head Injury
+> 11. Status Epilepticus
+> 12. Collapse During Seniors' Hike
+> 13. A Nearly Deadly Tea
+> 14. Abandoned Newborn
+> 15. Avalanche Burial
+> 16. Cardiologist with Heart Attack
+> 17. Stop (the title is the whole point)
+> 18. Quarantine
 
 Each chapter is a 3–6 page tight clinical vignette built around a single
 decision or a single learned-the-hard-way pearl. The format —
 mise-en-scène → handover → key decision → learning — maps directly onto
 Skitt's per-encounter loop.
 
-**Use:** mine for arc and episode *premise*. Skitt cases will rewrite
+**Use:** mine for arc and episode _premise_. Skitt cases will rewrite
 content in UK-EM voice against UK guidelines.
 
 ---
 
 ## 3. Emergency Medicine Case-Based Guide: Obstetric Emergencies (Kosoko, ed.)
 
-**Citation:** Kosoko AA (ed.). *Emergency Medicine Case-Based Guide:
-Obstetric Emergencies.* Springer Nature, 2024. ISBN 978-3-031-70117-7.
+**Citation:** Kosoko AA (ed.). _Emergency Medicine Case-Based Guide:
+Obstetric Emergencies._ Springer Nature, 2024. ISBN 978-3-031-70117-7.
 218 pages, 19 chapters.
 
 **Status as a source:** **Schema template and didactic scaffold.** US

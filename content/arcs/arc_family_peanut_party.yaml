@@ -1,0 +1,32 @@
+# SAMPLE ARC — family relation, shared incident.
+# Connects case_anaphylaxis_adult_peanut (sister, in resus) with
+# case_anaphylaxis_paeds_sibling (brother, arrives ~30 min later).
+# Demonstrates the build-prompt "intersecting arcs" mechanic.
+
+schema_version: 1
+id: arc_family_peanut_party
+type: family_relation
+title: 'Same family — same party'
+internal_summary: |
+  The adult anaphylaxis patient in resus is the older sister of the
+  paediatric anaphylaxis patient who arrives ~30 min later. The player
+  may realise the connection from the family-arrival event or from the
+  shared peanut history. Recognising the link earlier lets the player
+  pre-emptively prepare paeds anaphylaxis resus space and dose-by-weight
+  adrenaline.
+
+cases: [case_anaphylaxis_adult_peanut, case_anaphylaxis_paeds_sibling]
+
+reveals:
+  - id: reveal_via_history
+    on: action
+    action_id: mx_lay_flat # placeholder — the real reveal hook will be a history question
+    in_case_id: case_anaphylaxis_adult_peanut
+  - id: reveal_via_family_arrival
+    on: clock_time
+    t_min: 25
+
+effects:
+  - on_case_id: case_anaphylaxis_paeds_sibling
+    unlocks_history_id: hx_arrival
+    note: 'Once arc is revealed, paeds case history opens with the shared-party context.'

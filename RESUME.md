@@ -124,6 +124,7 @@ should be tractable in one session.
 ### Option B — Address the open items first
 
 If the user wants to:
+
 - move the PDFs out of git (do this with `git filter-repo` or BFG —
   rewrites history, **needs explicit consent**, and a coordinated push
   since it force-updates `main`),

@@ -4,14 +4,45 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Milestone 2 — Content schemas + validator
+
+- Add `zod` (^4.4) and `yaml` (^2.9) runtime deps; `tsx` and `@types/node` dev.
+- Author `src/content/schema.ts` — Zod schemas for `Case`, `Episode`, `Arc`,
+  `ScheduledEvent`, `Citation`, plus supporting types (curriculum codes,
+  SLO numbers, difficulty bands, triage categories, demographics, history,
+  examination, investigations, differential, management, state machine).
+  Discriminated unions for `Citation` (NICE / RCEM / Resus Council UK /
+  BTS-SIGN / RCOG / BSPED / JBDS / TOXBASE / ESC / textbook / legislation
+  / etc.) and `ScheduledEvent` (results back, NEWS2 escalation, new
+  arrival, family arrival, bed manager, lab callback, deterioration on
+  inaction, arc reveal).
+- Author `src/content/loader.ts` — YAML file walker.
+- Author `src/content/validator.ts` — schema validation + cross-reference
+  resolution (case ids referenced in episodes/arcs exist; arc reveal hooks
+  reference real cases; duplicate id detection).
+- Add `scripts/validate-content.ts` — CLI with colour output; non-zero
+  exit on validation failure.
+- Add `npm run validate-content` script (`pnpm validate-content` alias
+  works under pnpm too).
+- Author sample YAMLs that exercise every required schema field —
+  `case_anaphylaxis_adult_peanut`, `case_anaphylaxis_paeds_sibling`,
+  `case_minor_laceration_ambient`, `arc_family_peanut_party`, and
+  `ep_birthday_party`. Clinical content is intentionally skeleton with
+  `# TODO: verify` markers per the build-prompt rule; full authoring is
+  Milestone 3.
+- Add `tests/schema.test.ts` (54 unit tests over the Zod schemas) and
+  `tests/validator.test.ts` (5 integration tests over the file walker
+  - cross-ref validator using `tmpdir` fixtures). Total 63 tests passing.
+- Tighten RCEM curriculum-code regex to enumerate real syllabus prefixes
+  (catches typos at validation time).
+
 ### Pre-Milestone 2 — Content survey
 
 - Read RCEM Curriculum 2021 v1.5 (Aug 2025): TOC, all 12 SLOs (pp.17–58),
   full Clinical Syllabus (pp.59–68), assessment blueprint (pp.75–78).
   Confirmed the Clinical Syllabus is the canonical exam topic universe.
 - Surveyed Oxford Handbook 5e (Wyatt et al, 2020), Wenzel Case Studies in EM
-  (Springer 2023), Kosoko Obstetric Emergencies Case-Based Guide (Springer
-  2024) — TOCs and editorial flavour captured in `content/sources/`.
+  (Springer 2023), Kosoko Obstetric Emergencies Case-Based Guide (Springer 2024) — TOCs and editorial flavour captured in `content/sources/`.
 - Attempted RCEMLearning public catalogue fetch — site returned HTTP 503 to
   automated requests; calibration relied on search-indexed page titles
   ("FRCEM SBA blueprint" guidance). The build prompt's own scope for

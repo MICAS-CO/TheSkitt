@@ -1,0 +1,111 @@
+# SAMPLE CASE — paeds sibling of the adult peanut anaphylaxis case.
+# Schema-exercise only. Full authoring lands in Milestone 5 (build prompt
+# milestone 5 — first paeds case alongside the adult anaphylaxis).
+# Connects via arc_family_peanut_party.
+
+schema_version: 1
+id: case_anaphylaxis_paeds_sibling
+title: 'Anaphylaxis — child, same family, arrives later in shift'
+chief_complaint: 'Wheeze + rash — paeds anaphylaxis'
+topic_id: anaphylaxis
+vignette: |
+  8M, brought by dad. Picked up from same birthday party 30 min after sister
+  (case_anaphylaxis_adult_peanut). Mild urticaria initially, now rapidly
+  worsening wheeze and lip swelling in the waiting room.
+  # TODO: verify timing and paramedic intervention.
+
+curriculum_tags: [RP2, AP1, AC1]
+slos: [3, 5]
+difficulty_band: ST3
+paeds: true
+
+demographics:
+  age_value: 8
+  age_unit: years
+  sex: male
+  weight_kg: 25
+  pmh: ['eczema']
+  medications: []
+  allergies: ['?peanut (newly suspected; sister in resus has same)']
+
+triage_category: 2
+initial_state: deteriorating
+
+history:
+  - id: hx_arrival
+    source: family
+    topic: 'When did this start?'
+    response: '# TODO: 30 min after eating party food. Sister already in resus.'
+
+examination:
+  - system: paeds_assessment_triangle
+    findings:
+      - { name: 'appearance', value: 'anxious, alert' }
+      - { name: 'work of breathing', value: 'increased — tracheal tug, subcostal recession' }
+      - { name: 'circulation to skin', value: 'flushed; widespread urticaria' }
+  - system: airway
+    findings:
+      - { name: 'lip swelling', present: true }
+  - system: breathing
+    findings:
+      - { name: 'RR', value: '36' }
+      - { name: 'SpO2', value: '94% on air' }
+      - { name: 'wheeze', present: true }
+
+investigations:
+  - id: ix_paeds_obs
+    name: 'Paediatric obs + weight'
+    category: bedside
+    turnaround_min: 1
+    result_summary: 'Weight 25 kg. Obs as per examination.'
+
+differential:
+  - diagnosis: Anaphylaxis — shared peanut exposure with sister
+    likelihood: top
+    discriminator: 'Shared meal source; sister concurrently in resus with same picture.'
+  - diagnosis: Acute asthma exacerbation
+    likelihood: worth_considering
+    discriminator: 'Rash and lip swelling argue strongly for anaphylaxis.'
+
+working_diagnosis: 'Anaphylaxis — paediatric'
+
+management:
+  - id: mx_adrenaline_paeds_im
+    category: drug
+    name: 'IM adrenaline — paeds dose by age band'
+    detail: '6–12 years: 300 micrograms IM. Repeat every 5 min if no improvement.'
+    must_do: true
+    drug:
+      amount: '300 micrograms (0.3 mL of 1:1000)'
+      route: IM
+      frequency: 'STAT; repeat every 5 min PRN'
+      paeds_dose: '6–12 yr: 300 mcg; <6 yr: 150 mcg; >12 yr: 500 mcg per Resus Council UK 2021'
+    sources:
+      - {
+          type: resus_council_uk,
+          ref: 'Anaphylaxis Guidelines 2021 — paediatric IM adrenaline dose bands',
+        }
+
+disposition_options:
+  - label: 'Admit paeds ward for biphasic observation'
+    criteria: 'All paeds anaphylaxis admitted per local policy.'
+    appropriate: true
+
+state_machine:
+  states: [stable, deteriorating, arrested, admitted]
+  transitions:
+    - from: deteriorating
+      to: stable
+      trigger: { on: action, action_id: mx_adrenaline_paeds_im }
+
+pearls:
+  - 'Paeds IM adrenaline dose bands: <6 yr 150 mcg, 6–12 yr 300 mcg, >12 yr 500 mcg.'
+  - 'Shared-meal source → check siblings.'
+
+pitfalls:
+  - 'Using adult dose in a child.'
+
+sources:
+  - { type: resus_council_uk, ref: 'Emergency treatment of anaphylactic reactions (2021)' }
+
+author_notes: 'Skeleton. Milestone 5 authoring required.'

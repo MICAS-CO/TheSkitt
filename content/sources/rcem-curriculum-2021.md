@@ -1,7 +1,7 @@
 # RCEM Emergency Medicine Curriculum 2021 — source summary
 
-**Citation:** Royal College of Emergency Medicine. *Emergency Medicine 2021
-Curriculum*, version 1.5 (August 2025 update). Approved by GMC.
+**Citation:** Royal College of Emergency Medicine. _Emergency Medicine 2021
+Curriculum_, version 1.5 (August 2025 update). Approved by GMC.
 
 **Location of local copy (as of 2026-05-18):** repo root —
 `RCEM-Emergency-Medicine-Training-Curriculum-–-2025-Update-v1.5-Final (1).pdf`
@@ -31,20 +31,20 @@ exam, and the Clinical Syllabus is the topic universe.
 
 Captured verbatim from Table 1 (p.10) and §3.2.2 (pp.17–58):
 
-| # | SLO | Scope |
-|---|-----|-------|
-| 1 | Care for physiologically stable adult patients | Acute physical and mental health; complex co-morbidity; frailty; CDU/observation medicine. |
-| 2 | Support the ED team — answer clinical questions, make safe decisions | Expert diagnostician role; dual-process reasoning; cognitive bias; guideline use; Bayesian thinking. |
-| 3 | Identify sick adults, resuscitate and stabilise, know when to stop | Cardiac/respiratory arrest, peri-arrest, end-of-life decisions, advance directives, organ donation. |
-| 4 | Care for acutely injured patients | ATLS primary/secondary survey, CT head/c-spine decision rules, major haemorrhage, NOF#, trauma team leadership. |
-| 5 | Care for children of all ages | Paediatric resuscitation (APLS), HEEADSSS adolescent assessment, NAI/safeguarding, SUDIC, immunisation, transition to adult services. |
-| 6 | Deliver key procedural skills | See §5.5 — ACCS and EM-specific procedural lists below. |
-| 7 | Deal with complex/challenging workplace situations | Capacity, MHA, refusal of treatment, self-discharge, police/FME, adult safeguarding, violence. |
-| 8 | Lead the ED shift | From intermediate training; situational awareness; staff wellbeing. |
-| 9 | Support, supervise, educate | Multi-professional team, ACPs, physician associates. |
-| 10 | Research and data | Critical appraisal, audit, EBM. |
-| 11 | Quality & safety | QIAT (Quality Improvement Assessment Tool), audit cycle. |
-| 12 | Lead and manage | Leadership theory, cultural impact, emotional intelligence (revised in v1.5). |
+| #   | SLO                                                                  | Scope                                                                                                                                 |
+| --- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Care for physiologically stable adult patients                       | Acute physical and mental health; complex co-morbidity; frailty; CDU/observation medicine.                                            |
+| 2   | Support the ED team — answer clinical questions, make safe decisions | Expert diagnostician role; dual-process reasoning; cognitive bias; guideline use; Bayesian thinking.                                  |
+| 3   | Identify sick adults, resuscitate and stabilise, know when to stop   | Cardiac/respiratory arrest, peri-arrest, end-of-life decisions, advance directives, organ donation.                                   |
+| 4   | Care for acutely injured patients                                    | ATLS primary/secondary survey, CT head/c-spine decision rules, major haemorrhage, NOF#, trauma team leadership.                       |
+| 5   | Care for children of all ages                                        | Paediatric resuscitation (APLS), HEEADSSS adolescent assessment, NAI/safeguarding, SUDIC, immunisation, transition to adult services. |
+| 6   | Deliver key procedural skills                                        | See §5.5 — ACCS and EM-specific procedural lists below.                                                                               |
+| 7   | Deal with complex/challenging workplace situations                   | Capacity, MHA, refusal of treatment, self-discharge, police/FME, adult safeguarding, violence.                                        |
+| 8   | Lead the ED shift                                                    | From intermediate training; situational awareness; staff wellbeing.                                                                   |
+| 9   | Support, supervise, educate                                          | Multi-professional team, ACPs, physician associates.                                                                                  |
+| 10  | Research and data                                                    | Critical appraisal, audit, EBM.                                                                                                       |
+| 11  | Quality & safety                                                     | QIAT (Quality Improvement Assessment Tool), audit cycle.                                                                              |
+| 12  | Lead and manage                                                      | Leadership theory, cultural impact, emotional intelligence (revised in v1.5).                                                         |
 
 ## Procedural skills lists (§5.5)
 
@@ -75,6 +75,7 @@ simulation-mode cases, as they will be infrequently encountered clinically.
 ## Assessment programme (§5)
 
 Three components:
+
 1. **Formal RCEM examinations** (MRCEM Primary SBA, MRCEM Intermediate SBA,
    MRCEM OSCE, FRCEM SBA, FRCEM OSCE).
 2. **Workplace-based assessments** (WPBAs) — Mini-CEX, CbD, DOPs, ACAT, ESLE,
