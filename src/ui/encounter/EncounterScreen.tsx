@@ -88,6 +88,18 @@ export function EncounterScreen({
     if (idx > 0) onPhaseChange(PHASE_ORDER[idx - 1]!);
   }
 
+  // Escape returns to the board (unless editing a form control).
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key !== 'Escape') return;
+      const tag = (e.target as HTMLElement | null)?.tagName ?? '';
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return;
+      onBackToBoard();
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onBackToBoard]);
+
   return (
     <div className="enc">
       <EncounterHeader
@@ -147,7 +159,7 @@ export function EncounterScreen({
         </button>
         {!isDebrief ? (
           <button className="enc__primary" onClick={next} disabled={cannotAdvance}>
-            {phase === 'disposition' ? 'See debrief' : 'next →'}
+            {phase === 'disposition' ? 'See debrief' : `next: ${nextPhaseLabel(phase)} →`}
           </button>
         ) : (
           <button className="enc__primary" onClick={onBackToBoard}>
@@ -637,6 +649,12 @@ function DebriefPhase({ cs }: { cs: CaseRuntime }) {
       </p>
     </section>
   );
+}
+
+function nextPhaseLabel(phase: Phase): string {
+  const i = PHASE_ORDER.indexOf(phase);
+  const next = PHASE_ORDER[i + 1];
+  return next ? PHASE_LABELS[next].toLowerCase() : '';
 }
 
 function statusLabel(s: 'done' | 'missed' | 'trap_avoided' | 'trap_picked') {

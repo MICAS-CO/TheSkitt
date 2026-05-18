@@ -4,16 +4,25 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Polish: better next labels + Escape returns to board
+
+- Encounter "next →" buttons now show the next phase name —
+  e.g. "next: history →", "next: examination →" — so the player
+  always knows where they're going.
+- Escape key in an encounter returns to the shift board (skipped if
+  focus is on a form control). Pairs with the spacebar pause shortcut
+  added previously.
+
 ### Content: sepsis case + sepsis-solo shift
 
 - New `content/cases/case_sepsis_uti_morrison.yaml` — 72y/o nursing-
   home resident with overnight confusion + fever + AKI; urosepsis
   with evolving septic shock. Scaffolded by `pnpm new-case
-  --topic sepsis_adult` and then authored end-to-end against NICE
+--topic sepsis_adult` and then authored end-to-end against NICE
   NG51, RCEM Best Practice — Septic Patient, NEWS2 (RCP), and
   Sepsis-3 (Singer 2016). NEWS2 7, qSOFA 2, lactate 3.2. Five
-  `must_not_do` traps including the textbook *"wait for cultures
-  before antibiotics"*, NSAIDs in AKI, oral trimethoprim in shock,
+  `must_not_do` traps including the textbook _"wait for cultures
+  before antibiotics"_, NSAIDs in AKI, oral trimethoprim in shock,
   routine hydrocortisone before vasopressor trial, and re-litigating
   a documented DNACPR at the bedside.
 - New `content/episodes/ep_overnight_sepsis_solo.yaml` — 20-min
