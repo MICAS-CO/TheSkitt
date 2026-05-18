@@ -4,6 +4,35 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Milestone 7 — Content ingestion CLI
+
+- Add `scripts/new-case.ts` (`pnpm new-case`) — generates a Case YAML
+  skeleton for a topic from `content/topic-map.yaml`. Pre-fills
+  `curriculum_tags`, `slos` (converting `SLO1..SLO12` → integers),
+  `paeds`, and a complete `sources` block from the topic entry, so
+  authors don't re-look-up the same citations.
+  - `--list` lists topics grouped by tier with their labels and paeds
+    flags.
+  - `--topic <id>` (required to write) plus optional `--id <case_id>`,
+    `--title`, `--paeds`, `--difficulty <CT1..ST6>`, `--triage <1-5>`.
+  - Refuses to overwrite an existing file.
+  - Skeleton has every Case-schema-required field with `# TODO`
+    placeholders; runs the validator after writing.
+- Add `scripts/new-episode.ts` (`pnpm new-episode`) — generates an
+  Episode YAML skeleton wrapping existing cases. Verifies that
+  referenced case/arc ids exist on disk before writing. Pre-populates
+  one `deterioration_if_not_x_by_t` event per focus case at `T+5 + 4i`
+  so the author has a "patient deteriorates if you don't act"
+  scaffold to edit. Aggregates `curriculum_tags` from the referenced
+  cases. Episode-id prefix enforced (`ep_*`).
+- Both scripts surface clear errors and a `--help` flag.
+- Tests (`tests/new-scripts.test.ts`, 8 tests): topic list, refuse
+  unknown topic, write valid Case YAML, inherit tags/SLOs/sources,
+  refuse overwrite, refuse unknown case refs in episode, write valid
+  Episode YAML, enforce `ep_*` prefix. End-to-end against the real
+  topic-map.yaml and the real case files — proves the round trip.
+- 100 / 100 tests passing. All gates green.
+
 ### Milestone 6 — Episode-level debrief & scoring
 
 - Add `scoreEpisode(KernelState) → EpisodeReport` in `src/state/sim.ts`:

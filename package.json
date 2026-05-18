@@ -14,7 +14,9 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "validate-content": "tsx scripts/validate-content.ts"
+    "validate-content": "tsx scripts/validate-content.ts",
+    "new-case": "tsx scripts/new-case.ts",
+    "new-episode": "tsx scripts/new-episode.ts"
   },
   "dependencies": {
     "phaser": "^3.87.0",
