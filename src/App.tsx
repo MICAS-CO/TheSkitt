@@ -129,6 +129,17 @@ export function App() {
     setView('menu');
   }
 
+  function replayShift(episodeId: string) {
+    const make = KNOWN_SHIFTS[episodeId];
+    if (!make) {
+      exitShift();
+      return;
+    }
+    destroySim();
+    clearSavedShift();
+    startShift(make());
+  }
+
   function clearAndForget() {
     clearSavedShift();
     setSaved(null);
@@ -161,7 +172,7 @@ export function App() {
             onClearSave={clearAndForget}
           />
         )}
-        {view === 'shift' && <ShiftView onExit={exitShift} />}
+        {view === 'shift' && <ShiftView onExit={exitShift} onReplay={replayShift} />}
         {view === 'hub' && <PhaserGame />}
       </main>
 

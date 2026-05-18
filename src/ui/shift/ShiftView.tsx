@@ -14,11 +14,12 @@ import { EncounterScreen, type Phase } from '../encounter/EncounterScreen';
 
 interface Props {
   onExit: () => void;
+  onReplay: (episodeId: string) => void;
 }
 
 export type ShiftViewMode = 'board' | 'hub' | 'encounter' | 'episode_debrief';
 
-export function ShiftView({ onExit }: Props) {
+export function ShiftView({ onExit, onReplay }: Props) {
   useSim((s) => s.tick);
   const kernel = useSim((s) => s.kernel);
   const [focusedCaseId, setFocusedCaseId] = useState<string | null>(null);
@@ -94,7 +95,7 @@ export function ShiftView({ onExit }: Props) {
   }
 
   if (mode === 'episode_debrief') {
-    return <EpisodeDebriefScreen onExit={onExit} />;
+    return <EpisodeDebriefScreen onExit={onExit} onReplay={() => onReplay(ks.episode.id)} />;
   }
 
   if (mode === 'encounter' && focusedCaseId) {

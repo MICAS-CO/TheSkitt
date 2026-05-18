@@ -3,9 +3,10 @@ import type { CitationT } from '../../content/schema';
 
 interface Props {
   onExit: () => void;
+  onReplay: () => void;
 }
 
-export function EpisodeDebriefScreen({ onExit }: Props) {
+export function EpisodeDebriefScreen({ onExit, onReplay }: Props) {
   useSim((s) => s.tick);
   const kernel = useSim((s) => s.kernel);
   if (!kernel) return null;
@@ -49,8 +50,9 @@ export function EpisodeDebriefScreen({ onExit }: Props) {
       </main>
 
       <footer className="enc__foot">
-        <button className="enc__primary" onClick={onExit}>
-          ← back to menu
+        <button onClick={onExit}>← back to menu</button>
+        <button className="enc__primary" onClick={onReplay} title="Restart this shift from T+0">
+          ↻ play this shift again
         </button>
       </footer>
     </div>

@@ -50,7 +50,11 @@ topics:
     rationale: 'Protocolised, single-pathway, clear time/dose decisions. Adult and paeds variants. Strong first end-to-end case (build-prompt milestone 3 candidate).'
     sources:
       - { type: resus_council_uk, ref: 'Anaphylaxis Guidelines 2021 (updated 2024)' }
-      - { type: nice, id: 'CG134' }
+      - {
+          type: nice,
+          id: 'CG134',
+          ref: 'Anaphylaxis: assessment and referral after emergency treatment',
+        }
       - { type: textbook, ref: 'Oxford Handbook of EM 5e, Ch 2 Life-threatening emergencies' }
     arc_hooks:
       [
@@ -66,7 +70,7 @@ topics:
     paeds: no
     rationale: 'NICE NG51 + Sepsis Six bundle. SAQ classic. NEWS2 escalation maps cleanly to shift-clock mechanics.'
     sources:
-      - { type: nice, id: 'NG51' }
+      - { type: nice, id: 'NG51', ref: 'Sepsis: recognition, diagnosis and early management' }
       - { type: rcem, ref: 'Best Practice — Septic Patient in the ED' }
       - { type: nhs, ref: 'NEWS2 (RCP)' }
     arc_hooks:
@@ -82,7 +86,7 @@ topics:
     paeds: no
     rationale: 'PPCI pathway, door-to-balloon, dual antiplatelet decisions. UK pathway differs from US — important for FRCEM.'
     sources:
-      - { type: nice, id: 'NG185' }
+      - { type: nice, id: 'NG185', ref: 'Acute coronary syndromes' }
       - { type: esc, ref: 'ESC ACS Guidelines 2023' }
     arc_hooks:
       [
@@ -98,7 +102,7 @@ topics:
     rationale: 'JBDS-IP protocolised. Fluid/K+/insulin timing maps to long-tail shift clock — patient evolves over hours.'
     sources:
       - { type: jbds, ref: 'JBDS-IP Management of DKA in Adults, 2023' }
-      - { type: nice, id: 'NG17' }
+      - { type: nice, id: 'NG17', ref: 'Type 1 diabetes in adults: diagnosis and management' }
     arc_hooks: ['new T1DM presentation in a young adult with concurrent UTI as trigger']
 
   - id: stroke_tia
@@ -109,7 +113,7 @@ topics:
     paeds: no
     rationale: 'Thrombolysis window decisions, NIHSS, mimic exclusion. NICE NG128. ABCD2/HINTS exam features high-yield.'
     sources:
-      - { type: nice, id: 'NG128' }
+      - { type: nice, id: 'NG128', ref: 'Stroke and transient ischaemic attack in over 16s' }
       - { type: rcp, ref: 'National Clinical Guideline for Stroke 2023' }
     arc_hooks:
       ['"funny turn" GP letter case in ambulatory turns out to be TIA; sentinel for next-day CVA']
@@ -123,7 +127,11 @@ topics:
     rationale: 'BTS/SIGN 158 severity grading (moderate / acute severe / life-threatening / near-fatal). Clear escalation tree.'
     sources:
       - { type: bts_sign, ref: 'BTS/SIGN British Guideline 158 on Asthma 2024' }
-      - { type: nice, ref: 'NG244 (Asthma diagnosis, monitoring, chronic management)' }
+      - {
+          type: nice,
+          id: 'NG244',
+          ref: 'Asthma: diagnosis, monitoring and chronic asthma management',
+        }
     arc_hooks: ['paeds asthma + parent with own COPD exacerbation in adjacent bay (shared trigger)']
 
   - id: major_trauma
@@ -134,8 +142,8 @@ topics:
     paeds: yes
     rationale: 'ATLS primary/secondary survey. Trauma-team leadership. Massive haemorrhage protocol. RTC framing supports multi-patient arcs (build-prompt example: "two patients from same RTC with different injury patterns").'
     sources:
-      - { type: nice, id: 'NG39 (Major trauma)' }
-      - { type: nice, id: 'NG40 (Fractures: complex)' }
+      - { type: nice, id: 'NG39', ref: 'Major trauma: assessment and initial management' }
+      - { type: nice, id: 'NG40', ref: 'Fractures (complex): assessment and management' }
       - { type: rcem, ref: 'Major Haemorrhage in the ED' }
       - { type: resus_council_uk, ref: 'ATLS / European Trauma Course principles' }
     arc_hooks:
@@ -151,7 +159,7 @@ topics:
     paeds: yes
     rationale: 'Time-critical (>5 min seizure = status), benzo → levetiracetam/phenytoin → RSI. Paeds dose-by-weight. APLS algorithm.'
     sources:
-      - { type: nice, id: 'NG217 (Epilepsies in children, young people and adults)' }
+      - { type: nice, id: 'NG217', ref: 'Epilepsies in children, young people and adults' }
       - { type: resus_council_uk, ref: 'APLS / EPALS' }
     arc_hooks:
       [
@@ -166,7 +174,7 @@ topics:
     paeds: yes
     rationale: 'NICE NG232 CT head decision rules — Canadian CT Head / NICE criteria. Anticoagulated patient nuance. Paeds variant differs.'
     sources:
-      - { type: nice, id: 'NG232' }
+      - { type: nice, id: 'NG232', ref: 'Head injury: assessment and early management' }
     arc_hooks:
       [
         'minor fall in elderly on DOAC — looks well but on anticoag → CT decision',
@@ -182,7 +190,11 @@ topics:
     paeds: no
     rationale: 'Wells score / PERC / age-adjusted D-dimer / CTPA. SAQ favourite. Massive PE → thrombolysis decision.'
     sources:
-      - { type: nice, id: 'NG158' }
+      - {
+          type: nice,
+          id: 'NG158',
+          ref: 'Venous thromboembolic diseases: diagnosis, management and thrombophilia testing',
+        }
       - { type: bts, ref: 'BTS Guideline for the initial outpatient management of PE 2018' }
     arc_hooks: ['post-op patient or pregnancy-related PE (links to O&G arc)']
 
@@ -194,7 +206,7 @@ topics:
     paeds: no
     rationale: 'Magnesium loading + labetalol/nifedipine. HELLP overlap. SAQ classic. Maternal collapse decision (peri-mortem CS at 4 min).'
     sources:
-      - { type: nice, id: 'NG133' }
+      - { type: nice, id: 'NG133', ref: 'Hypertension in pregnancy: diagnosis and management' }
       - { type: rcog, ref: 'Green-top Guideline 10A (Severe pre-eclampsia/eclampsia management)' }
     arc_hooks:
       [
@@ -209,7 +221,11 @@ topics:
     paeds: no
     rationale: 'βhCG + TV-USS pathway. Ruptured ectopic → resus. "Cannot miss" SAQ.'
     sources:
-      - { type: nice, id: 'NG126' }
+      - {
+          type: nice,
+          id: 'NG126',
+          ref: 'Ectopic pregnancy and miscarriage: diagnosis and initial management',
+        }
       - { type: rcog, ref: 'Green-top Guideline 21 (Tubal Ectopic Pregnancy)' }
     arc_hooks:
       [
@@ -236,7 +252,7 @@ topics:
     paeds: yes
     rationale: 'NICE NG9. Winter pressure case. Saturation/work-of-breathing/feeding triad for admission.'
     sources:
-      - { type: nice, id: 'NG9' }
+      - { type: nice, id: 'NG9', ref: 'Bronchiolitis in children: diagnosis and management' }
     arc_hooks: []
 
   - id: croup
@@ -258,7 +274,11 @@ topics:
     paeds: yes
     rationale: 'MHA assessment, MCA capacity, rapid tranquilisation, suicide risk. SLO7 (complex situations) and SLO1 explicit on this.'
     sources:
-      - { type: nice, id: 'NG10 (Violence and aggression)' }
+      - {
+          type: nice,
+          id: 'NG10',
+          ref: 'Violence and aggression: short-term management in mental health, health and community settings',
+        }
       - { type: rcem, ref: 'Mental Health in the ED — RCEM Best Practice' }
       - { type: legislation, ref: 'Mental Health Act 1983 (s.5/4/2/3); Mental Capacity Act 2005' }
     arc_hooks:
@@ -393,7 +413,11 @@ topics:
     slos: [SLO1, SLO7]
     paeds: no
     sources:
-      - { type: nice, id: 'CG100' }
+      - {
+          type: nice,
+          id: 'CG100',
+          ref: 'Alcohol-use disorders: diagnosis and management of physical complications',
+        }
       - { type: rcem, ref: 'RCEM Best Practice — Alcohol Withdrawal' }
     arc_hooks: ['frequent flyer who is actually developing Wernicke or SAH this time']
 
@@ -404,7 +428,7 @@ topics:
     slos: [SLO5, SLO7]
     paeds: yes
     sources:
-      - { type: nice, id: 'CG89 (When to suspect child maltreatment)' }
+      - { type: nice, id: 'CG89', ref: 'When to suspect child maltreatment' }
       - { type: rcpch, ref: 'Child Protection Companion (RCPCH)' }
     arc_hooks:
       [
@@ -421,7 +445,8 @@ topics:
       [
         {
           type: nice,
-          id: 'NG143 (Sickle cell disease: managing acute painful episodes in hospital)',
+          id: 'NG143',
+          ref: 'Sickle cell disease: managing acute painful episodes in hospital',
         },
       ]
     arc_hooks: []
