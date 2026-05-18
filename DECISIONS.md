@@ -191,7 +191,7 @@ is deferred to whenever we first have an interaction worth E2E-asserting
 
 # Open questions
 
-## Q-001 · PDFs at repo root
+## Q-001 · PDFs at repo root — RESOLVED 2026-05-18
 
 The repo root currently contains five book/curriculum PDFs whose filenames
 identify them as z-library scans:
@@ -223,21 +223,33 @@ Concerns:
 - Purging from git history is a separate `git filter-repo` / BFG operation —
   do not undertake without explicit confirmation as it rewrites history.
 
-**Status:** under user management (per 2026-05-18 direction "I'll delete or
-move once you've finished processing them, let me worry about that").
-Claude has read the four book PDFs and the curriculum for topic calibration
-and source summaries (`content/sources/`) without reproducing substantive
-text. Once user moves/deletes the PDFs, the repo `.gitignore` already
-excludes `sources-local/` and `*.pdf` for the prettier config.
+**Resolution.** On user direction, all five PDFs were removed from the
+working tree via `git rm` in this commit. Topic calibration and source
+summaries (`content/sources/rcem-curriculum-2021.md`,
+`rcem-clinical-syllabus-codes.md`, `source-books.md`) were authored
+beforehand from the PDFs without reproducing substantive text. The
+RCEM curriculum is openly published at https://rcem.ac.uk; the three
+book sources are cited in `source-books.md` for replacement via
+legitimate institutional access. Add the `*.pdf` glob to `.gitignore`
+to keep future binary uploads out of git.
 
-## Q-002 · GitHub push permission
+**Git history note.** The PDFs remain in git history (this commit just
+removes them from HEAD). A full purge would require `git filter-repo`
+or BFG which rewrites history and requires force-push — that's still
+gated behind explicit user confirmation if/when needed. For
+DMCA-defensible removal, history rewrite is the right tool; for repo
+weight, the removal from HEAD is sufficient (clones can use
+`--depth 1` to skip history).
 
-The Claude integration backing this session lacks `contents: write` on
-`MICAS-CO/TheSkitt`. Both `git push` via the local proxy and
-`mcp__github__push_files` / `create_branch` return HTTP 403. The user
-precreated the working branch `claude/add-necessary-files-4THUA` on
-2026-05-18, which removed the need for `create_branch` but did **not**
-restore push permission. Until the integration's repo permissions include
-`contents: write`, work on this branch cannot land on GitHub.
+## Q-002 · GitHub push permission — RESOLVED 2026-05-18
 
-**Status:** awaiting permission grant. Commits accumulate locally.
+Permission was granted by the user; first successful push at commit
+`9852114` (the Content survey commit), and all subsequent pushes have
+succeeded.
+
+## Q-003 · RCEMLearning credentials disclosed in chat — USER ACTION
+
+The user pasted `mohammed.hamza@outlook.ie` / `mohm4216` into chat
+history on 2026-05-18. Claude did not use these (per build-prompt
+"no paywall workarounds" rule). User responsibility to rotate.
+Not a Claude-side action item; recorded here for traceability.
