@@ -42,6 +42,7 @@ button {
   border-radius: 4px;
   padding: 8px 14px;
   cursor: pointer;
+  min-height: 36px;
 }
 button:hover:not(:disabled) {
   background: var(--panel-2);
@@ -49,6 +50,30 @@ button:hover:not(:disabled) {
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+a {
+  color: var(--info);
+}
+
+/* Phaser load-failure fallback */
+.phaser-error {
+  padding: 16px;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  border-radius: 6px;
+  max-width: 480px;
 }
 
 .app {
@@ -111,6 +136,24 @@ button:disabled {
 .app__disclaimer {
   flex: 1;
   text-align: right;
+}
+
+@media (max-width: 600px) {
+  .app__header {
+    padding: 10px 14px;
+    flex-wrap: wrap;
+  }
+  .app__title {
+    font-size: 16px;
+  }
+  .app__footer {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .app__disclaimer {
+    flex-basis: 100%;
+    text-align: left;
+  }
 }
 
 .app__back {
@@ -189,6 +232,39 @@ button:disabled {
   gap: 16px;
   padding: 20px;
   margin: 0 auto;
+}
+@media (max-width: 600px) {
+  .enc {
+    padding: 12px;
+    gap: 12px;
+  }
+  .enc__head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .enc__progress {
+    gap: 4px;
+  }
+  .enc__progress li {
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+  .enc__progress-label {
+    display: none;
+  }
+  .enc__progress li.is-active .enc__progress-label {
+    display: inline;
+  }
+  .enc__card-head {
+    padding: 14px;
+    min-height: 48px;
+  }
+  .enc__clock-row {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
 }
 
 .enc__head {

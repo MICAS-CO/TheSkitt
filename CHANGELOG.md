@@ -4,6 +4,26 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Post-milestone polish (perf · CI · a11y · mobile)
+
+- Code-split Phaser. `src/game/boot.ts` exports `bootGame(parent)` and
+  is dynamically imported by `src/ui/PhaserGame.tsx` only when the
+  player opens the ED hub. **Initial JS chunk drops from ~1.9 MB to
+  ~479 KB (gzip 145 KB).** Phaser ships in a separate `boot-*.js`
+  chunk that downloads on demand.
+- Add `.github/workflows/ci.yml` — GitHub Actions workflow that runs
+  on PRs and pushes to main: typecheck → lint → format check →
+  validate-content → unit tests → prod build. Concurrency-cancel on
+  same-branch updates. Reads Node version from `.nvmrc`.
+- Accessibility: global `:focus-visible` outline (accent colour),
+  larger default button `min-height: 36px`, focus styles on inputs
+  and links. Phaser load-failure path now renders a visible
+  `role="alert"` fallback instead of a silent blank.
+- Mobile: tighter breakpoints at 600 px — header collapses, footer
+  wraps, encounter padding shrinks, phase-progress strip becomes
+  number-only with the active label visible, clock-control row goes
+  vertical, encounter card hit areas grow to 48 px minimum.
+
 ### Milestone 8 — Ambient board pressure (stretch)
 
 - Author two ambient cases for the hen-do shift:
@@ -28,8 +48,8 @@ Format: one line per change, newest first.
   - T+10 Stan NEWS2 escalation
   - T+14 Mrs Patel arrest if no ECG + no aspirin
   - T+15 Stan arrest if no BM check + no dextrose
-  → four time-critical mechanics on one 20-minute clock, in addition
-  to Beth's T+5 and Sarah's T+16 events.
+    → four time-critical mechanics on one 20-minute clock, in addition
+    to Beth's T+5 and Sarah's T+16 events.
 - `scoreEpisode` now splits the report into `cases` (focus) and
   `ambientCases`. Ambient deaths count as lives lost, ambient bands
   count toward `unsafeCases`. The percent and band aggregation

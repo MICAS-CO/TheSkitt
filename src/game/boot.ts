@@ -1,9 +1,15 @@
+/**
+ * Phaser entry point. Lives in a separate module so it can be dynamically
+ * imported by the React mount (`PhaserGame.tsx`) — keeps Phaser (~1.5 MB)
+ * out of the initial bundle for users who never open the ED hub.
+ */
+
 import Phaser from 'phaser';
 import { EDScene } from './scenes/EDScene';
-import { GAME_WIDTH, GAME_HEIGHT, PALETTE } from './layout';
+import { GAME_HEIGHT, GAME_WIDTH, PALETTE } from './layout';
 
-export function createGameConfig(parent: HTMLElement): Phaser.Types.Core.GameConfig {
-  return {
+export async function bootGame(parent: HTMLElement): Promise<Phaser.Game> {
+  return new Phaser.Game({
     type: Phaser.AUTO,
     parent,
     width: GAME_WIDTH,
@@ -15,7 +21,7 @@ export function createGameConfig(parent: HTMLElement): Phaser.Types.Core.GameCon
       autoCenter: Phaser.Scale.CENTER_BOTH,
     },
     scene: [EDScene],
-  };
+  });
 }
 
 function numberToCssColor(n: number): string {
