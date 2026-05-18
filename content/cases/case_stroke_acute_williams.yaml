@@ -278,11 +278,17 @@ management:
     category: monitoring
     name: 'CT head within 1 hour of arrival (door-to-CT)'
     detail: |
-      Door-to-CT target ≤25 min for thrombolysis candidates. NICE
-      NG128 — CT must precede thrombolysis to exclude haemorrhage.
+      NICE NG128 — CT must precede thrombolysis to exclude haemorrhage,
+      with imaging "immediately, within 1 hour". The aspirational
+      ≤25-min door-to-CT and ≤60-min door-to-needle targets are
+      RCP / SSNAP audit standards.
     must_do: true
     sources:
-      - { type: nice, id: 'NG128', ref: 'NICE NG128 — door-to-CT 25 min' }
+      - { type: nice, id: 'NG128', ref: 'NICE NG128 — CT immediately, within 1 hour' }
+      - {
+          type: textbook,
+          ref: 'RCP National Clinical Guideline for Stroke 2023 — door-to-CT 25 min, door-to-needle 60 min',
+        }
 
   - id: mx_call_stroke_team
     category: referral
@@ -455,7 +461,7 @@ state_machine:
       trigger: { on: action, action_id: mx_admit_hasu }
 
 pearls:
-  - 'NICE NG128: door-to-CT 25 min, door-to-needle 60 min, door-to-thrombectomy as a separate parallel pathway.'
+  - 'NICE NG128 says CT immediately, within 1 h; the ≤25-min door-to-CT and ≤60-min door-to-needle targets are RCP/SSNAP audit standards. Door-to-thrombectomy is a separate parallel pathway.'
   - 'BM before thrombolysis — hypoglycaemia is the canonical stroke mimic and the cheapest fix.'
   - 'Alteplase contraindications expanded in 2019: DOAC within 48 h is a relative contraindication unless anti-Xa <30 ng/mL or specific antidote (andexanet alfa) administered.'
   - 'Pre-thrombolysis BP target <185/110 mmHg. Do NOT lower aggressively before reperfusion — penumbra hypoperfusion.'

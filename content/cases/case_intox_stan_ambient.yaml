@@ -196,15 +196,22 @@ management:
     category: drug
     name: 'IV Pabrinex (high-potency vitamins B&C) for Wernicke prevention'
     detail: |
-      Before any carbohydrate load if at all possible; otherwise
-      concurrently. Pabrinex 1 pair IV TDS for 3 days in this population.
+      Life-threatening hypoglycaemia is treated FIRST — do not delay IV
+      glucose to give thiamine. Pabrinex follows promptly (concurrent
+      or immediately after) in malnourished / chronic-alcohol-misuse
+      adults to mitigate Wernicke risk from the glucose load.
+      Pabrinex 1 pair IV TDS for 3 days in this population.
     must_do: true
     drug:
       amount: 'Pabrinex 1 pair IV'
       route: IV
       frequency: 'TDS for 3 days'
     sources:
-      - { type: nice, id: 'CG100', ref: 'NICE CG100 — alcohol-use disorders, Pabrinex' }
+      - {
+          type: nice,
+          id: 'CG100',
+          ref: 'NICE CG100 — alcohol-use disorders, Pabrinex (acute Wernicke prevention in malnourished adults)',
+        }
 
   - id: mx_ct_head
     category: monitoring
@@ -273,7 +280,7 @@ state_machine:
 pearls:
   - 'Reduced GCS in an intoxicated patient is not "just the drink" — check a BM and consider CT head per NICE NG232.'
   - 'Severe hypoglycaemia in an adult: 100 mL 20% glucose (or 200 mL 10%) IV; avoid 50%.'
-  - 'Give Pabrinex before glucose if at all feasible, to reduce Wernicke risk in chronic alcohol misuse.'
+  - 'In life-threatening hypo, glucose first — Pabrinex follows promptly (concurrent or immediately after) in malnourished / chronic-alcohol-misuse adults to mitigate Wernicke risk from the carbohydrate load (NICE CG100).'
   - 'A frequent flyer is the highest-risk patient on the board — alarm fatigue is the trap.'
 
 pitfalls:

@@ -150,7 +150,7 @@ investigations:
     result_summary: |
       **pH 7.04 · HCO3 7 mmol/L · pCO2 1.9 kPa · BE -25 ·
       K+ 4.8 mmol/L · Na 134 mmol/L · Lactate 1.8 · Glucose 38.4.**
-      Severe DKA (pH ≤7.00 OR HCO3 ≤5 OR ketones >6 OR K+ <3.5 OR
+      Severe DKA (pH <7.1 OR HCO3 <5 OR ketones >6 OR K+ <3.5 OR
       GCS <12 OR sats <92 OR systolic <90 OR HR <60 or >100 OR anion
       gap >16). He meets severity criteria — needs HDU.
     abnormal: true
@@ -194,7 +194,7 @@ differential:
     likelihood: top
     discriminator: |
       Hyperglycaemia (>11) + ketosis (>3) + acidosis (pH <7.30) =
-      DKA. Severity criteria met (pH <7.00, HCO3 <5, anion gap >16).
+      DKA. Severity criteria met (pH <7.1, HCO3 <5, anion gap >16).
       Maternal autoimmune history + new presentation in a young adult
       fits T1DM.
 
@@ -381,7 +381,7 @@ management:
 disposition_options:
   - label: 'Admit HDU for severe DKA pathway; diabetes team in the morning'
     criteria: |
-      Meets severity criteria (pH <7.00, HCO3 <5, anion gap >16).
+      Meets severity criteria (pH <7.1, HCO3 <5, anion gap >16).
       Cerebral oedema watch + hourly bloods + cardiac monitoring.
     appropriate: true
   - label: 'Admit AMU for IV fluids and FRII'

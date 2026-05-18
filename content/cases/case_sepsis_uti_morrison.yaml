@@ -191,7 +191,8 @@ investigations:
     result_summary: |
       WCC 18.4 (neutrophilia) · Plt 92 (down — early DIC concern) ·
       Hb 118 · Na 134 · K 4.4 · Urea 11.2 · Creat 142 (eGFR ~30, AKI
-      Stage 1 from baseline ~70) · CRP 184 · LFTs mildly deranged ·
+      Stage 2 from baseline ~70 — KDIGO: ≥2.0× baseline) · CRP 184 ·
+      LFTs mildly deranged ·
       INR 1.3 (on apixaban) · APTT normal · fibrinogen 2.1.
     abnormal: true
 
@@ -377,7 +378,7 @@ management:
     category: drug
     name: 'IV ibuprofen for fever'
     detail: |
-      ❌ AKI Stage 1 + dehydration + anticoagulation. Avoid NSAIDs.
+      ❌ AKI Stage 2 + dehydration + anticoagulation. Avoid NSAIDs.
     must_not_do: true
 
   - id: mx_no_cpr_decision_now

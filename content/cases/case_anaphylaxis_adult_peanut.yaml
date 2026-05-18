@@ -85,7 +85,13 @@ history:
 
       Oh — her friend Sarah came in the ambulance with her. The
       bride-to-be. She was a bit quiet, said her belly was crampy.
-      Has she been seen? I think she went to triage when we got here."
+      Has she been seen? I think she went to triage when we got here.
+
+      …and — sorry, this is probably nothing — Beth's mum's got her
+      little brother Sam at home, he's eight. He helped himself to the
+      satay peanut sauce off her plate at the restaurant before she
+      noticed. Her mum just texted that Sam's lip's gone a bit swollen
+      after dinner. Should I call them?"
 
   - id: hx_eaten_today
     source: patient
@@ -302,16 +308,19 @@ management:
 
   - id: mx_nebulised_salbutamol
     category: drug
-    name: 'Nebulised salbutamol 5 mg + ipratropium 500 mcg'
-    detail: 'Adjunct for persistent wheeze after adrenaline; does not replace adrenaline.'
+    name: 'Nebulised salbutamol 5 mg (repeat 15–30 minutely or continuous)'
+    detail: |
+      Adjunct for persistent wheeze after adrenaline; does not replace
+      adrenaline. Ipratropium 500 mcg can be added every 4–6 h if
+      bronchospasm is severe — NOT 20-minutely (anticholinergic load).
     drug:
-      amount: 'Salbutamol 5 mg + ipratropium 500 mcg'
+      amount: 'Salbutamol 5 mg neb (± ipratropium 500 mcg q4–6h)'
       route: NEB
-      frequency: 'every 20 min as needed'
+      frequency: 'salbutamol 15–30 minutely or continuous; ipratropium every 4–6 h'
     sources:
       - {
           type: bts_sign,
-          ref: 'BTS/SIGN 158 — acute asthma nebuliser doses (adjunct for bronchospasm component)',
+          ref: 'BTS/SIGN 158 — acute asthma nebuliser doses (salbutamol back-to-back; ipratropium 4–6 hourly)',
         }
 
   - id: mx_tryptase_samples

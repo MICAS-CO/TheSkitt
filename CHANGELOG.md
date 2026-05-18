@@ -4,6 +4,51 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Audit: clinical accuracy + narrative coherence pass
+
+Driven by a content-audit subagent over all 8 authored cases / 6
+episodes / 2 arcs. Each fix calls out the source-of-truth UK guideline.
+
+- **Beth (anaphylaxis adult)** — split nebuliser drug entry: salbutamol
+  back-to-back / 15–30 minutely, ipratropium 500 mcg every 4–6 h (was
+  incorrectly "every 20 min" for the combined entry, BTS/SIGN 158).
+- **Beth (anaphylaxis adult)** — `hx_partner` now actually mentions
+  Beth's 8-year-old brother Sam. The `arc_family_peanut_party` reveal
+  is gated on this history item; previously Tom's response only
+  mentioned Sarah, so the arc reveal carried no narrative payload.
+- **Marcus (DKA)** — JBDS-IP 2023 severity threshold updated to
+  `pH <7.1` (was `≤7.00`), in result_summary, differential
+  discriminator, and disposition criteria.
+- **Mrs Morrison (sepsis/UTI)** — Creat 142 / baseline 70 = 2.03×
+  = **AKI Stage 2** per KDIGO (was labelled Stage 1), corrected in
+  result_summary and the NSAID trap.
+- **Mr Williams (stroke)** — Re-attributed door-to-CT 25 min and
+  door-to-needle 60 min targets to the RCP National Clinical Guideline
+  for Stroke 2023 / SSNAP audit standards. NICE NG128 says "CT
+  immediately, within 1 hour"; the 25/60-min targets are RCP/SSNAP.
+- **Stan (intox + hypo)** — re-worded the Pabrinex pearl: in
+  life-threatening hypoglycaemia, IV glucose is given FIRST; Pabrinex
+  follows promptly (concurrent or immediately after) per NICE CG100.
+  Previously the pearl was over-strong ("before glucose if at all
+  feasible") which conflicts with safe hypo treatment.
+- **Sam (paeds anaphylaxis)** — paeds nebulised salbutamol +
+  ipratropium dose detail split same as the adult fix; pearl added
+  explaining Sam's 5-h gap between mild lip reaction (settled with
+  cetirizine) and systemic wheeze is best described as a "protracted /
+  delayed" presentation rather than classic biphasic.
+- **Sam (paeds anaphylaxis)** — `mx_oxygen_paeds.route` changed from
+  `NEB` (semantically wrong — that's nebuliser) to `other` with the
+  delivery device named in the frequency string.
+- **Mrs Patel (STEMI)** — added inline sources to `mx_dual_antiplatelet`
+  (NICE NG185 / ESC STEMI 2023) and `mx_pain_oxygen_glucose` (NICE
+  NG185 + BTS Emergency Oxygen Guideline 2017 + AVOID trial citation).
+- **Stub case removed**: `case_minor_laceration_ambient.yaml` was a
+  schema-exercise sample left over from Milestone 8 ("clinical content
+  not authored"). Not referenced by any episode. Removed to keep the
+  content directory authored-only — the `pnpm new-case --topic` CLI
+  remains the way to scaffold new cases. Content footprint is now
+  **8 fully-authored cases**.
+
 ### Content: acute stroke (Williams) + stroke-solo shift
 
 - `content/cases/case_stroke_acute_williams.yaml` — 67y/o, witnessed
@@ -14,15 +59,15 @@ Format: one line per change, newest first.
   against NICE NG128 (2019, updated 2022), RCP National Clinical
   Guideline for Stroke 2023, and Oxford Handbook of EM 5e Ch 3. Five
   `must_not_do` traps:
-    1. Alteplase without checking DOAC timing (apixaban within 48 h
-       is a relative contraindication).
-    2. Aggressive BP lowering to <140/90 pre-reperfusion.
-    3. 300 mg aspirin immediately (before CT, before thrombolysis
-       decision).
-    4. Resuming home apixaban this morning.
-    5. Sedating to facilitate transfer to CT.
-  Headline learning: anticoagulated LVO patient → thrombectomy is
-  the preferred reperfusion path.
+  1. Alteplase without checking DOAC timing (apixaban within 48 h
+     is a relative contraindication).
+  2. Aggressive BP lowering to <140/90 pre-reperfusion.
+  3. 300 mg aspirin immediately (before CT, before thrombolysis
+     decision).
+  4. Resuming home apixaban this morning.
+  5. Sedating to facilitate transfer to CT.
+     Headline learning: anticoagulated LVO patient → thrombectomy is
+     the preferred reperfusion path.
 - `content/episodes/ep_stroke_solo.yaml` — 20-min single-case shift.
   T+8 CT results, T+11 CTA results, T+12 deterioration if no CT and
   no stroke-team activation, T+5 wife arrives, T+14 bed pressure.

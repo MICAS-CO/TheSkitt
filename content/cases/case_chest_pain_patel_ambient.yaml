@@ -203,14 +203,26 @@ management:
       Discuss with cardiology — agent depends on PCI plan and bleeding
       risk. Do not give before cath-lab discussion if uncertain.
     must_do: true
+    sources:
+      - {
+          type: nice,
+          id: 'NG185',
+          ref: 'NICE NG185 / ESC STEMI 2023 — DAPT loading per PCI pathway',
+        }
 
   - id: mx_pain_oxygen_glucose
     category: drug
     name: 'GTN sublingual for pain; titrated IV morphine if severe; oxygen ONLY if SpO2 <94%'
     detail: |
-      Routine oxygen is not recommended (AVOID trial). Manage glucose if
-      >11 mmol/L per local protocol.
+      Routine oxygen is not recommended (AVOID trial; Stub et al.,
+      Circulation 2015). Manage glucose if >11 mmol/L per local protocol.
     must_do: true
+    sources:
+      - { type: nice, id: 'NG185', ref: 'NICE NG185 — oxygen only if SpO2 <94%' }
+      - {
+          type: textbook,
+          ref: 'BTS Emergency Oxygen Guideline 2017 — target SpO2 94–98% in acute MI without COPD',
+        }
 
   - id: mx_no_routine_oxygen
     category: drug
