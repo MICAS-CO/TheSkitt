@@ -1,0 +1,18 @@
+# Topic map — to be populated in Milestone 2/3.
+#
+# Purpose: a high-yield topic priority list informed by surveying RCEMLearning's
+# public module/podcast catalogue, RCEM SAQ blueprint signals, and FRCEM
+# examiner reports. Drives WHICH cases we author; does NOT contain
+# RCEMLearning content.
+#
+# Schema (sketch):
+#   topics:
+#     - id: anaphylaxis
+#       curriculum_tags: [SLO5, ResusGuidelines]
+#       priority: high
+#       rationale: "Frequent SAQ; protocolised; first-line learning win."
+#       sources:
+#         - { type: nice, id: "NG134" }
+#         - { type: resus_council_uk, ref: "Anaphylaxis 2021" }
+
+topics: []

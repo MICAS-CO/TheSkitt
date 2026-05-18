@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# build outputs
+dist/
+.vite/
+*.tsbuildinfo
+
+# test outputs
+coverage/
+playwright-report/
+test-results/
+
+# editor / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.log
+
+# env
+.env
+.env.local
+.env.*.local
+
+# local-only source material (see DECISIONS.md re: PDFs in repo root)
+sources-local/
