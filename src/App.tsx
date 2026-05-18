@@ -32,6 +32,10 @@ import samYaml from '../content/cases/case_anaphylaxis_paeds_sibling.yaml?raw';
 import familyArcYaml from '../content/arcs/arc_family_peanut_party.yaml?raw';
 import birthdayEpYaml from '../content/episodes/ep_birthday_party.yaml?raw';
 
+// Stroke solo
+import williamsYaml from '../content/cases/case_stroke_acute_williams.yaml?raw';
+import strokeEpYaml from '../content/episodes/ep_stroke_solo.yaml?raw';
+
 type View = 'menu' | 'shift' | 'hub';
 
 interface ShiftPack {
@@ -75,12 +79,19 @@ const FAMILY_SHIFT: () => ShiftPack = () => ({
   arcs: [Arc.parse(parseYaml(familyArcYaml))],
 });
 
+const STROKE_SOLO: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(strokeEpYaml)),
+  cases: [Case.parse(parseYaml(williamsYaml))],
+  arcs: [],
+});
+
 const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
   ep_anaphylaxis_solo: SOLO_SHIFT,
   ep_hendo_shift: HENDO_SHIFT,
   ep_overnight_sepsis_solo: SEPSIS_SOLO,
   ep_overnight_metabolic: METABOLIC_SHIFT,
   ep_birthday_party: FAMILY_SHIFT,
+  ep_stroke_solo: STROKE_SOLO,
 };
 
 export function App() {
@@ -166,6 +177,7 @@ export function App() {
             onStartSepsis={() => startShift(SEPSIS_SOLO())}
             onStartMetabolic={() => startShift(METABOLIC_SHIFT())}
             onStartFamily={() => startShift(FAMILY_SHIFT())}
+            onStartStroke={() => startShift(STROKE_SOLO())}
             onShowHub={() => setView('hub')}
             saved={saved}
             onResume={resumeSavedShift}
@@ -198,6 +210,7 @@ function MenuView({
   onStartSepsis,
   onStartMetabolic,
   onStartFamily,
+  onStartStroke,
   onShowHub,
   saved,
   onResume,
@@ -208,6 +221,7 @@ function MenuView({
   onStartSepsis: () => void;
   onStartMetabolic: () => void;
   onStartFamily: () => void;
+  onStartStroke: () => void;
   onShowHub: () => void;
   saved: SavedShift | null;
   onResume: () => void;
@@ -265,6 +279,14 @@ function MenuView({
             <span className="menu__card-title">Overnight: sepsis solo</span>
             <span className="menu__card-meta">
               Urosepsis with evolving septic shock. NICE NG51 + Sepsis Six + advance care plan.
+            </span>
+          </button>
+          <button className="menu__card menu__card--secondary" onClick={onStartStroke}>
+            <span className="menu__card-eyebrow">Shift · CT2 · 20 min · 1 case</span>
+            <span className="menu__card-title">Stroke onset — thrombolysis window</span>
+            <span className="menu__card-meta">
+              Witnessed LMCA stroke on apixaban. NICE NG128 + DOAC contraindication + thrombectomy
+              referral.
             </span>
           </button>
           <button className="menu__card menu__card--secondary" onClick={onStartSolo}>

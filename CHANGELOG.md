@@ -4,6 +4,30 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Content: acute stroke (Williams) + stroke-solo shift
+
+- `content/cases/case_stroke_acute_williams.yaml` — 67y/o, witnessed
+  onset 37 min ago, right-sided weakness + non-fluent dysphasia,
+  FAST+, ROSIER 4, NIHSS 14, on apixaban for AF. CT shows hyperdense
+  MCA sign in the L MCA territory; CTA confirms M1 occlusion (LVO).
+  Scaffolded by `pnpm new-case --topic stroke_tia` then authored
+  against NICE NG128 (2019, updated 2022), RCP National Clinical
+  Guideline for Stroke 2023, and Oxford Handbook of EM 5e Ch 3. Five
+  `must_not_do` traps:
+    1. Alteplase without checking DOAC timing (apixaban within 48 h
+       is a relative contraindication).
+    2. Aggressive BP lowering to <140/90 pre-reperfusion.
+    3. 300 mg aspirin immediately (before CT, before thrombolysis
+       decision).
+    4. Resuming home apixaban this morning.
+    5. Sedating to facilitate transfer to CT.
+  Headline learning: anticoagulated LVO patient → thrombectomy is
+  the preferred reperfusion path.
+- `content/episodes/ep_stroke_solo.yaml` — 20-min single-case shift.
+  T+8 CT results, T+11 CTA results, T+12 deterioration if no CT and
+  no stroke-team activation, T+5 wife arrives, T+14 bed pressure.
+- New "Stroke onset — thrombolysis window" entry on the shift menu.
+
 ### Polish: replay button + topic-map cleanup
 
 - Episode debrief gets a "↻ play this shift again" button alongside
