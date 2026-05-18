@@ -435,6 +435,18 @@ export const ArcRevealTrigger = z.discriminatedUnion('on', [
   }),
   z.object({
     id: z.string(),
+    on: z.literal('history_asked'),
+    history_id: z.string(),
+    in_case_id: CaseId,
+  }),
+  z.object({
+    id: z.string(),
+    on: z.literal('examined'),
+    system: z.string(),
+    in_case_id: CaseId,
+  }),
+  z.object({
+    id: z.string(),
     on: z.literal('finding'),
     finding_id: z.string(),
     in_case_id: CaseId,
@@ -496,3 +508,5 @@ export type ScheduledEventT = z.infer<typeof ScheduledEvent>;
 export type CitationT = z.infer<typeof Citation>;
 export type CaseStateT = z.infer<typeof CaseState>;
 export type TransitionTriggerT = z.infer<typeof TransitionTrigger>;
+export type ArcRevealTriggerT = z.infer<typeof ArcRevealTrigger>;
+export type ArcEffectT = z.infer<typeof ArcEffect>;

@@ -1,0 +1,78 @@
+# MILESTONE 5 — first 2-case episode with an intersecting arc.
+#
+# 20-minute shift containing Beth (anaphylaxis, resus, T+0) and Sarah
+# (ectopic, minors, arriving at T+5 to triage). Connected by
+# arc_hendo_dinner. The player navigates between the two cases on the
+# shift board while the clock runs.
+
+schema_version: 1
+id: ep_hendo_shift
+title: 'Shift: the hen-do'
+learning_objectives:
+  - 'Manage anaphylaxis per Resus Council UK 2021 against a real shift clock.'
+  - 'Recognise that a deceptively-well minors patient with abdo pain + positive βhCG is an ectopic until proven otherwise (NICE NG126).'
+  - 'Triangulate across cases — asking the right history question in one bay unlocks history in another.'
+  - 'Prioritise time-critical decisions across competing patients.'
+
+curriculum_tags: [RP2, AP1, AP2, AC1, ObC4, ObP1, ObP2]
+difficulty_band: ST3
+shift_duration_min: 20
+
+focus_cases:
+  - case_anaphylaxis_adult_peanut
+  - case_ectopic_minors_sarah
+
+scheduled_events:
+  # Beth deteriorates to cardiac arrest if IM adrenaline not given by T+5.
+  - id: ev_beth_deterioration
+    type: deterioration_if_not_x_by_t
+    t_min: 5
+    case_id: case_anaphylaxis_adult_peanut
+    required_action_ids: [mx_adrenaline_im]
+    new_state: arrested
+
+  # Sarah triaged out of the relatives' room at T+5 — appears on board.
+  - id: ev_sarah_arrival
+    type: new_arrival
+    t_min: 5
+    case_id: case_ectopic_minors_sarah
+
+  # Tom (Beth's partner) reaches the relatives' room at T+8.
+  - id: ev_family_arrival
+    type: family_arrival
+    t_min: 8
+    case_id: case_anaphylaxis_adult_peanut
+    npc: Tom (Beth's partner)
+
+  # Beth's mast cell tryptase sample 1 returns at T+10.
+  - id: ev_tryptase_back
+    type: results_back
+    t_min: 10
+    case_id: case_anaphylaxis_adult_peanut
+    investigation_id: ix_tryptase
+
+  # Bed manager applies pressure at T+12.
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 12
+    severity: firm
+
+  # Sarah's ruptured ectopic — fires only if serum βhCG not sent AND
+  # gynae not called by T+16.
+  - id: ev_sarah_rupture
+    type: deterioration_if_not_x_by_t
+    t_min: 16
+    case_id: case_ectopic_minors_sarah
+    required_action_ids: [mx_serum_bhcg, mx_call_gynae]
+    new_state: arrested
+
+arcs:
+  - arc_hendo_dinner
+
+author_notes: |
+  Two time-critical mechanics on one shift clock:
+   - T+5 deterioration for Beth (anaphylaxis arrest if no adrenaline).
+   - T+16 deterioration for Sarah (ruptured ectopic if no βhCG or
+     gynae referral).
+  Intersection: asking Beth's partner-history question reveals the
+  arc, which unlocks two history items on Sarah's case.

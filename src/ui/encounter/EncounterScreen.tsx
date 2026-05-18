@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useSim, useRealTimeClock, scoreCase, type ScoreReport } from '../../state/sim';
+import { useEffect, useMemo } from 'react';
+import { useSim, scoreCase, type ScoreReport } from '../../state/sim';
 import type { CitationT } from '../../content/schema';
 import type { CaseRuntime, LogEntry } from '../../sim/kernel';
 
-type Phase =
+export type Phase =
   | 'vignette'
   | 'history'
   | 'examination'
@@ -37,27 +37,24 @@ const PHASE_LABELS: Record<Phase, string> = {
 
 interface Props {
   caseId: string;
+  phase: Phase;
+  onPhaseChange: (p: Phase) => void;
+  onBackToBoard: () => void;
   onExit: () => void;
 }
 
-export function EncounterScreen({ caseId, onExit }: Props) {
-  // Subscribe to kernel ticks so the whole UI re-renders on changes
+export function EncounterScreen({ caseId, phase, onPhaseChange, onBackToBoard, onExit }: Props) {
   useSim((s) => s.tick);
   const kernel = useSim((s) => s.kernel);
-
-  const [phase, setPhase] = useState<Phase>('vignette');
   const cs = kernel?.getState().cases.get(caseId) ?? null;
   const ks = kernel?.getState();
   const isRunning = ks?.isRunning ?? false;
   const isShiftOver = ks?.isShiftOver ?? false;
 
-  // Auto-jump to debrief when shift ends
+  // Auto-jump to debrief when the shift ends
   useEffect(() => {
-    if (isShiftOver && phase !== 'debrief') setPhase('debrief');
-  }, [isShiftOver, phase]);
-
-  // Drive the real-time clock when running
-  useRealTimeClock(kernel, isRunning && !isShiftOver);
+    if (isShiftOver && phase !== 'debrief') onPhaseChange('debrief');
+  }, [isShiftOver, phase, onPhaseChange]);
 
   if (!kernel || !cs || !ks) {
     return (
@@ -75,15 +72,20 @@ export function EncounterScreen({ caseId, onExit }: Props) {
     (phase === 'differential' && !cs.workingDx) || (phase === 'disposition' && !cs.disposition);
 
   function next() {
-    if (idx < PHASE_ORDER.length - 1) setPhase(PHASE_ORDER[idx + 1]!);
+    if (idx < PHASE_ORDER.length - 1) onPhaseChange(PHASE_ORDER[idx + 1]!);
   }
   function prev() {
-    if (idx > 0) setPhase(PHASE_ORDER[idx - 1]!);
+    if (idx > 0) onPhaseChange(PHASE_ORDER[idx - 1]!);
   }
 
   return (
     <div className="enc">
-      <EncounterHeader cs={cs} clockMin={ks.clockMin} state={cs.state} onExit={onExit} />
+      <EncounterHeader
+        cs={cs}
+        clockMin={ks.clockMin}
+        onBackToBoard={onBackToBoard}
+        onExit={onExit}
+      />
       <ClockControls
         clockMin={ks.clockMin}
         shiftDurationMin={ks.shiftDurationMin}
@@ -124,7 +126,7 @@ export function EncounterScreen({ caseId, onExit }: Props) {
           {phase === 'debrief' && <DebriefPhase cs={cs} />}
         </main>
 
-        <ShiftLog log={ks.log} />
+        <ShiftLog log={ks.log} caseId={caseId} />
       </div>
 
       <footer className="enc__foot">
@@ -136,14 +138,8 @@ export function EncounterScreen({ caseId, onExit }: Props) {
             {phase === 'disposition' ? 'See debrief' : 'next →'}
           </button>
         ) : (
-          <button
-            className="enc__primary"
-            onClick={() => {
-              setPhase('vignette');
-              onExit();
-            }}
-          >
-            ← back to menu
+          <button className="enc__primary" onClick={onBackToBoard}>
+            ← back to shift board
           </button>
         )}
       </footer>
@@ -156,12 +152,12 @@ export function EncounterScreen({ caseId, onExit }: Props) {
 function EncounterHeader({
   cs,
   clockMin,
-  state,
+  onBackToBoard,
   onExit,
 }: {
   cs: CaseRuntime;
   clockMin: number;
-  state: CaseRuntime['state'];
+  onBackToBoard: () => void;
   onExit: () => void;
 }) {
   const d = cs.data.demographics;
@@ -169,7 +165,8 @@ function EncounterHeader({
     <header className="enc__head">
       <div>
         <div className="enc__head-title">
-          {cs.data.title} <span className={`enc__chip enc__chip--state-${state}`}>{state}</span>
+          {cs.data.title}{' '}
+          <span className={`enc__chip enc__chip--state-${cs.state}`}>{cs.state}</span>
         </div>
         <div className="enc__head-meta">
           {d.age_value} {d.age_unit} · {d.sex}
@@ -177,9 +174,10 @@ function EncounterHeader({
           {clockMin}m
         </div>
       </div>
-      <button className="enc__exit" onClick={onExit} aria-label="Exit encounter">
-        ← menu
-      </button>
+      <div className="enc__head-actions">
+        <button onClick={onBackToBoard}>← board</button>
+        <button onClick={onExit}>← menu</button>
+      </div>
     </header>
   );
 }
@@ -212,21 +210,9 @@ function ClockControls({
           T+{clockMin}m / {shiftDurationMin}m {isShiftOver ? '· shift over' : ''}
         </span>
         <div className="enc__clock-buttons">
-          {!isRunning && !isShiftOver && (
-            <button onClick={onPlay} aria-label="Start shift">
-              ▶ start
-            </button>
-          )}
-          {isRunning && !isShiftOver && (
-            <button onClick={onPause} aria-label="Pause shift">
-              ❚❚ pause
-            </button>
-          )}
-          {!isShiftOver && (
-            <button onClick={onSkip} aria-label="Skip 1 minute">
-              +1m
-            </button>
-          )}
+          {!isRunning && !isShiftOver && <button onClick={onPlay}>▶ start</button>}
+          {isRunning && !isShiftOver && <button onClick={onPause}>❚❚ pause</button>}
+          {!isShiftOver && <button onClick={onSkip}>+1m</button>}
         </div>
       </div>
     </div>
@@ -247,13 +233,18 @@ function PhaseProgress({ phase }: { phase: Phase }) {
   );
 }
 
-function ShiftLog({ log }: { log: LogEntry[] }) {
+function ShiftLog({ log, caseId }: { log: LogEntry[]; caseId: string }) {
   return (
     <aside className="enc__log" aria-label="Shift log">
       <h3 className="enc__log-title">Shift log</h3>
       <ol className="enc__log-list">
         {log.map((e, i) => (
-          <li key={i} className={`enc__log-entry enc__log-entry--${e.level}`}>
+          <li
+            key={i}
+            className={`enc__log-entry enc__log-entry--${e.level} ${
+              e.caseId === caseId ? 'enc__log-entry--this' : ''
+            }`}
+          >
             <span className="enc__log-time">T+{e.t_min}m</span>
             <span>{e.text}</span>
           </li>
@@ -269,10 +260,10 @@ function VignettePhase({ cs }: { cs: CaseRuntime }) {
   const c = cs.data;
   return (
     <section className="enc__phase">
-      <h2>Bay 2 — arrival</h2>
+      <h2>Arrival</h2>
       <pre className="enc__vignette">{c.vignette}</pre>
       <details className="enc__details">
-        <summary>Pre-existing PMH and meds (paramedic handover sheet)</summary>
+        <summary>Pre-existing PMH and meds (handover sheet)</summary>
         <ul>
           {c.demographics.pmh.map((p) => (
             <li key={p}>{p}</li>
@@ -290,27 +281,49 @@ function VignettePhase({ cs }: { cs: CaseRuntime }) {
           </p>
         )}
       </details>
-      <p className="enc__hint">
-        Press ▶ start to begin the shift clock. Every minute counts — the patient is currently{' '}
-        <strong>{cs.state}</strong>.
-      </p>
     </section>
   );
 }
 
 function HistoryPhase({ cs, onAsk }: { cs: CaseRuntime; onAsk: (id: string) => void }) {
+  const kernel = useSim((s) => s.kernel)!;
+  const ks = kernel.getState();
+  const gatedIds = useMemo(() => gatedHistoryIds(cs.caseId, ks), [cs.caseId, ks]);
+
+  const items = cs.data.history.filter(
+    (h) => !gatedIds.has(h.id) || cs.unlockedHistoryIds.has(h.id),
+  );
+  const stillLocked = cs.data.history.filter(
+    (h) => gatedIds.has(h.id) && !cs.unlockedHistoryIds.has(h.id),
+  ).length;
+
   return (
     <section className="enc__phase">
       <h2>History</h2>
-      <p className="enc__hint">Tap a topic to ask. You can ask all of them.</p>
+      <p className="enc__hint">
+        Tap a topic to ask. You can ask all of them.
+        {stillLocked > 0 && (
+          <>
+            {' '}
+            <em>{stillLocked} more would open if an arc reveals.</em>
+          </>
+        )}
+      </p>
       <ul className="enc__cards">
-        {cs.data.history.map((h) => {
+        {items.map((h) => {
           const isAsked = cs.asked.has(h.id);
+          const isNewlyUnlocked = cs.unlockedHistoryIds.has(h.id) && !isAsked;
           return (
-            <li key={h.id} className={`enc__card ${isAsked ? 'is-revealed' : ''}`}>
+            <li
+              key={h.id}
+              className={`enc__card ${isAsked ? 'is-revealed' : ''} ${
+                isNewlyUnlocked ? 'is-unlocked' : ''
+              }`}
+            >
               <button className="enc__card-head" onClick={() => onAsk(h.id)} disabled={isAsked}>
                 <span className="enc__chip">{h.source.replace('_', ' ')}</span>
                 <span>{h.topic}</span>
+                {isNewlyUnlocked && <span className="enc__chip enc__chip--unlock">new</span>}
               </button>
               {isAsked && <p className="enc__card-body">{h.response}</p>}
             </li>
@@ -511,7 +524,7 @@ function DebriefPhase({ cs }: { cs: CaseRuntime }) {
 
   return (
     <section className="enc__phase">
-      <h2>Debrief</h2>
+      <h2>Debrief — {c.title}</h2>
       <div className={`enc__score enc__score--${score.band}`}>
         <div className="enc__score-pct">{score.percent}%</div>
         <div className="enc__score-band">{score.band.toUpperCase()}</div>
@@ -623,4 +636,24 @@ function CitationLine({ c }: { c: CitationT }) {
       )}
     </span>
   );
+}
+
+/**
+ * Compute the set of history ids on `caseId` that are gated by an unrevealed
+ * arc's unlocks_history_id effect.
+ */
+function gatedHistoryIds(
+  caseId: string,
+  ks: ReturnType<NonNullable<ReturnType<typeof useSim.getState>['kernel']>['getState']>,
+): Set<string> {
+  const gated = new Set<string>();
+  for (const arc of ks.arcs.values()) {
+    if (ks.revealedArcIds.has(arc.id)) continue;
+    for (const effect of arc.effects) {
+      if (effect.on_case_id === caseId && effect.unlocks_history_id) {
+        gated.add(effect.unlocks_history_id);
+      }
+    }
+  }
+  return gated;
 }

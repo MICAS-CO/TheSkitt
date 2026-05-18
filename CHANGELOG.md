@@ -4,6 +4,62 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Milestone 5 — Second case + first intersecting arc
+
+- Author `content/cases/case_ectopic_minors_sarah.yaml` — Sarah Mendez, 30,
+  7+0 weeks pregnant, walks in from the relatives' room with cramping LIF
+  pain and PV spotting. **Deliberately different shape** from Beth:
+  obstetric system, low triage (cat 3), deceptively well at presentation,
+  but time-critical (ruptured tubal ectopic). Authored end-to-end against
+  NICE NG126 (Ectopic pregnancy and miscarriage, 2019, updated 2023) and
+  RCOG Green-top 21 (Tubal Ectopic Pregnancy, 2016). Every clinical claim
+  cited inline. Four `must_not_do` examiner traps (ED methotrexate,
+  discharge with safety-net, ED bimanual pelvic exam, NSAIDs in early
+  pregnancy with bleeding).
+- Author `content/arcs/arc_hendo_dinner.yaml` — first intersecting arc.
+  Beth and Sarah are friends from the same hen-do dinner. Three reveal
+  triggers (primary: asking Beth's `hx_partner`; backup: asking Sarah's
+  gated `hx_friend_in_resus`; fallback: T+9 clock-time). Effects: unlocks
+  two history items on Sarah's case (`hx_friend_in_resus`,
+  `hx_pain_started_earlier`) — triangulating across cases unlocks a
+  longer pain history that changes the timeline.
+- Author `content/episodes/ep_hendo_shift.yaml` — 20-min, 2 focus cases,
+  1 arc, 6 scheduled events. Two time-critical mechanics on one clock:
+  T+5 deterioration for Beth (no adrenaline → arrest) and T+16
+  deterioration for Sarah (no βhCG / no gynae referral → ruptured
+  ectopic → arrest).
+- Schema (`src/content/schema.ts`): add `history_asked` and `examined`
+  variants to the `ArcRevealTrigger` discriminated union so arcs can
+  reveal on history-question or system-examined events. Export
+  `ArcRevealTriggerT` and `ArcEffectT` types.
+- Kernel (`src/sim/kernel.ts`): accept `arcs: Map<string, ArcT>` in
+  constructor; track `revealedArcIds` and unlocked history/finding ids
+  per `CaseRuntime`; new `checkAllArcReveals()` runs after every player
+  action and every tick advance; `revealArc()` applies all effects
+  (unlocks_history_id / unlocks_finding_id / changes_state_to); new
+  `new_arrival` event transitions `unseen → triaged` so the case
+  appears on the board at the scheduled time. Arc reveals are
+  idempotent and logged at `warn` level.
+- UI: new `src/ui/shift/ShiftView.tsx` parent that owns the real-time
+  clock loop and routes between board and encounter, plus
+  `src/ui/shift/ShiftBoardScreen.tsx` rendering case cards (with state
+  chip, pending/resulted ix counts, working-dx preview) and the live
+  shift log. `EncounterScreen` now takes `phase` and `onPhaseChange`
+  as props (state lifted to ShiftView so each case remembers where the
+  player left off), adds a `← board` button, and gates locked history
+  items with a `new` chip when unlocked by an arc reveal.
+- App routing: menu now shows three shift options — the new "Hen-do"
+  shift (M5), the "Anaphylaxis solo" shift (M4), and the ED hub preview
+  (M1).
+- Tests (`tests/arcs.test.ts`, 7 tests): reveal-via-history-question,
+  reveal-via-clock-fallback, history unlock effects applied to Sarah's
+  case, idempotent reveal, new-arrival → triaged, both-deterioration-
+  events on one clock, and the save-both happy path. Total **87 / 87**
+  passing.
+- All gates green: typecheck, ESLint, Prettier, validator (4 cases /
+  3 episodes / 2 arcs), prod build, dev server boots and serves the
+  new YAMLs.
+
 ### Milestone 4 — Simulation kernel + episode shell on a shift clock
 
 - Add `src/sim/kernel.ts` — a pure, deterministic `SimKernel` class. Owns

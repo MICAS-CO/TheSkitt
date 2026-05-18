@@ -4,6 +4,56 @@ Architectural notes and explicit trade-offs. Newest first.
 
 ---
 
+## D-015 · Arc reveals are kernel-side; UI just reads the unlock set
+
+**Date:** 2026-05-18
+
+When an arc reveals, the kernel mutates per-case `unlockedHistoryIds` and
+`unlockedFindingIds` sets, optionally changes a case's state, and logs at
+`warn` level. The UI computes which history items are _gated_ by
+inspecting the loaded arcs' effects (`unlocks_history_id`) — gated items
+are hidden until they appear in the case's unlocked set.
+
+Trade-off: the schema does not need a per-history `gated_by_arc: arcId`
+field, so case YAMLs don't have to declare gating twice. The gating
+information lives once on the arc as an effect; the UI infers what's
+hidden by walking the arcs. Cost: O(arcs × effects) per history render.
+Acceptable for the case sizes we author.
+
+Arc-reveal idempotency is enforced kernel-side: a `revealArc()` call
+returns early if the arc is already in `revealedArcIds`. So multiple
+matching reveal triggers don't double-fire effects.
+
+## D-016 · `new_arrival` event drives `unseen → triaged`
+
+**Date:** 2026-05-18
+
+Cases can have `initial_state: unseen` so they don't appear on the
+shift board until a scheduled `new_arrival` event fires. The kernel
+handles the transition directly inside `processEvent('new_arrival')`
+rather than relying on a case-side state transition — keeping content
+authoring lighter (the case YAML doesn't have to know about the
+scheduled event by name).
+
+This is the build prompt's "patients arrive on the timeline" mechanic
+(§ "Scheduled events"). Sarah is `unseen` until T+5 in the hen-do
+episode.
+
+## D-017 · Per-case phase memory lives in `ShiftView`, not the kernel
+
+**Date:** 2026-05-18
+
+The encounter UI's phase (vignette → history → … → debrief) is
+_navigation_, not simulation state. It is held in a
+`Record<caseId, Phase>` inside the React `ShiftView` component, passed
+down to `EncounterScreen` as a prop pair. The kernel doesn't know about
+phases — it just records actions, asked/examined/ordered sets, and the
+working-dx/disposition fields.
+
+Consequence: phase state is per-session (lost on shift exit) but
+preserved across board ↔ encounter navigation within a shift. The
+kernel's deterministic replay property is unaffected.
+
 ## D-012 · Simulation kernel is a plain TS class; React subscribes via tick counter
 
 **Date:** 2026-05-18

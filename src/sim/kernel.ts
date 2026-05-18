@@ -1,4 +1,6 @@
 import type {
+  ArcRevealTriggerT,
+  ArcT,
   CaseStateT,
   CaseT,
   EpisodeT,
@@ -32,6 +34,10 @@ export interface CaseRuntime {
   disposition: string | null;
   /** Free-text history of state changes for the debrief. */
   reasons: string[];
+  /** History item ids unlocked by an arc reveal effect. */
+  unlockedHistoryIds: Set<string>;
+  /** Findings unlocked by an arc reveal effect (e.g. extra exam findings). */
+  unlockedFindingIds: Set<string>;
 }
 
 export type LogLevel = 'info' | 'warn' | 'danger';
@@ -51,6 +57,10 @@ export interface KernelState {
   isShiftOver: boolean;
   episode: EpisodeT;
   cases: Map<string, CaseRuntime>;
+  /** Arcs loaded for this episode (keyed by arc id). */
+  arcs: Map<string, ArcT>;
+  /** Ids of arcs that have already been revealed to the player. */
+  revealedArcIds: Set<string>;
   /** Scheduled events that haven't fired yet, sorted by t_min. */
   unfiredEvents: ScheduledEventT[];
   /** Scheduled event ids that HAVE fired (for trigger lookup). */
@@ -68,6 +78,7 @@ const TERMINAL_STATES: ReadonlySet<CaseStateT> = new Set<CaseStateT>([
 export interface SimKernelOpts {
   episode: EpisodeT;
   cases: Map<string, CaseT>;
+  arcs?: Map<string, ArcT>;
 }
 
 export class SimKernel {
@@ -90,6 +101,8 @@ export class SimKernel {
         workingDx: null,
         disposition: null,
         reasons: [],
+        unlockedHistoryIds: new Set(),
+        unlockedFindingIds: new Set(),
       });
     }
     this.state = {
@@ -99,6 +112,8 @@ export class SimKernel {
       isShiftOver: false,
       episode: opts.episode,
       cases: caseMap,
+      arcs: opts.arcs ?? new Map(),
+      revealedArcIds: new Set(),
       unfiredEvents: [...opts.episode.scheduled_events].sort((a, b) => a.t_min - b.t_min),
       firedEventIds: new Set(),
       log: [{ t_min: 0, level: 'info', text: 'Shift handover received.' }],
@@ -157,6 +172,7 @@ export class SimKernel {
     this.state.clockMin = target;
     this.processInvestigationResults();
     this.checkAllTransitions();
+    this.checkAllArcReveals();
 
     if (this.state.clockMin >= this.state.shiftDurationMin) {
       this.state.isRunning = false;
@@ -194,6 +210,7 @@ export class SimKernel {
       this.log('info', `Action: ${actionLabel(cs, actionId)}.`, caseId);
     }
     this.checkTransitions(cs);
+    this.checkAllArcReveals();
     this.notify();
   }
 
@@ -201,6 +218,7 @@ export class SimKernel {
     const cs = this.state.cases.get(caseId);
     if (!cs) return;
     cs.asked.add(hxId);
+    this.checkAllArcReveals();
     this.notify();
   }
 
@@ -209,6 +227,7 @@ export class SimKernel {
     if (!cs) return;
     cs.examined.add(system);
     this.checkTransitions(cs);
+    this.checkAllArcReveals();
     this.notify();
   }
 
@@ -219,6 +238,7 @@ export class SimKernel {
     cs.ordered.set(ixId, this.state.clockMin);
     const ix = cs.data.investigations.find((i) => i.id === ixId);
     this.log('info', `Ordered: ${ix?.name ?? ixId}.`, caseId);
+    this.checkAllArcReveals();
     this.notify();
   }
 
@@ -290,6 +310,10 @@ export class SimKernel {
       }
       case 'new_arrival': {
         const cs = this.state.cases.get(ev.case_id);
+        if (cs && cs.state === 'unseen') {
+          cs.state = 'triaged';
+          cs.reasons.push(`Arrived at T+${ev.t_min}.`);
+        }
         this.log('warn', `Arrival: ${cs?.data.title ?? ev.case_id}.`, ev.case_id);
         break;
       }
@@ -332,8 +356,72 @@ export class SimKernel {
         break;
       }
       case 'arc_reveal': {
-        this.log('info', `Arc reveal: ${ev.arc_id}.`);
+        this.revealArc(ev.arc_id, `scheduled at T+${ev.t_min}`);
         break;
+      }
+    }
+  }
+
+  private checkAllArcReveals(): void {
+    for (const arc of this.state.arcs.values()) {
+      if (this.state.revealedArcIds.has(arc.id)) continue;
+      for (const trigger of arc.reveals) {
+        if (this.arcTriggerMatches(trigger)) {
+          this.revealArc(arc.id, `${trigger.on} trigger`);
+          break;
+        }
+      }
+    }
+  }
+
+  private revealArc(arcId: string, why: string): void {
+    if (this.state.revealedArcIds.has(arcId)) return;
+    const arc = this.state.arcs.get(arcId);
+    if (!arc) return;
+    this.state.revealedArcIds.add(arcId);
+    this.log('warn', `Arc reveal — ${arc.title} (${why}).`);
+    for (const effect of arc.effects) {
+      const cs = this.state.cases.get(effect.on_case_id);
+      if (!cs) continue;
+      if (effect.unlocks_history_id) {
+        cs.unlockedHistoryIds.add(effect.unlocks_history_id);
+      }
+      if (effect.unlocks_finding_id) {
+        cs.unlockedFindingIds.add(effect.unlocks_finding_id);
+      }
+      if (effect.changes_state_to && !TERMINAL_STATES.has(cs.state)) {
+        const prev = cs.state;
+        cs.state = effect.changes_state_to;
+        cs.reasons.push(`Arc "${arc.title}" changed state ${prev} → ${cs.state}.`);
+        this.log('info', `${cs.data.title}: ${prev} → ${cs.state} (arc effect).`, cs.caseId);
+      }
+      if (effect.note) cs.reasons.push(`Arc: ${effect.note}`);
+    }
+  }
+
+  private arcTriggerMatches(trigger: ArcRevealTriggerT): boolean {
+    switch (trigger.on) {
+      case 'clock_time':
+        return this.state.clockMin >= trigger.t_min;
+      case 'action': {
+        const cs = this.state.cases.get(trigger.in_case_id);
+        return !!cs && cs.actions.has(trigger.action_id);
+      }
+      case 'history_asked': {
+        const cs = this.state.cases.get(trigger.in_case_id);
+        return !!cs && cs.asked.has(trigger.history_id);
+      }
+      case 'examined': {
+        const cs = this.state.cases.get(trigger.in_case_id);
+        return !!cs && cs.examined.has(trigger.system);
+      }
+      case 'finding': {
+        const cs = this.state.cases.get(trigger.in_case_id);
+        return !!cs && cs.examined.has(trigger.finding_id);
+      }
+      case 'investigation_back': {
+        const cs = this.state.cases.get(trigger.in_case_id);
+        return !!cs && cs.resulted.has(trigger.investigation_id);
       }
     }
   }

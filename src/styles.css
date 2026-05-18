@@ -339,6 +339,103 @@ button:disabled {
   border-color: var(--warn);
 }
 
+.enc__card.is-unlocked {
+  border-color: var(--info);
+  background: linear-gradient(180deg, rgba(94, 164, 212, 0.08), transparent 40%);
+}
+
+.enc__chip--unlock {
+  background: var(--info);
+  color: #000;
+}
+
+.enc__head-actions {
+  display: flex;
+  gap: 6px;
+}
+.enc__head-actions button {
+  font-size: 12px;
+  padding: 6px 12px;
+}
+
+.enc__log-entry--this {
+  background: rgba(122, 219, 122, 0.06);
+}
+
+/* ─── Shift board ────────────────────────────────────────────────────────── */
+
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.board__title {
+  margin: 0;
+  font-size: 18px;
+}
+.board__cases {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.board__card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.board__card--deteriorating {
+  border-color: var(--warn);
+}
+.board__card--arrested,
+.board__card--deceased {
+  border-color: var(--danger);
+}
+.board__card--triaged {
+  border-color: var(--info);
+}
+.board__card-btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  padding: 14px 16px;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+}
+.board__card-btn:hover {
+  background: var(--panel-2);
+}
+.board__card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.board__card-title {
+  font-size: 15px;
+}
+.board__card-meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+.board__card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.board__card-stat--warn {
+  color: var(--warn);
+}
+
 .enc__progress {
   display: flex;
   gap: 6px;

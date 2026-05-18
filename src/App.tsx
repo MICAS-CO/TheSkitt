@@ -1,37 +1,57 @@
 import { useState } from 'react';
 import { parse as parseYaml } from 'yaml';
 import { PhaserGame } from './ui/PhaserGame';
-import { EncounterScreen } from './ui/encounter/EncounterScreen';
+import { ShiftView } from './ui/shift/ShiftView';
 import { useSim } from './state/sim';
-import { Case, Episode } from './content/schema';
+import { Arc, Case, Episode, type ArcT, type CaseT, type EpisodeT } from './content/schema';
 import { SimKernel } from './sim/kernel';
-import anaphylaxisYaml from '../content/cases/case_anaphylaxis_adult_peanut.yaml?raw';
-import episodeYaml from '../content/episodes/ep_anaphylaxis_solo.yaml?raw';
 
-type View = 'menu' | 'encounter' | 'hub';
+// Solo shift (Milestone 4)
+import bethYaml from '../content/cases/case_anaphylaxis_adult_peanut.yaml?raw';
+import soloEpYaml from '../content/episodes/ep_anaphylaxis_solo.yaml?raw';
+
+// Hen-do shift (Milestone 5)
+import sarahYaml from '../content/cases/case_ectopic_minors_sarah.yaml?raw';
+import arcYaml from '../content/arcs/arc_hendo_dinner.yaml?raw';
+import hendoEpYaml from '../content/episodes/ep_hendo_shift.yaml?raw';
+
+type View = 'menu' | 'shift' | 'hub';
+
+interface ShiftPack {
+  episode: EpisodeT;
+  cases: CaseT[];
+  arcs: ArcT[];
+}
+
+const SOLO_SHIFT: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(soloEpYaml)),
+  cases: [Case.parse(parseYaml(bethYaml))],
+  arcs: [],
+});
+
+const HENDO_SHIFT: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(hendoEpYaml)),
+  cases: [Case.parse(parseYaml(bethYaml)), Case.parse(parseYaml(sarahYaml))],
+  arcs: [Arc.parse(parseYaml(arcYaml))],
+});
 
 export function App() {
   const [view, setView] = useState<View>('menu');
-  const [activeCaseId, setActiveCaseId] = useState<string | null>(null);
   const initSim = useSim((s) => s.init);
   const destroySim = useSim((s) => s.destroy);
 
-  function beginAnaphylaxisShift() {
-    const caseData = Case.parse(parseYaml(anaphylaxisYaml));
-    const episode = Episode.parse(parseYaml(episodeYaml));
+  function startShift(pack: ShiftPack) {
     const kernel = new SimKernel({
-      episode,
-      cases: new Map([[caseData.id, caseData]]),
+      episode: pack.episode,
+      cases: new Map(pack.cases.map((c) => [c.id, c])),
+      arcs: new Map(pack.arcs.map((a) => [a.id, a])),
     });
-    kernel.enterCase(caseData.id);
     initSim(kernel);
-    setActiveCaseId(caseData.id);
-    setView('encounter');
+    setView('shift');
   }
 
-  function exitEncounter() {
+  function exitShift() {
     destroySim();
-    setActiveCaseId(null);
     setView('menu');
   }
 
@@ -41,8 +61,8 @@ export function App() {
         <h1 className="app__title">The Skitt</h1>
         <p className="app__subtitle">
           {view === 'menu'
-            ? 'Episodic EM RPG — milestone 4'
-            : view === 'encounter'
+            ? 'Episodic EM RPG — milestone 5'
+            : view === 'shift'
               ? 'Shift in progress'
               : 'ED hub (preview)'}
         </p>
@@ -50,11 +70,13 @@ export function App() {
 
       <main className="app__stage">
         {view === 'menu' && (
-          <MenuView onPlay={beginAnaphylaxisShift} onShowHub={() => setView('hub')} />
+          <MenuView
+            onStartHendo={() => startShift(HENDO_SHIFT())}
+            onStartSolo={() => startShift(SOLO_SHIFT())}
+            onShowHub={() => setView('hub')}
+          />
         )}
-        {view === 'encounter' && activeCaseId && (
-          <EncounterScreen caseId={activeCaseId} onExit={exitEncounter} />
-        )}
+        {view === 'shift' && <ShiftView onExit={exitShift} />}
         {view === 'hub' && <PhaserGame />}
       </main>
 
@@ -74,21 +96,37 @@ export function App() {
   );
 }
 
-function MenuView({ onPlay, onShowHub }: { onPlay: () => void; onShowHub: () => void }) {
+function MenuView({
+  onStartHendo,
+  onStartSolo,
+  onShowHub,
+}: {
+  onStartHendo: () => void;
+  onStartSolo: () => void;
+  onShowHub: () => void;
+}) {
   return (
     <div className="menu">
       <div className="menu__inner">
         <h2 className="menu__title">Shift menu</h2>
         <p className="menu__copy">
-          Milestone 4 ships a 20-minute single-case shift on the simulation kernel. The clock runs
-          while you work; act on adrenaline before T+5 or the patient arrests.
+          Pick a shift. The hen-do shift is the milestone-5 build — two cases on one clock with a
+          narrative arc connecting them.
         </p>
         <div className="menu__cards">
-          <button className="menu__card menu__card--primary" onClick={onPlay}>
-            <span className="menu__card-eyebrow">Shift · CT2 · 20 min</span>
-            <span className="menu__card-title">Anaphylaxis — adult, peanut at restaurant</span>
+          <button className="menu__card menu__card--primary" onClick={onStartHendo}>
+            <span className="menu__card-eyebrow">Shift · ST3 · 20 min · 2 cases · 1 arc</span>
+            <span className="menu__card-title">The hen-do</span>
             <span className="menu__card-meta">
-              Resus Council UK 2021 · NICE CG134 · 4 scheduled events
+              Anaphylaxis (resus) + ectopic pregnancy (minors), connected by shared incident. NICE
+              NG126 · Resus Council UK 2021 · RCOG GTG 21
+            </span>
+          </button>
+          <button className="menu__card menu__card--secondary" onClick={onStartSolo}>
+            <span className="menu__card-eyebrow">Shift · CT2 · 20 min · 1 case</span>
+            <span className="menu__card-title">Anaphylaxis solo</span>
+            <span className="menu__card-meta">
+              Single-case milestone-4 build. Adult anaphylaxis on the clock.
             </span>
           </button>
           <button className="menu__card menu__card--secondary" onClick={onShowHub}>
