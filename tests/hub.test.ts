@@ -18,15 +18,9 @@ describe('Hub view — bay assignments', () => {
     const raw = readFileSync(join(CASES_DIR, file), 'utf8');
     const parsed = Case.parse(parseYaml(raw));
     expect(parsed.bay).toBeDefined();
-    expect([
-      'resus',
-      'majors',
-      'minors',
-      'paeds',
-      'relatives',
-      'ambulatory',
-      'triage',
-    ]).toContain(parsed.bay!);
+    expect(['resus', 'majors', 'minors', 'paeds', 'relatives', 'ambulatory', 'triage']).toContain(
+      parsed.bay!,
+    );
   });
 
   it('every authored case maps to exactly one bay', () => {

@@ -23,6 +23,10 @@ import patelYaml from '../content/cases/case_chest_pain_patel_ambient.yaml?raw';
 import morrisonYaml from '../content/cases/case_sepsis_uti_morrison.yaml?raw';
 import sepsisEpYaml from '../content/episodes/ep_overnight_sepsis_solo.yaml?raw';
 
+// Overnight metabolic — DKA + sepsis 2-case
+import marcusYaml from '../content/cases/case_dka_marcus.yaml?raw';
+import metabolicEpYaml from '../content/episodes/ep_overnight_metabolic.yaml?raw';
+
 type View = 'menu' | 'shift' | 'hub';
 
 interface ShiftPack {
@@ -54,10 +58,17 @@ const SEPSIS_SOLO: () => ShiftPack = () => ({
   arcs: [],
 });
 
+const METABOLIC_SHIFT: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(metabolicEpYaml)),
+  cases: [Case.parse(parseYaml(marcusYaml)), Case.parse(parseYaml(morrisonYaml))],
+  arcs: [],
+});
+
 const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
   ep_anaphylaxis_solo: SOLO_SHIFT,
   ep_hendo_shift: HENDO_SHIFT,
   ep_overnight_sepsis_solo: SEPSIS_SOLO,
+  ep_overnight_metabolic: METABOLIC_SHIFT,
 };
 
 export function App() {
@@ -130,6 +141,7 @@ export function App() {
             onStartHendo={() => startShift(HENDO_SHIFT())}
             onStartSolo={() => startShift(SOLO_SHIFT())}
             onStartSepsis={() => startShift(SEPSIS_SOLO())}
+            onStartMetabolic={() => startShift(METABOLIC_SHIFT())}
             onShowHub={() => setView('hub')}
             saved={saved}
             onResume={resumeSavedShift}
@@ -160,6 +172,7 @@ function MenuView({
   onStartHendo,
   onStartSolo,
   onStartSepsis,
+  onStartMetabolic,
   onShowHub,
   saved,
   onResume,
@@ -168,6 +181,7 @@ function MenuView({
   onStartHendo: () => void;
   onStartSolo: () => void;
   onStartSepsis: () => void;
+  onStartMetabolic: () => void;
   onShowHub: () => void;
   saved: SavedShift | null;
   onResume: () => void;
@@ -202,6 +216,14 @@ function MenuView({
             <span className="menu__card-meta">
               Anaphylaxis (resus) + ectopic pregnancy (minors), connected by shared incident. NICE
               NG126 · Resus Council UK 2021 · RCOG GTG 21
+            </span>
+          </button>
+          <button className="menu__card menu__card--secondary" onClick={onStartMetabolic}>
+            <span className="menu__card-eyebrow">Shift · ST3 · 20 min · 2 cases</span>
+            <span className="menu__card-title">Overnight: metabolic resus</span>
+            <span className="menu__card-meta">
+              New-onset DKA + urosepsis on the same shift. JBDS-IP + NICE NG51. Two time-critical
+              bundles in parallel.
             </span>
           </button>
           <button className="menu__card menu__card--secondary" onClick={onStartSepsis}>

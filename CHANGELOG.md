@@ -4,11 +4,30 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Content: new-onset DKA case + overnight metabolic shift
+
+- `content/cases/case_dka_marcus.yaml` — 19y/o engineering student with
+  3-day vomiting + polyuria + weight loss, GCS 13, Kussmaul breathing,
+  BM "HI". First-presentation T1DM with severe DKA (pH 7.04, HCO3 7,
+  ketones 5.6, anion gap 23). Scaffolded by `pnpm new-case --topic
+  dka_adult` then authored against JBDS-IP Adult DKA 2023, NICE NG17,
+  RCEM Best Practice and Oxford Handbook 5e Ch 3. Five `must_not_do`
+  traps: insulin bolus before FRII; bicarbonate to "correct" the
+  acidosis; stopping insulin when glucose falls (instead of adding
+  dextrose); oral rehydration alone; potassium in the first bag.
+- `content/episodes/ep_overnight_metabolic.yaml` — 2-case 20-min
+  overnight shift pairing Marcus (DKA, deteriorates at T+15 without
+  fluids AND insulin) and Mrs Morrison (urosepsis, deteriorates at T+10
+  without antibiotics AND fluids). Two competing time-critical bundles
+  in resus, no arc — pure prioritisation pressure.
+- New "Overnight: metabolic resus" entry on the shift menu.
+- 8 cases / 5 episodes / 2 arcs validate. 122 / 122 tests pass.
+
 ### Hub → encounter wire-up (diegetic UI)
 
 - Schema (`src/content/schema.ts`): new optional `bay` field on Case
   — enum `resus | majors | minors | paeds | relatives | ambulatory |
-  triage`. All seven authored cases tagged with a bay inferred from
+triage`. All seven authored cases tagged with a bay inferred from
   the vignette.
 - `src/game/scenes/EDScene.ts` rewritten to accept `EDSceneData`
   (`patients`, `clockLabel`, `onCaseClick`) via Phaser's `init()`
