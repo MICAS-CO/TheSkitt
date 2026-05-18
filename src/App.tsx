@@ -40,6 +40,10 @@ import strokeEpYaml from '../content/episodes/ep_stroke_solo.yaml?raw';
 import priyaYaml from '../content/cases/case_status_epilepticus_priya.yaml?raw';
 import seizureEpYaml from '../content/episodes/ep_seizure_solo.yaml?raw';
 
+// Head injury — DOAC reasoning (anticoagulated mechanical fall)
+import brennanYaml from '../content/cases/case_head_injury_doac_brennan.yaml?raw';
+import headInjuryEpYaml from '../content/episodes/ep_head_injury_doac.yaml?raw';
+
 type View = 'menu' | 'shift' | 'hub';
 
 interface ShiftPack {
@@ -95,6 +99,12 @@ const SEIZURE_SOLO: () => ShiftPack = () => ({
   arcs: [],
 });
 
+const HEAD_INJURY_DOAC: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(headInjuryEpYaml)),
+  cases: [Case.parse(parseYaml(brennanYaml))],
+  arcs: [],
+});
+
 const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
   ep_anaphylaxis_solo: SOLO_SHIFT,
   ep_hendo_shift: HENDO_SHIFT,
@@ -103,6 +113,7 @@ const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
   ep_birthday_party: FAMILY_SHIFT,
   ep_stroke_solo: STROKE_SOLO,
   ep_seizure_solo: SEIZURE_SOLO,
+  ep_head_injury_doac: HEAD_INJURY_DOAC,
 };
 
 export function App() {
@@ -190,6 +201,7 @@ export function App() {
             onStartFamily={() => startShift(FAMILY_SHIFT())}
             onStartStroke={() => startShift(STROKE_SOLO())}
             onStartSeizure={() => startShift(SEIZURE_SOLO())}
+            onStartHeadInjury={() => startShift(HEAD_INJURY_DOAC())}
             onShowHub={() => setView('hub')}
             saved={saved}
             onResume={resumeSavedShift}
@@ -224,6 +236,7 @@ function MenuView({
   onStartFamily,
   onStartStroke,
   onStartSeizure,
+  onStartHeadInjury,
   onShowHub,
   saved,
   onResume,
@@ -236,6 +249,7 @@ function MenuView({
   onStartFamily: () => void;
   onStartStroke: () => void;
   onStartSeizure: () => void;
+  onStartHeadInjury: () => void;
   onShowHub: () => void;
   saved: SavedShift | null;
   onResume: () => void;
@@ -309,6 +323,14 @@ function MenuView({
             <span className="menu__card-meta">
               Refractory status in a pregnant 28-y/o. NICE NG217 (2022) + MHRA Valproate PPP + a CT
               twist.
+            </span>
+          </button>
+          <button className="menu__card menu__card--secondary" onClick={onStartHeadInjury}>
+            <span className="menu__card-eyebrow">Shift · CT2 · 20 min · 1 case</span>
+            <span className="menu__card-title">Head injury — DOAC reasoning</span>
+            <span className="menu__card-meta">
+              Anticoagulated faller, GCS 15 on arrival. NICE NG232 + Canadian C-spine + NICE TA697
+              andexanet.
             </span>
           </button>
           <button className="menu__card menu__card--secondary" onClick={onStartSolo}>

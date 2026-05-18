@@ -1,9 +1,10 @@
 # Resume — current state
 
-Last activity: 2026-05-18 ~21:30 UTC. All 8 build-prompt milestones plus
+Last activity: 2026-05-18 ~22:00 UTC. All 8 build-prompt milestones plus
 substantial post-milestone work shipped on `claude/add-necessary-files-4THUA`.
-The branch is now **28 commits ahead of main**, including a full
-clinical-accuracy audit pass and a new Tier-1 case (status epilepticus).
+The branch is now **30 commits ahead of main**, including a full
+clinical-accuracy audit pass and two new Tier-1 cases (status
+epilepticus + head injury with DOAC reasoning).
 
 ---
 
@@ -43,17 +44,22 @@ clinical-accuracy audit pass and a new Tier-1 case (status epilepticus).
   oxygen route + paeds neb dose, Patel ticagrelor + AVOID citations.
   Beth's hx_partner now actually mentions Sam (fixes a dead arc
   reveal). Stub `case_minor_laceration_ambient.yaml` removed.
-- _(pending commit)_ **Status epilepticus solo with SAH twist** —
-  9th case + 7th episode + new menu card. NICE NG217 (2022 update),
-  RCEM Best Practice 2024, MHRA Valproate PPP, RCOG GTG 10A.
+- `6e28902` **Status epilepticus solo with SAH twist** — 9th case +
+  7th episode + new menu card. NICE NG217 (2022 update), RCEM Best
+  Practice 2024, MHRA Valproate PPP, RCOG GTG 10A.
+- _(pending commit)_ **Head injury — DOAC reasoning** — 10th case +
+  8th episode. NICE NG232 + NICE TA697 (andexanet alfa) + BSH 2024
+  DOAC reversal + Canadian C-spine Rule. Pairs thematically with
+  Williams (stroke on apixaban) — together they cover the
+  ischaemic-vs-haemorrhagic ends of the DOAC-on-board spectrum.
 
 ### Numbers
 
-- **123 / 123** unit tests passing (Vitest).
+- **124 / 124** unit tests passing (Vitest).
 - **2 / 2** E2E tests passing (Playwright; menu → board → encounter, board ↔ hub toggle).
-- Initial JS bundle: 610 KB (gzip 181 KB). Phaser lazy-loaded
+- Initial JS bundle: 636 KB (gzip 188 KB). Phaser lazy-loaded
   (~1.5 MB chunk, only downloads when ED hub opens).
-- Content: **9 cases (all authored)**, **7 episodes**, **2 arcs**,
+- Content: **10 cases (all authored)**, **8 episodes**, **2 arcs**,
   27-topic high-yield map.
 - All authored clinical content cites UK guidelines inline.
 
@@ -71,11 +77,14 @@ clinical-accuracy audit pass and a new Tier-1 case (status epilepticus).
 4. **First seizure — status pathway** (ST3, 20 min, 1 case).
    28y/o in refractory status, pregnant, with a CT-SAH twist. NICE
    NG217 (2022) plus MHRA Valproate PPP plus RCOG GTG 10A.
-5. **Overnight: sepsis solo** (CT2, 20 min, 1 case). Sepsis Six, NICE NG51.
-6. **Overnight: metabolic resus** (ST3, 20 min, 2 cases). New-onset DKA
+5. **Head injury — DOAC reasoning** (CT2, 20 min, 1 case). 78y/o
+   faller on apixaban, GCS 15 on arrival. NICE NG232 + NICE TA697 +
+   Canadian C-spine Rule. The well-looking-but-bleeding trap.
+6. **Overnight: sepsis solo** (CT2, 20 min, 1 case). Sepsis Six, NICE NG51.
+7. **Overnight: metabolic resus** (ST3, 20 min, 2 cases). New-onset DKA
    plus urosepsis on the same shift. JBDS-IP plus NICE NG51.
-7. **Anaphylaxis solo** (CT2, 20 min, 1 case). The milestone-4 build.
-8. **ED hub layout** (preview).
+8. **Anaphylaxis solo** (CT2, 20 min, 1 case). The milestone-4 build.
+9. **ED hub layout** (preview).
 
 ### Play it (morning checklist)
 
@@ -113,11 +122,11 @@ reserved` given that the topic-map cites commercial textbooks.
 
 ## Where to pick up (in rough priority order)
 
-1. **More cases** — the topic-map has 18 unused Tier-1/2/3 topics. The
+1. **More cases** — the topic-map has 17 unused Tier-1/2/3 topics. The
    new-case CLI generates a schema-valid skeleton from any of them in
    one command (`pnpm new-case --topic <id>`). Natural next picks
-   (post-status-epilepticus): major trauma, asthma exacerbation,
-   paeds DKA, head injury (DOAC nuance), aortic dissection.
+   (post-head-injury): major trauma, asthma exacerbation, paeds DKA,
+   aortic dissection, paracetamol overdose.
 2. **Branching narrative trees** — currently dialogue is flat (topic →
    response). Building a real branching tree per the build prompt's
    "history" model would lift the narrative quality.

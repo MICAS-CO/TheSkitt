@@ -4,6 +4,34 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Content: head injury solo with DOAC reasoning
+
+- `content/cases/case_head_injury_doac_brennan.yaml` — 78y/o Mrs
+  Brennan, mechanical fall on apixaban, GCS 15 on arrival but the
+  son is pushing for discharge. The teaching arc forces the player
+  to apply the NICE NG232 anticoagulant-mandate rule (CT within 8 h
+  regardless of GCS) and then choose the correct DOAC reversal
+  pathway after CT shows a small frontal SDH.
+- Five `must_not_do` traps: safety-net home with leaflet; skip CT on
+  GCS 15; vitamin K + FFP "reversal" (warfarin not DOAC); aspirin
+  bridging the held apixaban; skipping the lying-standing BP /
+  cause-of-fall workup.
+- Includes the **apixaban-calibrated anti-Xa** investigation to
+  teach that INR / PT / APTT do NOT measure DOAC effect.
+- Authored against NICE NG232 (2023), NICE TA697 (andexanet alfa),
+  British Society for Haematology DOAC Reversal 2024, and the
+  Canadian C-spine Rule (Stiell 2001).
+- `content/episodes/ep_head_injury_doac.yaml` — 20-min single-case
+  shift. T+5 son arrives with disposition pressure; T+8 bloods;
+  T+10 lying-standing BP; T+12 CT head + CT C-spine return; T+13
+  anti-Xa; T+18 bed-manager pressure. Deterioration deadline at
+  T+25 if no CT + no apixaban-hold.
+- Pairs thematically with `case_stroke_acute_williams` (ischaemic
+  LVO on apixaban) — together they cover both ends of the
+  DOAC-on-board emergency spectrum.
+- New "Head injury — DOAC reasoning" entry on the shift menu.
+- 10 cases / 8 episodes / 2 arcs validate. 124 tests pass.
+
 ### Content: status epilepticus solo with SAH twist
 
 - `content/cases/case_status_epilepticus_priya.yaml` — 28y/o Priya
