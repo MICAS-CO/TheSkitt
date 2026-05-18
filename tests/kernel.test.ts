@@ -1,0 +1,183 @@
+import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { parse as parseYaml } from 'yaml';
+import { Case, Episode, type CaseT, type EpisodeT } from '../src/content/schema';
+import { SimKernel } from '../src/sim/kernel';
+
+const ROOT = process.cwd();
+
+function load<T>(rel: string, schema: { parse: (raw: unknown) => T }): T {
+  return schema.parse(parseYaml(readFileSync(join(ROOT, rel), 'utf8')));
+}
+
+function makeKernel(): { kernel: SimKernel; caseId: string; episode: EpisodeT; caseData: CaseT } {
+  const caseData = load('content/cases/case_anaphylaxis_adult_peanut.yaml', Case);
+  // Build a single-case episode in-memory for these tests so they don't
+  // couple to whatever episode the content tree happens to contain.
+  const episode: EpisodeT = Episode.parse({
+    schema_version: 1,
+    id: 'ep_test',
+    title: 'Kernel test',
+    learning_objectives: ['x'],
+    curriculum_tags: ['RP2'],
+    difficulty_band: 'CT2',
+    shift_duration_min: 20,
+    focus_cases: [caseData.id],
+    scheduled_events: [
+      {
+        id: 'ev_results',
+        type: 'results_back',
+        t_min: 10,
+        case_id: caseData.id,
+        investigation_id: 'ix_tryptase',
+      },
+      {
+        id: 'ev_deteriorate',
+        type: 'deterioration_if_not_x_by_t',
+        t_min: 5,
+        case_id: caseData.id,
+        required_action_ids: ['mx_adrenaline_im'],
+        new_state: 'arrested',
+      },
+    ],
+  });
+  const kernel = new SimKernel({ episode, cases: new Map([[caseData.id, caseData]]) });
+  kernel.enterCase(caseData.id);
+  return { kernel, caseId: caseData.id, episode, caseData };
+}
+
+describe('SimKernel — clock + events', () => {
+  it('starts at T+0 with the shift log seeded', () => {
+    const { kernel } = makeKernel();
+    expect(kernel.getState().clockMin).toBe(0);
+    expect(kernel.getState().log).toHaveLength(2); // handover + entered case
+  });
+
+  it('advances the clock by the requested minutes (clamped to shift duration)', () => {
+    const { kernel } = makeKernel();
+    kernel.advance(3);
+    expect(kernel.getState().clockMin).toBe(3);
+    kernel.advance(100);
+    expect(kernel.getState().clockMin).toBe(20);
+    expect(kernel.getState().isShiftOver).toBe(true);
+  });
+
+  it('does not advance once the shift is over', () => {
+    const { kernel } = makeKernel();
+    kernel.advance(25);
+    const stoppedAt = kernel.getState().clockMin;
+    kernel.advance(5);
+    expect(kernel.getState().clockMin).toBe(stoppedAt);
+  });
+
+  it('fires the deterioration event at T+5 if required action not done', () => {
+    const { kernel, caseId } = makeKernel();
+    kernel.advance(5);
+    const cs = kernel.getState().cases.get(caseId)!;
+    expect(cs.state).toBe('arrested');
+    expect(
+      kernel.getState().log.some((l) => l.level === 'danger' && l.text.includes('deterioration')),
+    ).toBe(true);
+  });
+
+  it('skips the deterioration event when the required action is done before T+5', () => {
+    const { kernel, caseId } = makeKernel();
+    kernel.toggleAction(caseId, 'mx_adrenaline_im');
+    kernel.advance(5);
+    const cs = kernel.getState().cases.get(caseId)!;
+    expect(cs.state).not.toBe('arrested');
+    // Adrenaline transition fires deteriorating → stable per the case YAML
+    expect(cs.state).toBe('stable');
+  });
+
+  it('fires the scheduled results_back event at T+10', () => {
+    const { kernel, caseId } = makeKernel();
+    kernel.toggleAction(caseId, 'mx_adrenaline_im'); // avoid arrest
+    kernel.advance(10);
+    const cs = kernel.getState().cases.get(caseId)!;
+    expect(cs.resulted.has('ix_tryptase')).toBe(true);
+  });
+});
+
+describe('SimKernel — investigations', () => {
+  it('does not result an investigation before its turnaround_min elapses', () => {
+    const { kernel, caseId } = makeKernel();
+    kernel.toggleAction(caseId, 'mx_adrenaline_im');
+    kernel.orderInvestigation(caseId, 'ix_vbg'); // turnaround 5 min
+    kernel.advance(3);
+    expect(kernel.getState().cases.get(caseId)!.resulted.has('ix_vbg')).toBe(false);
+  });
+
+  it('results an investigation once turnaround_min has elapsed', () => {
+    const { kernel, caseId } = makeKernel();
+    kernel.toggleAction(caseId, 'mx_adrenaline_im');
+    kernel.orderInvestigation(caseId, 'ix_vbg'); // ordered at T+0, turnaround 5
+    kernel.advance(6);
+    expect(kernel.getState().cases.get(caseId)!.resulted.has('ix_vbg')).toBe(true);
+  });
+});
+
+describe('SimKernel — state transitions', () => {
+  it('player action fires the deteriorating → stable transition', () => {
+    const { kernel, caseId } = makeKernel();
+    expect(kernel.getState().cases.get(caseId)!.state).toBe('deteriorating');
+    kernel.toggleAction(caseId, 'mx_adrenaline_im');
+    expect(kernel.getState().cases.get(caseId)!.state).toBe('stable');
+  });
+
+  it('terminal states are not transitioned out of', () => {
+    const { kernel, caseId } = makeKernel();
+    kernel.advance(5); // arrests
+    expect(kernel.getState().cases.get(caseId)!.state).toBe('arrested');
+    kernel.toggleAction(caseId, 'mx_adrenaline_im');
+    expect(kernel.getState().cases.get(caseId)!.state).toBe('arrested');
+  });
+});
+
+describe('SimKernel — subscribe/notify', () => {
+  it('notifies subscribers on advance, action, and investigation order', () => {
+    const { kernel, caseId } = makeKernel();
+    let calls = 0;
+    const unsub = kernel.subscribe(() => calls++);
+    kernel.advance(1);
+    kernel.toggleAction(caseId, 'mx_adrenaline_im');
+    kernel.orderInvestigation(caseId, 'ix_vbg');
+    unsub();
+    kernel.advance(1);
+    // The post-unsub advance should not have incremented calls
+    expect(calls).toBe(3);
+  });
+});
+
+describe('SimKernel — determinism', () => {
+  it('two kernels driven the same way reach the same state', () => {
+    const data = load('content/cases/case_anaphylaxis_adult_peanut.yaml', Case);
+    const episode: EpisodeT = Episode.parse({
+      schema_version: 1,
+      id: 'ep_test',
+      title: 'Determinism',
+      learning_objectives: ['x'],
+      curriculum_tags: ['RP2'],
+      difficulty_band: 'CT2',
+      shift_duration_min: 20,
+      focus_cases: [data.id],
+      scheduled_events: [],
+    });
+    const k1 = new SimKernel({ episode, cases: new Map([[data.id, data]]) });
+    const k2 = new SimKernel({ episode, cases: new Map([[data.id, data]]) });
+    [k1, k2].forEach((k) => {
+      k.enterCase(data.id);
+      k.advance(2);
+      k.toggleAction(data.id, 'mx_a_to_e');
+      k.advance(3);
+      k.orderInvestigation(data.id, 'ix_vbg');
+      k.advance(10);
+    });
+    expect(k1.getState().clockMin).toBe(k2.getState().clockMin);
+    expect(k1.getState().cases.get(data.id)!.state).toBe(k2.getState().cases.get(data.id)!.state);
+    expect([...k1.getState().cases.get(data.id)!.resulted]).toEqual([
+      ...k2.getState().cases.get(data.id)!.resulted,
+    ]);
+  });
+});

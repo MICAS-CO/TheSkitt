@@ -494,3 +494,5 @@ export type EpisodeT = z.infer<typeof Episode>;
 export type ArcT = z.infer<typeof Arc>;
 export type ScheduledEventT = z.infer<typeof ScheduledEvent>;
 export type CitationT = z.infer<typeof Citation>;
+export type CaseStateT = z.infer<typeof CaseState>;
+export type TransitionTriggerT = z.infer<typeof TransitionTrigger>;

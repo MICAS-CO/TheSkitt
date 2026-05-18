@@ -1,69 +1,30 @@
-import {
-  useEncounter,
-  PHASE_ORDER,
-  scoreEncounter,
-  type EncounterPhase,
-} from '../../state/encounter';
+import { useEffect, useMemo, useState } from 'react';
+import { useSim, useRealTimeClock, scoreCase, type ScoreReport } from '../../state/sim';
 import type { CitationT } from '../../content/schema';
+import type { CaseRuntime, LogEntry } from '../../sim/kernel';
 
-interface EncounterScreenProps {
-  onExit: () => void;
-}
+type Phase =
+  | 'vignette'
+  | 'history'
+  | 'examination'
+  | 'investigations'
+  | 'differential'
+  | 'management'
+  | 'disposition'
+  | 'debrief';
 
-export function EncounterScreen({ onExit }: EncounterScreenProps) {
-  const phase = useEncounter((s) => s.phase);
-  const caseData = useEncounter((s) => s.caseData);
+const PHASE_ORDER: Phase[] = [
+  'vignette',
+  'history',
+  'examination',
+  'investigations',
+  'differential',
+  'management',
+  'disposition',
+  'debrief',
+];
 
-  if (!caseData) {
-    return (
-      <div className="enc">
-        <p>No case loaded.</p>
-        <button onClick={onExit}>Back</button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="enc">
-      <EncounterHeader onExit={onExit} />
-      <PhaseProgress phase={phase} />
-      <main className="enc__body">
-        {phase === 'vignette' && <VignettePhase />}
-        {phase === 'history' && <HistoryPhase />}
-        {phase === 'examination' && <ExaminationPhase />}
-        {phase === 'investigations' && <InvestigationsPhase />}
-        {phase === 'differential' && <DifferentialPhase />}
-        {phase === 'management' && <ManagementPhase />}
-        {phase === 'disposition' && <DispositionPhase />}
-        {phase === 'debrief' && <DebriefPhase />}
-      </main>
-      <PhaseFooter onExit={onExit} />
-    </div>
-  );
-}
-
-// ─── Header / progress / footer ──────────────────────────────────────────────
-
-function EncounterHeader({ onExit }: { onExit: () => void }) {
-  const c = useEncounter((s) => s.caseData)!;
-  return (
-    <header className="enc__head">
-      <div>
-        <div className="enc__head-title">{c.title}</div>
-        <div className="enc__head-meta">
-          {c.demographics.age_value} {c.demographics.age_unit} · {c.demographics.sex}
-          {c.demographics.weight_kg ? ` · ${c.demographics.weight_kg} kg` : ''} · triage{' '}
-          {c.triage_category}
-        </div>
-      </div>
-      <button className="enc__exit" onClick={onExit} aria-label="Exit encounter">
-        ← menu
-      </button>
-    </header>
-  );
-}
-
-const PHASE_LABELS: Record<EncounterPhase, string> = {
+const PHASE_LABELS: Record<Phase, string> = {
   vignette: 'Arrival',
   history: 'History',
   examination: 'Examination',
@@ -74,7 +35,205 @@ const PHASE_LABELS: Record<EncounterPhase, string> = {
   debrief: 'Debrief',
 };
 
-function PhaseProgress({ phase }: { phase: EncounterPhase }) {
+interface Props {
+  caseId: string;
+  onExit: () => void;
+}
+
+export function EncounterScreen({ caseId, onExit }: Props) {
+  // Subscribe to kernel ticks so the whole UI re-renders on changes
+  useSim((s) => s.tick);
+  const kernel = useSim((s) => s.kernel);
+
+  const [phase, setPhase] = useState<Phase>('vignette');
+  const cs = kernel?.getState().cases.get(caseId) ?? null;
+  const ks = kernel?.getState();
+  const isRunning = ks?.isRunning ?? false;
+  const isShiftOver = ks?.isShiftOver ?? false;
+
+  // Auto-jump to debrief when shift ends
+  useEffect(() => {
+    if (isShiftOver && phase !== 'debrief') setPhase('debrief');
+  }, [isShiftOver, phase]);
+
+  // Drive the real-time clock when running
+  useRealTimeClock(kernel, isRunning && !isShiftOver);
+
+  if (!kernel || !cs || !ks) {
+    return (
+      <div className="enc">
+        <p>No case loaded.</p>
+        <button onClick={onExit}>Back</button>
+      </div>
+    );
+  }
+
+  const idx = PHASE_ORDER.indexOf(phase);
+  const isFirst = phase === 'vignette';
+  const isDebrief = phase === 'debrief';
+  const cannotAdvance =
+    (phase === 'differential' && !cs.workingDx) || (phase === 'disposition' && !cs.disposition);
+
+  function next() {
+    if (idx < PHASE_ORDER.length - 1) setPhase(PHASE_ORDER[idx + 1]!);
+  }
+  function prev() {
+    if (idx > 0) setPhase(PHASE_ORDER[idx - 1]!);
+  }
+
+  return (
+    <div className="enc">
+      <EncounterHeader cs={cs} clockMin={ks.clockMin} state={cs.state} onExit={onExit} />
+      <ClockControls
+        clockMin={ks.clockMin}
+        shiftDurationMin={ks.shiftDurationMin}
+        isRunning={isRunning}
+        isShiftOver={isShiftOver}
+        onPlay={() => kernel.start()}
+        onPause={() => kernel.pause()}
+        onSkip={() => kernel.advance(1)}
+      />
+
+      <PhaseProgress phase={phase} />
+
+      <div className="enc__split">
+        <main className="enc__body">
+          {phase === 'vignette' && <VignettePhase cs={cs} />}
+          {phase === 'history' && (
+            <HistoryPhase cs={cs} onAsk={(id) => kernel.recordAsk(caseId, id)} />
+          )}
+          {phase === 'examination' && (
+            <ExaminationPhase cs={cs} onExamine={(s) => kernel.recordExamine(caseId, s)} />
+          )}
+          {phase === 'investigations' && (
+            <InvestigationsPhase
+              cs={cs}
+              clockMin={ks.clockMin}
+              onOrder={(id) => kernel.orderInvestigation(caseId, id)}
+            />
+          )}
+          {phase === 'differential' && (
+            <DifferentialPhase cs={cs} onChoose={(dx) => kernel.setWorkingDx(caseId, dx)} />
+          )}
+          {phase === 'management' && (
+            <ManagementPhase cs={cs} onToggle={(id) => kernel.toggleAction(caseId, id)} />
+          )}
+          {phase === 'disposition' && (
+            <DispositionPhase cs={cs} onChoose={(label) => kernel.setDisposition(caseId, label)} />
+          )}
+          {phase === 'debrief' && <DebriefPhase cs={cs} />}
+        </main>
+
+        <ShiftLog log={ks.log} />
+      </div>
+
+      <footer className="enc__foot">
+        <button onClick={prev} disabled={isFirst}>
+          ← back
+        </button>
+        {!isDebrief ? (
+          <button className="enc__primary" onClick={next} disabled={cannotAdvance}>
+            {phase === 'disposition' ? 'See debrief' : 'next →'}
+          </button>
+        ) : (
+          <button
+            className="enc__primary"
+            onClick={() => {
+              setPhase('vignette');
+              onExit();
+            }}
+          >
+            ← back to menu
+          </button>
+        )}
+      </footer>
+    </div>
+  );
+}
+
+// ─── Header / clock / progress / log ─────────────────────────────────────────
+
+function EncounterHeader({
+  cs,
+  clockMin,
+  state,
+  onExit,
+}: {
+  cs: CaseRuntime;
+  clockMin: number;
+  state: CaseRuntime['state'];
+  onExit: () => void;
+}) {
+  const d = cs.data.demographics;
+  return (
+    <header className="enc__head">
+      <div>
+        <div className="enc__head-title">
+          {cs.data.title} <span className={`enc__chip enc__chip--state-${state}`}>{state}</span>
+        </div>
+        <div className="enc__head-meta">
+          {d.age_value} {d.age_unit} · {d.sex}
+          {d.weight_kg ? ` · ${d.weight_kg} kg` : ''} · triage {cs.data.triage_category} · T+
+          {clockMin}m
+        </div>
+      </div>
+      <button className="enc__exit" onClick={onExit} aria-label="Exit encounter">
+        ← menu
+      </button>
+    </header>
+  );
+}
+
+function ClockControls({
+  clockMin,
+  shiftDurationMin,
+  isRunning,
+  isShiftOver,
+  onPlay,
+  onPause,
+  onSkip,
+}: {
+  clockMin: number;
+  shiftDurationMin: number;
+  isRunning: boolean;
+  isShiftOver: boolean;
+  onPlay: () => void;
+  onPause: () => void;
+  onSkip: () => void;
+}) {
+  const pct = Math.min(100, Math.round((clockMin / shiftDurationMin) * 100));
+  return (
+    <div className="enc__clock">
+      <div className="enc__clock-bar" aria-hidden>
+        <div className="enc__clock-bar-fill" style={{ width: `${pct}%` }} />
+      </div>
+      <div className="enc__clock-row">
+        <span className="enc__clock-text">
+          T+{clockMin}m / {shiftDurationMin}m {isShiftOver ? '· shift over' : ''}
+        </span>
+        <div className="enc__clock-buttons">
+          {!isRunning && !isShiftOver && (
+            <button onClick={onPlay} aria-label="Start shift">
+              ▶ start
+            </button>
+          )}
+          {isRunning && !isShiftOver && (
+            <button onClick={onPause} aria-label="Pause shift">
+              ❚❚ pause
+            </button>
+          )}
+          {!isShiftOver && (
+            <button onClick={onSkip} aria-label="Skip 1 minute">
+              +1m
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PhaseProgress({ phase }: { phase: Phase }) {
   const idx = PHASE_ORDER.indexOf(phase);
   return (
     <ol className="enc__progress">
@@ -88,46 +247,26 @@ function PhaseProgress({ phase }: { phase: EncounterPhase }) {
   );
 }
 
-function PhaseFooter({ onExit }: { onExit: () => void }) {
-  const phase = useEncounter((s) => s.phase);
-  const next = useEncounter((s) => s.next);
-  const prev = useEncounter((s) => s.prev);
-  const reset = useEncounter((s) => s.reset);
-  const wdx = useEncounter((s) => s.workingDiagnosis);
-  const disp = useEncounter((s) => s.dispositionPicked);
-
-  const isFirst = phase === 'vignette';
-  const isDebrief = phase === 'debrief';
-  const cannotAdvance = (phase === 'differential' && !wdx) || (phase === 'disposition' && !disp);
-
+function ShiftLog({ log }: { log: LogEntry[] }) {
   return (
-    <footer className="enc__foot">
-      <button onClick={prev} disabled={isFirst}>
-        ← back
-      </button>
-      {!isDebrief ? (
-        <button className="enc__primary" onClick={next} disabled={cannotAdvance}>
-          {phase === 'disposition' ? 'See debrief' : 'next →'}
-        </button>
-      ) : (
-        <button
-          className="enc__primary"
-          onClick={() => {
-            reset();
-            onExit();
-          }}
-        >
-          ← back to menu
-        </button>
-      )}
-    </footer>
+    <aside className="enc__log" aria-label="Shift log">
+      <h3 className="enc__log-title">Shift log</h3>
+      <ol className="enc__log-list">
+        {log.map((e, i) => (
+          <li key={i} className={`enc__log-entry enc__log-entry--${e.level}`}>
+            <span className="enc__log-time">T+{e.t_min}m</span>
+            <span>{e.text}</span>
+          </li>
+        ))}
+      </ol>
+    </aside>
   );
 }
 
 // ─── Phases ─────────────────────────────────────────────────────────────────
 
-function VignettePhase() {
-  const c = useEncounter((s) => s.caseData)!;
+function VignettePhase({ cs }: { cs: CaseRuntime }) {
+  const c = cs.data;
   return (
     <section className="enc__phase">
       <h2>Bay 2 — arrival</h2>
@@ -151,25 +290,25 @@ function VignettePhase() {
           </p>
         )}
       </details>
+      <p className="enc__hint">
+        Press ▶ start to begin the shift clock. Every minute counts — the patient is currently{' '}
+        <strong>{cs.state}</strong>.
+      </p>
     </section>
   );
 }
 
-function HistoryPhase() {
-  const c = useEncounter((s) => s.caseData)!;
-  const asked = useEncounter((s) => s.historyAsked);
-  const ask = useEncounter((s) => s.ask);
-
+function HistoryPhase({ cs, onAsk }: { cs: CaseRuntime; onAsk: (id: string) => void }) {
   return (
     <section className="enc__phase">
       <h2>History</h2>
       <p className="enc__hint">Tap a topic to ask. You can ask all of them.</p>
       <ul className="enc__cards">
-        {c.history.map((h) => {
-          const isAsked = asked.has(h.id);
+        {cs.data.history.map((h) => {
+          const isAsked = cs.asked.has(h.id);
           return (
             <li key={h.id} className={`enc__card ${isAsked ? 'is-revealed' : ''}`}>
-              <button className="enc__card-head" onClick={() => ask(h.id)} disabled={isAsked}>
+              <button className="enc__card-head" onClick={() => onAsk(h.id)} disabled={isAsked}>
                 <span className="enc__chip">{h.source.replace('_', ' ')}</span>
                 <span>{h.topic}</span>
               </button>
@@ -182,23 +321,19 @@ function HistoryPhase() {
   );
 }
 
-function ExaminationPhase() {
-  const c = useEncounter((s) => s.caseData)!;
-  const examined = useEncounter((s) => s.examined);
-  const examine = useEncounter((s) => s.examine);
-
+function ExaminationPhase({ cs, onExamine }: { cs: CaseRuntime; onExamine: (s: string) => void }) {
   return (
     <section className="enc__phase">
       <h2>Examination</h2>
       <p className="enc__hint">Select a system to examine.</p>
       <ul className="enc__cards">
-        {c.examination.map((e) => {
-          const isExamined = examined.has(e.system);
+        {cs.data.examination.map((e) => {
+          const isExamined = cs.examined.has(e.system);
           return (
             <li key={e.system} className={`enc__card ${isExamined ? 'is-revealed' : ''}`}>
               <button
                 className="enc__card-head"
-                onClick={() => examine(e.system)}
+                onClick={() => onExamine(e.system)}
                 disabled={isExamined}
               >
                 <span className="enc__chip">{e.system.replace('_', ' ')}</span>
@@ -223,28 +358,49 @@ function ExaminationPhase() {
   );
 }
 
-function InvestigationsPhase() {
-  const c = useEncounter((s) => s.caseData)!;
-  const ordered = useEncounter((s) => s.investigationsOrdered);
-  const order = useEncounter((s) => s.order);
-
+function InvestigationsPhase({
+  cs,
+  clockMin,
+  onOrder,
+}: {
+  cs: CaseRuntime;
+  clockMin: number;
+  onOrder: (id: string) => void;
+}) {
   return (
     <section className="enc__phase">
       <h2>Investigations</h2>
       <p className="enc__hint">
-        Order what you need. Results appear immediately (the shift clock arrives in Milestone 4).
+        Results come back after the turnaround. The clock keeps running — order what you need early.
       </p>
       <ul className="enc__cards">
-        {c.investigations.map((ix) => {
-          const isOrdered = ordered.has(ix.id);
+        {cs.data.investigations.map((ix) => {
+          const orderedAt = cs.ordered.get(ix.id);
+          const isOrdered = orderedAt !== undefined;
+          const isResulted = cs.resulted.has(ix.id);
+          const dueAt = orderedAt !== undefined ? orderedAt + ix.turnaround_min : null;
+          const remaining = dueAt !== null ? Math.max(0, dueAt - clockMin) : null;
           return (
-            <li key={ix.id} className={`enc__card ${isOrdered ? 'is-revealed' : ''}`}>
-              <button className="enc__card-head" onClick={() => order(ix.id)} disabled={isOrdered}>
+            <li
+              key={ix.id}
+              className={`enc__card ${isResulted ? 'is-revealed' : isOrdered ? 'is-pending' : ''}`}
+            >
+              <button
+                className="enc__card-head"
+                onClick={() => onOrder(ix.id)}
+                disabled={isOrdered}
+              >
                 <span className="enc__chip">{ix.category}</span>
                 <span>{ix.name}</span>
-                <span className="enc__chip enc__chip--muted">~{ix.turnaround_min} min</span>
+                <span className="enc__chip enc__chip--muted">
+                  {isResulted
+                    ? 'resulted'
+                    : isOrdered
+                      ? `pending (${remaining}m)`
+                      : `~${ix.turnaround_min} min`}
+                </span>
               </button>
-              {isOrdered && <pre className="enc__result">{ix.result_summary}</pre>}
+              {isResulted && <pre className="enc__result">{ix.result_summary}</pre>}
             </li>
           );
         })}
@@ -253,11 +409,7 @@ function InvestigationsPhase() {
   );
 }
 
-function DifferentialPhase() {
-  const c = useEncounter((s) => s.caseData)!;
-  const chosen = useEncounter((s) => s.workingDiagnosis);
-  const choose = useEncounter((s) => s.chooseDiagnosis);
-
+function DifferentialPhase({ cs, onChoose }: { cs: CaseRuntime; onChoose: (dx: string) => void }) {
   return (
     <section className="enc__phase">
       <h2>Differential — pick your working diagnosis</h2>
@@ -266,13 +418,13 @@ function DifferentialPhase() {
         the answer — but you should rule it out actively.
       </p>
       <ul className="enc__cards">
-        {c.differential.map((d) => {
-          const isPicked = chosen === d.diagnosis;
+        {cs.data.differential.map((d) => {
+          const isPicked = cs.workingDx === d.diagnosis;
           return (
             <li key={d.diagnosis} className={`enc__card ${isPicked ? 'is-revealed' : ''}`}>
               <button
                 className="enc__card-head enc__card-head--toggle"
-                onClick={() => choose(d.diagnosis)}
+                onClick={() => onChoose(d.diagnosis)}
                 data-picked={isPicked}
               >
                 <span className={`enc__chip enc__chip--${d.likelihood}`}>
@@ -289,24 +441,21 @@ function DifferentialPhase() {
   );
 }
 
-function ManagementPhase() {
-  const c = useEncounter((s) => s.caseData)!;
-  const picked = useEncounter((s) => s.managementPicked);
-  const toggle = useEncounter((s) => s.toggleManagement);
-
+function ManagementPhase({ cs, onToggle }: { cs: CaseRuntime; onToggle: (id: string) => void }) {
   return (
     <section className="enc__phase">
       <h2>Management — tick what you do</h2>
       <p className="enc__hint">
-        Some options are distractors. The debrief will score against the guideline.
+        Some options are distractors. Actions count immediately — the patient&rsquo;s state may
+        change.
       </p>
       <ul className="enc__cards">
-        {c.management.map((m) => {
-          const isPicked = picked.has(m.id);
+        {cs.data.management.map((m) => {
+          const isPicked = cs.actions.has(m.id);
           return (
             <li key={m.id} className={`enc__card ${isPicked ? 'is-picked' : ''}`}>
               <label className="enc__card-head enc__card-head--check">
-                <input type="checkbox" checked={isPicked} onChange={() => toggle(m.id)} />
+                <input type="checkbox" checked={isPicked} onChange={() => onToggle(m.id)} />
                 <span className="enc__chip">{m.category}</span>
                 <span>{m.name}</span>
               </label>
@@ -325,22 +474,24 @@ function ManagementPhase() {
   );
 }
 
-function DispositionPhase() {
-  const c = useEncounter((s) => s.caseData)!;
-  const chosen = useEncounter((s) => s.dispositionPicked);
-  const choose = useEncounter((s) => s.chooseDisposition);
-
+function DispositionPhase({
+  cs,
+  onChoose,
+}: {
+  cs: CaseRuntime;
+  onChoose: (label: string) => void;
+}) {
   return (
     <section className="enc__phase">
       <h2>Disposition — where does this patient go now?</h2>
       <ul className="enc__cards">
-        {c.disposition_options.map((d) => {
-          const isPicked = chosen === d.label;
+        {cs.data.disposition_options.map((d) => {
+          const isPicked = cs.disposition === d.label;
           return (
             <li key={d.label} className={`enc__card ${isPicked ? 'is-revealed' : ''}`}>
               <button
                 className="enc__card-head enc__card-head--toggle"
-                onClick={() => choose(d.label)}
+                onClick={() => onChoose(d.label)}
                 data-picked={isPicked}
               >
                 <span>{d.label}</span>
@@ -354,10 +505,9 @@ function DispositionPhase() {
   );
 }
 
-function DebriefPhase() {
-  const c = useEncounter((s) => s.caseData)!;
-  const state = useEncounter();
-  const score = scoreEncounter(state);
+function DebriefPhase({ cs }: { cs: CaseRuntime }) {
+  const score = useMemo<ScoreReport>(() => scoreCase(cs), [cs]);
+  const c = cs.data;
 
   return (
     <section className="enc__phase">
@@ -375,6 +525,9 @@ function DebriefPhase() {
           <li>
             Disposition appropriate: <strong>{score.dispositionCorrect ? 'yes' : 'no'}</strong>
           </li>
+          <li>
+            Final patient state: <strong>{cs.state}</strong>
+          </li>
           {score.mustNotDoChosen > 0 && (
             <li className="enc__score-warn">
               <strong>Patient safety:</strong> picked {score.mustNotDoChosen} trap action(s).
@@ -382,6 +535,17 @@ function DebriefPhase() {
           )}
         </ul>
       </div>
+
+      {cs.reasons.length > 0 && (
+        <>
+          <h3>What changed on the clock</h3>
+          <ul className="enc__pearls">
+            {cs.reasons.map((r, i) => (
+              <li key={i}>{r}</li>
+            ))}
+          </ul>
+        </>
+      )}
 
       <h3>Action-by-action</h3>
       <ul className="enc__breakdown">

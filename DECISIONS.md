@@ -4,6 +4,77 @@ Architectural notes and explicit trade-offs. Newest first.
 
 ---
 
+## D-012 · Simulation kernel is a plain TS class; React subscribes via tick counter
+
+**Date:** 2026-05-18
+
+`SimKernel` in `src/sim/kernel.ts` is a plain TS class — no React, no
+Zustand, no Phaser dependencies. Its single mutable field is the
+`KernelState` object; `subscribe(fn)` adds the fn to a Set of listeners
+that are called on every state change.
+
+React integration in `src/state/sim.ts` is deliberately minimal:
+
+```
+useSim store {
+  kernel: SimKernel | null,
+  unsub: (() => void) | null,
+  tick: number,
+}
+```
+
+When `init(kernel)` is called, the store subscribes to the kernel and
+increments `tick` on each notification. Components depend on `tick` via
+`useSim(s => s.tick)` to force re-render, then read state imperatively
+via `kernel.getState()`. This is simpler than mirroring the entire
+`KernelState` into Zustand (which would require shallow-copying Sets
+and Maps on every change) and avoids `useSyncExternalStore` selector
+memoization tax.
+
+Trade-off: any selector tied to a slice of kernel state will re-render
+on every tick. Acceptable for Milestone 4 with one case; if it becomes
+a perf issue in later milestones, switch to `useSyncExternalStore` with
+per-slice snapshots.
+
+## D-013 · Kernel always advances in whole minutes
+
+**Date:** 2026-05-18
+
+`kernel.advance(deltaMin)` accepts fractional minutes but the React
+real-time clock (`useRealTimeClock`) only ever calls it with integers.
+Two reasons:
+
+1. Scheduled events have integer `t_min` in the schema. Mixing integer
+   event times with sub-minute clock ticks invites off-by-one bugs in
+   the "fires in `(current, target]`" window logic.
+2. Tests stay readable: `advance(5)` "now T+5m" is more legible than
+   `advance(5.0001)`.
+
+If a future mechanic needs sub-minute resolution (e.g. defibrillation
+sequencing, RSI countdown), we'll introduce a `tickSeconds` API rather
+than relaxing this. The schema's `turnaround_min` and `t_min` remain
+the unit of currency.
+
+## D-014 · Logical clock, not wall clock
+
+**Date:** 2026-05-18
+
+The kernel never reads `Date.now()` or `performance.now()`. All time
+flows through `kernel.advance(deltaMin)`. The `useRealTimeClock` hook
+is the only thing that converts real-world milliseconds into kernel
+minutes, and it lives in the React adapter, not the kernel.
+
+This gives us:
+
+- Deterministic replay (drive a kernel by recorded `advance` calls and
+  player actions → identical state).
+- Trivial fast-forward in tests (just call `advance(100)`).
+- A clean future path to deterministic multiplayer / replays.
+
+The kernel does NOT own its own `setInterval` or `requestAnimationFrame`
+loop — that responsibility lives at the React boundary so the kernel
+remains a pure function over (state, input) → state.
+
 ## D-010 · Encounter scorer is a pure function; Zustand only holds state
 
 **Date:** 2026-05-18

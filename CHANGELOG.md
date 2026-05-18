@@ -4,6 +4,57 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Milestone 4 — Simulation kernel + episode shell on a shift clock
+
+- Add `src/sim/kernel.ts` — a pure, deterministic `SimKernel` class. Owns
+  `clockMin`, `unfiredEvents` (priority-sorted), `firedEventIds`, and
+  per-case `CaseRuntime` (state, actions, asked, examined, ordered,
+  resulted, workingDx, disposition, reasons, enteredAt). Public API:
+  `advance(deltaMin)`, `start()`, `pause()`, `enterCase()`,
+  `toggleAction()`, `recordAsk()`, `recordExamine()`,
+  `orderInvestigation()`, `setWorkingDx()`, `setDisposition()`,
+  `subscribe()`. No React, no Phaser, no Zustand inside.
+- Per-tick the kernel: fires due scheduled events in order → checks
+  every case's transitions (`action`, `finding`, `elapsed_min`,
+  `inaction_by`, `scheduled_event`) → resolves any ordered
+  investigations whose `turnaround_min` has elapsed → logs.
+- Add `src/state/sim.ts` — `useSim` Zustand store wrapping a kernel
+  reference with a `tick` counter to force component re-render; pure
+  `scoreCase` function (replaces the old per-store `scoreEncounter`);
+  `useRealTimeClock` rAF hook that drives `kernel.advance(whole minutes)`
+  at a configurable speed (default 1 sim-min / 3 real-sec → 20-min
+  shift in 60 real-sec).
+- Replace `src/state/encounter.ts` and `src/content/runtime.ts` with the
+  kernel-backed equivalents. Delete the old store.
+- Rewrite `src/ui/encounter/EncounterScreen.tsx` against the kernel:
+  - Header now includes a state chip (stable / deteriorating / arrested
+    / admitted / discharged colour-coded).
+  - New clock bar with shift progress, ▶ start / ❚❚ pause / +1 m skip
+    controls.
+  - Right sidebar: live shift log (info / warn / danger entries) from
+    the kernel, reverse-chronological.
+  - Investigations show order time and pending countdown; result reveals
+    when `turnaround_min` has elapsed (or a scheduled `results_back`
+    event fires).
+  - Debrief gains a "what changed on the clock" section reading the
+    kernel's `reasons` log per case.
+- Add `content/episodes/ep_anaphylaxis_solo.yaml` — single-case 20-minute
+  shift wrapping the anaphylaxis case with four scheduled events:
+  deterioration-if-not-adrenaline-by-T+5 (must-act mechanic), family
+  arrival at T+8, tryptase results back at T+10, bed-manager pressure
+  at T+15.
+- Add deps: `zustand` was already in (Milestone 3). No new runtime
+  deps for Milestone 4.
+- Add `tests/kernel.test.ts` (12 tests): clock advance, shift-over
+  clamp, scheduled-event firing, deterioration/no-deterioration paths,
+  investigation turnaround, terminal-state safety, subscribe/notify,
+  determinism cross-check between two kernels.
+- Replace `tests/encounter.test.ts` with `tests/scoring.test.ts` (5
+  tests) over the new `scoreCase` against real `CaseRuntime` instances
+  produced by the kernel.
+- Total 80 tests passing. Typecheck, ESLint, Prettier, validator
+  (3 cases / 2 episodes / 1 arc), prod build all green.
+
 ### Milestone 3 — First end-to-end playable case (adult anaphylaxis)
 
 - Author the adult peanut anaphylaxis case end-to-end against Resus Council
