@@ -4,6 +4,40 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Milestone 3 — First end-to-end playable case (adult anaphylaxis)
+
+- Author the adult peanut anaphylaxis case end-to-end against Resus Council
+  UK 2021 (updated 2024) and NICE CG134. Every clinical claim carries an
+  inline citation; no `# TODO: verify` markers remain. Includes diagnostic
+  criteria, three-sample tryptase timing, Pumphrey posture trap, refractory
+  IV-infusion definition, biphasic risk-stratified observation, and four
+  explicit `must_not_do` examiner-trap actions (chlorphenamine first-line,
+  IV hydrocortisone first-line, sit-upright while hypotensive, fourth IM
+  dose in refractory anaphylaxis).
+- Add `zustand` (^5.0) for encounter state.
+- Add `src/state/encounter.ts` — Zustand store with phase machine
+  (vignette → history → examination → investigations → differential →
+  management → disposition → debrief) and pure `scoreEncounter` function
+  (must-do hit rate · working diagnosis · disposition · safety penalty
+  for `must_not_do` picks → percent + band: excellent/good/borderline/
+  unsafe).
+- Add `src/content/runtime.ts` — browser-side YAML loader using Vite
+  `?raw` imports; parses and schema-validates a case at runtime.
+- Add `src/ui/encounter/EncounterScreen.tsx` — full encounter UI with
+  a phase progress strip, distinct screens per phase, and a debrief that
+  scores action-by-action against the case YAML and lists pearls,
+  pitfalls, and clickable source citations.
+- Rewire `src/App.tsx` to a tiny menu router (`menu` | `encounter` |
+  `hub`) so the ED hub from Milestone 1 stays accessible while the
+  encounter is the primary entry point.
+- Extend `src/styles.css` with menu, encounter, progress, card, and
+  debrief styles. Dark, monospace, diegetic-ish.
+- Add `tests/encounter.test.ts` — 5 tests for `scoreEncounter` (perfect
+  run, must_not_do detection, disposition correctness, missed must_do,
+  empty run). Loads the real authored YAML to keep the test honest.
+- Test count now 68 / 68 passing; typecheck, lint, format, validator,
+  build, and dev-server YAML serving all verified.
+
 ### Milestone 2 — Content schemas + validator
 
 - Add `zod` (^4.4) and `yaml` (^2.9) runtime deps; `tsx` and `@types/node` dev.

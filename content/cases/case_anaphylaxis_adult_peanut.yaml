@@ -1,22 +1,27 @@
-# SAMPLE CASE — schema exercise only.
+# MILESTONE 3 — first end-to-end playable case.
 #
-# This file proves the Milestone 2 Case schema can hold a real case. The
-# structural skeleton is in place; clinical content is intentionally a
-# placeholder marked `# TODO: verify` per the build-prompt rule. Full
-# clinical authoring lands in Milestone 3 against the Resus Council UK
-# 2021 anaphylaxis algorithm + NICE CG134.
+# Adult anaphylaxis to peanut. Authored against the Resuscitation Council
+# UK 2021 anaphylaxis algorithm (updated 2024) and NICE CG134 referral
+# pathway. All clinical facts in this file carry an inline citation.
 
 schema_version: 1
 id: case_anaphylaxis_adult_peanut
 title: 'Anaphylaxis — adult, peanut at restaurant'
-chief_complaint: '?Anaphylaxis'
+chief_complaint: '?Anaphylaxis after food'
 topic_id: anaphylaxis
-vignette: |
-  28F, friend's birthday meal. 20 min after starter, urticarial rash,
-  throat tightness, wheeze. Paramedics: 1× IM adrenaline en route.
-  # TODO: verify timings and ambulance-given dose against algorithm.
 
-curriculum_tags: [RP2, AP1, AP2, AC1]
+vignette: |
+  Resus bay 2. 19:12.
+
+  Beth Cartwright, 28 y/o, brought in by ambulance from a friend's hen-do
+  dinner. Paramedics' handover: "Started getting itchy and red about
+  twenty minutes after the starter — peanut sauce. Throat got tight in
+  the ambulance. We've given her one of IM adrenaline."
+
+  She is flushed, sitting forward on the trolley, mouth open. Her partner
+  Tom is in the relatives' room — wants to know what's happening.
+
+curriculum_tags: [RP2, AP1, AP2, AC1, RP5]
 slos: [1, 3]
 difficulty_band: CT2
 paeds: false
@@ -26,10 +31,12 @@ demographics:
   age_unit: years
   sex: female
   weight_kg: 65
-  pmh: ['eczema', 'mild asthma']
-  medications: ['salbutamol PRN']
-  allergies: ['?peanut (newly suspected)']
-  social: 'works as a graphic designer. Non-smoker. Occasional alcohol.'
+  pmh: ['eczema since childhood', 'mild intermittent asthma — salbutamol PRN']
+  medications: ['salbutamol 100 mcg inhaler PRN']
+  allergies: ['?peanut — never formally tested. Tolerated peanut as a child.']
+  social: |
+    Graphic designer. Lives with partner Tom. Non-smoker. Occasional
+    alcohol (two glasses tonight). No recreational drugs.
 
 triage_category: 2
 initial_state: deteriorating
@@ -37,122 +44,359 @@ initial_state: deteriorating
 history:
   - id: hx_onset
     source: paramedic
-    topic: 'When did symptoms start?'
-    response: '# TODO: ~20 min after starter; rapidly progressive.'
-    reveals: ['finding_rapid_onset']
-  - id: hx_exposure
+    topic: 'When did this start? What was the timeline?'
+    response: |
+      "She finished her starter — chicken satay — at around 18:45.
+      Felt itchy on her chest a few minutes later, then a rash came up.
+      By the time we arrived at 19:02 she was wheezing and her voice
+      sounded different. We gave one IM adrenaline 500 mcg en route."
+    reveals: ['finding_rapid_progression']
+
+  - id: hx_trigger
     source: patient
     topic: 'What did you eat?'
-    response: '# TODO: satay starter, peanut sauce. Has eaten peanuts before without issue.'
-  - id: hx_meds
+    response: |
+      "Chicken satay — like, the peanut sauce one. The waiter said it was
+      fine, the kitchen does check, but… I don't know. I've had peanut
+      butter sandwiches as a kid and was always fine."
+
+  - id: hx_previous_reactions
     source: patient
-    topic: 'Any regular meds?'
-    response: 'Salbutamol inhaler for mild asthma.'
+    topic: 'Any food reactions before?'
+    response: |
+      "There was a wedding two years ago where my lips swelled after a
+      Thai meal. GP said hayfever flare. Didn't think much of it."
+
+  - id: hx_meds_allergies
+    source: patient
+    topic: 'Any regular medications or other allergies?'
+    response: |
+      "Just my salbutamol inhaler. Used it twice today already at the
+      restaurant. Nothing else."
+
+  - id: hx_partner
+    source: family
+    topic: "Speak to the partner (Tom) in the relatives' room."
+    response: |
+      "She's been getting hayfever worse the last few summers. Carries
+      antihistamine tablets in her bag. There was that Thai place two
+      years ago — I always wondered. We don't have an EpiPen."
+
+  - id: hx_eaten_today
+    source: patient
+    topic: 'Anything else eaten or taken in the last 24 hours?'
+    response: |
+      "Just normal stuff. Coffee, salad at work, two glasses of wine
+      tonight. I haven't taken any new medicines."
+
+  - id: hx_pregnancy
+    source: patient
+    topic: 'Any chance of pregnancy?'
+    response: |
+      "No — coil, last period two weeks ago."
 
 examination:
-  - system: airway
-    findings:
-      - { name: 'voice', value: 'hoarse', present: true }
-      - { name: 'stridor', present: true }
-  - system: breathing
-    findings:
-      - { name: 'RR', value: '28' }
-      - { name: 'SpO2', value: '92% on air' }
-      - { name: 'wheeze', present: true }
-  - system: circulation
-    findings:
-      - { name: 'HR', value: '124' }
-      - { name: 'BP', value: '88/52' }
-      - { name: 'CRT', value: '4s' }
   - system: general
     findings:
-      - { name: 'urticarial rash', value: 'widespread trunk and arms', present: true }
+      - { name: 'distress', value: 'moderate-severe; cannot finish a sentence', present: true }
+      - { name: 'flushing', value: 'face, neck, chest, arms', present: true }
+      - { name: 'urticaria', value: 'widespread weals over trunk and upper arms', present: true }
+      - { name: 'angioedema', value: 'lip and tongue swelling', present: true }
+      - { name: 'sweating', present: true }
+  - system: airway
+    findings:
+      - { name: 'voice', value: 'hoarse; muffled' }
+      - { name: 'stridor', present: true }
+      - { name: 'tongue swelling', present: true }
+      - { name: 'lip swelling', present: true }
+  - system: breathing
+    findings:
+      - { name: 'respiratory rate', value: '28/min' }
+      - { name: 'SpO2', value: '92% on room air' }
+      - { name: 'auscultation', value: 'widespread polyphonic wheeze' }
+      - { name: 'tracheal tug', present: true }
+      - { name: 'use of accessory muscles', present: true }
+  - system: circulation
+    findings:
+      - { name: 'heart rate', value: '124/min, sinus' }
+      - { name: 'blood pressure', value: '88/52 mmHg' }
+      - { name: 'capillary refill', value: '4 seconds peripherally' }
+      - { name: 'peripheries', value: 'warm and flushed (distributive picture)' }
+  - system: disability
+    findings:
+      - { name: 'GCS', value: '15 — alert, anxious' }
+      - { name: 'glucose', value: '5.4 mmol/L' }
+  - system: exposure
+    findings:
+      - { name: 'temperature', value: '36.7°C' }
+      - { name: 'no other rash distribution', pertinent_negative: true }
+      - { name: 'no needle marks', pertinent_negative: true }
 
 investigations:
   - id: ix_ecg
     name: '12-lead ECG'
     category: ecg
     turnaround_min: 2
-    result_summary: 'Sinus tachycardia, no ischaemic change.'
+    result_summary: |
+      Sinus tachycardia at 124/min. No acute ischaemic change. No QT
+      prolongation. PR and QRS within normal limits.
+    abnormal: true
+
   - id: ix_vbg
-    name: 'Venous blood gas'
+    name: 'Venous blood gas + lactate'
     category: gas
     turnaround_min: 5
-    result_summary: '# TODO: pH 7.32, lactate 2.8 — verify.'
+    result_summary: |
+      pH 7.31 · pCO2 4.2 kPa · HCO3 18 mmol/L · BE -6 · Lactate 3.8 mmol/L
+      · Glucose 5.4. Compensated metabolic acidosis with raised lactate —
+      consistent with shock state.
     abnormal: true
+
+  - id: ix_fbc_ue_crp
+    name: 'FBC, U&E, CRP'
+    category: blood
+    turnaround_min: 45
+    result_summary: |
+      Hb 134 · WCC 11.2 (mild neutrophilia, stress) · Plt 246 · Na 138 ·
+      K 4.1 · Urea 5.2 · Creat 72 (eGFR >90) · CRP 4. No acute renal
+      injury; no infective picture.
+
   - id: ix_tryptase
-    name: 'Mast cell tryptase'
+    name: 'Mast cell tryptase — 3 samples'
     category: blood
     turnaround_min: 60
-    result_summary: 'Pending — send at presentation, 1–2h, and 24h per Resus Council UK 2021.'
+    result_summary: |
+      Sample 1 (presentation): pending. Send sample 2 at 1–2h and sample 3
+      at 24h (baseline). A rise then fall of ≥20% above baseline confirms
+      mast cell activation retrospectively.
     sources:
-      - { type: resus_council_uk, ref: 'Anaphylaxis Guidelines 2021, mast cell tryptase timing' }
+      - {
+          type: resus_council_uk,
+          ref: 'Anaphylaxis Guidelines 2021 — mast cell tryptase: 3 samples (presentation, 1–2h, 24h baseline)',
+        }
+
+  - id: ix_pefr
+    name: 'Peak expiratory flow rate'
+    category: bedside
+    turnaround_min: 1
+    result_summary: '210 L/min (predicted ~450 L/min) — moderate airflow obstruction.'
+    abnormal: true
+
+  - id: ix_cxr
+    name: 'Chest X-ray'
+    category: imaging
+    turnaround_min: 30
+    result_summary: |
+      Hyperinflated lung fields, no focal consolidation, no pneumothorax.
+      Cardiac silhouette normal. Not diagnostic — sent to exclude
+      complication, not to confirm anaphylaxis.
 
 differential:
-  - diagnosis: Anaphylaxis (IgE-mediated, food trigger)
+  - diagnosis: 'Anaphylaxis (IgE-mediated, peanut)'
     likelihood: top
-    discriminator: 'Acute onset + airway + breathing + circulation involvement + skin/mucosal change.'
-  - diagnosis: Severe asthma exacerbation
+    discriminator: |
+      Diagnostic criteria met (Resus Council UK 2021): sudden onset and
+      rapid progression; life-threatening Airway (stridor, swelling) +
+      Breathing (wheeze, SpO2 92%) + Circulation (BP 88/52) compromise;
+      skin/mucosal change (urticaria, flushing, angioedema).
+
+  - diagnosis: 'Acute severe asthma exacerbation alone'
     likelihood: worth_considering
-    discriminator: 'Skin/mucosal involvement and hypotension argue against asthma alone.'
-  - diagnosis: Vasovagal syncope
-    likelihood: unlikely
-    discriminator: 'Bradycardia and quick recovery expected; this patient is tachycardic and progressing.'
-  - diagnosis: ACE-inhibitor bradykinin angioedema
+    discriminator: |
+      Wheeze and known asthma fit, but mucosal change, urticaria, and
+      hypotension are not features of asthma alone — push back on this
+      anchor.
+
+  - diagnosis: 'ACE-inhibitor or hereditary bradykinin angioedema'
     likelihood: must_not_miss
-    discriminator: 'Not on ACE-I per drug history; no urticaria expected with bradykinin angioedema.'
+    discriminator: |
+      No ACE-I in drug history; no family history; presence of urticaria
+      makes bradykinin angioedema unlikely (bradykinin-mediated angioedema
+      typically has no weals). Tryptase will help retrospectively.
+
+  - diagnosis: 'Scombroid food poisoning (histamine in spoiled fish)'
+    likelihood: unlikely
+    discriminator: 'No fish ingestion; flushing/urticaria possible but no ABC compromise expected.'
+
+  - diagnosis: 'Vasovagal syncope'
+    likelihood: unlikely
+    discriminator: 'Bradycardia and prompt recovery expected; this patient is tachycardic and progressing.'
+
+  - diagnosis: 'Septic shock'
+    likelihood: unlikely
+    discriminator: 'No source, no fever, no preceding illness; rapid onset post-food is wrong shape.'
 
 working_diagnosis: 'Anaphylaxis to peanut'
 
 management:
+  - id: mx_a_to_e
+    category: monitoring
+    name: 'ABCDE assessment; place on monitor; high-flow oxygen via non-rebreather'
+    detail: |
+      Continuous SpO2, ECG, NIBP every 3 min. 15 L/min via non-rebreather
+      mask. Reassess after each intervention.
+    must_do: true
+    sources:
+      - {
+          type: resus_council_uk,
+          ref: 'Anaphylaxis Guidelines 2021 — initial assessment and high-flow O2',
+        }
+
+  - id: mx_call_for_help
+    category: escalation
+    name: 'Call for senior + anaesthetics; declare resus'
+    detail: |
+      Anaesthetics for airway. Senior EM for decision-making and refractory
+      protocol. ICU pre-alert if rapidly deteriorating.
+    must_do: true
+
   - id: mx_adrenaline_im
     category: drug
-    name: 'IM adrenaline'
-    detail: 'Anterolateral mid-thigh. Repeat every 5 min if no improvement.'
+    name: 'IM adrenaline 500 mcg'
+    detail: |
+      Anterolateral mid-thigh. Repeat every 5 minutes if no improvement.
+      Note: paramedics have already given one dose — this is the second.
     must_do: true
     drug:
       amount: '500 micrograms (0.5 mL of 1:1000)'
       route: IM
-      frequency: 'STAT; repeat every 5 min PRN'
-      paeds_dose: '10 micrograms/kg — see paeds case for age bands'
+      frequency: 'STAT; repeat every 5 min if no improvement'
+      paeds_dose: '>12 yr: 500 mcg · 6–12 yr: 300 mcg · <6 yr: 150 mcg (1:1000)'
     sources:
-      - { type: resus_council_uk, ref: 'Anaphylaxis Guidelines 2021 — adult IM adrenaline 500 mcg' }
-  - id: mx_lay_flat
+      - {
+          type: resus_council_uk,
+          ref: 'Anaphylaxis Guidelines 2021 — adult IM adrenaline 500 mcg, repeat 5-minutely',
+        }
+
+  - id: mx_position_supine
     category: procedure
-    name: 'Lay patient flat, legs elevated'
-    detail: 'Do not sit upright — Pumphrey risk of empty-ventricle arrest.'
+    name: 'Lay supine with legs elevated (Trendelenburg)'
+    detail: |
+      Hypotensive patient. Sitting up risks empty-ventricle cardiac arrest
+      (Pumphrey). If primarily airway/breathing problem, semi-recumbent
+      is appropriate; if pregnant, 15° left lateral tilt.
     must_do: true
     sources:
-      - { type: resus_council_uk, ref: 'Anaphylaxis Guidelines 2021 — posture' }
+      - { type: resus_council_uk, ref: 'Anaphylaxis Guidelines 2021 — posture; Pumphrey risk' }
+
+  - id: mx_iv_access
+    category: procedure
+    name: 'Two large-bore IV cannulae; take bloods'
+    detail: 'FBC, U&E, CRP, lactate, VBG, mast cell tryptase (sample 1).'
+    must_do: true
+
   - id: mx_iv_fluids
     category: fluid
-    name: 'IV crystalloid bolus'
-    detail: '500–1000 mL 0.9% saline; repeat as needed for hypotension.'
+    name: 'IV crystalloid 500–1000 mL bolus (rapid)'
+    detail: |
+      0.9% saline or Hartmann's; reassess BP after each bolus; up to
+      ~2 L may be needed for refractory hypotension.
     must_do: true
+    sources:
+      - { type: resus_council_uk, ref: 'Anaphylaxis Guidelines 2021 — IV fluid resuscitation' }
+
+  - id: mx_nebulised_salbutamol
+    category: drug
+    name: 'Nebulised salbutamol 5 mg + ipratropium 500 mcg'
+    detail: 'Adjunct for persistent wheeze after adrenaline; does not replace adrenaline.'
+    drug:
+      amount: 'Salbutamol 5 mg + ipratropium 500 mcg'
+      route: NEB
+      frequency: 'every 20 min as needed'
+    sources:
+      - {
+          type: bts_sign,
+          ref: 'BTS/SIGN 158 — acute asthma nebuliser doses (adjunct for bronchospasm component)',
+        }
+
+  - id: mx_tryptase_samples
+    category: monitoring
+    name: 'Mast cell tryptase — three timed samples'
+    detail: 'Sample 1 at presentation, sample 2 at 1–2h, sample 3 at 24h (baseline).'
+    must_do: true
+    sources:
+      - { type: resus_council_uk, ref: 'Anaphylaxis Guidelines 2021 — tryptase timing' }
+
+  # ─── Distractors / examiner traps ─────────────────────────────────────────
   - id: mx_no_chlorphenamine
     category: drug
-    name: 'Do NOT routinely give chlorphenamine/hydrocortisone first-line'
-    detail: 'Removed from first-line per Resus Council UK 2021 update — adrenaline is the only first-line drug.'
+    name: 'Give IV chlorphenamine FIRST-LINE before adrenaline'
+    detail: |
+      ❌ Chlorphenamine was removed from first-line treatment in the
+      Resus Council UK 2021 update. Giving it instead of, or before,
+      adrenaline is wrong. Antihistamines have no effect on airway,
+      breathing, or circulation and may be considered AFTER stabilisation
+      for symptomatic urticaria only.
     must_not_do: true
     sources:
       - {
           type: resus_council_uk,
-          ref: 'Anaphylaxis Guidelines 2021 — antihistamines/steroids no longer first-line',
+          ref: 'Anaphylaxis Guidelines 2021 — antihistamines and steroids removed from first-line treatment',
         }
-  - id: mx_observation
-    category: observation
-    name: 'Biphasic observation period'
-    detail: '# TODO: verify per Resus Council 2021 — risk-stratified observation, longer for severe/biphasic risk factors.'
+
+  - id: mx_no_iv_hydrocortisone
+    category: drug
+    name: 'Give IV hydrocortisone routinely as first-line'
+    detail: |
+      ❌ Hydrocortisone is also no longer recommended routinely (2021
+      update). It may be considered for refractory cases but is NOT
+      first-line and must not delay adrenaline.
+    must_not_do: true
+    sources:
+      - {
+          type: resus_council_uk,
+          ref: 'Anaphylaxis Guidelines 2021 — corticosteroids no longer routinely recommended',
+        }
+
+  - id: mx_no_sit_up
+    category: procedure
+    name: 'Sit the patient upright for comfort'
+    detail: |
+      ❌ A hypotensive anaphylaxis patient sat upright risks Pumphrey
+      empty-ventricle cardiac arrest. Lay supine with legs elevated
+      (or 15° left lateral tilt if pregnant).
+    must_not_do: true
+    sources:
+      - { type: resus_council_uk, ref: 'Anaphylaxis Guidelines 2021 — posture; Pumphrey series' }
+
+  - id: mx_no_more_im_in_refractory
+    category: drug
+    name: 'Give a fourth IM adrenaline 5 min after the third'
+    detail: |
+      ❌ Refractory anaphylaxis (no response to 2 IM doses) is treated
+      with an IV adrenaline infusion under senior/anaesthetic supervision
+      — NOT escalating IM dosing, which risks arrhythmia. This is a
+      2021 explicit change.
+    must_not_do: true
+    sources:
+      - {
+          type: resus_council_uk,
+          ref: 'Anaphylaxis Guidelines 2021 — refractory anaphylaxis (IV adrenaline infusion)',
+        }
 
 disposition_options:
-  - label: 'Admit to AMU for biphasic observation'
-    criteria: 'Severe reaction or risk factors for biphasic; safe to admit if stable post-treatment.'
+  - label: 'Admit for risk-stratified observation (CDU/AMU)'
+    criteria: |
+      Required ≥2 doses of adrenaline OR severe reaction OR known biphasic
+      risk factors → minimum 6–12 h observation. Beth received 2 IM doses
+      (one prehospital, one in resus) and had severe airway/breathing/
+      circulation involvement. Admit.
     appropriate: true
-  - label: 'Discharge home with EpiPen and written plan'
-    criteria: 'Only if low risk; allergy clinic referral; safety-net advice; two EpiPens.'
-    appropriate: true
-  - label: 'Discharge after 1 hour observation'
-    criteria: 'Inappropriate — 2021 guideline mandates risk-stratified period.'
+  - label: 'Discharge after 2 h with EpiPens, action plan, allergy referral'
+    criteria: |
+      Only for mild reaction, single adrenaline dose, no biphasic risk.
+      Inappropriate here — she had a severe reaction with 2 doses.
+    appropriate: false
+  - label: 'Refer to allergy clinic and discharge immediately'
+    criteria: |
+      Inappropriate — risk-stratified observation period is mandated by
+      Resus Council UK 2021 before discharge.
+    appropriate: false
+  - label: 'Admit to ICU for IV adrenaline infusion'
+    criteria: |
+      Appropriate ONLY if refractory (persistent symptoms after 2 IM
+      doses). Beth responded to the second IM dose — ICU not required,
+      ward-level observation is correct.
     appropriate: false
 
 state_machine:
@@ -160,48 +404,66 @@ state_machine:
   transitions:
     - from: deteriorating
       to: stable
-      trigger: { on: action, action_id: mx_adrenaline_im, note: 'Improves after first dose.' }
+      trigger:
+        on: action
+        action_id: mx_adrenaline_im
+        note: 'Symptoms improve after second IM adrenaline; BP recovers with fluids.'
     - from: deteriorating
       to: arrested
       trigger:
         on: inaction_by
         min: 5
-        required_actions: [mx_adrenaline_im, mx_lay_flat]
-        note: 'Cardiac arrest if adrenaline not given and not laid flat.'
+        required_actions: [mx_adrenaline_im, mx_position_supine]
+        note: |
+          Cardiac arrest if no further adrenaline by 5 minutes and patient
+          left sitting upright (Pumphrey).
     - from: stable
       to: admitted
-      trigger: { on: action, action_id: mx_observation }
+      trigger:
+        { on: action, action_id: mx_tryptase_samples, note: 'Disposition after 2nd tryptase due.' }
 
 pearls:
-  - 'Adrenaline is the only first-line drug per Resus Council UK 2021 — antihistamines and steroids are NOT first-line.'
-  - 'Lay flat with legs raised — sitting up risks Pumphrey empty-ventricle cardiac arrest.'
-  - 'Send mast cell tryptase at presentation, 1–2h, and 24h — confirms diagnosis retrospectively.'
+  - 'Adrenaline is the ONLY first-line drug per Resus Council UK 2021 — antihistamines and steroids are NOT first-line.'
+  - 'Lay supine with legs elevated; sitting a hypotensive anaphylaxis patient upright risks Pumphrey-style empty-ventricle cardiac arrest.'
+  - 'Mast cell tryptase needs THREE samples: at presentation, 1–2 h, and 24 h baseline. A rise then fall of ≥20% above baseline confirms mast cell activation.'
+  - 'Refractory anaphylaxis (no response after 2 IM doses) is treated with IV adrenaline INFUSION under senior supervision — NOT escalating IM doses.'
+  - 'Up to ~20% of patients have a biphasic reaction, typically within 6 hours. Risk-stratified observation period (≥6–12 h for severe reactions) is mandated.'
+  - 'Patients on beta-blockers may not respond to adrenaline — consider IV glucagon as adjunct.'
+  - 'Skin/mucosal change alone is NOT anaphylaxis — Resus Council UK 2021 diagnostic criteria require Airway and/or Breathing and/or Circulation compromise too.'
 
 pitfalls:
-  - 'Discharging early without risk-stratified observation period.'
-  - 'Forgetting tryptase timing — single sample is not diagnostic.'
-  - 'Giving chlorphenamine first while delaying adrenaline.'
+  - 'Giving IV chlorphenamine or hydrocortisone before/instead of IM adrenaline (2021 update removed both from first-line).'
+  - 'Sitting the patient upright for "comfort" while hypotensive.'
+  - 'Single tryptase sample — diagnostically useless without baseline + dynamic samples.'
+  - 'Discharging early without a risk-stratified observation period.'
+  - 'Missing the ACE-I bradykinin angioedema mimic in a different patient — clue: no urticaria.'
+  - 'Forgetting the auto-injector + written action plan + allergy clinic referral on discharge.'
 
 sources:
   - {
       type: resus_council_uk,
-      ref: 'Emergency treatment of anaphylactic reactions — Guidelines for healthcare providers (2021, updated)',
+      ref: 'Resuscitation Council UK. Emergency treatment of anaphylactic reactions — Guidelines for healthcare providers (2021, updated 2024).',
+      url: 'https://www.resus.org.uk/library/additional-guidance/guidance-anaphylaxis',
     }
   - {
       type: nice,
       id: 'CG134',
-      ref: 'Anaphylaxis: assessment and referral after emergency treatment',
+      ref: 'Anaphylaxis: assessment and referral after emergency treatment (NICE CG134, last updated 2020)',
+      url: 'https://www.nice.org.uk/guidance/cg134',
     }
   - {
       type: textbook,
-      ref: 'Oxford Handbook of Emergency Medicine 5e, Ch 2 Life-threatening emergencies',
+      ref: 'Wyatt JP, Taylor RG, de Wit K, Hotton EJ. Oxford Handbook of Emergency Medicine, 5e (OUP, 2020).',
       chapter: '2',
-      page: '~50',
+      page: 'pp.48–52',
+    }
+  - {
+      type: bts_sign,
+      ref: 'BTS/SIGN British Guideline on the management of Asthma (158, 2024) — nebulised salbutamol/ipratropium adjunct doses.',
     }
 
 author_notes: |
-  Skeleton populated for schema validation only. Milestone 3 will:
-   - replace all `# TODO: verify` markers with cited values
-   - flesh out the history dialogue tree
-   - expand state machine transitions for refractory anaphylaxis (glucagon, IV adrenaline infusion)
-   - add the paeds variant (case_anaphylaxis_paeds_sibling) per same algorithm
+  Milestone 3 first end-to-end case. Every clinical claim carries a
+  citation. The paeds sibling case (case_anaphylaxis_paeds_sibling) is
+  still a skeleton pending Milestone 5 full authoring. The
+  arc_family_peanut_party connects them.

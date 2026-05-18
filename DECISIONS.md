@@ -4,6 +4,50 @@ Architectural notes and explicit trade-offs. Newest first.
 
 ---
 
+## D-010 · Encounter scorer is a pure function; Zustand only holds state
+
+**Date:** 2026-05-18
+
+`scoreEncounter(state)` in `src/state/encounter.ts` is a pure function over
+the case data and the player's choices. It is exported separately from the
+Zustand store so the debrief can re-compute the report deterministically
+and tests can drive it without React. The Zustand store only owns the
+record of player choices; it never holds derived state.
+
+Score formula (Milestone 3 — deliberately simple, expected to evolve):
+
+```
+score = (mustDo_hit / mustDo_total) * 70
+      + (workingDxCorrect ? 15 : 0)
+      + (dispositionCorrect ? 15 : 0)
+      - (mustNotDo_picked * 20)
+clamp to [0, 100]
+```
+
+Any `must_not_do` action automatically downgrades the band to `unsafe`
+regardless of percentage. This matches the SAQ examiner instinct of "one
+unsafe answer fails the station". Will refine in Milestone 6 (proper
+debrief & scoring) once we have more cases to calibrate against.
+
+## D-011 · Browser YAML loading via Vite `?raw`
+
+**Date:** 2026-05-18
+
+The encounter UI imports case YAMLs as raw strings at build time:
+
+    import yamlText from '../../content/cases/foo.yaml?raw';
+
+Vite bundles them into the JS output. Pros: no runtime fetch, no path
+resolution issues, types stay tight via `vite/client`. Cons: each case
+ships in the main bundle today — fine for Milestone 3 (one case) but
+will need dynamic `import()` once we have multiple cases or any size
+pressure.
+
+`src/content/runtime.ts` exists separately from `src/content/loader.ts`
+because the latter uses `node:fs` (CLI validator only) and would fail
+in the browser. They share `src/content/schema.ts` as the single source
+of truth.
+
 ## D-008 · Zod + YAML for content; one schema file, no codegen
 
 **Date:** 2026-05-18
