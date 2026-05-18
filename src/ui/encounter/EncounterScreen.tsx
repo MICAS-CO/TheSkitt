@@ -66,6 +66,18 @@ export function EncounterScreen({
     if (isShiftOver && phase !== 'debrief') onPhaseChange('debrief');
   }, [isShiftOver, phase, onPhaseChange]);
 
+  // Escape returns to the board (unless editing a form control).
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key !== 'Escape') return;
+      const tag = (e.target as HTMLElement | null)?.tagName ?? '';
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return;
+      onBackToBoard();
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onBackToBoard]);
+
   if (!kernel || !cs || !ks) {
     return (
       <div className="enc">
@@ -87,18 +99,6 @@ export function EncounterScreen({
   function prev() {
     if (idx > 0) onPhaseChange(PHASE_ORDER[idx - 1]!);
   }
-
-  // Escape returns to the board (unless editing a form control).
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key !== 'Escape') return;
-      const tag = (e.target as HTMLElement | null)?.tagName ?? '';
-      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return;
-      onBackToBoard();
-    }
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onBackToBoard]);
 
   return (
     <div className="enc">
