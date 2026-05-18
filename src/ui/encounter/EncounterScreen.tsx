@@ -495,26 +495,36 @@ function InvestigationsPhase({
 }
 
 function DifferentialPhase({ cs, onChoose }: { cs: CaseRuntime; onChoose: (dx: string) => void }) {
+  const hasPicked = cs.workingDx !== null;
   return (
     <section className="enc__phase">
       <h2>Differential — pick your working diagnosis</h2>
       <p className="enc__hint">
-        Use the discriminator to test each. The &ldquo;must-not-miss&rdquo; item isn&rsquo;t always
-        the answer — but you should rule it out actively.
+        {hasPicked
+          ? 'Likelihood revealed. You can change your pick before moving on.'
+          : 'Use each discriminator to test the diagnosis. Likelihoods reveal once you choose.'}
       </p>
       <ul className="enc__cards">
         {cs.data.differential.map((d) => {
           const isPicked = cs.workingDx === d.diagnosis;
+          const isTop = d.likelihood === 'top';
           return (
-            <li key={d.diagnosis} className={`enc__card ${isPicked ? 'is-revealed' : ''}`}>
+            <li
+              key={d.diagnosis}
+              className={`enc__card ${isPicked ? 'is-revealed' : ''} ${
+                hasPicked && isTop ? 'enc__card--correct' : ''
+              } ${hasPicked && isPicked && !isTop ? 'enc__card--wrong' : ''}`}
+            >
               <button
                 className="enc__card-head enc__card-head--toggle"
                 onClick={() => onChoose(d.diagnosis)}
                 data-picked={isPicked}
               >
-                <span className={`enc__chip enc__chip--${d.likelihood}`}>
-                  {d.likelihood.replace('_', ' ')}
-                </span>
+                {hasPicked && (
+                  <span className={`enc__chip enc__chip--${d.likelihood}`}>
+                    {d.likelihood.replace('_', ' ')}
+                  </span>
+                )}
                 <span>{d.diagnosis}</span>
               </button>
               <p className="enc__card-body">{d.discriminator}</p>
@@ -566,22 +576,43 @@ function DispositionPhase({
   cs: CaseRuntime;
   onChoose: (label: string) => void;
 }) {
+  const hasPicked = cs.disposition !== null;
   return (
     <section className="enc__phase">
       <h2>Disposition — where does this patient go now?</h2>
+      <p className="enc__hint">
+        {hasPicked
+          ? 'Rationale revealed below. You can change your pick before going to debrief.'
+          : 'Pick the disposition you would document. Rationale is revealed once you choose.'}
+      </p>
       <ul className="enc__cards">
         {cs.data.disposition_options.map((d) => {
           const isPicked = cs.disposition === d.label;
+          const showRationale = hasPicked;
           return (
-            <li key={d.label} className={`enc__card ${isPicked ? 'is-revealed' : ''}`}>
+            <li
+              key={d.label}
+              className={`enc__card ${isPicked ? 'is-revealed' : ''} ${
+                showRationale && d.appropriate ? 'enc__card--correct' : ''
+              } ${showRationale && isPicked && !d.appropriate ? 'enc__card--wrong' : ''}`}
+            >
               <button
                 className="enc__card-head enc__card-head--toggle"
                 onClick={() => onChoose(d.label)}
                 data-picked={isPicked}
               >
                 <span>{d.label}</span>
+                {showRationale && (
+                  <span
+                    className={`enc__chip ${
+                      d.appropriate ? 'enc__chip--unlock' : 'enc__chip--red-flag'
+                    }`}
+                  >
+                    {d.appropriate ? 'appropriate' : 'inappropriate'}
+                  </span>
+                )}
               </button>
-              <p className="enc__card-body">{d.criteria}</p>
+              {showRationale && <p className="enc__card-body">{d.criteria}</p>}
             </li>
           );
         })}

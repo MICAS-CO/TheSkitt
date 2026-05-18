@@ -4,6 +4,25 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### UX: stop revealing answers in differential + disposition pickers
+
+The differential and disposition pickers were displaying the
+`likelihood` chip ("top" / "must-not-miss") and the disposition
+`criteria` text upfront, which is the answer key — the player could
+just pick whichever option was labelled "top" or whose criteria
+explicitly said "→ admit HDU". That breaks the assessment.
+
+- **Differential**: likelihood chip is now hidden until the player
+  picks their working diagnosis. After pick, the chip appears on
+  every option, plus a green "correct" border on the `top` option
+  and a red "wrong" border if the picked one isn't `top`.
+- **Disposition**: criteria body text is now hidden until the player
+  picks. After pick, criteria appears on every option with an
+  `appropriate` / `inappropriate` chip, green border on
+  `appropriate: true`, red on picked-but-`appropriate: false`.
+- Player can still change their pick before the "see debrief"
+  button — but they make the first pick blind, which is the test.
+
 ### UX: surface `red_flag` exam findings + backfill across cases
 
 - Schema: `ExamFinding.red_flag` was already a documented field but
