@@ -54,6 +54,35 @@ layout invariants (no overlaps, in-bounds, unique ids) without spinning up
 Phaser in jsdom, which is brittle. The same pattern will apply to case data
 in Milestone 2.
 
+## D-006 · Case schema mirrors the Kosoko chapter structure
+
+**Date:** 2026-05-18
+
+Kosoko (Obstetric Emergencies Case-Based Guide, Springer 2024) uses a strict
+per-chapter template — Case vignette → Past Hx → Meds/Allergies/Soc Hx →
+Physical Exam → Pertinent Diagnostic Tests → Differential → Working Diagnosis
+→ Management → Clinical Pearls — that is also how the RCEM SAQ format expects
+trainees to think (history → exam → ix → ddx → mx → debrief). The Milestone 2
+`Case` Zod schema will mirror this 1:1. Acceptance check: every Kosoko chapter
+must be re-expressible as a Case YAML without information loss.
+
+Additional required fields per build prompt §"Content model" — `curriculum_tags`
+(RCEM Clinical Syllabus codes), `slos` (1–12), `difficulty_band`
+(CT1/CT2/ST3/ST4–6), `sources` (typed citations), `pearls`, `pitfalls`,
+`state_machine` (stable/deteriorating/arrested/discharged/admitted with time-
+and-action transitions).
+
+## D-007 · First end-to-end case is anaphylaxis
+
+**Date:** 2026-05-18
+
+Picking anaphylaxis (codes RP2, AP1, AP2, AC1; SLOs 1, 3, 5) for the Milestone
+3 playable case. Rationale captured in `content/topic-map.yaml`
+`recommended_first_case`. Short version: cleanest end-to-end loop, single
+protocolised pathway (Resus Council UK 2021), adult and paeds variants share
+the same algorithm, strong examiner-trap material (biphasic reactions,
+upright-posture arrest per Pumphrey, ACE-I bradykinin angioedema mimic).
+
 ## D-005 · Vitest for unit; Playwright deferred
 
 **Date:** 2026-05-18
@@ -98,4 +127,21 @@ Concerns:
 - Purging from git history is a separate `git filter-repo` / BFG operation —
   do not undertake without explicit confirmation as it rewrites history.
 
-**Status:** awaiting decision. No destructive action taken.
+**Status:** under user management (per 2026-05-18 direction "I'll delete or
+move once you've finished processing them, let me worry about that").
+Claude has read the four book PDFs and the curriculum for topic calibration
+and source summaries (`content/sources/`) without reproducing substantive
+text. Once user moves/deletes the PDFs, the repo `.gitignore` already
+excludes `sources-local/` and `*.pdf` for the prettier config.
+
+## Q-002 · GitHub push permission
+
+The Claude integration backing this session lacks `contents: write` on
+`MICAS-CO/TheSkitt`. Both `git push` via the local proxy and
+`mcp__github__push_files` / `create_branch` return HTTP 403. The user
+precreated the working branch `claude/add-necessary-files-4THUA` on
+2026-05-18, which removed the need for `create_branch` but did **not**
+restore push permission. Until the integration's repo permissions include
+`contents: write`, work on this branch cannot land on GitHub.
+
+**Status:** awaiting permission grant. Commits accumulate locally.

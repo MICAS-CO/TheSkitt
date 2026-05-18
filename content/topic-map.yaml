@@ -1,18 +1,412 @@
-# Topic map — to be populated in Milestone 2/3.
+# The Skitt — high-yield topic map
 #
-# Purpose: a high-yield topic priority list informed by surveying RCEMLearning's
-# public module/podcast catalogue, RCEM SAQ blueprint signals, and FRCEM
-# examiner reports. Drives WHICH cases we author; does NOT contain
-# RCEMLearning content.
+# Drives WHICH cases we author. Maps each topic to the RCEM 2021 Clinical
+# Syllabus code(s), the SLO(s) it tests, the authoritative UK guideline source(s),
+# and a priority tier. Calibrated against:
+#   - RCEM Curriculum 2021 (v1.5, Aug 2025) — Clinical Syllabus pp.59–68; SLOs
+#     pp.10–58; assessment blueprint p.78 ("anything in the Clinical Syllabus
+#     can appear in formal examinations, and each of the relevant SLOs will be
+#     tested").
+#   - RCEMLearning public surface (FRCEM SBA blueprint, module catalogue) —
+#     used for topic-frequency calibration only. No content ingested.
+#   - Cross-checks: NICE guidance, Resus Council UK ALS/APLS/anaphylaxis 2021,
+#     BTS/SIGN, JBDS-IP, RCOG, ROCKET/Sepsis Six, NICE NG-series.
 #
-# Schema (sketch):
-#   topics:
-#     - id: anaphylaxis
-#       curriculum_tags: [SLO5, ResusGuidelines]
-#       priority: high
-#       rationale: "Frequent SAQ; protocolised; first-line learning win."
-#       sources:
-#         - { type: nice, id: "NG134" }
-#         - { type: resus_council_uk, ref: "Anaphylaxis 2021" }
+# Tier 1 = build first; clear decision tree, protocolised, high SAQ yield.
+# Tier 2 = SAQ favourite, second-wave cases.
+# Tier 3 = ambient board / future filler.
+#
+# Notes:
+#   - paeds: yes — topic has paeds-specific variant in the syllabus.
+#   - The 'arc_hooks' field flags narrative-link potential per build-prompt §
+#     "intersecting arcs". These are seeds, not commitments.
 
-topics: []
+version: 1
+generated: 2026-05-18
+generator: claude-opus-4.7 (manual synthesis from RCEM curriculum 2021 v1.5)
+source_calibration:
+  - id: rcem_curriculum_2021_v1_5
+    type: pdf
+    citation: 'Royal College of Emergency Medicine. Emergency Medicine 2021 Curriculum, v1.5, August 2025. Approved by GMC.'
+    sections_consulted: ['3.2 SLOs (pp.17–58)', '3.3 Clinical Syllabus (pp.59–68)', '5 Programme of Assessment (pp.75–82)']
+  - id: rcemlearning_public
+    type: web
+    citation: 'RCEMLearning public catalogue (https://www.rcemlearning.co.uk). Public-facing surface only. No member content used.'
+    note: 'Site returned 503 to automated fetch on 2026-05-18; topic calibration relied on search-indexed page titles and editorial pieces (e.g. "A Guide to Conquering the FRCEM SBA").'
+
+topics:
+  # ─── Tier 1 ───────────────────────────────────────────────────────────────
+  - id: anaphylaxis
+    label: Anaphylaxis
+    tier: 1
+    curriculum_codes: [RP2, AP1, AP2, AC1]
+    slos: [SLO1, SLO3, SLO5]
+    paeds: yes
+    rationale: 'Protocolised, single-pathway, clear time/dose decisions. Adult and paeds variants. Strong first end-to-end case (build-prompt milestone 3 candidate).'
+    sources:
+      - { type: resus_council_uk, ref: 'Anaphylaxis Guidelines 2021 (updated 2024)' }
+      - { type: nice, id: 'CG134' }
+      - { type: textbook, ref: 'Oxford Handbook of EM 5e, Ch 2 Life-threatening emergencies' }
+    arc_hooks: ['parent presenting with own anaphylaxis (familial atopy)', 'food-allergy paeds case where parent is in adjacent bay for unrelated cause']
+
+  - id: sepsis_adult
+    label: Adult sepsis / septic shock
+    tier: 1
+    curriculum_codes: [RP6, IP3]
+    slos: [SLO1, SLO3]
+    paeds: no
+    rationale: 'NICE NG51 + Sepsis Six bundle. SAQ classic. NEWS2 escalation maps cleanly to shift-clock mechanics.'
+    sources:
+      - { type: nice, id: 'NG51' }
+      - { type: rcem, ref: 'Best Practice — Septic Patient in the ED' }
+      - { type: nhs, ref: 'NEWS2 (RCP)' }
+    arc_hooks: ['source unclear — UTI vs pneumonia vs intra-abdominal; biliary case in adjacent bay turns out to be the source']
+
+  - id: stemi
+    label: STEMI / ACS
+    tier: 1
+    curriculum_codes: [CP1, CC1, CC2]
+    slos: [SLO1, SLO3]
+    paeds: no
+    rationale: 'PPCI pathway, door-to-balloon, dual antiplatelet decisions. UK pathway differs from US — important for FRCEM.'
+    sources:
+      - { type: nice, id: 'NG185' }
+      - { type: esc, ref: 'ESC ACS Guidelines 2023' }
+    arc_hooks: ['worried-relative arc: family member of the resus-bay STEMI is the one quietly deteriorating in minors']
+
+  - id: dka_adult
+    label: Diabetic ketoacidosis (adult)
+    tier: 1
+    curriculum_codes: [EnP2, EnC2]
+    slos: [SLO1, SLO3]
+    paeds: no
+    rationale: 'JBDS-IP protocolised. Fluid/K+/insulin timing maps to long-tail shift clock — patient evolves over hours.'
+    sources:
+      - { type: jbds, ref: 'JBDS-IP Management of DKA in Adults, 2023' }
+      - { type: nice, id: 'NG17' }
+    arc_hooks: ['new T1DM presentation in a young adult with concurrent UTI as trigger']
+
+  - id: stroke_tia
+    label: Acute stroke / TIA
+    tier: 1
+    curriculum_codes: [NeuC12, NeuP5, NeuP4]
+    slos: [SLO1, SLO3]
+    paeds: no
+    rationale: 'Thrombolysis window decisions, NIHSS, mimic exclusion. NICE NG128. ABCD2/HINTS exam features high-yield.'
+    sources:
+      - { type: nice, id: 'NG128' }
+      - { type: rcp, ref: 'National Clinical Guideline for Stroke 2023' }
+    arc_hooks: ['"funny turn" GP letter case in ambulatory turns out to be TIA; sentinel for next-day CVA']
+
+  - id: asthma_acute
+    label: Acute severe asthma
+    tier: 1
+    curriculum_codes: [ResC1, ResP2]
+    slos: [SLO1, SLO3, SLO5]
+    paeds: yes
+    rationale: 'BTS/SIGN 158 severity grading (moderate / acute severe / life-threatening / near-fatal). Clear escalation tree.'
+    sources:
+      - { type: bts_sign, ref: 'BTS/SIGN British Guideline 158 on Asthma 2024' }
+      - { type: nice, ref: 'NG244 (Asthma diagnosis, monitoring, chronic management)' }
+    arc_hooks: ['paeds asthma + parent with own COPD exacerbation in adjacent bay (shared trigger)']
+
+  - id: major_trauma
+    label: Major trauma (blunt / RTC pattern)
+    tier: 1
+    curriculum_codes: [RP4, TP1, TP3, TP4, TP5]
+    slos: [SLO1, SLO3, SLO4]
+    paeds: yes
+    rationale: 'ATLS primary/secondary survey. Trauma-team leadership. Massive haemorrhage protocol. RTC framing supports multi-patient arcs (build-prompt example: "two patients from same RTC with different injury patterns").'
+    sources:
+      - { type: nice, id: 'NG39 (Major trauma)' }
+      - { type: nice, id: 'NG40 (Fractures: complex)' }
+      - { type: rcem, ref: 'Major Haemorrhage in the ED' }
+      - { type: resus_council_uk, ref: 'ATLS / European Trauma Course principles' }
+    arc_hooks: ['SHARED-INCIDENT ARC: driver in resus, passenger in majors, child in paeds — different injury patterns from one RTC. Family identity reveals over time.']
+
+  - id: status_epilepticus
+    label: Status epilepticus
+    tier: 1
+    curriculum_codes: [NeuP3, NeuC3]
+    slos: [SLO1, SLO3, SLO5]
+    paeds: yes
+    rationale: 'Time-critical (>5 min seizure = status), benzo → levetiracetam/phenytoin → RSI. Paeds dose-by-weight. APLS algorithm.'
+    sources:
+      - { type: nice, id: 'NG217 (Epilepsies in children, young people and adults)' }
+      - { type: resus_council_uk, ref: 'APLS / EPALS' }
+    arc_hooks: ['febrile convulsion in paeds with concerned parent; first seizure of life in adult with hidden alcohol withdrawal']
+
+  - id: head_injury
+    label: Head injury
+    tier: 1
+    curriculum_codes: [TP1, NeuC11]
+    slos: [SLO1, SLO3, SLO4, SLO5]
+    paeds: yes
+    rationale: 'NICE NG232 CT head decision rules — Canadian CT Head / NICE criteria. Anticoagulated patient nuance. Paeds variant differs.'
+    sources:
+      - { type: nice, id: 'NG232' }
+    arc_hooks: ['minor fall in elderly on DOAC — looks well but on anticoag → CT decision', 'NAI consideration in paeds head injury (safeguarding arc)']
+
+  # ─── Tier 2 ───────────────────────────────────────────────────────────────
+  - id: pe
+    label: Pulmonary embolism
+    tier: 2
+    curriculum_codes: [ResC10, CP2]
+    slos: [SLO1, SLO3]
+    paeds: no
+    rationale: 'Wells score / PERC / age-adjusted D-dimer / CTPA. SAQ favourite. Massive PE → thrombolysis decision.'
+    sources:
+      - { type: nice, id: 'NG158' }
+      - { type: bts, ref: 'BTS Guideline for the initial outpatient management of PE 2018' }
+    arc_hooks: ['post-op patient or pregnancy-related PE (links to O&G arc)']
+
+  - id: pre_eclampsia_eclampsia
+    label: Pre-eclampsia / eclampsia
+    tier: 2
+    curriculum_codes: [ObC11, ObC6]
+    slos: [SLO1, SLO3, SLO4]
+    paeds: no
+    rationale: 'Magnesium loading + labetalol/nifedipine. HELLP overlap. SAQ classic. Maternal collapse decision (peri-mortem CS at 4 min).'
+    sources:
+      - { type: nice, id: 'NG133' }
+      - { type: rcog, ref: 'Green-top Guideline 10A (Severe pre-eclampsia/eclampsia management)' }
+    arc_hooks: ['pregnant patient with seizures presenting as "first fit" — true diagnosis hidden by ambulance handover error']
+
+  - id: ectopic_pregnancy
+    label: Ectopic pregnancy
+    tier: 2
+    curriculum_codes: [ObC4, ObP1, ObP2]
+    slos: [SLO1, SLO3]
+    paeds: no
+    rationale: 'βhCG + TV-USS pathway. Ruptured ectopic → resus. "Cannot miss" SAQ.'
+    sources:
+      - { type: nice, id: 'NG126' }
+      - { type: rcog, ref: 'Green-top Guideline 21 (Tubal Ectopic Pregnancy)' }
+    arc_hooks: ['young woman with "PV bleeding" in minors deteriorating while clinician is in resus — classic build-prompt example']
+
+  - id: paeds_dka
+    label: Paediatric DKA
+    tier: 2
+    curriculum_codes: [EnC2, GC3]
+    slos: [SLO1, SLO3, SLO5]
+    paeds: yes
+    rationale: 'BSPED 2020 — distinct from adult: cautious fluids (cerebral oedema risk), insulin start at 1 hour, no bolus unless shocked.'
+    sources:
+      - { type: bsped, ref: 'BSPED Paediatric DKA Guideline 2020' }
+    arc_hooks: ['first presentation with delayed diagnosis (vomiting initially attributed to gastro)']
+
+  - id: bronchiolitis
+    label: Bronchiolitis
+    tier: 2
+    curriculum_codes: [ResC2, ResC11]
+    slos: [SLO5]
+    paeds: yes
+    rationale: 'NICE NG9. Winter pressure case. Saturation/work-of-breathing/feeding triad for admission.'
+    sources:
+      - { type: nice, id: 'NG9' }
+    arc_hooks: []
+
+  - id: croup
+    label: Croup
+    tier: 2
+    curriculum_codes: [EC1, RC2]
+    slos: [SLO5]
+    paeds: yes
+    rationale: 'Westley score, dex 0.15 mg/kg PO, nebulised adrenaline for moderate-severe. Differential: epiglottitis, FB, anaphylaxis, bacterial tracheitis.'
+    sources:
+      - { type: nice_cks, ref: 'NICE CKS Croup' }
+    arc_hooks: ['differential reveal: was actually inhaled FB (bay 4 sibling with same exposure)']
+
+  - id: mental_health_acute
+    label: Acute behavioural disturbance / mental health crisis
+    tier: 2
+    curriculum_codes: [MHP1, MHP4, MHP5, MHC8]
+    slos: [SLO1, SLO7]
+    paeds: yes
+    rationale: 'MHA assessment, MCA capacity, rapid tranquilisation, suicide risk. SLO7 (complex situations) and SLO1 explicit on this.'
+    sources:
+      - { type: nice, id: 'NG10 (Violence and aggression)' }
+      - { type: rcem, ref: 'Mental Health in the ED — RCEM Best Practice' }
+      - { type: legislation, ref: 'Mental Health Act 1983 (s.5/4/2/3); Mental Capacity Act 2005' }
+    arc_hooks: ['frequent flyer with self-harm becomes the deteriorating patient if neglected — build-prompt explicit example']
+
+  - id: paracetamol_od
+    label: Paracetamol overdose
+    tier: 2
+    curriculum_codes: [PhP2, PhC1]
+    slos: [SLO1, SLO3]
+    paeds: yes
+    rationale: 'Single timed level vs staggered. SNAP / 12-hr NAC. TOXBASE pathway.'
+    sources:
+      - { type: toxbase, ref: 'TOXBASE Paracetamol monograph' }
+      - { type: nice_cks, ref: 'NICE CKS Poisoning or overdose' }
+      - { type: rcem, ref: 'RCEM Best Practice — Paracetamol Overdose' }
+    arc_hooks: ['staggered OD in apparently-well teenager — disposition decision is the test']
+
+  - id: aortic_dissection
+    label: Aortic dissection
+    tier: 2
+    curriculum_codes: [CC7, CP1]
+    slos: [SLO1, SLO3]
+    paeds: no
+    rationale: 'Cannot-miss. ADD-RS score. Tearing pain, BP differential, mediastinal widening. CT angio gating.'
+    sources:
+      - { type: rcem, ref: 'RCEM Best Practice — Aortic Dissection (2023)' }
+      - { type: esc, ref: 'ESC Aortic Diseases Guideline 2024' }
+    arc_hooks: ['"chest pain — ?ACS" case where the ECG is unhelpful — diagnostic anchor breaker']
+
+  - id: cauda_equina
+    label: Cauda equina syndrome
+    tier: 2
+    curriculum_codes: [MuC1, MuP1]
+    slos: [SLO1]
+    paeds: no
+    rationale: 'Red-flag back pain. MRI gating. Time-critical surgical referral.'
+    sources:
+      - { type: nice_cks, ref: 'NICE CKS Sciatica (lumbar radiculopathy)' }
+      - { type: rcem, ref: 'RCEM Best Practice — Cauda Equina' }
+    arc_hooks: []
+
+  - id: necrotising_fasciitis
+    label: Necrotising fasciitis
+    tier: 2
+    curriculum_codes: [DC6, IP3]
+    slos: [SLO1, SLO3]
+    paeds: no
+    rationale: 'Pain-out-of-proportion. LRINEC score. Time-critical surgical debridement + broad-spectrum abx.'
+    sources:
+      - { type: rcem, ref: 'RCEM Best Practice — Necrotising Soft Tissue Infections' }
+    arc_hooks: []
+
+  - id: testicular_torsion
+    label: Testicular torsion
+    tier: 2
+    curriculum_codes: [UC5, UP4]
+    slos: [SLO1]
+    paeds: yes
+    rationale: 'Time-critical (6h salvage window). Clinical diagnosis — do not delay for USS.'
+    sources:
+      - { type: rcem, ref: 'RCEM Best Practice — Testicular Torsion' }
+    arc_hooks: []
+
+  - id: acute_glaucoma
+    label: Acute angle-closure glaucoma
+    tier: 2
+    curriculum_codes: [OptC1, OptP3, OptP5]
+    slos: [SLO1]
+    paeds: no
+    rationale: 'Sight-threatening. IOP, anti-glaucoma drops, IV acetazolamide, urgent ophthal referral.'
+    sources:
+      - { type: nice_cks, ref: 'NICE CKS Glaucoma' }
+    arc_hooks: []
+
+  - id: hyperkalaemia
+    label: Hyperkalaemia
+    tier: 2
+    curriculum_codes: [NepP1, NepC3]
+    slos: [SLO1, SLO3]
+    paeds: no
+    rationale: 'ECG changes → calcium gluconate stabilisation → insulin/dextrose → salbutamol. UK Renal Association protocolised.'
+    sources:
+      - { type: renal_assoc, ref: 'UK Renal Association — Hyperkalaemia 2023' }
+    arc_hooks: []
+
+  - id: co_poisoning
+    label: Carbon monoxide poisoning
+    tier: 2
+    curriculum_codes: [PhC2, RP5]
+    slos: [SLO1]
+    paeds: yes
+    rationale: 'Non-specific symptoms ("flu", headache). CO oximetry. Hyperbaric referral criteria. Shared-source potential (household / workplace).'
+    sources:
+      - { type: rcem, ref: 'RCEM Best Practice — Carbon Monoxide Poisoning' }
+    arc_hooks: ['SHARED-SOURCE ARC: multiple family members from same household present separately over the shift']
+
+  # ─── Tier 3 ───────────────────────────────────────────────────────────────
+  - id: hyperemesis_gravidarum
+    label: Hyperemesis gravidarum
+    tier: 3
+    curriculum_codes: [ObC8]
+    slos: [SLO1]
+    paeds: no
+    sources: [{ type: rcog, ref: 'Green-top Guideline 69 (Nausea and Vomiting of Pregnancy and Hyperemesis Gravidarum)' }]
+    arc_hooks: ['hidden ectopic / molar pregnancy revealed by βhCG anomaly']
+
+  - id: paeds_febrile_convulsion
+    label: Febrile convulsion
+    tier: 3
+    curriculum_codes: [NeuC3]
+    slos: [SLO5]
+    paeds: yes
+    sources: [{ type: nice_cks, ref: 'NICE CKS Febrile seizure' }]
+    arc_hooks: []
+
+  - id: alcohol_withdrawal
+    label: Alcohol withdrawal / DTs
+    tier: 3
+    curriculum_codes: [GC1, MHC1, NeuC4]
+    slos: [SLO1, SLO7]
+    paeds: no
+    sources:
+      - { type: nice, id: 'CG100' }
+      - { type: rcem, ref: 'RCEM Best Practice — Alcohol Withdrawal' }
+    arc_hooks: ['frequent flyer who is actually developing Wernicke or SAH this time']
+
+  - id: nai_safeguarding
+    label: Non-accidental injury / safeguarding
+    tier: 3
+    curriculum_codes: [SaC1, SaC4, XC3]
+    slos: [SLO5, SLO7]
+    paeds: yes
+    sources:
+      - { type: nice, id: 'CG89 (When to suspect child maltreatment)' }
+      - { type: rcpch, ref: 'Child Protection Companion (RCPCH)' }
+    arc_hooks: ['HIDDEN-IDENTITY ARC: presenting injury inconsistent with mechanism; parent in adjacent bay with DV markers']
+
+  - id: sickle_cell_crisis
+    label: Sickle cell crisis
+    tier: 3
+    curriculum_codes: [HC8]
+    slos: [SLO1, SLO3]
+    paeds: yes
+    sources: [{ type: nice, id: 'NG143 (Sickle cell disease: managing acute painful episodes in hospital)' }]
+    arc_hooks: []
+
+  - id: hypoglycaemia
+    label: Hypoglycaemia
+    tier: 3
+    curriculum_codes: [EnP3]
+    slos: [SLO1, SLO3, SLO5]
+    paeds: yes
+    sources: [{ type: trend_uk, ref: 'TREND-UK Hypoglycaemia guidance' }]
+    arc_hooks: ['"intoxicated" patient who is actually hypoglycaemic — diagnostic-anchor trap']
+
+  - id: major_incident
+    label: Major incident / mass casualty
+    tier: 3
+    curriculum_codes: [XC1, XC2]
+    slos: [SLO1, SLO4, SLO8]
+    paeds: yes
+    sources: [{ type: nhs, ref: 'NHS EPRR Concept of Operations — Mass Casualty Incidents' }]
+    arc_hooks: ['frame an entire episode as the MAJAX call — every focus case is from the incident']
+
+# ─── Recommended first end-to-end case (build-prompt milestone 3) ────────────
+recommended_first_case:
+  id: anaphylaxis
+  rationale: |
+    Cleanest end-to-end loop of any candidate:
+      - Protocolised single-pathway management (Resus Council UK 2021) keeps
+        the decision tree tight enough to author fully in one milestone.
+      - IM adrenaline timing is a clear clock-driven mechanic.
+      - History → exam → ix → mx → debrief all fit cleanly into the
+        per-encounter loop without leaning on the simulation kernel.
+      - Adult and paeds doses both exist in the same algorithm — opens
+        SLO5 variant for milestone 5 without re-authoring.
+      - Maps to SLO1, SLO3, SLO5; codes RP2, AP1, AP2, AC1.
+      - Strong examiner-trap material: biphasic reactions, cardiac arrest
+        in upright posture (Pumphrey), refractory case glucagon, ACE-I
+        bradykinin angioedema mimic.
+  defer_after_milestone_3:
+    - sepsis_adult     # better second case — NEWS2 + Sepsis Six tests the simulation kernel
+    - paeds_dka        # good first paeds, links to safeguarding arc
+    - major_trauma     # earliest natural fit for the RTC shared-incident arc
