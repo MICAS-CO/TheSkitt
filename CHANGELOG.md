@@ -4,6 +4,49 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Milestone 8 — Ambient board pressure (stretch)
+
+- Author two ambient cases for the hen-do shift:
+  - `case_intox_stan_ambient.yaml` — 58y/o frequent flyer, smells of
+    alcohol, looks like "the usual". Underneath: hypoglycaemia
+    (BM 2.4) + witnessed head injury → CT head indication per NICE
+    NG232 (GCS <13 within 1 h). Trap: anchoring on alcohol.
+    Authored against NICE NG232, NICE CG100, TREND-UK hypoglycaemia,
+    RCEM Best Practice and Oxford Handbook 5e Ch 14. Three
+    `must_not_do` traps (leave in side room, oral glucose with
+    reduced GCS, missing head injury workup).
+  - `case_chest_pain_patel_ambient.yaml` — 72y/o stoic woman in the
+    waiting room, daughter says "it's just indigestion".
+    Anterior STEMI hiding behind family framing. Authored against
+    NICE NG185 with the 10-minute ECG target, 300 mg aspirin load,
+    primary PCI pathway, oxygen-only-if-SpO2-<94% rule. Three
+    `must_not_do` traps (routine oxygen, default thrombolysis
+    without PCI discussion, discharge as reflux).
+- Wire both ambient cases into `ep_hendo_shift.yaml` with four new
+  scheduled events:
+  - T+8 Mrs Patel NEWS2 escalation
+  - T+10 Stan NEWS2 escalation
+  - T+14 Mrs Patel arrest if no ECG + no aspirin
+  - T+15 Stan arrest if no BM check + no dextrose
+  → four time-critical mechanics on one 20-minute clock, in addition
+  to Beth's T+5 and Sarah's T+16 events.
+- `scoreEpisode` now splits the report into `cases` (focus) and
+  `ambientCases`. Ambient deaths count as lives lost, ambient bands
+  count toward `unsafeCases`. The percent and band aggregation
+  includes both case sets.
+- UI: shift board now renders **Focus cases** and **Ambient board**
+  as separate sections with distinct heading hierarchy and a subtle
+  `ambient` tag on each ambient card. Ambient cards dim when stable
+  and reset to full opacity when deteriorating or arrested.
+- Episode debrief panels both focus and ambient cases in their own
+  sections (same per-case card UI).
+- Tests (`tests/ambient.test.ts`, 7 tests): ambient cases listed in
+  episode, Stan arrests-if-neglected, Stan-saved-if-actioned, Mrs
+  Patel arrests-if-neglected, Mrs Patel-saved-if-actioned,
+  `scoreEpisode` separates the two groups, ambient deaths count as
+  lives lost.
+- **107 / 107** tests passing. All gates green.
+
 ### Milestone 7 — Content ingestion CLI
 
 - Add `scripts/new-case.ts` (`pnpm new-case`) — generates a Case YAML

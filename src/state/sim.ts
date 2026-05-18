@@ -172,7 +172,10 @@ export interface EpisodeReport {
   shiftEnded: boolean;
   clockMin: number;
   shiftDurationMin: number;
+  /** Episode focus cases (the player is expected to take these end-to-end). */
   cases: PerCaseReport[];
+  /** Ambient board cases — board pressure (Milestone 8). */
+  ambientCases: PerCaseReport[];
   arcs: PerArcReport[];
   livesSaved: number;
   livesLost: number;
@@ -181,7 +184,7 @@ export interface EpisodeReport {
   overallPercent: number;
   band: 'excellent' | 'good' | 'borderline' | 'unsafe';
   examinerNotes: string[];
-  /** Aggregated, de-duplicated source citations across all focus cases. */
+  /** Aggregated, de-duplicated source citations across all cases. */
   sources: CitationT[];
 }
 
@@ -194,32 +197,41 @@ const LIFE_SAVED_STATES: ReadonlySet<CaseStateT> = new Set<CaseStateT>([
 ]);
 
 export function scoreEpisode(ks: KernelState): EpisodeReport {
-  const focusIds = new Set(ks.episode.focus_cases);
-  const focusCases: CaseRuntime[] = [];
-  for (const id of focusIds) {
-    const cs = ks.cases.get(id);
-    if (cs) focusCases.push(cs);
+  function reportFor(ids: readonly string[]): {
+    runtimes: CaseRuntime[];
+    perCase: PerCaseReport[];
+  } {
+    const runtimes: CaseRuntime[] = [];
+    for (const id of ids) {
+      const cs = ks.cases.get(id);
+      if (cs) runtimes.push(cs);
+    }
+    const perCase: PerCaseReport[] = runtimes.map((cs) => ({
+      caseId: cs.caseId,
+      title: cs.data.title,
+      chiefComplaint: cs.data.chief_complaint,
+      finalState: cs.state,
+      curriculumTags: cs.data.curriculum_tags,
+      slos: cs.data.slos,
+      score: scoreCase(cs),
+      attended: cs.enteredAt !== null,
+    }));
+    return { runtimes, perCase };
   }
 
-  const perCase: PerCaseReport[] = focusCases.map((cs) => ({
-    caseId: cs.caseId,
-    title: cs.data.title,
-    chiefComplaint: cs.data.chief_complaint,
-    finalState: cs.state,
-    curriculumTags: cs.data.curriculum_tags,
-    slos: cs.data.slos,
-    score: scoreCase(cs),
-    attended: cs.enteredAt !== null,
-  }));
+  const focus = reportFor(ks.episode.focus_cases);
+  const ambient = reportFor(ks.episode.ambient_cases);
+  const allRuntimes = [...focus.runtimes, ...ambient.runtimes];
+  const allPerCase = [...focus.perCase, ...ambient.perCase];
 
-  const livesLost = perCase.filter((c) => LIFE_LOST_STATES.has(c.finalState)).length;
-  const livesSaved = perCase.filter((c) => LIFE_SAVED_STATES.has(c.finalState)).length;
-  const unsafeCases = perCase.filter((c) => c.score.band === 'unsafe').length;
+  const livesLost = allPerCase.filter((c) => LIFE_LOST_STATES.has(c.finalState)).length;
+  const livesSaved = allPerCase.filter((c) => LIFE_SAVED_STATES.has(c.finalState)).length;
+  const unsafeCases = allPerCase.filter((c) => c.score.band === 'unsafe').length;
 
   const averagePercent =
-    perCase.length === 0
+    allPerCase.length === 0
       ? 0
-      : Math.round(perCase.reduce((sum, c) => sum + c.score.percent, 0) / perCase.length);
+      : Math.round(allPerCase.reduce((sum, c) => sum + c.score.percent, 0) / allPerCase.length);
 
   // Overall penalty: lose 25 percentage points per dead patient.
   const overallPercent = Math.max(0, Math.min(100, averagePercent - livesLost * 25));
@@ -250,7 +262,8 @@ export function scoreEpisode(ks: KernelState): EpisodeReport {
     shiftEnded: ks.isShiftOver,
     clockMin: ks.clockMin,
     shiftDurationMin: ks.shiftDurationMin,
-    cases: perCase,
+    cases: focus.perCase,
+    ambientCases: ambient.perCase,
     arcs: perArc,
     livesSaved,
     livesLost,
@@ -258,8 +271,8 @@ export function scoreEpisode(ks: KernelState): EpisodeReport {
     averagePercent,
     overallPercent,
     band,
-    examinerNotes: buildExaminerNotes(perCase, perArc),
-    sources: dedupeCitations(focusCases.flatMap((cs) => cs.data.sources)),
+    examinerNotes: buildExaminerNotes(allPerCase, perArc),
+    sources: dedupeCitations(allRuntimes.flatMap((cs) => cs.data.sources)),
   };
 }
 

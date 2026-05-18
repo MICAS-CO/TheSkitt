@@ -442,6 +442,34 @@ button:disabled {
   justify-content: flex-end;
 }
 
+.board__subtitle {
+  margin: 18px 0 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.board__card--ambient {
+  opacity: 0.85;
+  background: var(--bg);
+}
+.board__card--ambient.board__card--deteriorating,
+.board__card--ambient.board__card--arrested {
+  opacity: 1;
+}
+.board__card-tag {
+  display: inline-block;
+  background: var(--border);
+  color: var(--muted);
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-right: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
 /* ─── Episode debrief (Milestone 6) ──────────────────────────────────────── */
 
 .ep-debrief {

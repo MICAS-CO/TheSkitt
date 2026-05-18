@@ -35,7 +35,10 @@ export function EpisodeDebriefScreen({ onExit }: Props) {
 
       <main className="ep-debrief">
         <Overall report={report} />
-        <CasesPanel cases={report.cases} />
+        <CasesPanel cases={report.cases} title="Focus cases" />
+        {report.ambientCases.length > 0 && (
+          <CasesPanel cases={report.ambientCases} title="Ambient board" />
+        )}
         {report.arcs.length > 0 && <ArcsPanel report={report} />}
         <ExaminerNotes report={report} />
         <SourcesPanel sources={report.sources} />
@@ -87,10 +90,10 @@ function Overall({ report }: { report: EpisodeReport }) {
   );
 }
 
-function CasesPanel({ cases }: { cases: PerCaseReport[] }) {
+function CasesPanel({ cases, title }: { cases: PerCaseReport[]; title: string }) {
   return (
     <section className="ep-debrief__section">
-      <h3>Per-case outcomes</h3>
+      <h3>{title}</h3>
       <ul className="ep-debrief__case-list">
         {cases.map((c) => (
           <li key={c.caseId} className={`ep-debrief__case ep-debrief__case--${c.score.band}`}>

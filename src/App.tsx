@@ -15,6 +15,10 @@ import sarahYaml from '../content/cases/case_ectopic_minors_sarah.yaml?raw';
 import arcYaml from '../content/arcs/arc_hendo_dinner.yaml?raw';
 import hendoEpYaml from '../content/episodes/ep_hendo_shift.yaml?raw';
 
+// Ambient board pressure (Milestone 8)
+import stanYaml from '../content/cases/case_intox_stan_ambient.yaml?raw';
+import patelYaml from '../content/cases/case_chest_pain_patel_ambient.yaml?raw';
+
 type View = 'menu' | 'shift' | 'hub';
 
 interface ShiftPack {
@@ -31,7 +35,12 @@ const SOLO_SHIFT: () => ShiftPack = () => ({
 
 const HENDO_SHIFT: () => ShiftPack = () => ({
   episode: Episode.parse(parseYaml(hendoEpYaml)),
-  cases: [Case.parse(parseYaml(bethYaml)), Case.parse(parseYaml(sarahYaml))],
+  cases: [
+    Case.parse(parseYaml(bethYaml)),
+    Case.parse(parseYaml(sarahYaml)),
+    Case.parse(parseYaml(stanYaml)),
+    Case.parse(parseYaml(patelYaml)),
+  ],
   arcs: [Arc.parse(parseYaml(arcYaml))],
 });
 

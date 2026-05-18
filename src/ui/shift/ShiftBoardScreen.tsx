@@ -13,12 +13,17 @@ export function ShiftBoardScreen({ onEnterCase, onFinishShift, onExit }: Props) 
   if (!kernel) return null;
 
   const ks = kernel.getState();
-  const visible = [...ks.cases.values()].filter((c) => c.state !== 'unseen');
   const unseen = [...ks.cases.values()].filter((c) => c.state === 'unseen').length;
 
   const focusCases = ks.episode.focus_cases
     .map((id) => ks.cases.get(id))
     .filter((c): c is CaseRuntime => !!c);
+  const ambientCases = ks.episode.ambient_cases
+    .map((id) => ks.cases.get(id))
+    .filter((c): c is CaseRuntime => !!c);
+  const visibleFocus = focusCases.filter((c) => c.state !== 'unseen');
+  const visibleAmbient = ambientCases.filter((c) => c.state !== 'unseen');
+  const totalVisible = visibleFocus.length + visibleAmbient.length;
   const allDispositioned = focusCases.every((c) => c.disposition !== null);
   const allEntered = focusCases.every((c) => c.enteredAt !== null);
 
@@ -51,17 +56,47 @@ export function ShiftBoardScreen({ onEnterCase, onFinishShift, onExit }: Props) 
 
       <div className="enc__split">
         <main className="board">
-          <h2 className="board__title">Shift board</h2>
-          {visible.length === 0 ? (
+          {totalVisible === 0 ? (
             <p className="enc__hint">
               No patients yet — press <strong>▶ start</strong> to begin the shift.
             </p>
           ) : (
-            <ul className="board__cases">
-              {visible.map((c) => (
-                <CaseCard key={c.caseId} cs={c} clockMin={ks.clockMin} onEnter={onEnterCase} />
-              ))}
-            </ul>
+            <>
+              {visibleFocus.length > 0 && (
+                <>
+                  <h2 className="board__title">Focus cases</h2>
+                  <ul className="board__cases">
+                    {visibleFocus.map((c) => (
+                      <CaseCard
+                        key={c.caseId}
+                        cs={c}
+                        clockMin={ks.clockMin}
+                        onEnter={onEnterCase}
+                      />
+                    ))}
+                  </ul>
+                </>
+              )}
+              {visibleAmbient.length > 0 && (
+                <>
+                  <h3 className="board__subtitle">Ambient board</h3>
+                  <p className="enc__hint">
+                    Board pressure — they look stable now, but check on them before they go off.
+                  </p>
+                  <ul className="board__cases">
+                    {visibleAmbient.map((c) => (
+                      <CaseCard
+                        key={c.caseId}
+                        cs={c}
+                        clockMin={ks.clockMin}
+                        onEnter={onEnterCase}
+                        ambient
+                      />
+                    ))}
+                  </ul>
+                </>
+              )}
+            </>
           )}
           {unseen > 0 && (
             <p className="enc__hint">
@@ -134,19 +169,24 @@ function CaseCard({
   cs,
   clockMin,
   onEnter,
+  ambient = false,
 }: {
   cs: CaseRuntime;
   clockMin: number;
   onEnter: (id: string) => void;
+  ambient?: boolean;
 }) {
   const minsSinceEntered = cs.enteredAt !== null ? clockMin - cs.enteredAt : null;
   const pendingIx = [...cs.ordered].filter(([id]) => !cs.resulted.has(id)).length;
   const resultedIx = cs.resulted.size;
   return (
-    <li className={`board__card board__card--${cs.state}`}>
+    <li className={`board__card board__card--${cs.state} ${ambient ? 'board__card--ambient' : ''}`}>
       <button className="board__card-btn" onClick={() => onEnter(cs.caseId)}>
         <div className="board__card-row">
-          <span className="board__card-title">{cs.data.title}</span>
+          <span className="board__card-title">
+            {ambient && <span className="board__card-tag">ambient</span>}
+            {cs.data.title}
+          </span>
           <span className={`enc__chip enc__chip--state-${cs.state}`}>{cs.state}</span>
         </div>
         <div className="board__card-meta">
