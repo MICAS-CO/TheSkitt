@@ -4,6 +4,26 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Content: sepsis case + sepsis-solo shift
+
+- New `content/cases/case_sepsis_uti_morrison.yaml` — 72y/o nursing-
+  home resident with overnight confusion + fever + AKI; urosepsis
+  with evolving septic shock. Scaffolded by `pnpm new-case
+  --topic sepsis_adult` and then authored end-to-end against NICE
+  NG51, RCEM Best Practice — Septic Patient, NEWS2 (RCP), and
+  Sepsis-3 (Singer 2016). NEWS2 7, qSOFA 2, lactate 3.2. Five
+  `must_not_do` traps including the textbook *"wait for cultures
+  before antibiotics"*, NSAIDs in AKI, oral trimethoprim in shock,
+  routine hydrocortisone before vasopressor trial, and re-litigating
+  a documented DNACPR at the bedside.
+- New `content/episodes/ep_overnight_sepsis_solo.yaml` — 20-min
+  single-case shift. T+10 deterioration window (must give IV
+  antibiotics AND fluids), T+6 lactate result, T+12 family arrives,
+  T+14 bed-manager pressure.
+- New "Overnight: sepsis solo" entry on the shift menu.
+- Validates the new-case → new-episode → playable shift round trip.
+  Demonstrates the M7 content CLI in real use.
+
 ### UX quality (speed control · spacebar pause · ARIA live log)
 
 - Sim speed selector: 0.5× / 1× / 2× / 4× available in both the shift

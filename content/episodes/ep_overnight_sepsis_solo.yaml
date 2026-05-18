@@ -1,0 +1,55 @@
+# Scaffolded by scripts/new-episode.ts then polished by hand.
+# Single-case overnight shift wrapping case_sepsis_uti_morrison.
+
+schema_version: 1
+id: ep_overnight_sepsis_solo
+title: 'Overnight: sepsis solo'
+learning_objectives:
+  - 'Run the Sepsis Six within the first hour (NICE NG51).'
+  - 'Recognise septic shock (Sepsis-3) and escalate to critical care.'
+  - 'Re-read an advance care plan rather than re-litigating a DNACPR at the bedside.'
+  - 'Handle a penicillin allergy with a non-severe rash pragmatically.'
+
+curriculum_tags: [RP6, IP3, NeuP1, IP1, ElP1]
+difficulty_band: CT2
+shift_duration_min: 20
+
+focus_cases:
+  - case_sepsis_uti_morrison
+
+ambient_cases: []
+
+scheduled_events:
+  - id: ev_sepsis_deterioration
+    type: deterioration_if_not_x_by_t
+    t_min: 10
+    case_id: case_sepsis_uti_morrison
+    required_action_ids:
+      - mx_iv_abx_within_1h
+      - mx_fluid_resus
+    new_state: arrested
+
+  - id: ev_family_arrival
+    type: family_arrival
+    t_min: 12
+    case_id: case_sepsis_uti_morrison
+    npc: Helen (Mrs Morrison's daughter)
+
+  - id: ev_lactate_back
+    type: results_back
+    t_min: 6
+    case_id: case_sepsis_uti_morrison
+    investigation_id: ix_vbg_lactate
+
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 14
+    severity: firm
+
+arcs: []
+
+author_notes: |
+  Single-case 20-min shift. The deterioration window is T+10 — abx
+  AND fluids must both be running by then. Lactate result lands at
+  T+6 (faster than the case's own turnaround_min of 5 plus order
+  time), demonstrating the scheduled-event-driven result path.

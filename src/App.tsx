@@ -19,6 +19,10 @@ import hendoEpYaml from '../content/episodes/ep_hendo_shift.yaml?raw';
 import stanYaml from '../content/cases/case_intox_stan_ambient.yaml?raw';
 import patelYaml from '../content/cases/case_chest_pain_patel_ambient.yaml?raw';
 
+// Sepsis solo (post-M8, authored from the new-case CLI skeleton)
+import morrisonYaml from '../content/cases/case_sepsis_uti_morrison.yaml?raw';
+import sepsisEpYaml from '../content/episodes/ep_overnight_sepsis_solo.yaml?raw';
+
 type View = 'menu' | 'shift' | 'hub';
 
 interface ShiftPack {
@@ -44,9 +48,16 @@ const HENDO_SHIFT: () => ShiftPack = () => ({
   arcs: [Arc.parse(parseYaml(arcYaml))],
 });
 
+const SEPSIS_SOLO: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(sepsisEpYaml)),
+  cases: [Case.parse(parseYaml(morrisonYaml))],
+  arcs: [],
+});
+
 const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
   ep_anaphylaxis_solo: SOLO_SHIFT,
   ep_hendo_shift: HENDO_SHIFT,
+  ep_overnight_sepsis_solo: SEPSIS_SOLO,
 };
 
 export function App() {
@@ -118,6 +129,7 @@ export function App() {
           <MenuView
             onStartHendo={() => startShift(HENDO_SHIFT())}
             onStartSolo={() => startShift(SOLO_SHIFT())}
+            onStartSepsis={() => startShift(SEPSIS_SOLO())}
             onShowHub={() => setView('hub')}
             saved={saved}
             onResume={resumeSavedShift}
@@ -147,6 +159,7 @@ export function App() {
 function MenuView({
   onStartHendo,
   onStartSolo,
+  onStartSepsis,
   onShowHub,
   saved,
   onResume,
@@ -154,6 +167,7 @@ function MenuView({
 }: {
   onStartHendo: () => void;
   onStartSolo: () => void;
+  onStartSepsis: () => void;
   onShowHub: () => void;
   saved: SavedShift | null;
   onResume: () => void;
@@ -188,6 +202,13 @@ function MenuView({
             <span className="menu__card-meta">
               Anaphylaxis (resus) + ectopic pregnancy (minors), connected by shared incident. NICE
               NG126 · Resus Council UK 2021 · RCOG GTG 21
+            </span>
+          </button>
+          <button className="menu__card menu__card--secondary" onClick={onStartSepsis}>
+            <span className="menu__card-eyebrow">Shift · CT2 · 20 min · 1 case</span>
+            <span className="menu__card-title">Overnight: sepsis solo</span>
+            <span className="menu__card-meta">
+              Urosepsis with evolving septic shock. NICE NG51 + Sepsis Six + advance care plan.
             </span>
           </button>
           <button className="menu__card menu__card--secondary" onClick={onStartSolo}>
