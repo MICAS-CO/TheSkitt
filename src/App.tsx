@@ -27,6 +27,11 @@ import sepsisEpYaml from '../content/episodes/ep_overnight_sepsis_solo.yaml?raw'
 import marcusYaml from '../content/cases/case_dka_marcus.yaml?raw';
 import metabolicEpYaml from '../content/episodes/ep_overnight_metabolic.yaml?raw';
 
+// Family anaphylaxis — Beth + Sam (adult + paeds)
+import samYaml from '../content/cases/case_anaphylaxis_paeds_sibling.yaml?raw';
+import familyArcYaml from '../content/arcs/arc_family_peanut_party.yaml?raw';
+import birthdayEpYaml from '../content/episodes/ep_birthday_party.yaml?raw';
+
 type View = 'menu' | 'shift' | 'hub';
 
 interface ShiftPack {
@@ -64,11 +69,18 @@ const METABOLIC_SHIFT: () => ShiftPack = () => ({
   arcs: [],
 });
 
+const FAMILY_SHIFT: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(birthdayEpYaml)),
+  cases: [Case.parse(parseYaml(bethYaml)), Case.parse(parseYaml(samYaml))],
+  arcs: [Arc.parse(parseYaml(familyArcYaml))],
+});
+
 const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
   ep_anaphylaxis_solo: SOLO_SHIFT,
   ep_hendo_shift: HENDO_SHIFT,
   ep_overnight_sepsis_solo: SEPSIS_SOLO,
   ep_overnight_metabolic: METABOLIC_SHIFT,
+  ep_birthday_party: FAMILY_SHIFT,
 };
 
 export function App() {
@@ -142,6 +154,7 @@ export function App() {
             onStartSolo={() => startShift(SOLO_SHIFT())}
             onStartSepsis={() => startShift(SEPSIS_SOLO())}
             onStartMetabolic={() => startShift(METABOLIC_SHIFT())}
+            onStartFamily={() => startShift(FAMILY_SHIFT())}
             onShowHub={() => setView('hub')}
             saved={saved}
             onResume={resumeSavedShift}
@@ -173,6 +186,7 @@ function MenuView({
   onStartSolo,
   onStartSepsis,
   onStartMetabolic,
+  onStartFamily,
   onShowHub,
   saved,
   onResume,
@@ -182,6 +196,7 @@ function MenuView({
   onStartSolo: () => void;
   onStartSepsis: () => void;
   onStartMetabolic: () => void;
+  onStartFamily: () => void;
   onShowHub: () => void;
   saved: SavedShift | null;
   onResume: () => void;
@@ -216,6 +231,14 @@ function MenuView({
             <span className="menu__card-meta">
               Anaphylaxis (resus) + ectopic pregnancy (minors), connected by shared incident. NICE
               NG126 · Resus Council UK 2021 · RCOG GTG 21
+            </span>
+          </button>
+          <button className="menu__card menu__card--secondary" onClick={onStartFamily}>
+            <span className="menu__card-eyebrow">Shift · ST3 · 20 min · 2 cases · 1 arc</span>
+            <span className="menu__card-title">Family anaphylaxis — adult + paeds</span>
+            <span className="menu__card-meta">
+              Beth + her 8y/o brother Sam. Resus Council UK 2021 algorithm, two dose bands, one
+              shift.
             </span>
           </button>
           <button className="menu__card menu__card--secondary" onClick={onStartMetabolic}>

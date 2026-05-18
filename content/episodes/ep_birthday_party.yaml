@@ -1,50 +1,69 @@
-# SAMPLE EPISODE — two focus cases + one ambient + one arc.
-# Exercises every Episode schema field. The shift clock + event scheduler
-# are NOT yet implemented (Milestone 4) — this is structural.
+# Two-case 20-minute family-anaphylaxis shift.
+#
+# Beth Cartwright (adult, resus, anaphylaxis at the hen-do dinner) and her
+# 8y/o brother Sam Cartwright (paeds, mum brought him in after spotting
+# Beth's hospitalisation on WhatsApp and connecting it to Sam's lip
+# swelling earlier). Both share the peanut trigger. Connected by
+# arc_family_peanut_party.
+#
+# Pure paeds + adult anaphylaxis pacing on one clock — different dose
+# bands, same algorithm.
 
 schema_version: 1
 id: ep_birthday_party
-title: 'Birthday party'
+title: 'Family anaphylaxis — adult + paeds'
 learning_objectives:
-  - 'Recognise and manage anaphylaxis per Resus Council UK 2021 algorithm.'
-  - 'Adjust adrenaline dose for paediatric age bands.'
-  - 'Recognise shared-incident arcs and pre-empt anticipated arrivals.'
+  - 'Run the Resus Council UK 2021 anaphylaxis algorithm in both an adult and a child.'
+  - 'Correctly select the IM adrenaline dose by age band (6–12 y → 300 mcg, adult → 500 mcg).'
+  - 'Recognise the family-wide implications of a shared trigger and brief both teams.'
+  - 'Use a 10 mL/kg paeds fluid bolus rather than the adult volume.'
 
-curriculum_tags: [RP2, AP1, AP2, AC1, TP10]
-difficulty_band: CT2
+curriculum_tags: [RP2, AP1, AP2, AC1, RP5, ResC1]
+difficulty_band: ST3
 shift_duration_min: 20
 
 focus_cases:
   - case_anaphylaxis_adult_peanut
   - case_anaphylaxis_paeds_sibling
 
-ambient_cases:
-  - case_minor_laceration_ambient
+ambient_cases: []
 
 scheduled_events:
-  - id: ev_paeds_arrival
+  - id: ev_beth_deterioration
+    type: deterioration_if_not_x_by_t
+    t_min: 5
+    case_id: case_anaphylaxis_adult_peanut
+    required_action_ids: [mx_adrenaline_im]
+    new_state: arrested
+
+  - id: ev_sam_arrival
     type: new_arrival
     t_min: 8
     case_id: case_anaphylaxis_paeds_sibling
+
+  - id: ev_sam_deterioration
+    type: deterioration_if_not_x_by_t
+    t_min: 15
+    case_id: case_anaphylaxis_paeds_sibling
+    required_action_ids: [mx_adrenaline_paeds_im, mx_oxygen_paeds]
+    new_state: arrested
+
   - id: ev_tryptase_back
     type: results_back
     t_min: 12
     case_id: case_anaphylaxis_adult_peanut
     investigation_id: ix_tryptase
+
   - id: ev_bed_pressure
     type: bed_manager_pressure
-    t_min: 15
+    t_min: 14
     severity: firm
-  - id: ev_arc_reveal
-    type: arc_reveal
-    t_min: 6
-    arc_id: arc_family_peanut_party
-    reveal_id: reveal_via_family_arrival
 
 arcs:
   - arc_family_peanut_party
 
 author_notes: |
-  This episode is the schema exercise for Milestone 2 — proves the schema
-  can hold a 2-focus + 1-ambient + 1-arc shift. Real clinical authoring
-  for the focus cases is Milestones 3 and 5.
+  M2 sample episode upgraded to a fully-authored family-anaphylaxis
+  shift. The dose-band trap (giving Sam adult 500 mcg adrenaline)
+  is the headline learning point. The arc reveals the shared trigger
+  via the family-arrival event at T+8.

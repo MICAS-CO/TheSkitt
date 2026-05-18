@@ -1,21 +1,39 @@
-# SAMPLE CASE — paeds sibling of the adult peanut anaphylaxis case.
-# Schema-exercise only. Full authoring lands in Milestone 5 (build prompt
-# milestone 5 — first paeds case alongside the adult anaphylaxis).
-# Connects via arc_family_peanut_party.
+# Authored against Resus Council UK 2021 paediatric anaphylaxis algorithm,
+# NICE CG134, BTS/SIGN 158 (nebulised salbutamol doses), APLS principles,
+# and Oxford Handbook of EM 5e Ch 15.
+#
+# Sam Cartwright is Beth's 8y/o brother. While Beth was at her hen-do
+# dinner, Sam had a peanut-butter sandwich at lunchtime. His lip got a
+# bit swollen and his mum gave him an antihistamine and assumed it was
+# nothing. Two hours later the wheeze started. Mum saw on her phone that
+# Beth was being treated for severe anaphylaxis to peanut at the
+# restaurant; she dialled 999 immediately.
 
 schema_version: 1
 id: case_anaphylaxis_paeds_sibling
-title: 'Anaphylaxis — child, same family, arrives later in shift'
-chief_complaint: 'Wheeze + rash — paeds anaphylaxis'
+title: 'Anaphylaxis — child, brother of the resus-bay patient'
+chief_complaint: 'Lip swelling and wheeze after peanut butter at lunch'
 topic_id: anaphylaxis
-vignette: |
-  8M, brought by dad. Picked up from same birthday party 30 min after sister
-  (case_anaphylaxis_adult_peanut). Mild urticaria initially, now rapidly
-  worsening wheeze and lip swelling in the waiting room.
-  # TODO: verify timing and paramedic intervention.
 
-curriculum_tags: [RP2, AP1, AC1]
-slos: [3, 5]
+vignette: |
+  Paeds resus. 21:08.
+
+  Sam Cartwright, 8 y/o, brought in by his mum Helen. Had a peanut-
+  butter sandwich at lunchtime; lip felt "tingly" and a bit swollen
+  by 14:30. Mum gave a spoon of cetirizine, swelling settled, he was
+  fine until ~19:30 when he started wheezing and looking pale.
+
+  Mum saw on the family WhatsApp around 20:00 that Beth (in resus
+  next door) was being treated for severe anaphylaxis to peanut at
+  the restaurant. She made the connection and dialled 999.
+
+  Paramedics: "10-minute drive. IM adrenaline 300 mcg en route — his
+  mum had Beth's EpiPen at home and he hadn't been given anything. RR
+  was 36, sats 92, lips swollen. He's improved on the way in."
+
+bay: paeds
+curriculum_tags: [RP2, AP1, AP2, AC1, RP5, ResC1]
+slos: [1, 3, 5]
 difficulty_band: ST3
 paeds: true
 
@@ -23,90 +41,473 @@ demographics:
   age_value: 8
   age_unit: years
   sex: male
-  weight_kg: 25
-  pmh: ['eczema']
-  medications: []
-  allergies: ['?peanut (newly suspected; sister in resus has same)']
+  weight_kg: 28
+  pmh:
+    - 'Eczema since infancy'
+    - 'Mild asthma — salbutamol PRN; has not used it for 6 months'
+    - 'Never formally tested for food allergies'
+  medications: ['salbutamol 100 mcg inhaler PRN', 'emollients PRN']
+  allergies: ['?peanut — newly suspected; sister Beth being treated next door']
+  social: |
+    Lives with mum Helen, dad Mike, sister Beth. Year 4. No school
+    absences. Has previously eaten peanut butter "a few times" without
+    a clear reaction — possible historical mild reactions reframed by
+    today's events.
 
 triage_category: 2
 initial_state: deteriorating
-bay: paeds
 
 history:
-  - id: hx_arrival
+  - id: hx_paramedics
+    source: paramedic
+    topic: 'Paramedic handover.'
+    response: |
+      "999 call at 20:14 — mum saw Beth was in for anaphylaxis and
+      noticed Sam had been wheezy. We arrived at 20:25. Found him sat
+      forward, audible wheeze, mild stridor on inspiration. Mum gave
+      one of Beth's old EpiPens (300 mcg) at the door — he improved
+      noticeably in transit. Sats 92 → 96, RR 36 → 28. Brought him in
+      lying flat."
+
+  - id: hx_lunch_timeline
     source: family
-    topic: 'When did this start?'
-    response: '# TODO: 30 min after eating party food. Sister already in resus.'
+    topic: 'Mum — walk me through today.'
+    response: |
+      "He had a peanut-butter sandwich for lunch about 12:30 — same
+      brand we always buy. His lip felt funny by half-two and looked
+      a bit puffy. I gave him cetirizine and he settled. He's eaten
+      peanut butter before. He played in his room all afternoon. About
+      half-past-seven he came down wheezing and pale — I thought
+      asthma. Then I saw the messages about Beth."
+
+  - id: hx_previous_reactions
+    source: family
+    topic: 'Has Sam ever had a reaction like this before?'
+    response: |
+      "Maybe? He's had hives once or twice. Eczema flares around his
+      mouth when he eats certain things — I always thought it was
+      tomato. There was Christmas before last when he was sick after a
+      Snickers… we put it down to the chocolate being rich."
+
+  - id: hx_asthma
+    source: family
+    topic: 'Tell me about his asthma.'
+    response: |
+      "Diagnosed at 5. He has a salbutamol pump. Hasn't really used it
+      this year — last time he wheezed was March. No nebulisers,
+      never been admitted."
+
+  - id: hx_paeds_aware
+    source: patient
+    topic: 'Ask Sam directly — what does he feel right now?'
+    response: |
+      "My… my chest feels really tight. And my lip is fat. Mum, am I
+      gonna die like in films?" (Anxious, but talking in short
+      sentences.)
+
+  - id: hx_pre_anaesthesia
+    source: records
+    topic: 'Quick pre-anaesthesia screen in case we need RSI.'
+    response: |
+      "Never had a GA. Last ate 12:30 (sandwich). No teeth issues.
+      Allergies: ?peanut. Mum here for consent if needed."
 
 examination:
   - system: paeds_assessment_triangle
     findings:
-      - { name: 'appearance', value: 'anxious, alert' }
-      - { name: 'work of breathing', value: 'increased — tracheal tug, subcostal recession' }
-      - { name: 'circulation to skin', value: 'flushed; widespread urticaria' }
+      - { name: 'appearance', value: 'anxious, alert, eye-contact maintained', present: true }
+      - {
+          name: 'work of breathing',
+          value: 'increased — tracheal tug, subcostal recession, audible wheeze',
+          present: true,
+        }
+      - {
+          name: 'circulation to skin',
+          value: 'flushed; widespread urticaria over trunk; lip swelling',
+          present: true,
+        }
   - system: airway
     findings:
-      - { name: 'lip swelling', present: true }
+      - { name: 'voice', value: 'audible inspiratory stridor; talking in short sentences' }
+      - { name: 'lip and peri-oral swelling', present: true }
+      - { name: 'tongue', value: 'mildly swollen; protrudes normally; no drooling' }
   - system: breathing
     findings:
-      - { name: 'RR', value: '36' }
-      - { name: 'SpO2', value: '94% on air' }
-      - { name: 'wheeze', present: true }
+      - { name: 'respiratory rate', value: '28/min (paeds 6–12y normal 18–24)' }
+      - { name: 'SpO2', value: '96% on 4 L nasal cannulae (was 92% on air)' }
+      - { name: 'auscultation', value: 'symmetrical polyphonic wheeze, no focal consolidation' }
+      - { name: 'accessory muscle use', value: 'sternocleidomastoids active', present: true }
+  - system: circulation
+    findings:
+      - { name: 'heart rate', value: '142/min, sinus (paeds 6–12y normal 70–115)' }
+      - {
+          name: 'blood pressure',
+          value: '94/58 mmHg (paeds lower limit ~5th centile for age = 80 systolic)',
+        }
+      - { name: 'capillary refill', value: '3 s peripherally' }
+  - system: disability
+    findings:
+      - { name: 'GCS', value: '15 — alert, anxious, eye-contact good' }
+      - { name: 'glucose', value: '5.6 mmol/L' }
+      - { name: 'AVPU', value: 'A' }
+  - system: exposure
+    findings:
+      - { name: 'temperature', value: '37.0 °C' }
+      - { name: 'no other rash distribution', pertinent_negative: true }
+      - { name: 'eczema patches in antecubital fossae', present: true }
 
 investigations:
   - id: ix_paeds_obs
-    name: 'Paediatric obs + weight'
+    name: 'Paediatric vital signs + weight'
     category: bedside
     turnaround_min: 1
-    result_summary: 'Weight 25 kg. Obs as per examination.'
+    result_summary: |
+      Weight 28 kg (paramedic measured). Obs as per examination —
+      HR/RR above normal range for 8y; SpO2 corrected with O2; BP at
+      lower end of normal.
+    abnormal: true
+
+  - id: ix_pefr
+    name: 'Peak expiratory flow rate (best of 3)'
+    category: bedside
+    turnaround_min: 2
+    result_summary: |
+      120 L/min (Sam's previous best ~230 L/min per parent — ~52% of
+      best). Acute severe asthma threshold per BTS/SIGN 158 (≤50%) just
+      missed — but anaphylaxis-driven bronchospasm responds to
+      adrenaline + nebs.
+    abnormal: true
+
+  - id: ix_vbg
+    name: 'Venous blood gas + lactate'
+    category: gas
+    turnaround_min: 5
+    result_summary: |
+      pH 7.34 · pCO2 4.6 kPa · HCO3 19 · BE -3 · Lactate 2.1 · K 4.0 ·
+      Glucose 5.6. Mild metabolic acidosis — improving after IM
+      adrenaline.
+
+  - id: ix_tryptase
+    name: 'Mast cell tryptase — 3 samples (per Resus Council UK 2021)'
+    category: blood
+    turnaround_min: 60
+    result_summary: |
+      Sample 1 (presentation) drawn before further adrenaline.
+      Sample 2 at 1–2 h. Sample 3 at 24 h (baseline). Same protocol as
+      adults; paeds reference ranges apply.
+    sources:
+      - { type: resus_council_uk, ref: 'Anaphylaxis Guidelines 2021 — tryptase timing in children' }
+
+  - id: ix_fbc_ue
+    name: 'FBC, U&E, glucose'
+    category: blood
+    turnaround_min: 45
+    result_summary: 'Hb 124 · WCC 13 (mild neutrophilia, stress) · Plt 280 · Na 138 · K 4.0 · Urea 4.4 · Creat 42 (normal for age). CRP 6.'
+
+  - id: ix_ecg
+    name: '12-lead ECG'
+    category: ecg
+    turnaround_min: 2
+    result_summary: 'Sinus tachycardia at 142/min. No QT prolongation. No ischaemic change (not expected at his age).'
 
 differential:
-  - diagnosis: Anaphylaxis — shared peanut exposure with sister
+  - diagnosis: 'Paediatric anaphylaxis — peanut (food-IgE)'
     likelihood: top
-    discriminator: 'Shared meal source; sister concurrently in resus with same picture.'
-  - diagnosis: Acute asthma exacerbation
-    likelihood: worth_considering
-    discriminator: 'Rash and lip swelling argue strongly for anaphylaxis.'
+    discriminator: |
+      Diagnostic criteria (Resus Council UK 2021): rapid onset +
+      life-threatening Airway (stridor, lip swelling) + Breathing
+      (wheeze, SpO2 92% pre-O2) + skin/mucosal change. Sister
+      concurrently in resus with the same trigger seals it.
 
-working_diagnosis: 'Anaphylaxis — paediatric'
+  - diagnosis: 'Acute severe asthma exacerbation'
+    likelihood: worth_considering
+    discriminator: |
+      Known asthma + wheeze + PEFR 52% best fits acute severe asthma.
+      But isolated asthma doesn''t explain the urticaria, lip swelling,
+      or stridor. Treat the anaphylaxis driver first.
+
+  - diagnosis: 'Inhaled foreign body'
+    likelihood: must_not_miss
+    discriminator: |
+      Sudden inspiratory stridor in a child is FB until proven otherwise.
+      Here the timing (post-meal, urticaria, lip swelling, eczema
+      history) and improvement on adrenaline points away — but
+      always reassess if no response.
+
+  - diagnosis: 'Hereditary angioedema (HAE)'
+    likelihood: must_not_miss
+    discriminator: |
+      Bradykinin-mediated angioedema does NOT respond to adrenaline
+      and has no urticaria. Family history and slower onset (over
+      hours, not minutes) help — but Sam has urticaria, so HAE is
+      unlikely.
+
+  - diagnosis: 'Viral wheeze'
+    likelihood: unlikely
+    discriminator: "No fever, no preceding URTI, sudden onset post-food. Doesn't fit."
+
+working_diagnosis: 'Paediatric anaphylaxis to peanut'
 
 management:
+  - id: mx_a_to_e_paeds
+    category: monitoring
+    name: 'Paediatric ABCDE + continuous monitoring + paeds early warning score (PEWS)'
+    detail: |
+      Move to paeds resus; continuous SpO2, ECG, BP every 3 min, RR every
+      5 min. Reassess after each intervention.
+    must_do: true
+
+  - id: mx_call_paeds_anaesthetics
+    category: escalation
+    name: 'Call paeds team and paeds anaesthetics; consider PICU pre-alert'
+    detail: |
+      Stridor with paeds anaphylaxis = airway risk. Paeds anaesthetics
+      should know early in case RSI becomes necessary.
+    must_do: true
+
+  - id: mx_oxygen_paeds
+    category: drug
+    name: 'High-flow O2 via paediatric non-rebreather (target SpO2 ≥94%)'
+    detail: '15 L/min via paeds non-rebreather initially; titrate down to keep SpO2 ≥94%.'
+    must_do: true
+    drug:
+      amount: '15 L/min then titrate'
+      route: NEB
+      frequency: 'continuous'
+    sources:
+      - { type: bts_sign, ref: 'BTS/SIGN 158 — oxygen in paeds acute asthma' }
+
   - id: mx_adrenaline_paeds_im
     category: drug
-    name: 'IM adrenaline — paeds dose by age band'
-    detail: '6–12 years: 300 micrograms IM. Repeat every 5 min if no improvement.'
+    name: 'IM adrenaline — paediatric dose (8 y → 300 mcg)'
+    detail: |
+      Anterolateral mid-thigh. Sam already had one dose from his
+      sister''s EpiPen pre-hospital. If symptoms persist, give a second
+      dose 5 min after the first. Beyond 2 doses with persisting
+      compromise → refractory anaphylaxis → IV adrenaline infusion
+      under senior/anaesthetic supervision.
     must_do: true
     drug:
       amount: '300 micrograms (0.3 mL of 1:1000)'
       route: IM
-      frequency: 'STAT; repeat every 5 min PRN'
-      paeds_dose: '6–12 yr: 300 mcg; <6 yr: 150 mcg; >12 yr: 500 mcg per Resus Council UK 2021'
+      frequency: 'every 5 min PRN'
+      paeds_dose: '<6 months 100–150 mcg · 6m–6 yr 150 mcg · 6–12 yr 300 mcg · >12 yr 500 mcg'
     sources:
       - {
           type: resus_council_uk,
           ref: 'Anaphylaxis Guidelines 2021 — paediatric IM adrenaline dose bands',
         }
 
+  - id: mx_position_paeds
+    category: procedure
+    name: 'Lay supine; if pregnant adolescent → left lateral tilt'
+    detail: |
+      For a hypotensive paeds anaphylaxis patient, lay supine with legs
+      raised. If respiratory distress predominates and Sam wants to sit
+      up, that''s OK while monitoring closely — never force a hypotensive
+      patient to sit if it compromises preload (Pumphrey principle).
+    must_do: true
+    sources:
+      - { type: resus_council_uk, ref: 'Anaphylaxis Guidelines 2021 — posture' }
+
+  - id: mx_iv_access_paeds
+    category: procedure
+    name: 'IV access (or IO if struggling) — take bloods + tryptase sample 1'
+    detail: |
+      Two attempts max at IV in a stable-ish patient before going IO.
+      Sample 1 of mast cell tryptase from this draw.
+    must_do: true
+
+  - id: mx_iv_fluids_paeds
+    category: fluid
+    name: 'IV crystalloid 10 mL/kg bolus, reassess (paeds dose, NOT adult 20)'
+    detail: |
+      280 mL of 0.9% saline or Hartmann''s over 5–10 min for Sam at
+      28 kg. Reassess BP, HR, perfusion. Repeat if persistent shock.
+      Note: paeds bolus is 10 mL/kg (Resus Council UK 2021), differs
+      from the adult 500–1000 mL bolus.
+    drug:
+      amount: '10 mL/kg crystalloid'
+      route: IV
+      frequency: 'over 5–10 min, reassess'
+    must_do: true
+    sources:
+      - {
+          type: resus_council_uk,
+          ref: 'Anaphylaxis Guidelines 2021 — paediatric fluid bolus 10 mL/kg',
+        }
+
+  - id: mx_nebulised_salbutamol_paeds
+    category: drug
+    name: 'Nebulised salbutamol 5 mg (≥5 yr) for persistent wheeze'
+    detail: |
+      Adjunct only — does NOT replace IM adrenaline. Repeat every 20 min
+      as needed. Add ipratropium 250 mcg if severe.
+    drug:
+      amount: '5 mg salbutamol (+ ipratropium 250 mcg if severe)'
+      route: NEB
+      frequency: 'every 20 min as needed'
+    sources:
+      - { type: bts_sign, ref: 'BTS/SIGN 158 — paediatric acute asthma nebuliser doses' }
+
+  - id: mx_tryptase_paeds
+    category: monitoring
+    name: 'Mast cell tryptase — three timed samples'
+    detail: 'Sample 1 at presentation, sample 2 at 1–2 h, sample 3 at 24 h. Same paeds protocol as adult.'
+    must_do: true
+
+  - id: mx_communicate_with_sister_team
+    category: communication
+    name: 'Coordinate with the resus team treating Beth'
+    detail: |
+      Family-wide reaction — same trigger, same household. Document the
+      link in both notes for the allergy clinic referral.
+
+  - id: mx_admit_paeds_obs
+    category: disposition
+    name: 'Admit paeds ward for risk-stratified observation period'
+    detail: |
+      Per Resus Council UK 2021: ALL paeds anaphylaxis are admitted for
+      observation. Duration risk-stratified — ≥12 h if severe / required
+      2 doses adrenaline / asthma history / biphasic risk.
+    must_do: true
+
+  # ─── Trap actions ──────────────────────────────────────────────────────────
+  - id: mx_no_adult_dose
+    category: drug
+    name: 'Give adult dose (500 mcg) IM adrenaline'
+    detail: |
+      ❌ Sam is 8 — the correct dose is 300 mcg (6–12 yr). Adult dose
+      risks arrhythmia and the dose bands exist for a reason.
+    must_not_do: true
+
+  - id: mx_no_chlorphenamine_first
+    category: drug
+    name: 'Give IV chlorphenamine first-line'
+    detail: |
+      ❌ Removed from first-line in Resus Council UK 2021. Adrenaline is
+      the only first-line drug. Chlorphenamine may be considered AFTER
+      stabilisation for symptomatic urticaria.
+    must_not_do: true
+    sources:
+      - {
+          type: resus_council_uk,
+          ref: 'Anaphylaxis Guidelines 2021 — antihistamines/steroids no longer first-line',
+        }
+
+  - id: mx_no_inhaler_alone
+    category: drug
+    name: 'Give salbutamol from his own inhaler and treat as asthma'
+    detail: |
+      ❌ Anchoring on his asthma history. The urticaria, lip swelling, and
+      response to IM adrenaline pre-hospital make this anaphylaxis;
+      inhaled salbutamol alone treats only the bronchospasm component.
+    must_not_do: true
+
+  - id: mx_no_discharge_after_short_obs
+    category: disposition
+    name: 'Discharge home after one hour if symptoms settle, with cetirizine PRN'
+    detail: |
+      ❌ All paeds anaphylaxis admitted for risk-stratified observation
+      per Resus Council UK 2021. Discharge without auto-injector +
+      allergy clinic referral is a sentinel-event-grade decision.
+    must_not_do: true
+
+  - id: mx_no_iv_adrenaline_bolus
+    category: drug
+    name: 'Give IV adrenaline bolus while still responsive to IM'
+    detail: |
+      ❌ IV adrenaline boluses risk arrhythmia and are reserved for
+      cardiac arrest. Refractory anaphylaxis (no response to 2 IM
+      doses) is treated with an IV INFUSION under senior supervision —
+      not bolus dosing.
+    must_not_do: true
+
 disposition_options:
-  - label: 'Admit paeds ward for biphasic observation'
-    criteria: 'All paeds anaphylaxis admitted per local policy.'
+  - label: 'Admit paeds ward for risk-stratified observation (minimum 12 h)'
+    criteria: |
+      Severe reaction + asthma history + 1 IM adrenaline dose +
+      potential biphasic risk. Standard paeds anaphylaxis disposition.
     appropriate: true
+  - label: 'Discharge home with allergy clinic referral and 2× EpiPen Jr'
+    criteria: |
+      Inappropriate — observation period mandated by Resus Council UK
+      2021 for paeds anaphylaxis. Discharge ONLY after risk-stratified
+      observation completes.
+    appropriate: false
+  - label: 'Refer to PICU pre-emptively for invasive ventilation'
+    criteria: |
+      Premature — Sam is responding to IM adrenaline. PICU only if
+      airway compromise develops or refractory shock.
+    appropriate: false
+  - label: "Admit AMU under adult medics (sister's under there)"
+    criteria: |
+      Wrong specialty — he''s a paeds patient. Paeds ward is the
+      correct disposition.
+    appropriate: false
 
 state_machine:
-  states: [stable, deteriorating, arrested, admitted]
+  states: [stable, deteriorating, arrested, admitted, discharged]
   transitions:
     - from: deteriorating
       to: stable
-      trigger: { on: action, action_id: mx_adrenaline_paeds_im }
+      trigger:
+        on: action
+        action_id: mx_adrenaline_paeds_im
+        note: 'Second IM adrenaline + fluids — symptoms continue improving.'
+    - from: deteriorating
+      to: arrested
+      trigger:
+        on: inaction_by
+        min: 7
+        required_actions: [mx_adrenaline_paeds_im, mx_oxygen_paeds]
+        note: 'Refractory anaphylaxis to arrest if no second dose and no O2 by T+7.'
+    - from: stable
+      to: admitted
+      trigger: { on: action, action_id: mx_admit_paeds_obs }
 
 pearls:
-  - 'Paeds IM adrenaline dose bands: <6 yr 150 mcg, 6–12 yr 300 mcg, >12 yr 500 mcg.'
-  - 'Shared-meal source → check siblings.'
+  - 'Paediatric IM adrenaline dose bands (Resus Council UK 2021): <6 m 100–150 mcg · 6m–6 y 150 mcg · 6–12 y 300 mcg · >12 y 500 mcg.'
+  - 'Paeds IV fluid bolus in anaphylaxis is 10 mL/kg — half the old "adult 20 mL/kg" rule. Reassess after every bolus.'
+  - 'All paeds anaphylaxis admitted for risk-stratified observation (Resus Council UK 2021). No "1-hour observation and home" shortcut.'
+  - 'A shared meal source is a family-wide allergy disclosure event — screen siblings, brief parents, refer to paediatric allergy clinic.'
+  - 'A peanut-sensitised child has the same biphasic risk profile as the adult — 6–12 h observation minimum for severe reactions.'
+  - 'Discharge bundle: 2× EpiPen Jr (150 mcg) for <30 kg, 2× EpiPen (300 mcg) for ≥30 kg, written action plan, paeds allergy referral, school + family briefing.'
 
 pitfalls:
-  - 'Using adult dose in a child.'
+  - 'Adult-dose adrenaline in a child.'
+  - 'Anchoring on asthma in a known asthmatic — missing the urticaria, lip swelling, and the shared family trigger.'
+  - 'Discharging early without an auto-injector or allergy referral.'
+  - 'Giving IV adrenaline bolus to a child who is still responding to IM doses.'
+  - 'Forgetting the family-wide implications when one sibling is in resus with the same trigger.'
 
 sources:
-  - { type: resus_council_uk, ref: 'Emergency treatment of anaphylactic reactions (2021)' }
+  - {
+      type: resus_council_uk,
+      ref: 'Resuscitation Council UK. Emergency treatment of anaphylactic reactions — Guidelines for healthcare providers (2021, paediatric algorithm).',
+      url: 'https://www.resus.org.uk/library/additional-guidance/guidance-anaphylaxis',
+    }
+  - {
+      type: nice,
+      id: 'CG134',
+      ref: 'Anaphylaxis: assessment and referral after emergency treatment',
+      url: 'https://www.nice.org.uk/guidance/cg134',
+    }
+  - {
+      type: bts_sign,
+      ref: 'BTS/SIGN British Guideline 158 on Asthma (2024) — paediatric nebuliser doses',
+    }
+  - {
+      type: textbook,
+      ref: 'Wyatt JP et al. Oxford Handbook of Emergency Medicine 5e (OUP, 2020).',
+      chapter: '15',
+      page: 'pp.650–660',
+    }
+  - { type: other, ref: 'APLS — Advanced Paediatric Life Support, 7th edition (BMJ Books, 2023)' }
 
-author_notes: 'Skeleton. Milestone 5 authoring required.'
+author_notes: |
+  Authored against Resus Council UK 2021 paeds algorithm. The dose-band
+  trap (adult dose in a child) is the single most important pearl. The
+  arc_family_peanut_party connects Sam to Beth — completing that arc
+  reveals the shared peanut trigger and enables paeds-team coordination
+  with the resus team next door.

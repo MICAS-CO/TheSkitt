@@ -1,32 +1,47 @@
-# SAMPLE ARC — family relation, shared incident.
-# Connects case_anaphylaxis_adult_peanut (sister, in resus) with
-# case_anaphylaxis_paeds_sibling (brother, arrives ~30 min later).
-# Demonstrates the build-prompt "intersecting arcs" mechanic.
+# Family-relation arc connecting Beth Cartwright (adult anaphylaxis,
+# resus) and her 8y/o brother Sam Cartwright (paediatric anaphylaxis,
+# brought in 2 hours later by mum). Both share a peanut trigger. Mum
+# made the connection from the family WhatsApp while Beth was being
+# resuscitated.
+#
+# The reveal primes the paeds team to expect Sam and to draw up the
+# 300 mcg paediatric IM adrenaline dose in advance.
 
 schema_version: 1
 id: arc_family_peanut_party
 type: family_relation
-title: 'Same family — same party'
+title: 'Same family — same trigger'
 internal_summary: |
-  The adult anaphylaxis patient in resus is the older sister of the
-  paediatric anaphylaxis patient who arrives ~30 min later. The player
-  may realise the connection from the family-arrival event or from the
-  shared peanut history. Recognising the link earlier lets the player
-  pre-emptively prepare paeds anaphylaxis resus space and dose-by-weight
-  adrenaline.
+  Beth (adult, resus) and Sam (8y/o, en route via paeds at T+8) are
+  siblings, both reacting to peanut. Mum saw Beth's hospitalisation
+  on the family WhatsApp and connected the dots about Sam's lip
+  swelling earlier in the day. Recognising the link early lets the
+  player pre-emptively prepare paeds anaphylaxis space and dose-by-
+  weight adrenaline.
 
 cases: [case_anaphylaxis_adult_peanut, case_anaphylaxis_paeds_sibling]
 
 reveals:
-  - id: reveal_via_history
-    on: action
-    action_id: mx_lay_flat # placeholder — the real reveal hook will be a history question
+  # Primary: asking Beth's partner-history question reveals the family
+  # detail (her partner Tom is in the relatives' room, family includes
+  # an 8y/o brother).
+  - id: reveal_via_partner_history
+    on: history_asked
+    history_id: hx_partner
     in_case_id: case_anaphylaxis_adult_peanut
-  - id: reveal_via_family_arrival
+
+  # Fallback: Sam's new_arrival fires at T+8 in the birthday-party
+  # episode; the clock-time reveal happens just before then so the
+  # player has a beat to react.
+  - id: reveal_via_clock_fallback
     on: clock_time
-    t_min: 25
+    t_min: 7
 
 effects:
   - on_case_id: case_anaphylaxis_paeds_sibling
-    unlocks_history_id: hx_arrival
-    note: 'Once arc is revealed, paeds case history opens with the shared-party context.'
+    note: |
+      Paeds team primed: 300 mcg IM adrenaline drawn up in anticipation
+      of Sam's arrival; paeds resus space allocated; allergy clinic
+      referral path noted on both case files.
+  - on_case_id: case_anaphylaxis_adult_peanut
+    note: 'Resus team aware a paediatric sibling is en route — disposition planning includes a paeds-allergy family referral.'

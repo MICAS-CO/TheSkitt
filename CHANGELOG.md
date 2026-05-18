@@ -4,13 +4,45 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Content: paeds anaphylaxis (Sam) + family-anaphylaxis shift
+
+- Upgrade `content/cases/case_anaphylaxis_paeds_sibling.yaml` from
+  the M2 skeleton to a fully-authored paeds case. Sam Cartwright,
+  8y/o, brother of Beth from the hen-do shift. Mum saw Beth's
+  hospitalisation on the family WhatsApp and connected it to Sam's
+  lip-swelling-after-lunch earlier in the day. Authored against
+  Resus Council UK 2021 paediatric algorithm, NICE CG134, BTS/SIGN
+  158 (paediatric nebuliser doses), and APLS principles.
+  - 6 history items (paramedic, mum's timeline, previous reactions,
+    asthma history, asking Sam directly, pre-anaesthesia screen).
+  - PAT (Paediatric Assessment Triangle) included as an explicit
+    examination system.
+  - 11 management actions including paeds IM adrenaline at 300 mcg
+    (the dose-band trap is the headline pearl), 10 mL/kg fluid bolus
+    (not the adult 500–1000 mL), salbutamol nebs as adjunct,
+    paeds-team + paeds-anaesthetics escalation.
+  - 5 must_not_do traps: adult 500 mcg dose in a child, IV chlorphenamine
+    first-line, salbutamol-only as asthma, discharge after short obs
+    without auto-injector, IV adrenaline bolus while still responding
+    to IM.
+- Upgrade `content/episodes/ep_birthday_party.yaml` (M2 sample) to a
+  fully-authored 2-case family-anaphylaxis shift. Beth + Sam,
+  arc_family_peanut_party connecting them. Sam arrives at T+8;
+  Beth deteriorates at T+5 without adrenaline; Sam deteriorates at
+  T+15 without further adrenaline AND oxygen.
+- Rewrite `content/arcs/arc_family_peanut_party.yaml` to use the new
+  `history_asked` reveal trigger (asking Beth's `hx_partner`) plus a
+  T+7 clock-time fallback that primes the paeds team before Sam
+  arrives.
+- New "Family anaphylaxis — adult + paeds" entry on the shift menu.
+
 ### Content: new-onset DKA case + overnight metabolic shift
 
 - `content/cases/case_dka_marcus.yaml` — 19y/o engineering student with
   3-day vomiting + polyuria + weight loss, GCS 13, Kussmaul breathing,
   BM "HI". First-presentation T1DM with severe DKA (pH 7.04, HCO3 7,
   ketones 5.6, anion gap 23). Scaffolded by `pnpm new-case --topic
-  dka_adult` then authored against JBDS-IP Adult DKA 2023, NICE NG17,
+dka_adult` then authored against JBDS-IP Adult DKA 2023, NICE NG17,
   RCEM Best Practice and Oxford Handbook 5e Ch 3. Five `must_not_do`
   traps: insulin bolus before FRII; bicarbonate to "correct" the
   acidosis; stopping insulin when glucose falls (instead of adding
