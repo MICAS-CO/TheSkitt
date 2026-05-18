@@ -117,20 +117,20 @@ examination:
   - system: airway
     findings:
       - { name: 'voice', value: 'hoarse; muffled' }
-      - { name: 'stridor', present: true }
-      - { name: 'tongue swelling', present: true }
+      - { name: 'stridor', present: true, red_flag: true }
+      - { name: 'tongue swelling', present: true, red_flag: true }
       - { name: 'lip swelling', present: true }
   - system: breathing
     findings:
       - { name: 'respiratory rate', value: '28/min' }
-      - { name: 'SpO2', value: '92% on room air' }
+      - { name: 'SpO2', value: '92% on room air', red_flag: true }
       - { name: 'auscultation', value: 'widespread polyphonic wheeze' }
       - { name: 'tracheal tug', present: true }
       - { name: 'use of accessory muscles', present: true }
   - system: circulation
     findings:
       - { name: 'heart rate', value: '124/min, sinus' }
-      - { name: 'blood pressure', value: '88/52 mmHg' }
+      - { name: 'blood pressure', value: '88/52 mmHg', red_flag: true }
       - { name: 'capillary refill', value: '4 seconds peripherally' }
       - { name: 'peripheries', value: 'warm and flushed (distributive picture)' }
   - system: disability

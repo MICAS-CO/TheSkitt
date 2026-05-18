@@ -118,8 +118,12 @@ examination:
   - system: general
     findings:
       - { name: 'appearance', value: 'sat upright, looking right-gaze-deviated', present: true }
-      - { name: 'right-sided facial droop', present: true }
-      - { name: 'speech', value: 'non-fluent dysphasia — words effortful, telegrams' }
+      - { name: 'right-sided facial droop', present: true, red_flag: true }
+      - {
+          name: 'speech',
+          value: 'non-fluent dysphasia — words effortful, telegrams',
+          red_flag: true,
+        }
   - system: airway
     findings:
       - { name: 'patent, swallowing', present: true }
@@ -139,11 +143,11 @@ examination:
       - { name: 'GCS', value: '14 — E4 V4 M6 (V4 from dysphasia, not drowsiness)' }
       - { name: 'glucose', value: '9.4 mmol/L (BM in ED) — excludes hypoglycaemic stroke mimic' }
       - { name: 'pupils', value: '3 mm, equal, reactive' }
-      - { name: 'right arm power', value: 'MRC 2/5 (drift to bed within 5 s)' }
-      - { name: 'right leg power', value: 'MRC 3/5' }
+      - { name: 'right arm power', value: 'MRC 2/5 (drift to bed within 5 s)', red_flag: true }
+      - { name: 'right leg power', value: 'MRC 3/5', red_flag: true }
       - { name: 'right face', value: 'lower-face droop, forehead spared (UMN pattern)' }
       - { name: 'gaze', value: 'conjugate deviation to the left (away from the weakness)' }
-      - { name: 'NIHSS', value: '14 — moderate-severe stroke' }
+      - { name: 'NIHSS', value: '14 — moderate-severe stroke', red_flag: true }
   - system: neuro
     findings:
       - { name: 'plantar response right', value: 'upgoing (Babinski)' }

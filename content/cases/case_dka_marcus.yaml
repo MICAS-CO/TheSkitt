@@ -107,22 +107,23 @@ examination:
       - { name: 'patent, talking', present: true }
   - system: breathing
     findings:
-      - { name: 'respiratory rate', value: '32/min — deep sighing (Kussmaul)' }
+      - { name: 'respiratory rate', value: '32/min — deep sighing (Kussmaul)', red_flag: true }
       - { name: 'SpO2', value: '99% on room air' }
       - { name: 'auscultation', value: 'clear chest' }
   - system: circulation
     findings:
-      - { name: 'heart rate', value: '124/min, sinus' }
+      - { name: 'heart rate', value: '124/min, sinus', red_flag: true }
       - {
           name: 'blood pressure',
           value: '102/68 mmHg sitting; 88/52 mmHg standing — postural drop',
+          red_flag: true,
         }
       - { name: 'capillary refill', value: '3 s' }
       - { name: 'peripheries', value: 'cool, dry' }
   - system: disability
     findings:
-      - { name: 'GCS', value: '13 (E3 V4 M6) — drowsy when not stimulated' }
-      - { name: 'glucose', value: 'meter "HI" (>33 mmol/L)' }
+      - { name: 'GCS', value: '13 (E3 V4 M6) — drowsy when not stimulated', red_flag: true }
+      - { name: 'glucose', value: 'meter "HI" (>33 mmol/L)', red_flag: true }
       - { name: 'pupils', value: 'equal, reactive' }
   - system: abdomen
     findings:

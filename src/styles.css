@@ -496,6 +496,19 @@ a {
   color: #000;
 }
 
+.enc__chip--red-flag {
+  background: #b94434;
+  color: #fff;
+  margin-right: 6px;
+  font-weight: 600;
+}
+
+.enc__findings li.is-red-flag {
+  border-left: 3px solid #b94434;
+  padding-left: 8px;
+  margin-left: -11px;
+}
+
 .enc__head-actions {
   display: flex;
   gap: 6px;

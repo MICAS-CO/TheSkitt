@@ -114,18 +114,22 @@ examination:
       - { name: 'patent, speaks in short sentences', present: true }
   - system: breathing
     findings:
-      - { name: 'respiratory rate', value: '24/min' }
-      - { name: 'SpO2', value: '95% on 4 L nasal cannulae (91% at scene on air)' }
+      - { name: 'respiratory rate', value: '24/min', red_flag: true }
+      - { name: 'SpO2', value: '95% on 4 L nasal cannulae (91% at scene on air)', red_flag: true }
       - { name: 'chest auscultation', value: 'fine bibasal crackles, no focal consolidation' }
   - system: circulation
     findings:
       - { name: 'heart rate', value: '112/min, irregularly irregular (AF)' }
-      - { name: 'blood pressure', value: '98/62 mmHg after 750 mL crystalloid (down from 105/68)' }
-      - { name: 'capillary refill', value: '4 s peripherally' }
+      - {
+          name: 'blood pressure',
+          value: '98/62 mmHg after 750 mL crystalloid (down from 105/68)',
+          red_flag: true,
+        }
+      - { name: 'capillary refill', value: '4 s peripherally', red_flag: true }
       - { name: 'peripheries', value: 'warm to elbows but mottled below knees' }
   - system: disability
     findings:
-      - { name: 'GCS', value: '13 (E3 V4 M6) — drop from her baseline of 15' }
+      - { name: 'GCS', value: '13 (E3 V4 M6) — drop from her baseline of 15', red_flag: true }
       - { name: 'glucose', value: '6.8 mmol/L (was 6.4 pre-hospital)' }
       - { name: 'pupils', value: '3 mm, equal, reactive' }
   - system: abdomen

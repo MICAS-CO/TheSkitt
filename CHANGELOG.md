@@ -4,6 +4,20 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### UX: surface `red_flag` exam findings + backfill across cases
+
+- Schema: `ExamFinding.red_flag` was already a documented field but
+  unused by the UI. Wired into `ExaminationPhase`: red-flag rows now
+  carry an "⚠ red flag" chip and a left-border accent so critical
+  findings (stridor, NIHSS, GCS drop, hypotension, Kussmaul
+  breathing) jump off the page when revealed.
+- Backfilled `red_flag: true` on the most diagnostically important
+  findings in Beth, Williams, Morrison, and Marcus. Combined with the
+  two new cases (Priya status, Brennan head injury) that already used
+  the field, all 10 cases now demonstrate red-flag rendering.
+- WCAG contrast: red-flag chip uses the same `#b94434` red as the
+  arrested/deceased state chip (≈5:1 on white).
+
 ### A11y: reduced-motion + WCAG-AA contrast + ARIA progressbar
 
 - `@media (prefers-reduced-motion: reduce)` collapses all animations

@@ -422,7 +422,12 @@ function ExaminationPhase({ cs, onExamine }: { cs: CaseRuntime; onExamine: (s: s
               {isExamined && (
                 <ul className="enc__findings">
                   {e.findings.map((f, i) => (
-                    <li key={i}>
+                    <li key={i} className={f.red_flag ? 'is-red-flag' : ''}>
+                      {f.red_flag && (
+                        <span className="enc__chip enc__chip--red-flag" aria-label="Red flag">
+                          ⚠ red flag
+                        </span>
+                      )}
                       <strong>{f.name}</strong>
                       {f.value ? `: ${f.value}` : ''}
                       {f.pertinent_negative ? ' · (pertinent negative)' : ''}

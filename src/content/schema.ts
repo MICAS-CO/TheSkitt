@@ -197,6 +197,7 @@ export const ExamFinding = z.object({
   value: z.string().optional(),
   present: z.boolean().default(true),
   pertinent_negative: z.boolean().default(false),
+  red_flag: z.boolean().default(false),
 });
 
 export const ExamSystemFindings = z.object({
