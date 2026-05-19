@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { CaseRuntime } from '../../sim/kernel';
+import { IconMustDo } from '../../style/icons';
 
 /**
  * Resus-mode encounter view (M13).
@@ -89,7 +90,10 @@ export function ResusMode({
                     <span className="enc__chip">{m.category}</span>
                     <span>{m.name}</span>
                     {m.must_do && !isPicked && (
-                      <span className="enc__chip enc__chip--attn">must-do</span>
+                      <span className="enc__chip enc__chip--attn">
+                        <IconMustDo size={12} fill="#fff" />
+                        <span style={{ marginLeft: 4 }}>must-do</span>
+                      </span>
                     )}
                   </label>
                   {m.detail && <p className="enc__card-body enc__card-body--dim">{m.detail}</p>}

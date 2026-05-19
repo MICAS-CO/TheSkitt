@@ -1,29 +1,38 @@
 export const GAME_WIDTH = 1280;
 export const GAME_HEIGHT = 720;
 
+/**
+ * Phaser overworld palette — tracks Claude Design's locked palette
+ * (see src/style/palette.ts). Hex stored as 0x integers for Phaser.
+ *
+ * Zone tints chosen so each bay reads as a distinct in-world surface
+ * while keeping inside the locked ramps: resus = alert-300 (blood-red
+ * shadow), paeds = teal-200 (clinical), majors = teal-300 (deep night
+ * bay), minors = lino-300 (warm low-lit corridor), etc.
+ */
 export const PALETTE = {
-  bg: 0x0f1115,
-  floor: 0x1a1d24,
-  border: 0x2a3140,
-  resus: 0x6b2d2d,
-  majors: 0x3a4a6b,
-  minors: 0x2f6b4a,
-  paeds: 0x6b4a8a,
-  relatives: 0x8a6b3a,
-  triage: 0x4a4a4a,
-  ambulatory: 0x3a6b6b,
-  station: 0x3a4a3a,
-  text: 0xe8e8e8,
-  muted: 0x8a93a3,
-  accent: 0x7adb7a,
-  // Patient-state colours for hub view (Milestone 8+ post)
-  patient_stable: 0x7adb7a,
-  patient_deteriorating: 0xe1a247,
-  patient_arrested: 0xd96b5c,
-  patient_admitted: 0x5ea4d4,
-  patient_discharged: 0x5ea4d4,
-  patient_unseen: 0x4a5263,
-  patient_triaged: 0xb8b8b8,
+  bg: 0x0d2120, // teal-night bg
+  floor: 0x15302f, // teal-400
+  border: 0x264a48, // teal-200/dark
+  resus: 0x7a1e16, // alert-300
+  majors: 0x2b5f5d, // teal-300
+  minors: 0x3d8885, // teal-200
+  paeds: 0x4fa3a0, // teal-100
+  relatives: 0x9c8d5c, // paper-300 (warm waiting room)
+  triage: 0x6b6862, // lino-400
+  ambulatory: 0x3d8885, // teal-200
+  station: 0x15302f, // teal-400 (counter at front)
+  text: 0xf1ece3, // lino-50
+  muted: 0xa29f98, // lino-300
+  accent: 0x5bbf8f, // mon-ok
+  // Patient-state colours mirror the encounter UI's vitals chips.
+  patient_stable: 0x5bbf8f, // mon-ok
+  patient_deteriorating: 0xe0a82e, // mon-warn
+  patient_arrested: 0xc8362a, // mon-crit
+  patient_admitted: 0x4fa3a0, // teal-100
+  patient_discharged: 0x86e0b5, // mon-trace
+  patient_unseen: 0x6b6862, // lino-400
+  patient_triaged: 0xc4c1ba, // lino-200
 } as const;
 
 export interface Zone {

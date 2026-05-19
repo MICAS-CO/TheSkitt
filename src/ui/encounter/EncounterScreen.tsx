@@ -5,7 +5,7 @@ import type { CaseRuntime, KernelState, LogEntry } from '../../sim/kernel';
 import { ClockBar } from '../shift/ClockBar';
 import { PatientPanel } from './PatientPanel';
 import { ResusMode } from './ResusMode';
-import { IconCountdown, IconRedFlag } from '../../style/icons';
+import { IconCountdown, IconNewInfo, IconRedFlag } from '../../style/icons';
 import { ResultsEnvelope } from '../../style/frames';
 
 /**
@@ -537,7 +537,12 @@ function HistoryPhase({ cs, onAsk }: { cs: CaseRuntime; onAsk: (id: string) => v
               >
                 <span className="enc__chip">{h.source.replace('_', ' ')}</span>
                 <span>{h.topic}</span>
-                {isNewlyUnlocked && <span className="enc__chip enc__chip--unlock">new</span>}
+                {isNewlyUnlocked && (
+                  <span className="enc__chip enc__chip--unlock">
+                    <IconNewInfo size={12} fill="#000" />
+                    <span style={{ marginLeft: 4 }}>new</span>
+                  </span>
+                )}
               </button>
               {isAsked && (
                 <div className="enc__card-body enc__card-body--dialogue">
