@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSim, scoreCase, type ScoreReport, type SimSpeedKey } from '../../state/sim';
-import type { CitationT, HistoryItemT } from '../../content/schema';
+import type { CaseT, CitationT, HistoryItemT } from '../../content/schema';
 import type {
   CaseRuntime,
   ConsultantInterrupt,
@@ -13,6 +13,7 @@ import { ResusMode } from './ResusMode';
 import { IconCitation, IconCountdown, IconNewInfo, IconRedFlag, IconTrap } from '../../style/icons';
 import { ResultsEnvelope } from '../../style/frames';
 import { NPC_SPRITES, npcFrameToSvg, npcSpriteIdForSource } from '../../style/npcSprites';
+import { PROP_SPRITES, propFrameToSvg, propIdForAction } from '../../style/propSprites';
 import { ECG_BANK } from '../../content/ecg-challenges';
 import { hasPerk } from '../../state/progression';
 
@@ -798,6 +799,31 @@ function HistoryNpcSprite({
   );
 }
 
+/**
+ * Inline diegetic prop sprite for a management action (M45). Maps
+ * action.name + action.category onto a 16×16 prop (syringe, IV bag,
+ * O2 mask, etc.) via propIdForAction. Sprite-less actions render
+ * a placeholder slot so column widths stay aligned.
+ */
+function ActionPropSprite({ action }: { action: CaseT['management'][number] }) {
+  const id = useMemo(() => propIdForAction(action), [action]);
+  const svg = useMemo(() => {
+    if (!id) return null;
+    const rows = PROP_SPRITES[id];
+    if (!rows) return null;
+    return propFrameToSvg(rows, 1);
+  }, [id]);
+  if (!svg) return <span className="drugchart__prop drugchart__prop--placeholder" aria-hidden="true" />;
+  return (
+    <span
+      className="drugchart__prop"
+      aria-hidden="true"
+      title={id?.replace(/_/g, ' ')}
+      dangerouslySetInnerHTML={{ __html: svg }}
+    />
+  );
+}
+
 function BranchPicker({
   choices,
   onPick,
@@ -1375,6 +1401,7 @@ function ManagementPhase({ cs, onToggle }: { cs: CaseRuntime; onToggle: (id: str
                 </span>
                 <span className="drugchart__row-name">
                   <input type="checkbox" checked={isPicked} onChange={() => onToggle(m.id)} />
+                  <ActionPropSprite action={m} />
                   <span>{m.name}</span>
                   {m.must_do && isPicked && <span className="drugchart__row-stat">STAT</span>}
                   {trapHints && m.must_not_do && !isPicked && (

@@ -1885,6 +1885,20 @@ a {
   width: 16px;
   height: 16px;
 }
+/* Inline diegetic prop sprite — M45. */
+.drugchart__prop {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.drugchart__prop--placeholder {
+  visibility: hidden;
+}
+.drugchart__row.is-given .drugchart__prop {
+  filter: brightness(0.9);
+}
 .drugchart__row-cat {
   font-size: 10px;
   letter-spacing: 0.06em;
