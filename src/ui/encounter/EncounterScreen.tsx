@@ -5,7 +5,7 @@ import type { CaseRuntime, KernelState, LogEntry } from '../../sim/kernel';
 import { ClockBar } from '../shift/ClockBar';
 import { PatientPanel } from './PatientPanel';
 import { ResusMode } from './ResusMode';
-import { IconCountdown, IconNewInfo, IconRedFlag } from '../../style/icons';
+import { IconCitation, IconCountdown, IconNewInfo, IconRedFlag } from '../../style/icons';
 import { ResultsEnvelope } from '../../style/frames';
 
 /**
@@ -1111,6 +1111,7 @@ function CitationLine({ c }: { c: CitationT }) {
   const head = c.type === 'nice' ? `NICE ${c.id}` : c.type.replace(/_/g, ' ').toUpperCase();
   return (
     <span>
+      <IconCitation size={12} style={{ marginRight: 6 }} />
       <strong>{head}</strong> — {c.ref}
       {c.type === 'textbook' && (c.chapter || c.page) && (
         <span>

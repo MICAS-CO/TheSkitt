@@ -297,6 +297,197 @@ export const ECG_BANK: EcgChallenge[] = [
     sources: ['Resus Council UK ALS — Tachycardia algorithm', 'REVERT trial 2015'],
   },
   {
+    id: 'ecg_008_atrial_flutter',
+    title: 'Tachycardia at exactly 150 — sawtooth or coincidence?',
+    context:
+      '68 y/o man, palpitations 4 h, mild SOB. HR 150, BP 132/82, GCS 15. PMH: hypertension, mild renal impairment.',
+    strip:
+      '12-lead summary:\n  Narrow-complex regular tachycardia 150/min\n  Sawtooth flutter waves visible in II/III/aVF\n  P:QRS = 2:1\n  Atrial rate ~300/min\n  No ST-segment change',
+    steps: [
+      {
+        prompt: 'Most likely rhythm?',
+        options: [
+          'Sinus tachycardia',
+          'AVNRT',
+          'Atrial flutter with 2:1 AV block',
+          'Ventricular tachycardia',
+        ],
+        correctIndex: 2,
+        rationale:
+          'Narrow, regular, exactly 150/min, sawtooth pattern in inferior leads — atrial flutter with 2:1 block. The classic "150 ± a few bpm" should always raise atrial flutter as the prime differential.',
+      },
+      {
+        prompt: 'A new-onset, haemodynamically stable atrial flutter — first-line?',
+        options: [
+          'IV digoxin 500 mcg slow',
+          'Rate control (IV bisoprolol or diltiazem) + anticoagulation per CHA₂DS₂-VASc + plan electrical cardioversion / TOE-guided',
+          'Synchronised DC cardioversion now without anticoagulation',
+          'IV adenosine 6 mg bolus to cardiovert',
+        ],
+        correctIndex: 1,
+        rationale:
+          'Stable atrial flutter <48 h still carries embolic risk per UK guidance; anticoagulate per CHA₂DS₂-VASc, rate-control while planning rhythm strategy. Adenosine only unmasks flutter — does not cardiovert.',
+      },
+      {
+        prompt: 'If patient becomes hypotensive (SBP 80) and drowsy — next step?',
+        options: [
+          'IV amiodarone 300 mg over 20 min',
+          'Synchronised DC cardioversion (75–100 J biphasic, anaesthetic input)',
+          'IV verapamil 5 mg bolus',
+          'Vagal manoeuvres',
+        ],
+        correctIndex: 1,
+        rationale:
+          'Adverse features (shock, syncope, MI, heart failure) → synchronised DC cardioversion per Resus Council UK tachycardia algorithm. Stable patient = drug. Unstable patient = electricity.',
+      },
+    ],
+    sources: [
+      'Resus Council UK 2021 — Adult Tachycardia algorithm',
+      'NICE NG196 atrial fibrillation 2021 (applies to flutter)',
+    ],
+  },
+  {
+    id: 'ecg_009_third_degree_inferior',
+    title: 'Inferior STEMI with bradycardia',
+    context:
+      '58 y/o man, central crushing pain 50 min, sweaty, nauseated. HR 42, BP 86/54, SpO2 97%. Diaphoretic, mildly confused.',
+    strip:
+      '12-lead summary:\n  Bradycardia ~42/min\n  Lead II/III/aVF: ST↑ 3 mm with Q waves\n  Reciprocal ST↓ in I/aVL\n  V1: ST↑ 1 mm (RV involvement)\n  Complete AV block — P waves dissociated from narrow escape',
+    steps: [
+      {
+        prompt: 'ECG diagnosis?',
+        options: [
+          'Inferior STEMI + RV infarct + complete AV block',
+          'Anterior STEMI',
+          'Pericarditis',
+          'Left bundle branch block',
+        ],
+        correctIndex: 0,
+        rationale:
+          'Inferior ST elevation (II/III/aVF) + V1 ST elevation = right coronary artery occlusion proximal to AV nodal branch. Bradyarrhythmia + RV infarction = hypotension. Always check V4R when inferior STEMI bradycardia/hypotension to confirm.',
+      },
+      {
+        prompt: 'BP 86/54, drowsy — first haemodynamic intervention?',
+        options: [
+          'GTN 800 mcg sublingual',
+          'IV fluid 250–500 mL crystalloid bolus (RV infarct preload-dependent)',
+          'IV furosemide 40 mg',
+          'IV morphine 5 mg',
+        ],
+        correctIndex: 1,
+        rationale:
+          'RV infarction is preload-dependent. Cautious crystalloid bolus + avoid nitrates / diuretics / morphine that drop preload. Activate primary PCI as you fluid-resuscitate.',
+      },
+      {
+        prompt: 'Most appropriate definitive treatment?',
+        options: [
+          'Thrombolysis with tenecteplase',
+          'Primary PCI — activate cath lab now',
+          'Conservative management — ACS pathway, troponin in 3 h',
+          'Beta-blocker + ACE inhibitor on the ward',
+        ],
+        correctIndex: 1,
+        rationale:
+          'STEMI = primary PCI within 120 min. Atropine 500 mcg may bridge bradycardia; transcutaneous pacing if escape fails. Avoid GTN/morphine/IV nitrates in RV infarct.',
+      },
+    ],
+    sources: ['NICE NG185 ACS 2020', 'ESC 2023 STEMI guidelines'],
+  },
+  {
+    id: 'ecg_010_wpw_af',
+    title: 'Irregular wide-complex tachycardia in a young patient',
+    context:
+      '22 y/o woman, sudden palpitations 30 min, mild light-headedness. HR irregularly 200–260, BP 102/68, GCS 15.',
+    strip:
+      '12-lead summary:\n  Irregular, irregular tachycardia\n  Wide complexes (QRS 140 ms), variable morphology\n  Rate fluctuates 200–260/min\n  Some narrow complexes interspersed (variable conduction)\n  Prior ECG (1 year ago): short PR + delta wave',
+    steps: [
+      {
+        prompt: 'Most likely diagnosis?',
+        options: [
+          'Atrial fibrillation with rate-related aberrancy',
+          'AF in pre-excited (WPW) conduction via accessory pathway',
+          'Polymorphic VT',
+          'Idioventricular rhythm',
+        ],
+        correctIndex: 1,
+        rationale:
+          'Irregularly irregular + wide + extreme tachycardia (>250) + history of delta waves = AF conducting via an accessory pathway (pre-excited AF). The pathway has no AV-node refractoriness, so rates >250 are possible and risk VF.',
+      },
+      {
+        prompt: 'Worst drug to give in this rhythm?',
+        options: [
+          'IV amiodarone',
+          'IV procainamide',
+          'IV adenosine, verapamil, beta-blocker or digoxin (all AV-node blockers)',
+          'Synchronised DC cardioversion',
+        ],
+        correctIndex: 2,
+        rationale:
+          'AV-node blockers (adenosine, verapamil, beta-blocker, digoxin) divert conduction down the accessory pathway, accelerate ventricular rates and can precipitate VF in pre-excited AF. This is the FRCEM trap.',
+      },
+      {
+        prompt: 'Safest definitive ED management of haemodynamically stable pre-excited AF?',
+        options: [
+          'IV verapamil',
+          'IV amiodarone bolus then infusion (or synchronised DC cardioversion if unstable)',
+          'Vagal manoeuvres only',
+          'Discharge for outpatient cardiology',
+        ],
+        correctIndex: 1,
+        rationale:
+          'Stable: IV amiodarone or IV procainamide; cardiology input + plan for accessory-pathway ablation. Unstable: synchronised DC cardioversion. Never AV-node blockers.',
+      },
+    ],
+    sources: ['Resus Council UK ALS — Periarrest Arrhythmias', 'ESC 2019 SVT guidelines'],
+  },
+  {
+    id: 'ecg_011_brugada_phenocopy',
+    title: 'Syncope, fever, suspicious right precordial ECG',
+    context:
+      '34 y/o man, fever 39.4°C, viral URTI, syncopal episode at home. Family history of sudden death in his uncle aged 38.',
+    strip:
+      '12-lead summary:\n  Sinus rhythm 96/min\n  V1: coved ST elevation ≥2 mm with negative T wave\n  V2: coved ST elevation 2.5 mm with negative T wave\n  QRS 100 ms\n  No reciprocal change\n  (Type 1 Brugada pattern)',
+    steps: [
+      {
+        prompt: 'Pattern recognition?',
+        options: [
+          'Anterior STEMI',
+          'Type 1 Brugada ECG pattern',
+          'Hyperkalaemia',
+          'Hypothermia (Osborn J waves)',
+        ],
+        correctIndex: 1,
+        rationale:
+          'Coved ST elevation ≥2 mm + negative T wave in V1–V2 = Type 1 Brugada. The "Brugada phenocopy" (fever, electrolyte derangement, drugs) can unmask the same pattern. Family history of sudden death raises pre-test probability.',
+      },
+      {
+        prompt: 'Immediate ED priority?',
+        options: [
+          'Discharge with safety-net — viral illness',
+          'Antipyrese aggressively + cardiac monitoring + cardiology referral',
+          'Thrombolysis for STEMI',
+          'IV beta-blocker for tachyarrhythmia prophylaxis',
+        ],
+        correctIndex: 1,
+        rationale:
+          'Aggressive antipyrese (paracetamol, cooling) reduces VF risk in Brugada phenocopy. Continuous cardiac monitoring + urgent cardiology — they will decide ICD per recent syncope + family history.',
+      },
+      {
+        prompt: 'Which drug class must this patient avoid?',
+        options: [
+          'Beta-blockers',
+          'Sodium-channel blockers (flecainide, propafenone, TCAs, cocaine)',
+          'ACE inhibitors',
+          'Statins',
+        ],
+        correctIndex: 1,
+        rationale:
+          'Sodium-channel blockers can convert latent Brugada to Type 1 and provoke VF. The "Brugadadrugs" reference website lists exhaustive contraindications — share with the patient at discharge.',
+      },
+    ],
+    sources: ['ESC 2022 Ventricular Arrhythmias / SCD guidelines', 'brugadadrugs.org'],
+  },
+  {
     id: 'ecg_007_hyperacute_t_lad',
     title: 'Chest pain with normal-looking ECG',
     context:
