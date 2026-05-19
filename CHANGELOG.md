@@ -4,6 +4,27 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Validator: cross-check action / investigation / history ids
+
+The content validator was already checking `case_id` and `arc_id`
+references but skipping the inner ids (which had occasionally drifted
+during authoring). Extended `validateContent` to also verify:
+
+- `results_back.investigation_id` and `lab_callback.investigation_id`
+  exist on the referenced case's investigations.
+- `deterioration_if_not_x_by_t.required_action_ids` exist on the
+  referenced case's management.
+- Arc reveal triggers (`action`, `history_asked`, `investigation_back`,
+  `examined`) point at real ids on the referenced case.
+- Arc `effect.unlocks_history_id` points at a real history item.
+
+Plus three new unit tests in `tests/validator.test.ts` that
+synthesise tiny YAML fixtures with each kind of broken reference and
+assert the validator catches them. All 10 authored cases + 9
+episodes + 2 arcs already pass under the stricter check.
+
+Test count: 144 → 147.
+
 ### Content: DOAC double-bill — 2-case thematic shift
 
 - `content/episodes/ep_doac_double.yaml` — 20-min 2-case shift

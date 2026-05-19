@@ -134,4 +134,106 @@ describe('validateContent', () => {
       rmSync(root, { recursive: true, force: true });
     }
   });
+
+  it('flags a scheduled results_back referencing an unknown investigation', () => {
+    const root = makeRoot();
+    try {
+      writeFileSync(join(root, 'content/cases/case_a.yaml'), yamlStringify(minimalCase));
+      writeFileSync(
+        join(root, 'content/episodes/ep_a.yaml'),
+        yamlStringify({
+          schema_version: 1,
+          id: 'ep_a',
+          title: 'Test',
+          learning_objectives: ['x'],
+          curriculum_tags: ['RP2'],
+          difficulty_band: 'CT1',
+          focus_cases: ['case_a'],
+          scheduled_events: [
+            {
+              id: 'ev_x',
+              type: 'results_back',
+              t_min: 5,
+              case_id: 'case_a',
+              investigation_id: 'ix_does_not_exist',
+            },
+          ],
+        }),
+      );
+      const report = validateContent(root);
+      expect(report.ok).toBe(false);
+      expect(report.errors.some((e) => e.message.includes('ix_does_not_exist'))).toBe(true);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('flags a deterioration_if_not_x_by_t with an unknown required_action_id', () => {
+    const root = makeRoot();
+    try {
+      writeFileSync(join(root, 'content/cases/case_a.yaml'), yamlStringify(minimalCase));
+      writeFileSync(
+        join(root, 'content/episodes/ep_a.yaml'),
+        yamlStringify({
+          schema_version: 1,
+          id: 'ep_a',
+          title: 'Test',
+          learning_objectives: ['x'],
+          curriculum_tags: ['RP2'],
+          difficulty_band: 'CT1',
+          focus_cases: ['case_a'],
+          scheduled_events: [
+            {
+              id: 'ev_x',
+              type: 'deterioration_if_not_x_by_t',
+              t_min: 5,
+              case_id: 'case_a',
+              required_action_ids: ['mx_does_not_exist'],
+              new_state: 'deteriorating',
+            },
+          ],
+        }),
+      );
+      const report = validateContent(root);
+      expect(report.ok).toBe(false);
+      expect(report.errors.some((e) => e.message.includes('mx_does_not_exist'))).toBe(true);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('flags an arc history_asked reveal that points to an unknown history_id', () => {
+    const root = makeRoot();
+    try {
+      writeFileSync(join(root, 'content/cases/case_a.yaml'), yamlStringify(minimalCase));
+      writeFileSync(
+        join(root, 'content/cases/case_b.yaml'),
+        yamlStringify({ ...minimalCase, id: 'case_b' }),
+      );
+      writeFileSync(
+        join(root, 'content/arcs/arc_a.yaml'),
+        yamlStringify({
+          schema_version: 1,
+          id: 'arc_a',
+          type: 'family_relation',
+          title: 'x',
+          internal_summary: 'x',
+          cases: ['case_a', 'case_b'],
+          reveals: [
+            {
+              id: 'r1',
+              on: 'history_asked',
+              in_case_id: 'case_a',
+              history_id: 'hx_does_not_exist',
+            },
+          ],
+        }),
+      );
+      const report = validateContent(root);
+      expect(report.ok).toBe(false);
+      expect(report.errors.some((e) => e.message.includes('hx_does_not_exist'))).toBe(true);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
 });

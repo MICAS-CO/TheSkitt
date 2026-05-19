@@ -75,7 +75,8 @@ export function validateContent(rootDir: string): ValidationReport {
       }
     }
     for (const ev of ep.scheduled_events) {
-      if ('case_id' in ev && !parsed.cases.has(ev.case_id)) {
+      const caseEntry = 'case_id' in ev ? parsed.cases.get(ev.case_id) : undefined;
+      if ('case_id' in ev && !caseEntry) {
         report.errors.push({
           file: entry.file,
           path: `episode ${ep.id} → scheduled_event ${ev.id}`,
@@ -88,6 +89,30 @@ export function validateContent(rootDir: string): ValidationReport {
           path: `episode ${ep.id} → scheduled_event ${ev.id}`,
           message: `references unknown arc "${ev.arc_id}"`,
         });
+      }
+      // Investigation-id references must exist on the case.
+      if (
+        caseEntry &&
+        (ev.type === 'results_back' || ev.type === 'lab_callback') &&
+        !caseEntry.data.investigations.some((i) => i.id === ev.investigation_id)
+      ) {
+        report.errors.push({
+          file: entry.file,
+          path: `episode ${ep.id} → scheduled_event ${ev.id}`,
+          message: `references unknown investigation "${ev.investigation_id}" on case "${ev.case_id}"`,
+        });
+      }
+      // Required-action-id references must exist on the case.
+      if (caseEntry && ev.type === 'deterioration_if_not_x_by_t') {
+        for (const aid of ev.required_action_ids) {
+          if (!caseEntry.data.management.some((m) => m.id === aid)) {
+            report.errors.push({
+              file: entry.file,
+              path: `episode ${ep.id} → scheduled_event ${ev.id}`,
+              message: `required_action_ids "${aid}" not found in case "${ev.case_id}" management`,
+            });
+          }
+        }
       }
     }
   }
@@ -103,20 +128,75 @@ export function validateContent(rootDir: string): ValidationReport {
       }
     }
     for (const reveal of entry.data.reveals) {
-      if ('in_case_id' in reveal && !parsed.cases.has(reveal.in_case_id)) {
+      const refCase = 'in_case_id' in reveal ? parsed.cases.get(reveal.in_case_id) : undefined;
+      if ('in_case_id' in reveal && !refCase) {
         report.errors.push({
           file: entry.file,
           path: `arc ${entry.data.id} → reveal ${reveal.id}`,
           message: `references unknown case "${reveal.in_case_id}"`,
         });
       }
+      if (refCase) {
+        if (
+          reveal.on === 'action' &&
+          !refCase.data.management.some((m) => m.id === reveal.action_id)
+        ) {
+          report.errors.push({
+            file: entry.file,
+            path: `arc ${entry.data.id} → reveal ${reveal.id}`,
+            message: `action_id "${reveal.action_id}" not in case "${reveal.in_case_id}" management`,
+          });
+        }
+        if (
+          reveal.on === 'history_asked' &&
+          !refCase.data.history.some((h) => h.id === reveal.history_id)
+        ) {
+          report.errors.push({
+            file: entry.file,
+            path: `arc ${entry.data.id} → reveal ${reveal.id}`,
+            message: `history_id "${reveal.history_id}" not in case "${reveal.in_case_id}" history`,
+          });
+        }
+        if (
+          reveal.on === 'investigation_back' &&
+          !refCase.data.investigations.some((i) => i.id === reveal.investigation_id)
+        ) {
+          report.errors.push({
+            file: entry.file,
+            path: `arc ${entry.data.id} → reveal ${reveal.id}`,
+            message: `investigation_id "${reveal.investigation_id}" not in case "${reveal.in_case_id}" investigations`,
+          });
+        }
+        if (
+          reveal.on === 'examined' &&
+          !refCase.data.examination.some((e) => e.system === reveal.system)
+        ) {
+          report.errors.push({
+            file: entry.file,
+            path: `arc ${entry.data.id} → reveal ${reveal.id}`,
+            message: `examination system "${reveal.system}" not in case "${reveal.in_case_id}"`,
+          });
+        }
+      }
     }
     for (const effect of entry.data.effects) {
-      if (!parsed.cases.has(effect.on_case_id)) {
+      const refCase = parsed.cases.get(effect.on_case_id);
+      if (!refCase) {
         report.errors.push({
           file: entry.file,
           path: `arc ${entry.data.id} → effect`,
           message: `references unknown case "${effect.on_case_id}"`,
+        });
+        continue;
+      }
+      if (
+        effect.unlocks_history_id &&
+        !refCase.data.history.some((h) => h.id === effect.unlocks_history_id)
+      ) {
+        report.errors.push({
+          file: entry.file,
+          path: `arc ${entry.data.id} → effect on ${effect.on_case_id}`,
+          message: `unlocks_history_id "${effect.unlocks_history_id}" not in case history`,
         });
       }
     }
