@@ -137,6 +137,43 @@ examination:
       - { name: 'BP', value: '142/92 mmHg' }
       - { name: 'JVP', value: 'mildly raised' }
       - { name: 'peripheries', value: 'cool to wrists' }
+    manoeuvres:
+      - id: full_auscultation
+        label: 'Auscultate at apex / LSE / aortic / pulmonic, including left-lateral and sit-forward positions'
+        findings:
+          - {
+              name: 'soft S3 gallop at apex (left-lateral position)',
+              value: 'low-pitched; appears in late ventricular filling — early LV dysfunction',
+              red_flag: true,
+              supports: ['Anterior ST-elevation myocardial infarction (STEMI)'],
+            }
+          - {
+              name: 'no murmur of acute mitral regurgitation',
+              present: false,
+              pertinent_negative: true,
+              value: 'no pansystolic murmur at apex radiating to axilla — papillary muscle rupture not yet established',
+            }
+          - {
+              name: 'no friction rub',
+              present: false,
+              pertinent_negative: true,
+              value: 'no pericardial scratch — argues against pericarditis as the alternative diagnosis',
+            }
+      - id: peripheral_pulses
+        label: 'Compare radial pulses both sides + check radio-femoral delay'
+        findings:
+          - {
+              name: 'radial pulses equal volume bilaterally',
+              present: true,
+              pertinent_negative: true,
+              value: 'no >10 s radio-femoral delay; no inter-arm pulse pressure difference >20 mmHg',
+              supports: ['Aortic dissection'],
+            }
+          - {
+              name: 'capillary refill 3 s at fingertips',
+              value: 'borderline-prolonged in a warm patient — reflects forward-flow inadequacy',
+              supports: ['Anterior ST-elevation myocardial infarction (STEMI)'],
+            }
   - system: disability
     findings:
       - { name: 'GCS', value: '15' }

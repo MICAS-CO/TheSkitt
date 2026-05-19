@@ -179,6 +179,42 @@ examination:
       - { name: 'stridor', present: true, red_flag: true }
       - { name: 'tongue swelling', present: true, red_flag: true }
       - { name: 'lip swelling', present: true }
+    manoeuvres:
+      - id: oropharynx_inspection
+        label: 'Inspect the oropharynx (tongue depressor, pen-torch — gentle, semi-recumbent)'
+        findings:
+          - {
+              name: 'uvular oedema',
+              value: 'uvula swollen, contacting the soft palate; mucosa pale and boggy',
+              red_flag: true,
+              supports: ['Anaphylaxis to peanut — IgE-mediated (now with hereditary angioedema as a mimic to exclude)'],
+            }
+          - {
+              name: 'tongue base swelling extending posteriorly',
+              value: 'reduced visible airway aperture; the trap-door anatomy that closes fast',
+              red_flag: true,
+              supports: ['Anaphylaxis to peanut — IgE-mediated (now with hereditary angioedema as a mimic to exclude)'],
+            }
+          - {
+              name: 'no ulceration or burns',
+              present: false,
+              pertinent_negative: true,
+              value: 'no scald or chemical injury pattern — argues against thermal / caustic airway oedema',
+            }
+      - id: voice_provocation
+        label: 'Ask the patient to count to ten — listen for stridor under load'
+        findings:
+          - {
+              name: 'stridor on the count of 4',
+              value: 'inspiratory; worsens as effort increases — airway swelling is dynamic and progressive',
+              red_flag: true,
+              supports: ['Anaphylaxis to peanut — IgE-mediated (now with hereditary angioedema as a mimic to exclude)'],
+            }
+          - {
+              name: 'speech in phrases not sentences',
+              value: 'cuts at 3–4 words to breathe; not yet 1–2 word breathlessness, but heading there',
+              red_flag: true,
+            }
   - system: breathing
     findings:
       - { name: 'respiratory rate', value: '28/min' }

@@ -230,6 +230,45 @@ examination:
       - { name: 'gestation by LMP', value: '7+0 weeks' }
       - { name: 'fundus', value: 'not yet palpable abdominally' }
       - { name: 'speculum / bimanual', value: 'deferred to gynae — not routinely required in ED' }
+    manoeuvres:
+      - id: bedside_uss_fast
+        label: 'Bedside abdominal USS (FAST view, Morison''s pouch + pouch of Douglas)'
+        findings:
+          - {
+              name: 'free fluid in Morison''s pouch',
+              value: 'moderate anechoic fluid; the most sensitive view for haemoperitoneum',
+              red_flag: true,
+              supports: ['Right tubal ectopic pregnancy with probable rupture'],
+            }
+          - {
+              name: 'no intrauterine sac visualised',
+              value: 'consistent with very early gestation OR ectopic location',
+              red_flag: true,
+              supports: ['Right tubal ectopic pregnancy with probable rupture'],
+            }
+      - id: pelvic_exam
+        label: 'Pelvic exam (with chaperone and explicit verbal consent)'
+        findings:
+          - {
+              name: 'dark blood at the external os',
+              value: 'small volume, cervix closed; not active brisk bleeding',
+              supports:
+                [
+                  'Right tubal ectopic pregnancy with probable rupture',
+                  'Threatened miscarriage with corpus luteum cyst',
+                ],
+            }
+          - {
+              name: 'cervical motion tenderness',
+              value: 'marked on right-sided motion; reproducibly tender',
+              red_flag: true,
+              supports: ['Right tubal ectopic pregnancy with probable rupture'],
+            }
+          - {
+              name: 'right adnexal fullness',
+              value: 'subtle on bimanual; patient guards heavily',
+              supports: ['Right tubal ectopic pregnancy with probable rupture'],
+            }
 
 investigations:
   - id: ix_urine_bhcg

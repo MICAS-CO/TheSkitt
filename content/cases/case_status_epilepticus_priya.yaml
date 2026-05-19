@@ -211,6 +211,43 @@ examination:
       - name: 'Focal neurology'
         value: 'cannot assess mid-seizure; no lateralising tonic posturing'
         present: false
+    manoeuvres:
+      - id: post_ictal_neuro
+        label: 'Wait for the inter-ictal pause and examine the post-ictal patient (>30s no convulsive activity)'
+        findings:
+          - {
+              name: "Todd's paresis on the right",
+              value: 'right arm and leg with reduced tone and 0/5 power, transient — should resolve within 24-48 h',
+              red_flag: true,
+              supports: ['Focal-onset seizure with secondary generalisation — provoked, on a background of subtherapeutic levetiracetam'],
+            }
+          - {
+              name: 'post-ictal stertor with intact gag',
+              value: 'noisy upper-airway breathing; gag reflex preserved on suction — airway adjunct sufficient, intubation not yet indicated on airway grounds alone',
+              supports: ['Focal-onset seizure with secondary generalisation — provoked, on a background of subtherapeutic levetiracetam'],
+            }
+          - {
+              name: 'lateral tongue bite (right side)',
+              value: '~1 cm, fresh, with active oozing; corroborates true tonic-clonic activity rather than psychogenic non-epileptic attack',
+              red_flag: true,
+              supports: ['Focal-onset seizure with secondary generalisation — provoked, on a background of subtherapeutic levetiracetam'],
+            }
+      - id: meningism_screen
+        label: 'Test neck stiffness and Kernig in the post-ictal window'
+        findings:
+          - {
+              name: 'no neck stiffness',
+              present: false,
+              pertinent_negative: true,
+              value: 'passive flexion to chest tolerated; argues against meningitis as the seizure trigger',
+              supports: ['CNS infection — bacterial meningitis / encephalitis'],
+            }
+          - {
+              name: "Kernig negative bilaterally",
+              present: false,
+              pertinent_negative: true,
+              value: 'no hamstring resistance; supports the above',
+            }
 
   - system: exposure
     findings:
