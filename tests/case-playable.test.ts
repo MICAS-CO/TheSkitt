@@ -24,13 +24,10 @@ import { scoreCase } from '../src/state/sim';
 
 const ROOT = process.cwd();
 const CASES_DIR = join(ROOT, 'content/cases');
-const caseFiles = readdirSync(CASES_DIR)
+const CASES: ReadonlyArray<readonly [string, CaseT]> = readdirSync(CASES_DIR)
   .filter((f) => f.endsWith('.yaml'))
-  .filter((f) => !f.includes('scratch') && !f.includes('_draft'));
-
-function loadCase(file: string): CaseT {
-  return Case.parse(parseYaml(readFileSync(join(CASES_DIR, file), 'utf8')));
-}
+  .filter((f) => !f.includes('scratch') && !f.includes('_draft'))
+  .map((f) => [f, Case.parse(parseYaml(readFileSync(join(CASES_DIR, f), 'utf8')))] as const);
 
 function singleCaseEpisode(caseData: CaseT): EpisodeT {
   return Episode.parse({
@@ -47,9 +44,7 @@ function singleCaseEpisode(caseData: CaseT): EpisodeT {
 }
 
 describe('Every authored case is playable to a non-unsafe band', () => {
-  it.each(caseFiles)('case %s reaches good/excellent on a perfect run', (file) => {
-    const caseData = loadCase(file);
-
+  it.each(CASES)('case %s reaches good/excellent on a perfect run', (_file, caseData) => {
     const topDx = caseData.differential.find((d) => d.likelihood === 'top');
     expect(topDx, `case ${caseData.id} has no "top" differential`).toBeDefined();
 
@@ -76,8 +71,7 @@ describe('Every authored case is playable to a non-unsafe band', () => {
     expect(score.percent).toBeGreaterThanOrEqual(75);
   });
 
-  it.each(caseFiles)('case %s with no actions scores 0-30 (well below good)', (file) => {
-    const caseData = loadCase(file);
+  it.each(CASES)('case %s with no actions scores 0-30 (well below good)', (_file, caseData) => {
     const episode = singleCaseEpisode(caseData);
     const kernel = new SimKernel({ episode, cases: new Map([[caseData.id, caseData]]) });
     kernel.enterCase(caseData.id);

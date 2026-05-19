@@ -1,7 +1,8 @@
 import { useEffect, useMemo } from 'react';
-import { useSim, scoreCase, SIM_SPEEDS, type ScoreReport, type SimSpeedKey } from '../../state/sim';
+import { useSim, scoreCase, type ScoreReport, type SimSpeedKey } from '../../state/sim';
 import type { CitationT } from '../../content/schema';
 import type { CaseRuntime, LogEntry } from '../../sim/kernel';
+import { ClockBar } from '../shift/ClockBar';
 
 export type Phase =
   | 'vignette'
@@ -108,7 +109,7 @@ export function EncounterScreen({
         onBackToBoard={onBackToBoard}
         onExit={onExit}
       />
-      <ClockControls
+      <ClockBar
         clockMin={ks.clockMin}
         shiftDurationMin={ks.shiftDurationMin}
         isRunning={isRunning}
@@ -206,72 +207,6 @@ function EncounterHeader({
   );
 }
 
-function ClockControls({
-  clockMin,
-  shiftDurationMin,
-  isRunning,
-  isShiftOver,
-  onPlay,
-  onPause,
-  onSkip,
-  speedKey,
-  onSpeedChange,
-}: {
-  clockMin: number;
-  shiftDurationMin: number;
-  isRunning: boolean;
-  isShiftOver: boolean;
-  onPlay: () => void;
-  onPause: () => void;
-  onSkip: () => void;
-  speedKey: SimSpeedKey;
-  onSpeedChange: (k: SimSpeedKey) => void;
-}) {
-  const pct = Math.min(100, Math.round((clockMin / shiftDurationMin) * 100));
-  return (
-    <div className="enc__clock">
-      <div
-        className="enc__clock-bar"
-        role="progressbar"
-        aria-valuenow={clockMin}
-        aria-valuemin={0}
-        aria-valuemax={shiftDurationMin}
-        aria-label={`Shift clock: ${clockMin} of ${shiftDurationMin} minutes`}
-      >
-        <div className="enc__clock-bar-fill" style={{ width: `${pct}%` }} />
-      </div>
-      <div className="enc__clock-row">
-        <span className="enc__clock-text">
-          T+{clockMin}m / {shiftDurationMin}m {isShiftOver ? '· shift over' : ''}
-        </span>
-        <div className="enc__clock-buttons">
-          <label className="enc__speed">
-            <span className="enc__speed-label">speed</span>
-            <select value={speedKey} onChange={(e) => onSpeedChange(e.target.value as SimSpeedKey)}>
-              {Object.entries(SIM_SPEEDS).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          {!isRunning && !isShiftOver && (
-            <button onClick={onPlay} title="Start (spacebar)">
-              ▶ start
-            </button>
-          )}
-          {isRunning && !isShiftOver && (
-            <button onClick={onPause} title="Pause (spacebar)">
-              ❚❚ pause
-            </button>
-          )}
-          {!isShiftOver && <button onClick={onSkip}>+1m</button>}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function PhaseProgress({ phase }: { phase: Phase }) {
   const idx = PHASE_ORDER.indexOf(phase);
   return (
@@ -279,18 +214,21 @@ function PhaseProgress({ phase }: { phase: Phase }) {
       className="enc__progress"
       aria-label={`Encounter phase ${idx + 1} of ${PHASE_ORDER.length}`}
     >
-      {PHASE_ORDER.map((p, i) => (
-        <li
-          key={p}
-          className={i === idx ? 'is-active' : i < idx ? 'is-done' : ''}
-          aria-current={i === idx ? 'step' : undefined}
-        >
-          <span className="enc__progress-num" aria-hidden="true">
-            {i + 1}
-          </span>
-          <span className="enc__progress-label">{PHASE_LABELS[p]}</span>
-        </li>
-      ))}
+      {PHASE_ORDER.map((p, i) => {
+        const status = i === idx ? 'active' : i < idx ? 'done' : 'pending';
+        return (
+          <li
+            key={p}
+            className={`is-${status}`}
+            aria-current={status === 'active' ? 'step' : undefined}
+          >
+            <span className="enc__progress-num" aria-hidden="true">
+              {i + 1}
+            </span>
+            <span className="enc__progress-label">{PHASE_LABELS[p]}</span>
+          </li>
+        );
+      })}
     </ol>
   );
 }
@@ -511,9 +449,7 @@ function DifferentialPhase({ cs, onChoose }: { cs: CaseRuntime; onChoose: (dx: s
           return (
             <li
               key={d.diagnosis}
-              className={`enc__card ${isPicked ? 'is-revealed' : ''} ${
-                hasPicked && isTop ? 'enc__card--correct' : ''
-              } ${hasPicked && isPicked && !isTop ? 'enc__card--wrong' : ''}`}
+              className={pickCardClass({ isPicked, hasPicked, isCorrect: isTop })}
             >
               <button
                 className="enc__card-head enc__card-head--toggle"
@@ -588,13 +524,14 @@ function DispositionPhase({
       <ul className="enc__cards">
         {cs.data.disposition_options.map((d) => {
           const isPicked = cs.disposition === d.label;
-          const showRationale = hasPicked;
           return (
             <li
               key={d.label}
-              className={`enc__card ${isPicked ? 'is-revealed' : ''} ${
-                showRationale && d.appropriate ? 'enc__card--correct' : ''
-              } ${showRationale && isPicked && !d.appropriate ? 'enc__card--wrong' : ''}`}
+              className={pickCardClass({
+                isPicked,
+                hasPicked,
+                isCorrect: d.appropriate,
+              })}
             >
               <button
                 className="enc__card-head enc__card-head--toggle"
@@ -602,7 +539,7 @@ function DispositionPhase({
                 data-picked={isPicked}
               >
                 <span>{d.label}</span>
-                {showRationale && (
+                {hasPicked && (
                   <span
                     className={`enc__chip ${
                       d.appropriate ? 'enc__chip--unlock' : 'enc__chip--red-flag'
@@ -612,7 +549,7 @@ function DispositionPhase({
                   </span>
                 )}
               </button>
-              {showRationale && <p className="enc__card-body">{d.criteria}</p>}
+              {hasPicked && <p className="enc__card-body">{d.criteria}</p>}
             </li>
           );
         })}
@@ -707,6 +644,22 @@ function nextPhaseLabel(phase: Phase): string {
   const i = PHASE_ORDER.indexOf(phase);
   const next = PHASE_ORDER[i + 1];
   return next ? PHASE_LABELS[next].toLowerCase() : '';
+}
+
+function pickCardClass({
+  isPicked,
+  hasPicked,
+  isCorrect,
+}: {
+  isPicked: boolean;
+  hasPicked: boolean;
+  isCorrect: boolean;
+}): string {
+  const parts = ['enc__card'];
+  if (isPicked) parts.push('is-revealed');
+  if (hasPicked && isCorrect) parts.push('enc__card--correct');
+  if (hasPicked && isPicked && !isCorrect) parts.push('enc__card--wrong');
+  return parts.join(' ');
 }
 
 function statusLabel(s: 'done' | 'missed' | 'trap_avoided' | 'trap_picked') {

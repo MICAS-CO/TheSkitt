@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { PhaserGame } from '../PhaserGame';
-import { useSim, SIM_SPEEDS, type SimSpeedKey } from '../../state/sim';
+import { useSim, type SimSpeedKey } from '../../state/sim';
+import { ClockBar } from './ClockBar';
 import type { CaseRuntime, LogEntry } from '../../sim/kernel';
 import type { HubPatient, EDSceneData } from '../../game/scenes/EDScene';
 
@@ -112,72 +113,6 @@ export function ShiftHubScreen({
         >
           {allDispositioned ? 'End shift — debrief' : 'End shift early — debrief'}
         </button>
-      </div>
-    </div>
-  );
-}
-
-function ClockBar({
-  clockMin,
-  shiftDurationMin,
-  isRunning,
-  isShiftOver,
-  onPlay,
-  onPause,
-  onSkip,
-  speedKey,
-  onSpeedChange,
-}: {
-  clockMin: number;
-  shiftDurationMin: number;
-  isRunning: boolean;
-  isShiftOver: boolean;
-  onPlay: () => void;
-  onPause: () => void;
-  onSkip: () => void;
-  speedKey: SimSpeedKey;
-  onSpeedChange: (k: SimSpeedKey) => void;
-}) {
-  const pct = Math.min(100, Math.round((clockMin / shiftDurationMin) * 100));
-  return (
-    <div className="enc__clock">
-      <div
-        className="enc__clock-bar"
-        role="progressbar"
-        aria-valuenow={clockMin}
-        aria-valuemin={0}
-        aria-valuemax={shiftDurationMin}
-        aria-label={`Shift clock: ${clockMin} of ${shiftDurationMin} minutes`}
-      >
-        <div className="enc__clock-bar-fill" style={{ width: `${pct}%` }} />
-      </div>
-      <div className="enc__clock-row">
-        <span className="enc__clock-text">
-          T+{clockMin}m / {shiftDurationMin}m {isShiftOver ? '· shift over' : ''}
-        </span>
-        <div className="enc__clock-buttons">
-          <label className="enc__speed">
-            <span className="enc__speed-label">speed</span>
-            <select value={speedKey} onChange={(e) => onSpeedChange(e.target.value as SimSpeedKey)}>
-              {Object.entries(SIM_SPEEDS).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          {!isRunning && !isShiftOver && (
-            <button onClick={onPlay} title="Start (spacebar)">
-              ▶ start
-            </button>
-          )}
-          {isRunning && !isShiftOver && (
-            <button onClick={onPause} title="Pause (spacebar)">
-              ❚❚ pause
-            </button>
-          )}
-          {!isShiftOver && <button onClick={onSkip}>+1m</button>}
-        </div>
       </div>
     </div>
   );

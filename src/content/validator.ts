@@ -1,5 +1,13 @@
 import { z } from 'zod';
-import { Arc, Case, Episode, type ArcT, type CaseT, type EpisodeT } from './schema';
+import {
+  Arc,
+  Case,
+  Episode,
+  type ArcRevealTriggerT,
+  type ArcT,
+  type CaseT,
+  type EpisodeT,
+} from './schema';
 import { walkYaml, type LoadedFile } from './loader';
 
 export interface ValidationIssue {
@@ -137,44 +145,12 @@ export function validateContent(rootDir: string): ValidationReport {
         });
       }
       if (refCase) {
-        if (
-          reveal.on === 'action' &&
-          !refCase.data.management.some((m) => m.id === reveal.action_id)
-        ) {
+        const issue = checkRevealRef(reveal, refCase.data);
+        if (issue) {
           report.errors.push({
             file: entry.file,
             path: `arc ${entry.data.id} → reveal ${reveal.id}`,
-            message: `action_id "${reveal.action_id}" not in case "${reveal.in_case_id}" management`,
-          });
-        }
-        if (
-          reveal.on === 'history_asked' &&
-          !refCase.data.history.some((h) => h.id === reveal.history_id)
-        ) {
-          report.errors.push({
-            file: entry.file,
-            path: `arc ${entry.data.id} → reveal ${reveal.id}`,
-            message: `history_id "${reveal.history_id}" not in case "${reveal.in_case_id}" history`,
-          });
-        }
-        if (
-          reveal.on === 'investigation_back' &&
-          !refCase.data.investigations.some((i) => i.id === reveal.investigation_id)
-        ) {
-          report.errors.push({
-            file: entry.file,
-            path: `arc ${entry.data.id} → reveal ${reveal.id}`,
-            message: `investigation_id "${reveal.investigation_id}" not in case "${reveal.in_case_id}" investigations`,
-          });
-        }
-        if (
-          reveal.on === 'examined' &&
-          !refCase.data.examination.some((e) => e.system === reveal.system)
-        ) {
-          report.errors.push({
-            file: entry.file,
-            path: `arc ${entry.data.id} → reveal ${reveal.id}`,
-            message: `examination system "${reveal.system}" not in case "${reveal.in_case_id}"`,
+            message: issue,
           });
         }
       }
@@ -215,6 +191,29 @@ export function validateContent(rootDir: string): ValidationReport {
 
   report.ok = report.errors.length === 0;
   return report;
+}
+
+function checkRevealRef(reveal: ArcRevealTriggerT, c: CaseT): string | null {
+  switch (reveal.on) {
+    case 'action':
+      return c.management.some((m) => m.id === reveal.action_id)
+        ? null
+        : `action_id "${reveal.action_id}" not in case "${reveal.in_case_id}" management`;
+    case 'history_asked':
+      return c.history.some((h) => h.id === reveal.history_id)
+        ? null
+        : `history_id "${reveal.history_id}" not in case "${reveal.in_case_id}" history`;
+    case 'investigation_back':
+      return c.investigations.some((i) => i.id === reveal.investigation_id)
+        ? null
+        : `investigation_id "${reveal.investigation_id}" not in case "${reveal.in_case_id}" investigations`;
+    case 'examined':
+      return c.examination.some((e) => e.system === reveal.system)
+        ? null
+        : `examination system "${reveal.system}" not in case "${reveal.in_case_id}"`;
+    default:
+      return null;
+  }
 }
 
 function parseInto<TSchema extends z.ZodTypeAny>(

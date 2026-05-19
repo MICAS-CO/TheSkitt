@@ -49,6 +49,12 @@ import doacDoubleEpYaml from '../content/episodes/ep_doac_double.yaml?raw';
 
 type View = 'menu' | 'shift' | 'hub';
 
+const SUBTITLES: Record<View, string> = {
+  menu: 'Episodic UK FRCEM study RPG · 9 shifts, 10 cases',
+  shift: 'Shift in progress',
+  hub: 'ED hub (preview)',
+};
+
 interface ShiftPack {
   episode: EpisodeT;
   cases: CaseT[];
@@ -192,13 +198,7 @@ export function App() {
     <div className="app">
       <header className="app__header">
         <h1 className="app__title">The Skitt</h1>
-        <p className="app__subtitle">
-          {view === 'menu'
-            ? 'Episodic UK FRCEM study RPG · 8 shifts, 10 cases'
-            : view === 'shift'
-              ? 'Shift in progress'
-              : 'ED hub (preview)'}
-        </p>
+        <p className="app__subtitle">{SUBTITLES[view]}</p>
       </header>
 
       <main className="app__stage">
@@ -373,14 +373,20 @@ function MenuView({
   );
 }
 
+const SHIFT_TITLES: Record<string, string> = {
+  ep_anaphylaxis_solo: 'Anaphylaxis solo',
+  ep_hendo_shift: 'The hen-do',
+  ep_overnight_sepsis_solo: 'Overnight: sepsis solo',
+  ep_overnight_metabolic: 'Overnight: metabolic resus',
+  ep_birthday_party: 'Family anaphylaxis — adult + paeds',
+  ep_stroke_solo: 'Stroke onset — thrombolysis window',
+  ep_seizure_solo: 'First seizure — status pathway',
+  ep_head_injury_doac: 'Head injury — DOAC reasoning',
+  ep_doac_double: 'DOAC double-bill — clot and bleed',
+};
+
 function savedShiftTitle(episodeId: string): string {
-  const make = KNOWN_SHIFTS[episodeId];
-  if (!make) return episodeId;
-  try {
-    return make().episode.title;
-  } catch {
-    return episodeId;
-  }
+  return SHIFT_TITLES[episodeId] ?? episodeId;
 }
 
 function timeAgo(ts: number): string {

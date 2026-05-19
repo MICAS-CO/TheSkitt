@@ -4,6 +4,38 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Simplify pass: shared ClockBar, lookup tables, CSS variable
+
+Driven by three parallel review agents (reuse / quality / efficiency).
+Net **−189 lines** across 7 files.
+
+- **Extract `ClockBar` to `src/ui/shift/ClockBar.tsx`** — was
+  triplicated near-verbatim across `EncounterScreen.tsx`,
+  `ShiftBoardScreen.tsx`, and `ShiftHubScreen.tsx`. Each ARIA
+  progressbar attribute I'd just added had to be added three times.
+  Now one component, three consumers. SpeedSelect helper moved
+  alongside.
+- **`savedShiftTitle()`** was calling `KNOWN_SHIFTS[id]()` on every
+  MenuView render with a saved shift — re-parsing 1–3 YAML docs
+  through Zod just to read `episode.title`. Replaced with a static
+  `SHIFT_TITLES` map.
+- **App subtitle 3-way ternary → `SUBTITLES[view]` lookup table.**
+- **`pickCardClass()` helper** unifies the `enc__card`/`is-revealed`/
+  `--correct`/`--wrong` className concatenation that DifferentialPhase
+  and DispositionPhase were both doing inline.
+- **`checkRevealRef()` helper** replaces the four
+  `if (reveal.on === 'X' && !refCase.data.Y.some(...))` blocks in
+  validator.ts with a single switch.
+- **`--danger-strong: #b94434` CSS variable** replaces four
+  occurrences of the hard-coded red across the chip / red-flag
+  border / wrong-card border / wrong-card gradient.
+- **PhaseProgress nested-ternary** → derive `status` once
+  (`'active' | 'done' | 'pending'`), use as className suffix.
+- **Test parse hoist**: `tests/case-playable.test.ts` now parses each
+  case YAML once (was twice — once per `it.each` block).
+
+All 147 tests pass; production build green.
+
 ### Validator: cross-check action / investigation / history ids
 
 The content validator was already checking `case_id` and `arc_id`

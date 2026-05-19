@@ -10,6 +10,7 @@
   --accent: #7adb7a;
   --warn: #e1a247;
   --danger: #d96b5c;
+  --danger-strong: #b94434;
   --info: #5ea4d4;
   --top: #7adb7a;
   --must-not-miss: #e1a247;
@@ -335,7 +336,7 @@ a {
 }
 .enc__chip--state-arrested,
 .enc__chip--state-deceased {
-  background: #b94434;
+  background: var(--danger-strong);
   color: #fff;
 }
 .enc__chip--state-admitted,
@@ -497,14 +498,14 @@ a {
 }
 
 .enc__chip--red-flag {
-  background: #b94434;
+  background: var(--danger-strong);
   color: #fff;
   margin-right: 6px;
   font-weight: 600;
 }
 
 .enc__findings li.is-red-flag {
-  border-left: 3px solid #b94434;
+  border-left: 3px solid var(--danger-strong);
   padding-left: 8px;
   margin-left: -11px;
 }
@@ -514,7 +515,7 @@ a {
   background: linear-gradient(180deg, rgba(122, 219, 122, 0.06), transparent 40%);
 }
 .enc__card--wrong {
-  border-color: #b94434;
+  border-color: var(--danger-strong);
   background: linear-gradient(180deg, rgba(185, 68, 52, 0.08), transparent 40%);
 }
 
