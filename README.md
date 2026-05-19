@@ -58,9 +58,15 @@ log and `RESUME.md` for current state at a glance.
 | 40    | Discoverable manoeuvres            | ExamSystemFindings.manoeuvres splits system-eyeball from technique (log-roll, pronator drift, CN II–XII) |
 | 41    | Interpolated vitals                | HR/RR/SpO2/BP lerp toward kernel target over 6-10s wall-clock; trend arrows in the strip                |
 | 42    | Content backfill                   | Branches +3 cases · essentials +3 cases · gated_by_history +3 traps                                      |
+| 43    | NPC sprites in history             | 8 NPCs (paramedic / triage_nurse / sister / f1_doctor / SHO / security / partner / bereaved) inline      |
+| 44    | Williams patient sprite            | 24×32 across 5 states; sprite coverage 1/17 → 2/17                                                       |
+| 45    | Encounter props in drug chart      | 12 props (syringe / IV bag / vials / ECG dots / O2 / BVM / chart / cannula / glucometer / defib / ETT)   |
+| 46    | World tiles + Style Guide          | 11 environment tiles parked · hidden ?style-guide=1 asset library                                         |
+| 47    | ECG drill at the bedside           | EcgInlineQuiz upgraded to full multi-step · new bank entry · Patel + Okonkwo + Ahmed wired               |
 
-Numbers: **280 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
-14 daily ECGs**. Lint clean, typecheck clean, validator green.
+Numbers: **295 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
+15 daily ECGs · 8 NPC sprites · 12 encounter props · 11 world tiles**.
+Lint clean, typecheck clean, validator green.
 
 ## Stack
 

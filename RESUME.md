@@ -48,6 +48,11 @@ visual integration from Claude Design + new content.
 | M40 | Discoverable examination manoeuvres (Stan log-roll, Brennan pronator-drift + cranial nerves) |
 | M41 | Interpolated vitals + trend arrows — patients deteriorate in real time, no jump-cut |
 | M42 | Content backfill across new systems — branches on +3 cases, essentials on +3, gating on +3 |
+| M43 | NPC sprites in history cards — paramedic / triage_nurse / sister / worried_partner / etc render next to source rows |
+| M44 | Williams patient sprite (5 states) — sprite coverage 1/17 → 2/17 |
+| M45 | Inline encounter prop sprites in the drug chart — syringe / IV bag / O2 mask / etc per action |
+| M46 | World tiles parked + hidden Visual Style Guide (?style-guide=1) |
+| M47 | Full multi-step ECG drill at the bedside — coverage Patel + Okonkwo + Ahmed |
 
 ## ⏳ WAITING ON DESIGN
 
@@ -58,7 +63,7 @@ template. No code changes needed beyond the registry entry.
 
 ## Numbers
 
-- **280 / 280** unit tests passing (Vitest)
+- **295 / 295** unit tests passing (Vitest)
 - **2 / 2** E2E tests passing (Playwright)
 - **17 fully-authored cases**, **17 episodes**, **3 arcs**, 44-topic
   high-yield map

@@ -4,6 +4,55 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M47 — full multi-step ECG drill at the bedside + new bank entry
+
+- EcgInlineQuiz upgraded from single-question preview to full
+  3-step drill matching the side-room daily challenge. Progress
+  dots, back/reveal/next nav, end-of-drill summary.
+- New ECG bank entry: ecg_015_af_rvr_pulmonary_oedema. Teaches
+  the no-cardiovert-before-anticoag rule + digoxin first-line for
+  rate control in pulmonary oedema (ESC 2020 + NICE NG196).
+- case_acute_heart_failure_ahmed.yaml wired. Coverage now Patel +
+  Okonkwo + Ahmed.
+
+### M46 — park world tiles + hidden Visual Style Guide
+
+- src/style/worldSprites.ts: 11 environment tiles (lino /
+  wall_teal / curtain / trolley / drip stand / monitor / handgel /
+  sharps bin). Not wired into gameplay; available for a future
+  overworld composition pass.
+- AssetLibraryScreen.tsx: in-app asset library reachable via
+  ?style-guide=1 URL gate. Renders palette ramps, icons, patient
+  sprites, NPC sprites, encounter props, world tiles.
+
+### M45 — inline prop sprites in the drug chart
+
+- src/style/propSprites.ts: 12 encounter props (syringe / IV bag /
+  vials / ECG dots / O2 mask / BVM / drug chart / cannula /
+  glucometer / defib pads / ET tube / nurse-call button).
+- propIdForAction: two-phase match (action.name regex first,
+  category fallback second). Beth's IM adrenaline → syringe.
+- Inline 16×16 SVG glyph between checkbox and action name in the
+  drugchart row.
+
+### M44 — Williams patient sprite (2/17 cases sprited)
+
+- 24×32 sprite across 5 states (stable / triaged / deteriorating /
+  arrested / post_resus). Right-sided facial droop + half-closed
+  eye on deteriorating mirrors the M40 manoeuvre findings.
+- Remapped chars (K/J/E/y) to avoid clashing with the flushed and
+  cyanosed tints already in the palette.
+
+### M43 — NPC sprites in history cards
+
+- src/style/npcSprites.ts: 8 overworld NPCs (paramedic /
+  triage_nurse / f1_doctor / sister / anaesthetic_sho / security /
+  worried_partner / bereaved_relative) at 16×24.
+- npcSpriteIdForSource maps the 4 NPC-bearing history sources
+  onto sprite ids; patient / records / gp_letter return null.
+- HistoryNpcSprite renders the matching NPC inline in every
+  history card across all 17 cases (universal coverage via mapping).
+
 ### M42 — content backfill across new systems
 
 - Branching choices on +3 cases (Beth partner, Sarah pregnancy
