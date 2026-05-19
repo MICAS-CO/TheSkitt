@@ -317,31 +317,53 @@ management:
     sources:
       - { type: nice, id: 'NG128', ref: 'NICE NG128 — BP target <185/110 before alteplase' }
 
-  - id: mx_alteplase_decision
+  - id: mx_thrombolysis_decision
     category: drug
-    name: 'IV alteplase 0.9 mg/kg (max 90 mg) — 10% bolus, 90% over 1 h'
+    name: 'IV thrombolysis — alteplase 0.9 mg/kg OR tenecteplase 0.25 mg/kg single bolus'
     detail: |
+      **Thrombolytic choice (UK May 2026):**
+      - **Tenecteplase 0.25 mg/kg single bolus (max 25 mg)** is
+        NICE-recommended (TA990, July 2024) and the RCP National
+        Clinical Guideline for Stroke 2023 endorses it as an
+        alternative to alteplase. Non-inferiority data from AcT
+        (Menon Lancet 2022), ATTEST-2 and TRACE-2.
+      - **Alteplase 0.9 mg/kg (max 90 mg)** — 10% bolus, 90% over
+        1 h — remains the alternative.
+
       ELIGIBILITY in this patient:
         ✓ Onset <4.5 h (35 min)
         ✓ Age <80 (67)
         ✓ NIHSS in range (14)
         ✓ No haemorrhage on CT
         ✓ BP <185/110 (172/96 — recheck)
-        ⚠ ON APIXABAN — relative contraindication unless anti-Xa
-          level <30 ng/mL OR ≥48 h since last dose OR specific
-          antidote (andexanet alfa) given. Last dose ~12 h ago →
-          alteplase generally contraindicated; discuss with stroke
-          consultant — thrombectomy is the preferred option for
-          anticoagulated patients with LVO.
+        ⚠ ON APIXABAN — relative contraindication unless apixaban-
+          calibrated **anti-Xa <50 ng/mL** (per RCP 2023 / ESO 2021)
+          OR last dose >48 h ago with preserved renal function. Last
+          dose ~12 h ago → thrombolysis generally not given; discuss
+          with stroke consultant — thrombectomy is the preferred
+          option for anticoagulated patients with LVO.
     drug:
-      amount: '0.9 mg/kg (max 90 mg) — 10% as bolus, 90% over 1 h'
+      amount: 'Tenecteplase 0.25 mg/kg single bolus (max 25 mg) — OR alteplase 0.9 mg/kg (max 90 mg), 10% bolus + 90% over 1 h'
       route: IV
-      frequency: 'STAT bolus then 1 h infusion'
+      frequency: 'tenecteplase: single bolus over 10 s; alteplase: bolus then 1 h infusion'
     sources:
       - {
           type: nice,
+          id: 'TA990',
+          ref: 'NICE TA990 (July 2024) — Tenecteplase for treating acute ischaemic stroke.',
+        }
+      - {
+          type: nice,
           id: 'NG128',
-          ref: 'NICE NG128 — alteplase criteria including DOAC contraindication',
+          ref: 'NICE NG128 — thrombolysis pathway in acute ischaemic stroke',
+        }
+      - {
+          type: textbook,
+          ref: 'RCP National Clinical Guideline for Stroke 2023 — endorses tenecteplase as alternative; anti-Xa <50 ng/mL threshold for thrombolysis on DOAC.',
+        }
+      - {
+          type: textbook,
+          ref: 'Menon BK et al. AcT trial — Intravenous tenecteplase compared with alteplase for acute ischaemic stroke. Lancet 2022 (non-inferior).',
         }
 
   - id: mx_thrombectomy_referral
@@ -370,11 +392,12 @@ management:
   # ─── Trap actions ──────────────────────────────────────────────────────────
   - id: mx_no_thrombolysis_on_doac
     category: drug
-    name: 'Give IV alteplase without checking DOAC timing'
+    name: 'Give IV thrombolysis (alteplase or tenecteplase) without checking DOAC timing'
     detail: |
-      ❌ Apixaban within 48 h is a contraindication to alteplase
-      unless specific antidote or anti-Xa <30 ng/mL. Bleeding risk
-      is high. Thrombectomy is the safer pathway in this patient.
+      ❌ Apixaban within 48 h is a contraindication to thrombolysis
+      unless apixaban-calibrated **anti-Xa <50 ng/mL** (RCP 2023 /
+      ESO 2021) OR specific antidote considered. Bleeding risk is
+      high. Thrombectomy is the safer pathway in this patient.
     must_not_do: true
     sources:
       - { type: nice, id: 'NG128', ref: 'NICE NG128 — DOAC + alteplase contraindication' }
@@ -467,9 +490,9 @@ state_machine:
 pearls:
   - 'NICE NG128 says CT immediately, within 1 h; the ≤25-min door-to-CT and ≤60-min door-to-needle targets are RCP/SSNAP audit standards. Door-to-thrombectomy is a separate parallel pathway.'
   - 'BM before thrombolysis — hypoglycaemia is the canonical stroke mimic and the cheapest fix.'
-  - 'Alteplase contraindications expanded in 2019: DOAC within 48 h is a relative contraindication unless anti-Xa <30 ng/mL or specific antidote (andexanet alfa) administered.'
+  - 'DOAC + thrombolysis (UK May 2026): apixaban/rivaroxaban within 48 h is a relative contraindication unless apixaban-calibrated **anti-Xa <50 ng/mL** (RCP 2023, ESO 2021). Tenecteplase 0.25 mg/kg (NICE TA990 July 2024) is an alternative to alteplase 0.9 mg/kg — non-inferior per AcT (Menon Lancet 2022).'
   - 'Pre-thrombolysis BP target <185/110 mmHg. Do NOT lower aggressively before reperfusion — penumbra hypoperfusion.'
-  - 'Large vessel occlusion + NIHSS ≥6 + ASPECTS ≥6 = thrombectomy candidate, time window extended to 6 h (24 h with perfusion imaging).'
+  - 'Large vessel occlusion + NIHSS ≥6 + ASPECTS ≥6 = thrombectomy candidate. Window: 0-6 h standard; 6-16 h with perfusion mismatch (DEFUSE-3, Albers NEJM 2018); 6-24 h with clinical-imaging mismatch (DAWN, Nogueira NEJM 2018).'
   - 'Anticoagulated patient with LVO → thrombectomy is the preferred reperfusion path; alteplase is the alternative only if DOAC effect is excluded.'
   - 'Always speak to the witness. Time of onset is the single most consequential data point in the whole encounter.'
   - 'This is an anterior (LMCA) stroke and FAST is positive. **FAST misses up to ~50% of posterior circulation strokes** (vertigo, truncal ataxia, headache, isolated cranial-nerve signs). For posterior-circulation suspicion in acute vestibular syndrome use HINTS (Head Impulse, Nystagmus, Test of Skew) — performed by appropriately trained clinicians.'
@@ -502,7 +525,7 @@ sources:
     }
   - {
       type: other,
-      ref: 'DAWN and DEFUSE-3 trials — thrombectomy time-window extension (NEJM 2018)',
+      ref: 'Nogueira RG et al. DAWN trial — thrombectomy 6-24 h with mismatch. NEJM 2018; Albers GW et al. DEFUSE-3 — thrombectomy 6-16 h with perfusion mismatch. NEJM 2018.',
     }
 
 author_notes: |

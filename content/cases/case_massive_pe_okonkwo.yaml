@@ -531,7 +531,11 @@ management:
       and by anticoagulation).
     must_do: true
     sources:
-      - { type: rcog, ref: 'RCOG Green-top 37b — Thromboprophylaxis after gynaecological surgery' }
+      - {
+          type: nice,
+          id: 'NG89',
+          ref: 'NICE NG89 — Venous thromboembolism in over 16s: reducing the risk of hospital-acquired DVT or PE; covers post-gynae-surgery prophylaxis (7-28 d depending on risk).',
+        }
 
   - id: mx_thrombolysis_consent
     category: communication
@@ -690,7 +694,7 @@ sources:
     }
   - {
       type: rcog,
-      ref: 'RCOG Green-top 37b — Thromboprophylaxis during pregnancy and after gynaecological surgery',
+      ref: 'NICE NG89 — Venous thromboembolism in over 16s: reducing the risk of hospital-acquired VTE (covers post-gynae-surgery prophylaxis). RCOG Green-top 37b separately covers thromboprophylaxis in pregnancy and the puerperium.',
     }
   - {
       type: textbook,

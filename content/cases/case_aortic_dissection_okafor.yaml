@@ -7,7 +7,7 @@
 # ostium pattern, calculating ADD-RS, and getting CTA before any
 # anticoagulation.
 #
-# Sources: RCEM Best Practice — Aortic Dissection (2023), ESC
+# Sources: RCEM/RCR Joint Best Practice Guideline 2024 — Diagnosis of Thoracic Aortic Dissection in the ED, ESC
 # Guidelines for the Management of Aortic Diseases (2024 update),
 # IRAD registry data (Hagan et al., JAMA 2000), Aortic Dissection
 # Charitable Trust UK Think Aorta campaign, Oxford Handbook of EM 5e.
@@ -257,7 +257,7 @@ investigations:
         }
       - {
           type: rcem,
-          ref: 'RCEM Best Practice — Aortic Dissection (2023) — ECG patterns mimicking ACS',
+          ref: 'RCEM/RCR Joint Best Practice Guideline 2024 — Diagnosis of Thoracic Aortic Dissection in the ED — ECG patterns mimicking ACS',
         }
 
   - id: ix_cxr
@@ -276,7 +276,7 @@ investigations:
     sources:
       - {
           type: rcem,
-          ref: 'RCEM Best Practice — Aortic Dissection (2023) — CXR has poor sensitivity (~64%) and normal in ~20%',
+          ref: 'RCEM/RCR Joint Best Practice Guideline 2024 — Diagnosis of Thoracic Aortic Dissection in the ED — CXR has poor sensitivity (~64%) and normal in ~20%',
         }
 
   - id: ix_pocus
@@ -313,7 +313,10 @@ investigations:
       anaesthetics, and cell salvage on the line.
     abnormal: true
     sources:
-      - { type: esc, ref: 'ESC Aortic Diseases Guideline (2024 update) — CTA as gold standard' }
+      - {
+          type: esc,
+          ref: 'Mazzolai L et al. 2024 ESC Guidelines for the management of peripheral arterial and aortic diseases. Eur Heart J 2024;45:3538-3700 — CTA as gold standard; introduces TEM classification for acute aortic syndromes.',
+        }
 
   - id: ix_troponin
     name: 'High-sensitivity troponin (hs-cTnI)'
@@ -433,19 +436,21 @@ management:
 
   - id: mx_iv_labetalol
     category: drug
-    name: 'IV labetalol bolus + infusion — target HR 60–80, systolic <120 mmHg'
+    name: 'IV labetalol bolus + infusion — target HR <60, systolic <120 mmHg'
     detail: |
       Combined alpha/beta blockade lowers shear stress (dP/dt) on the
       flap. Bolus 10–20 mg IV (≈0.1–0.2 mg/kg in an adult), repeat
-      every 10 min as tolerated to a max ~300 mg, then infusion
-      0.5–2 mg/min titrated to HR + BP. Heart-rate control is as
-      important as BP control —
-      lowering BP without slowing HR can paradoxically raise dP/dt.
+      every 10 min as tolerated to a max ~200 mg cumulative bolus
+      (BNF cap; harmonised with hypertensive-emergency dosing in
+      Oduya case), then infusion 0.5–2 mg/min titrated to HR + BP.
+      Heart-rate control is as important as BP control — lowering BP
+      without slowing HR can paradoxically raise dP/dt. ESC 2024
+      target: **HR <60** in acute Type A.
     must_do: true
     drug:
-      amount: '10–20 mg IV bolus (max 300 mg in titrated doses); infusion 0.5–2 mg/min'
+      amount: '10–20 mg IV bolus (max ~200 mg cumulative); infusion 0.5–2 mg/min'
       route: IV
-      frequency: 'titrate to HR 60–80 and systolic <120 mmHg'
+      frequency: 'titrate to HR <60 and systolic <120 mmHg'
     sources:
       - { type: esc, ref: 'ESC Aortic Diseases Guideline 2024 — BP and HR targets in acute AD' }
       - { type: rcem, ref: 'RCEM Best Practice — Aortic Dissection 2023' }
@@ -651,7 +656,10 @@ pitfalls:
   - "Anchoring on AD when it isn't — the must-not-miss alternative is genuinely an MI; pretest probability and ADD-RS guide the call."
 
 sources:
-  - { type: rcem, ref: 'RCEM Best Practice — Aortic Dissection (2023)' }
+  - {
+      type: rcem,
+      ref: 'RCEM/RCR Joint Best Practice Guideline 2024 — Diagnosis of Thoracic Aortic Dissection in the ED',
+    }
   - { type: esc, ref: 'ESC Guidelines for the Management of Aortic Diseases (2024 update)' }
   - {
       type: textbook,

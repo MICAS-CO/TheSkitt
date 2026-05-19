@@ -207,7 +207,7 @@ management:
       - {
           type: nice,
           id: 'NG185',
-          ref: 'NICE NG185 / ESC STEMI 2023 — DAPT loading per PCI pathway',
+          ref: 'NICE NG185 / Byrne RA et al. 2023 ESC Guidelines for the management of acute coronary syndromes (consolidated STEMI + NSTE-ACS) — DAPT loading per PCI pathway',
         }
 
   - id: mx_pain_oxygen_glucose
@@ -327,7 +327,10 @@ sources:
       chapter: '2',
       page: 'pp.66–80',
     }
-  - { type: esc, ref: 'ESC STEMI Guidelines 2023' }
+  - {
+      type: esc,
+      ref: 'Byrne RA et al. 2023 ESC Guidelines for the management of acute coronary syndromes (consolidated STEMI + NSTE-ACS). Eur Heart J 2023.',
+    }
 
 author_notes: |
   Ambient case for the hen-do shift. The pressure is "she''s in the

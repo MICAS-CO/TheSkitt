@@ -323,7 +323,10 @@ differential:
 # ─── Management ──────────────────────────────────────────────────────────
 working_diagnosis: |
   Anticoagulant-associated traumatic subdural haematoma. Decision tree:
-  reverse apixaban (andexanet alfa or 4-factor PCC per local pathway),
+  reverse apixaban (4-factor PCC 25-50 IU/kg per BSH 2024 — andexanet
+  alfa is NOT NICE-recommended for intracranial haemorrhage since
+  TA1029 terminated the appraisal in Jan 2025; ANNEXa-I (NEJM 2024)
+  showed haemostatic benefit but no mortality/disability benefit),
   admit for neuro obs, neurosurgical opinion. Re-evaluate apixaban
   resumption on day 2-3 in MDT setting (stroke risk vs bleed risk).
 
@@ -339,15 +342,19 @@ management:
     category: monitoring
     name: 'CT head within 8 h (DOAC mandate)'
     detail: |
-      NICE NG232 is unambiguous: any adult on anticoagulant therapy
-      who sustains head injury should have CT within 8 hours,
-      regardless of GCS or symptoms. This is the headline rule.
+      NICE NG232 (§1.5.13, 2023) says **consider** CT within 8 hours
+      in any adult on anticoagulant therapy after head injury — a
+      softening from the prior CG176 "must" mandate. In a recurrent
+      faller, age 78, lives alone, with a forehead haematoma, the
+      clinical judgement here is unambiguously to scan; the
+      guideline framing is "should consider", not absolute. Document
+      the reasoning either way.
     must_do: true
     sources:
       - {
           type: nice,
           id: 'NG232',
-          ref: 'NICE NG232 1.4.6 — anticoagulant + head injury = CT within 8 h',
+          ref: 'NICE NG232 §1.5.13 — consider CT within 8 h in adults on anticoagulant after head injury (softened from CG176 mandate)',
         }
 
   - id: mx_ct_cspine
@@ -384,19 +391,31 @@ management:
     category: referral
     name: 'Discuss with haematology + neurosurgery — reversal vs observation'
     detail: |
-      DOAC reversal decision: andexanet alfa (specific) or 4-factor
-      PCC (off-label but pragmatic where andexanet unavailable). NICE
-      TA697 covers andexanet alfa for life-threatening / uncontrolled
-      bleeding. Discussion balances bleed extent, neurosurgical
-      view, and reversal-related thrombotic risk.
+      DOAC reversal decision: **4-factor PCC 25–50 IU/kg** is the
+      UK standard for ICH on apixaban/rivaroxaban per BSH 2024.
+      Andexanet alfa is **NOT NICE-recommended for ICH** as of
+      January 2025 (TA1029 terminated the appraisal — ANNEXa-I
+      NEJM 2024 showed haemostatic benefit but no mortality /
+      disability benefit; manufacturer declined to submit further
+      evidence). For GI bleeding the original TA697 recommendation
+      still applies in some pathways. Discussion balances bleed
+      extent, neurosurgical view, and reversal-related thrombotic
+      risk.
     must_do: true
     sources:
       - {
+          type: textbook,
+          ref: 'British Society for Haematology — Guidance for use of factor concentrates in DOAC-associated bleeding (2024): 4-factor PCC 25-50 IU/kg first-line for ICH.',
+        }
+      - {
+          type: textbook,
+          ref: 'Connolly SJ et al. ANNEXa-I — andexanet for anticoagulant-associated ICH. NEJM 2024 (haemostasis improved but no mortality/disability benefit; led to TA1029 termination Jan 2025).',
+        }
+      - {
           type: nice,
           id: 'TA697',
-          ref: 'NICE TA697 — Andexanet alfa for life-threatening or uncontrolled bleeding on apixaban / rivaroxaban',
+          ref: 'NICE TA697 — Andexanet alfa (remains active for GI bleed; ICH indication superseded by TA1029 termination Jan 2025).',
         }
-      - { type: textbook, ref: 'British Society for Haematology — Reversal of DOACs (2024)' }
 
   - id: mx_admission_observe
     category: disposition
@@ -434,21 +453,24 @@ management:
       — well-looking patients with occult SDH.
     must_not_do: true
     sources:
-      - { type: nice, id: 'NG232', ref: 'NICE NG232 1.4.6' }
+      - { type: nice, id: 'NG232', ref: 'NICE NG232 §1.5.13' }
 
   - id: mx_warfarin_reversal_in_doac
     category: drug
-    name: 'Vitamin K + FFP for reversal'
+    name: 'Vitamin K + FFP as DOAC reversal'
     detail: |
-      ❌ Vitamin K reverses warfarin, NOT apixaban. FFP is
-      ineffective for DOAC reversal. Andexanet alfa (NICE TA697)
-      or 4-factor PCC is the haematology call.
+      ❌ Vitamin K reverses WARFARIN (vitamin-K-dependent factors),
+      not apixaban. FFP is ineffective for DOAC reversal — too
+      little factor per unit volume to overcome the direct Xa
+      inhibitor. **4-factor PCC 25–50 IU/kg** is the UK first-line
+      for DOAC-associated ICH (BSH 2024); andexanet alfa is NOT
+      NICE-recommended for ICH since TA1029 terminated Jan 2025
+      (ANNEXa-I NEJM 2024).
     must_not_do: true
     sources:
       - {
-          type: nice,
-          id: 'TA697',
-          ref: 'NICE TA697 — andexanet alfa for apixaban/rivaroxaban (not vitamin K, not FFP)',
+          type: textbook,
+          ref: 'British Society for Haematology — DOAC-associated bleeding guidance (2024): 4-factor PCC 25-50 IU/kg for ICH; NOT vitamin K, NOT FFP.',
         }
 
   - id: mx_no_aspirin_for_falls
@@ -527,7 +549,7 @@ pearls:
   - 'NICE NG232: ANY adult on anticoagulant + head injury = CT within 8 hours, regardless of GCS or symptoms.'
   - 'Canadian C-spine high-risk criteria: age ≥65, dangerous mechanism (fall ≥1 m / stairs / RTC), paraesthesia. Any positive = imaging.'
   - 'INR / PT / APTT do NOT measure apixaban / rivaroxaban effect — use anti-Xa activity calibrated for the specific DOAC.'
-  - 'DOAC reversal: andexanet alfa (NICE TA697) for apixaban / rivaroxaban; idarucizumab for dabigatran; 4-factor PCC as pragmatic alternative.'
+  - '**DOAC reversal for ICH (UK May 2026)**: 4-factor PCC 25-50 IU/kg per BSH 2024. Andexanet alfa is **NOT NICE-recommended for ICH** since TA1029 terminated Jan 2025 (ANNEXa-I NEJM 2024 — haemostasis improved but no mortality/disability benefit). Idarucizumab remains the specific reversal agent for dabigatran. TA697 remains active for GI bleeding.'
   - 'Vitamin K + FFP reverse WARFARIN, not DOACs. Easy examiner trap.'
   - 'Admission criteria after head injury include "on anticoagulant with abnormal CT" — admission is not a clinical-gestalt decision.'
 
@@ -548,7 +570,7 @@ sources:
   - {
       type: nice,
       id: 'TA697',
-      ref: 'NICE TA697 — Andexanet alfa for life-threatening or uncontrolled bleeding on apixaban / rivaroxaban',
+      ref: 'NICE TA697 — Andexanet alfa (still active for GI bleed; ICH indication superseded by TA1029 terminated Jan 2025)',
     }
   - {
       type: textbook,
@@ -574,5 +596,9 @@ author_notes: |
   (alteplase contraindicated; thrombectomy preferred) vs
   haemorrhagic SDH on apixaban (reverse; admit; do not safety-net).
 
-  Author against NICE NG232 (2023), NICE TA697 (andexanet alfa), BSH
+  Author against NICE NG232 (2023, §1.5.13 — "consider" CT in DOAC
+  patients, softened from CG176 mandate), BSH DOAC bleeding 2024
+  (4F-PCC 25-50 IU/kg for ICH), ANNEXa-I NEJM 2024 (TA697 ICH
+  indication superseded by TA1029 termination Jan 2025), TA697 (now
+  GI-bleed-only), BSH
   DOAC reversal 2024, Canadian C-spine Rule (Stiell 2001).

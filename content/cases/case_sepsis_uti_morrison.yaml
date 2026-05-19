@@ -4,7 +4,8 @@
 # fever and tachycardia. Source: urosepsis. NEWS2 7, qSOFA 2, lactate 3.2.
 # Septic shock by Sepsis-3 if hypotension persists after fluid resus.
 # The Sepsis Six within the first hour is the SAQ-classic intervention
-# bundle. NICE NG51 + UK Sepsis Trust + RCEM Best Practice.
+# bundle. NICE NG253 (Nov 2025, supersedes NG51) + UK Sepsis Trust
+# toolkit 2025 + RCEM Best Practice.
 
 schema_version: 1
 id: case_sepsis_uti_morrison
@@ -151,7 +152,11 @@ investigations:
     abnormal: true
     sources:
       - { type: nhs, ref: 'NEWS2 (Royal College of Physicians)' }
-      - { type: nice, id: 'NG51', ref: 'NICE NG51 — risk stratification of suspected sepsis' }
+      - {
+          type: nice,
+          id: 'NG253',
+          ref: 'NICE NG253 (Nov 2025, supersedes NG51) — risk stratification of suspected sepsis in adults',
+        }
 
   - id: ix_4at
     name: '4AT delirium screen'
@@ -196,8 +201,8 @@ investigations:
     sources:
       - {
           type: nice,
-          id: 'NG51',
-          ref: 'NICE NG51 — cultures before antibiotics if no significant delay',
+          id: 'NG253',
+          ref: 'NICE NG253 §1.5 — cultures before antibiotics if no significant delay',
         }
 
   - id: ix_urinalysis
@@ -248,9 +253,13 @@ differential:
   - diagnosis: 'Septic shock (Sepsis-3 criteria)'
     likelihood: must_not_miss
     discriminator: |
-      Lactate >2 + persistent hypotension despite 30 mL/kg fluid (still
-      to be reached) defines septic shock. Vasopressors will be needed
-      if BP does not respond.
+      Sepsis-3 septic shock = persistent hypotension **requiring
+      vasopressors to maintain MAP ≥65** AND lactate >2 mmol/L
+      **despite adequate fluid resus** (target ~30 mL/kg). She is
+      heading there — vasopressor will be needed if BP does not
+      respond to the next bolus, and UKST 2025 toolkit highlights
+      early-vasopressor consideration without waiting for full
+      30 mL/kg.
 
   - diagnosis: 'Pneumonia (HAP / aspiration)'
     likelihood: worth_considering
@@ -306,11 +315,11 @@ management:
     category: monitoring
     name: 'Take blood cultures × 2 BEFORE antibiotics — but not at the cost of delay'
     detail: |
-      Sepsis Six step. NICE NG51 says draw cultures before antibiotics
+      Sepsis Six step. NICE NG253 (Nov 2025) says draw cultures before antibiotics
       if there is no significant delay; otherwise give antibiotics first.
     must_do: true
     sources:
-      - { type: nice, id: 'NG51', ref: 'NICE NG51 — cultures before abx if no delay' }
+      - { type: nice, id: 'NG253', ref: 'NICE NG253 §1.5 — cultures before abx if no delay' }
 
   - id: mx_iv_abx_within_1h
     category: drug
@@ -327,7 +336,11 @@ management:
       frequency: 'STAT, then per regimen'
     must_do: true
     sources:
-      - { type: nice, id: 'NG51', ref: 'NICE NG51 — antibiotics within 1 hour' }
+      - {
+          type: nice,
+          id: 'NG253',
+          ref: 'NICE NG253 — antibiotics within 1 hour of red-flag recognition',
+        }
       - { type: rcem, ref: 'RCEM Best Practice — Septic Patient in the ED' }
 
   - id: mx_fluid_resus
@@ -344,7 +357,7 @@ management:
       frequency: 'first 500 mL over 15 min, reassess'
     must_do: true
     sources:
-      - { type: nice, id: 'NG51', ref: 'NICE NG51 — IV fluid resuscitation' }
+      - { type: nice, id: 'NG253', ref: 'NICE NG253 — IV fluid resuscitation' }
 
   - id: mx_catheter_uop
     category: monitoring
@@ -380,14 +393,14 @@ management:
     detail: |
       ❌ Reserve hydrocortisone for vasopressor-refractory shock in line
       with the local critical care protocol. Not first-line in early ED
-      septic shock per NICE NG51.
+      septic shock per NICE NG253.
     must_not_do: true
 
   - id: mx_no_delay_abx_for_cultures
     category: drug
     name: 'Delay antibiotics until blood cultures are back'
     detail: |
-      ❌ The 1-hour rule trumps culture timing. NICE NG51 explicitly
+      ❌ The 1-hour rule trumps culture timing. NICE NG253 explicitly
       permits giving antibiotics before cultures if drawing them would
       delay administration.
     must_not_do: true
@@ -463,7 +476,7 @@ state_machine:
       trigger: { on: action, action_id: mx_escalate_critcare }
 
 pearls:
-  - 'NICE NG51: antibiotics within 1 hour of recognising sepsis. Do not delay for blood cultures if drawing them would push past 1 hour.'
+  - 'NICE NG253 (Nov 2025, supersedes NG51): antibiotics within 1 hour of recognising sepsis. Do not delay for blood cultures if drawing them would push past 1 hour.'
   - 'Sepsis Six: blood cultures, urine output, FBC/lactate, oxygen, IV antibiotics, IV fluids — all within the first hour.'
   - 'Septic shock (Sepsis-3): persistent hypotension requiring vasopressors AND lactate >2 mmol/L despite adequate fluid resus. Needs HDU/ITU.'
   - 'Confusion in an elderly woman with a fever is sepsis until proven otherwise.'
@@ -483,7 +496,7 @@ pitfalls:
 sources:
   - {
       type: nice,
-      id: 'NG51',
+      id: 'NG253',
       ref: 'Sepsis: recognition, diagnosis and early management (NICE 2016, updated 2024)',
       url: 'https://www.nice.org.uk/guidance/ng51',
     }

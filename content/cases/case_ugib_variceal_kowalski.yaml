@@ -396,24 +396,28 @@ management:
 
   - id: mx_terlipressin
     category: drug
-    name: 'IV terlipressin 2 mg STAT then 1-2 mg every 4-6 h'
+    name: 'IV terlipressin — weight-banded initial dose then 1-2 mg every 4-6 h'
     detail: |
-      Splanchnic vasoconstrictor — reduces portal venous pressure and
-      variceal bleeding. Give EMPIRICALLY at suspicion of variceal
-      bleed; do not wait for OGD. Continuation for 2-5 days after
-      haemostasis. Caution: ischaemic side-effects (skin necrosis,
-      MI, mesenteric ischaemia) — monitor.
+      Splanchnic vasoconstrictor — reduces portal venous pressure
+      and variceal bleeding. Give EMPIRICALLY at suspicion of
+      variceal bleed; do not wait for OGD. **UK SmPC weight-banded
+      initial dose**: <50 kg = 1 mg; 50–70 kg = 1.5 mg; >70 kg =
+      2 mg. Mr Kowalski is 71 kg → **2 mg IV STAT**. Maintenance:
+      1–2 mg every 4–6 h for 2–5 days after haemostasis. Caution:
+      ischaemic side-effects (skin necrosis, MI, mesenteric
+      ischaemia) — monitor.
     must_do: true
     drug:
-      amount: '2 mg IV STAT, then 1-2 mg every 4-6 h for 2-5 days'
+      amount: 'Initial weight-banded (<50 kg 1 mg / 50-70 kg 1.5 mg / >70 kg 2 mg) IV STAT; then 1-2 mg every 4-6 h for 2-5 days'
       route: IV
       frequency: 'STAT then 4-6 hourly'
     sources:
       - { type: nice, id: 'CG141', ref: 'NICE CG141 — terlipressin for suspected variceal bleed' }
       - {
           type: textbook,
-          ref: 'BSG/UK guidelines on the management of variceal haemorrhage in cirrhotic patients (Tripathi 2015)',
+          ref: 'BSG/UK guidelines on the management of variceal haemorrhage in cirrhotic patients (Tripathi 2015) — weight-banded terlipressin SmPC dosing.',
         }
+      - { type: textbook, ref: 'Terlipressin SmPC (UK EMC) — weight-banded initial dose.' }
 
   - id: mx_ceftriaxone
     category: drug
@@ -467,6 +471,28 @@ management:
       - {
           type: textbook,
           ref: 'BSG guidelines — balloon tamponade as bridge to definitive therapy',
+        }
+
+  - id: mx_early_preemptive_tips
+    category: referral
+    name: 'Discuss EARLY (pre-emptive) TIPS with hepatology / IR — within 72 h, ideally <24 h'
+    detail: |
+      Baveno VII consensus (2022) recommends **early / pre-emptive
+      TIPS within 72 h** (ideally <24 h) for Child-Pugh C (<14) or
+      Child-Pugh B with active bleeding at index endoscopy.
+      Mr Kowalski is the textbook candidate (Child-Pugh C, MELD 18,
+      active bleed). This is a paradigm shift from the older "TIPS
+      as rescue after rebleed" stance. Activate the hepatology /
+      interventional-radiology pathway alongside endoscopy.
+    must_do: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'de Franchis R et al. Baveno VII — Renewing consensus in portal hypertension. J Hepatol 2022.',
+        }
+      - {
+          type: textbook,
+          ref: 'BSG (Tripathi 2015) — TIPS as definitive therapy for variceal bleed in selected patients.',
         }
 
   - id: mx_high_dose_ppi_if_pud
@@ -577,13 +603,23 @@ management:
 
   - id: mx_no_vitamin_k
     category: drug
-    name: 'IV vitamin K 10 mg "to correct the INR"'
+    name: 'Rely on IV vitamin K alone to "correct the INR"'
     detail: |
-      ❌ INR in cirrhosis reflects synthetic dysfunction, not vitamin-
-      K-dependent deficiency. Vitamin K won't fix it. FFP + platelets
-      + cryoprecipitate based on actual deficits if actively bleeding;
-      otherwise do not correct prophylactically.
+      ❌ INR in cirrhosis primarily reflects synthetic dysfunction,
+      not vitamin-K deficiency — vitamin K alone WILL NOT normalise
+      it. **However**, BSG 2015 still recommends a **single 10 mg
+      IV vitamin K dose** in cirrhotic UGIB because there is often
+      a vitamin-K-responsive cholestatic / malnutrition component
+      worth covering. The wrong move is RELYING on vitamin K to fix
+      coagulopathy or substituting it for FFP / platelets / cryo
+      based on actual deficits. Give the one 10 mg dose; do not
+      keep redosing or use it as the haemostatic strategy.
     must_not_do: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'BSG (Tripathi 2015) — single 10 mg IV vitamin K dose in cirrhotic UGIB; not expected to normalise INR; FFP/platelets/cryo for actual deficits.',
+        }
 
   - id: mx_no_high_dose_ppi_empirical
     category: drug

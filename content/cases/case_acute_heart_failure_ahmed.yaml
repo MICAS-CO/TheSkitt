@@ -7,11 +7,15 @@
 # intubation. Trap-rich because the reflex shock-protocol (fluids,
 # morphine) is wrong here.
 #
-# Sources: NICE NG106 (Chronic heart failure 2018, sections on acute
-# decompensation), ESC 2021 acute and chronic heart failure guideline
-# (McDonagh et al., Eur Heart J), 3CPO trial (Gray NEJM 2008 — CPAP
-# in cardiogenic pulmonary oedema), BTS Emergency Oxygen Guideline
-# 2017.
+# Sources: NICE NG106 (Chronic heart failure 2018, **updated 3 Sept
+# 2025** introducing quadruple therapy as first-line for HFrEF —
+# ACEi/ARNI + β-blocker + MRA + SGLT2i), ESC 2021 acute and chronic
+# heart failure guideline (McDonagh et al., Eur Heart J) with **2023
+# Focused Update** (McDonagh Eur Heart J 2023), 3CPO trial (Gray NEJM
+# 2008 — CPAP in cardiogenic pulmonary oedema), BTS Emergency Oxygen
+# Guideline 2017, Peacock ADHERE Emerg Med J 2008 (primary morphine
+# harm signal), Iakobishvili Acute Cardiac Care 2011 (secondary
+# EuroHF signal).
 
 schema_version: 1
 id: case_acute_heart_failure_ahmed
@@ -501,16 +505,32 @@ management:
 
   - id: mx_restart_bumetanide_explain
     category: communication
-    name: 'Restart bumetanide; document the pre-op-clinic teaching point with surgical team'
+    name: 'Restart bumetanide; flag NG106 2025 quadruple therapy + document pre-op-clinic teaching point'
     detail: |
-      He decompensated because his chronic diuretic was held. This
-      is a recurring patient-safety problem — preoperative diuretic
-      withdrawal in chronic heart failure carries decompensation
-      risk and should be discussed with cardiology before the next
-      surgery. Document the conversation with the anaesthetic
-      team in the discharge summary.
+      He decompensated because his chronic diuretic was held — flag
+      this with the surgical team for the next surgery (preoperative
+      diuretic withdrawal in chronic HF carries decompensation risk).
+
+      **NICE NG106 (3 Sept 2025) now lists quadruple therapy as
+      first-line for HFrEF**: ACEi/ARNI + β-blocker + MRA + SGLT2
+      inhibitor (e.g. dapagliflozin / empagliflozin). Mr Ahmed has
+      ramipril + bisoprolol + spironolactone but **NO SGLT2i** — at
+      EF 32% he should be on dapagliflozin 10 mg OD. Flag this for
+      the cardiology post-take and the discharge prescription.
+
+      Document the pre-op-clinic conversation in the discharge
+      summary for the next surgery.
     must_do: true
     sources:
+      - {
+          type: nice,
+          id: 'NG106',
+          ref: 'NICE NG106 — Chronic heart failure (updated 3 Sept 2025) — quadruple therapy (ACEi/ARNI + β-blocker + MRA + SGLT2i) as first-line for HFrEF.',
+        }
+      - {
+          type: esc,
+          ref: 'McDonagh TA et al. 2023 Focused Update of the 2021 ESC Heart Failure Guideline. Eur Heart J 2023;44:3627-3639 — endorses SGLT2i across the EF spectrum.',
+        }
       - {
           type: textbook,
           ref: 'Royal College of Anaesthetists / AAGBI guidance — perioperative management of chronic diuretics',
@@ -525,9 +545,10 @@ management:
       **≥2 of**: age ≥80, weight ≤60 kg, serum creatinine
       ≥133 µmol/L. Mr Ahmed: age 78 (does NOT meet), weight 88 kg
       (does NOT meet), creatinine 142 (DOES meet — 1 of 3). One
-      criterion only → continue **5 mg BD**. Apixaban is
-      contraindicated below CrCl 15 mL/min (NOT below 30); his
-      CrCl is well above this threshold.
+      criterion only → continue **5 mg BD**. Apixaban is **not
+      recommended** below CrCl 15 mL/min per the UK SmPC (NOT a
+      formal "contraindication", and NOT a <30 cut-off — that's a
+      common confusion); his CrCl is well above this threshold.
     must_do: true
     sources:
       - {
@@ -556,7 +577,7 @@ management:
       management — opiate use is associated with WORSE outcomes.
       The primary signal is from the ADHERE registry (Peacock,
       Emerg Med J 2008); secondary support from the EuroHF survey
-      (Iakobishvili, Eur Heart J 2011). Treat the pulmonary oedema;
+      (Iakobishvili, Acute Cardiac Care 2011). Treat the pulmonary oedema;
       do not sedate the breathlessness away.
     must_not_do: true
     sources:
@@ -571,7 +592,7 @@ management:
         }
       - {
           type: textbook,
-          ref: 'Iakobishvili Z et al. Use of intravenous morphine for acute decompensated heart failure (EuroHF survey, secondary analysis). Eur Heart J 2011.',
+          ref: 'Iakobishvili Z et al. Use of intravenous morphine for acute decompensated heart failure (EuroHF survey, secondary analysis). Acute Cardiac Care 2011;13(2):76-80.',
         }
 
   - id: mx_no_beta_blocker_bolus
@@ -692,7 +713,7 @@ sources:
     }
   - {
       type: textbook,
-      ref: 'Iakobishvili Z et al. Use of intravenous morphine for acute decompensated heart failure. Eur Heart J 2011 (EuroHF survey).',
+      ref: 'Iakobishvili Z et al. Use of intravenous morphine for acute decompensated heart failure (EuroHF survey). Acute Cardiac Care 2011;13(2):76-80.',
     }
   - {
       type: textbook,

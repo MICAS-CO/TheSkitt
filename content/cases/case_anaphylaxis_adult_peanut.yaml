@@ -1,7 +1,8 @@
 # MILESTONE 3 — first end-to-end playable case.
 #
 # Adult anaphylaxis to peanut. Authored against the Resuscitation Council
-# UK 2021 anaphylaxis algorithm (updated 2024) and NICE CG134 referral
+# UK 2021 anaphylaxis algorithm (still current as of May 2026; 2024
+# Anaesthesia peri-operative addendum exists) and NICE CG134 referral
 # pathway. All clinical facts in this file carry an inline citation.
 
 schema_version: 1
@@ -272,7 +273,7 @@ management:
       amount: '500 micrograms (0.5 mL of 1:1000)'
       route: IM
       frequency: 'STAT; repeat every 5 min if no improvement'
-      paeds_dose: '>12 yr: 500 mcg · 6–12 yr: 300 mcg · <6 yr: 150 mcg (1:1000)'
+      paeds_dose: '>12 yr: 500 mcg · 6–12 yr: 300 mcg · 6 m–6 yr: 150 mcg · <6 m: 100–150 mcg (all 1:1000 IM)'
     sources:
       - {
           type: resus_council_uk,
@@ -398,8 +399,12 @@ disposition_options:
     appropriate: true
   - label: 'Discharge after 2 h with EpiPens, action plan, allergy referral'
     criteria: |
-      Only for mild reaction, single adrenaline dose, no biphasic risk.
-      Inappropriate here — she had a severe reaction with 2 doses.
+      Per RCUK 2021 Table 5, the 2-h fast-track IS appropriate for
+      low-risk patients (single adrenaline dose, full sustained
+      response, no biphasic risk factors, no asthma, supervised
+      setting). Inappropriate FOR BETH specifically — she had a
+      severe reaction with 2 IM doses + asthma history. Risk-
+      stratified ≥6–12 h observation.
     appropriate: false
   - label: 'Refer to allergy clinic and discharge immediately'
     criteria: |
@@ -441,7 +446,7 @@ pearls:
   - 'Lay supine with legs elevated; sitting a hypotensive anaphylaxis patient upright risks Pumphrey-style empty-ventricle cardiac arrest.'
   - 'Mast cell tryptase needs THREE samples: at presentation, 1–2 h, and 24 h baseline. A rise then fall of ≥20% above baseline confirms mast cell activation.'
   - 'Refractory anaphylaxis (no response after 2 IM doses) is treated with IV adrenaline INFUSION under senior supervision — NOT escalating IM doses.'
-  - 'Up to ~20% of patients have a biphasic reaction, typically within 6 hours. Risk-stratified observation period (≥6–12 h for severe reactions) is mandated.'
+  - 'Biphasic reaction incidence is ~5% in current meta-analyses (up to 20% in selected severe-reaction cohorts) — typically within 6–12 h. Risk-stratified observation period per RCUK 2021 Table 5: 2 h fast-track for low-risk profiles (single adrenaline, full response, no asthma, no biphasic risk factors); 6–12 h or longer for severe reactions / asthma / 2-dose regimens.'
   - 'Patients on beta-blockers may not respond to adrenaline — consider IV glucagon as adjunct.'
   - 'Skin/mucosal change alone is NOT anaphylaxis — Resus Council UK 2021 diagnostic criteria require Airway and/or Breathing and/or Circulation compromise too.'
 
@@ -456,13 +461,13 @@ pitfalls:
 sources:
   - {
       type: resus_council_uk,
-      ref: 'Resuscitation Council UK. Emergency treatment of anaphylactic reactions — Guidelines for healthcare providers (2021, updated 2024).',
+      ref: 'Resuscitation Council UK. Emergency treatment of anaphylactic reactions — Guidelines for healthcare providers (2021; still current May 2026; 2024 peri-operative addendum: Dodd et al. Anaesthesia 2024).',
       url: 'https://www.resus.org.uk/library/additional-guidance/guidance-anaphylaxis',
     }
   - {
       type: nice,
       id: 'CG134',
-      ref: 'Anaphylaxis: assessment and referral after emergency treatment (NICE CG134, last updated 2020)',
+      ref: 'NICE CG134 — Anaphylaxis: assessment and referral after emergency treatment (last updated December 2021; review planned 2026).',
       url: 'https://www.nice.org.uk/guidance/cg134',
     }
   - {

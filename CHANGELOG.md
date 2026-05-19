@@ -4,6 +4,130 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Audit: guideline-currency + clinical-accuracy sweep across all 15 cases
+
+Driven by 5 parallel subagent audits, each verifying internal
+accuracy AND looking up each cited guideline online for currency /
+supersession. Found and fixed material updates:
+
+**Critical (clinical-safety / guideline-supersession):**
+
+- **Brennan (head injury)**: **NICE TA697 was partially superseded
+  by TA1029 (terminated appraisal) in January 2025** — andexanet
+  alfa is **NO LONGER NICE-recommended for intracranial
+  haemorrhage** (ANNEXa-I NEJM 2024 showed haemostatic benefit
+  without mortality/disability benefit). Reversal pathway rewritten
+  to **4-factor PCC 25-50 IU/kg per BSH 2024** as UK first-line for
+  DOAC-associated ICH. TA697 retained as a reference for the
+  remaining (GI-bleed) indication only.
+- **Brennan**: NG232 wording softened from "must CT within 8 h" to
+  "**should consider** CT within 8 h" — NICE explicitly softened
+  this from the prior CG176 mandate in the 2023 update. The
+  in-case decision still to scan (recurrent faller + DOAC + lives
+  alone) is preserved with the correct clinical-judgement framing.
+- **Brennan**: NG232 recommendation number corrected: **§1.5.13**
+  (not 1.4.6).
+- **Williams (stroke)**: Added **tenecteplase 0.25 mg/kg single
+  bolus (NICE TA990, July 2024)** as alternative thrombolytic per
+  RCP 2023 / AcT (Menon Lancet 2022). Was previously alteplase-only.
+- **Williams**: Anti-Xa threshold for thrombolysis on DOAC corrected
+  to **<50 ng/mL** (RCP 2023 / ESO 2021) — was incorrectly listed
+  as <30 ng/mL.
+- **Williams**: DAWN/DEFUSE-3 windows disambiguated (DAWN 6-24 h,
+  DEFUSE-3 6-16 h) with first-author citations.
+- **Priya (status)**: NICE NG217 citation updated to "last updated
+  **30 January 2025**". Levetiracetam wording softened from
+  "preferred over phenytoin" to "alongside phenytoin/valproate as
+  2nd-line" per the current guideline text. ESETT (Kapur NEJM 2019)
+  + EcLiPSE (Lyttle Lancet 2019) added to sources.
+- **Priya**: Lorazepam dose framing corrected — "4 mg IV fixed dose
+  (adult); 0.1 mg/kg max 4 mg (paeds)" (was misleadingly weight-
+  based for adults). Levetiracetam pregnancy category note rewritten
+  — FDA letter categories retired in 2015 (PLLR narrative system
+  now); UKTIS framing used instead.
+- **Priya**: MHRA Valproate PPP citation updated to include the
+  2025 paternal-precaution refresh. Pregnancy contraindication
+  unchanged.
+- **Sam (paeds anaphylaxis)**: **EpiPen weight threshold corrected
+  from 30 kg → 25 kg** per MHRA / BNFc 2024. Sam at 28 kg now
+  correctly receives **2× EpiPen 300 mcg (adult)**, NOT EpiPen Jr.
+  Discharge bundle pearl + disposition criterion updated.
+- **Beth (anaphylaxis)**: Paeds adrenaline dose-band entry now
+  includes the missing **<6 month band (100-150 mcg)** per RCUK
+  2021. Biphasic incidence pearl corrected to ~5% (was "Up to
+  ~20%" — overstated). 2-h fast-track disposition reframed as
+  "inappropriate for Beth specifically" rather than universally
+  wrong.
+- **Morrison (sepsis)**: **NICE NG51 was replaced by NICE NG253
+  (Suspected sepsis in people aged 16 or over, 19 November 2025)**.
+  All references updated (9 instances). Septic shock Sepsis-3
+  definition tightened to require both vasopressor + lactate >2
+  despite adequate fluid resus.
+- **Marcus (DKA)**: JBDS-IP 2023 severity pH threshold corrected to
+  **<7.0** (the 2022/2023 update tightened from <7.1). Marcus's
+  result_summary now correctly identifies which criteria he meets
+  (HR >100 + anion gap >16) rather than over-claiming pH/HCO3
+  severity that his actual numbers don't meet.
+- **Marcus**: Added **0.05 unit/kg/h FRII step-down** when glucose
+  <14 mmol/L per JBDS-IP 2022/2023 update — major hypokalaemia /
+  hypoglycaemia mitigation that was missing.
+- **Stan (intox)**: Pabrinex regimen corrected — "1 pair TDS" was
+  non-standard. Now NICE CG100 / SPS:
+  - Suspected/established Wernicke (Stan qualifies): **2 pairs IV
+    TDS for 3 days**, then 1 pair OD.
+  - Prophylaxis only: 1 pair IV OD for 3-5 days.
+- **Sarah (ectopic)**: Methotrexate criteria expanded to **NICE
+  NG126 tiered system**: <1500 IU/L offer MTX; 1500-5000 offer
+  choice; >5000 surgery preferred. Sarah's βhCG 4280 sits in the
+  choice band; surgery preferred because of rupture/free-fluid,
+  NOT because the hCG disqualifies MTX.
+- **Sarah**: Anti-D pearl rewritten per **NICE NG126 May 2026
+  update** — no routine anti-D for ectopic/miscarriage at
+  <12 weeks regardless of management.
+- **Sarah**: NG126 citation date updated to "2019, updated June
+  2025; anti-D update May 2026".
+- **Kowalski (UGIB)**: Added **pre-emptive TIPS within 72 h**
+  (ideally <24 h) action for Child-Pugh C per **Baveno VII (de
+  Franchis J Hepatol 2022)** — paradigm shift from "TIPS as
+  rescue". Mr Kowalski is the textbook candidate.
+- **Kowalski**: Vitamin K trap reframed — single 10 mg IV is still
+  recommended per BSG 2015 for the cholestatic/nutritional
+  component; the wrong move is RELYING on it for haemostasis.
+- **Kowalski**: Propranolol indication corrected to "**secondary**
+  prevention" (post-banding), was "primary".
+- **Kowalski**: Terlipressin dose corrected to **weight-banded**
+  initial dose (<50 kg 1 mg / 50-70 kg 1.5 mg / >70 kg 2 mg) per
+  UK SmPC.
+- **Patel (STEMI)**: ESC ACS guideline title corrected to **Byrne
+  et al. 2023 ESC ACS Guideline (consolidated STEMI + NSTE-ACS)** —
+  was "ESC STEMI Guidelines 2023" which is the wrong document.
+- **Okafor (AD)**: ESC 2024 guideline title corrected to
+  **Mazzolai et al. 2024 ESC Guidelines for peripheral arterial
+  and aortic diseases** (merged into one guideline with TEM
+  classification for acute aortic syndromes). RCEM source updated
+  to **RCEM/RCR Joint Best Practice Guideline 2024** (was "RCEM
+  Best Practice 2023" — between versions). Labetalol cumulative
+  bolus cap harmonised to **200 mg** (was 300 mg, inconsistent
+  with Oduya). HR target tightened to **<60** in acute Type A.
+- **Ahmed (AHF)**: **NICE NG106 was updated 3 September 2025** with
+  quadruple therapy (ACEi/ARNI + β-blocker + MRA + SGLT2i) as
+  first-line for HFrEF. `mx_restart_bumetanide_explain` now flags
+  that Mr Ahmed (EF 32%) is NOT on SGLT2i and should be on
+  dapagliflozin 10 mg OD per the updated guideline.
+- **Ahmed**: Iakobishvili journal citation corrected — Acute
+  Cardiac Care 2011 (was incorrectly listed as Eur Heart J 2011).
+  Peacock ADHERE (Emerg Med J 2008) added as the primary morphine-
+  harm signal.
+- **Ahmed**: Apixaban wording corrected — "not recommended below
+  CrCl 15" (was "contraindicated below CrCl 15... NOT below 30",
+  which conflated SmPC language).
+- **Okonkwo (PE)**: RCOG GT 37b citation replaced with **NICE
+  NG89** (RCOG 37b covers pregnancy/puerperium; NG89 covers post-
+  gynae-surgery thromboprophylaxis).
+
+**Numbers**: 15 cases / 14 episodes / 2 arcs validate. 192 tests
+pass. Production build green.
+
 ### Test: state-machine reachability; backfill missing case transitions
 
 Added `tests/state-machine-reachability.test.ts` — would have caught

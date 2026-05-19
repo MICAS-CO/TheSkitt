@@ -151,9 +151,12 @@ investigations:
     result_summary: |
       **pH 7.04 · HCO3 7 mmol/L · pCO2 1.9 kPa · BE -25 ·
       K+ 4.8 mmol/L · Na 134 mmol/L · Lactate 1.8 · Glucose 38.4.**
-      Severe DKA (pH <7.1 OR HCO3 <5 OR ketones >6 OR K+ <3.5 OR
-      GCS <12 OR sats <92 OR systolic <90 OR HR <60 or >100 OR anion
-      gap >16). He meets severity criteria — needs HDU.
+      JBDS-IP 2023 severity criteria (ANY of): pH <7.0, HCO3 <5,
+      ketones >6, K+ <3.5, GCS <12, sats <92, systolic <90, HR <60
+      or >100, anion gap >16. **Marcus meets severity by HR 124
+      (>100) AND anion gap 23 (>16)** — his pH 7.04 and HCO3 7 are
+      borderline-severe but don't independently qualify. He needs
+      HDU regardless.
     abnormal: true
     sources:
       - { type: jbds, ref: 'JBDS-IP Adult DKA 2023 — severity criteria' }
@@ -195,9 +198,9 @@ differential:
     likelihood: top
     discriminator: |
       Hyperglycaemia (>11) + ketosis (>3) + acidosis (pH <7.30) =
-      DKA. Severity criteria met (pH <7.1, HCO3 <5, anion gap >16).
-      Maternal autoimmune history + new presentation in a young adult
-      fits T1DM.
+      DKA. Severity criteria met (HR >100, anion gap >16 per JBDS-IP
+      2023). Maternal autoimmune history + new presentation in a
+      young adult fits T1DM.
 
   - diagnosis: 'Hyperosmolar hyperglycaemic state (HHS)'
     likelihood: worth_considering
@@ -288,12 +291,25 @@ management:
 
   - id: mx_dextrose_when_glucose_falls
     category: fluid
-    name: 'Add 10% dextrose when capillary glucose <14 mmol/L'
+    name: 'Add 10% dextrose AND consider reducing FRII to 0.05 unit/kg/h when glucose <14 mmol/L'
     detail: |
-      Run alongside the saline (not instead of it). 10% dextrose
-      125 mL/h with continued FRII to keep ketones falling.
+      Run dextrose alongside the saline (not instead of it). 10%
+      dextrose 125 mL/h with continued FRII to keep ketones falling.
+      **JBDS-IP 2022/2023 update**: consider stepping the FRII down
+      from 0.1 unit/kg/h to **0.05 unit/kg/h** once glucose <14 to
+      reduce hypoglycaemia and hypokalaemia risk, particularly in
+      young adults (cerebral-oedema risk cohort like Marcus). The
+      target is still ketone clearance, but the insulin demand
+      drops once euglycaemia is reached.
     sources:
-      - { type: jbds, ref: 'JBDS-IP Adult DKA 2023 — concurrent dextrose' }
+      - {
+          type: jbds,
+          ref: 'JBDS-IP Adult DKA 2023 — concurrent dextrose + FRII step-down to 0.05 unit/kg/h at glucose <14 mmol/L (introduced in 2022 update).',
+        }
+      - {
+          type: textbook,
+          ref: 'Dhatariya KK et al. The management of diabetic ketoacidosis in adults — JBDS update. Diabetic Medicine 2022.',
+        }
 
   - id: mx_treat_precipitant
     category: drug
@@ -382,7 +398,7 @@ management:
 disposition_options:
   - label: 'Admit HDU for severe DKA pathway; diabetes team in the morning'
     criteria: |
-      Meets severity criteria (pH <7.1, HCO3 <5, anion gap >16).
+      Meets JBDS-IP 2023 severity criteria (HR >100 + anion gap >16).
       Cerebral oedema watch + hourly bloods + cardiac monitoring.
     appropriate: true
   - label: 'Admit AMU for IV fluids and FRII'

@@ -430,11 +430,14 @@ disposition_options:
       Severe reaction + asthma history + 1 IM adrenaline dose +
       potential biphasic risk. Standard paeds anaphylaxis disposition.
     appropriate: true
-  - label: 'Discharge home with allergy clinic referral and 2× EpiPen Jr'
+  - label: 'Discharge home with allergy clinic referral and 2× EpiPen Jr (150 mcg)'
     criteria: |
-      Inappropriate — observation period mandated by Resus Council UK
-      2021 for paeds anaphylaxis. Discharge ONLY after risk-stratified
-      observation completes.
+      Inappropriate on two grounds: (1) observation period is
+      mandated per RCUK 2021 for paeds anaphylaxis; (2) Sam weighs
+      28 kg — under MHRA/BNFc 2024 he receives **adult EpiPen
+      300 mcg** (threshold for the higher-dose pen changed from
+      30 kg → 25 kg in 2024). EpiPen Jr is now reserved for
+      7.5–25 kg.
     appropriate: false
   - label: 'Refer to PICU pre-emptively for invasive ventilation'
     criteria: |
@@ -472,9 +475,9 @@ pearls:
   - 'Paeds IV fluid bolus in anaphylaxis is 10 mL/kg — half the old "adult 20 mL/kg" rule. Reassess after every bolus.'
   - 'All paeds anaphylaxis admitted for risk-stratified observation (Resus Council UK 2021). No "1-hour observation and home" shortcut.'
   - 'A shared meal source is a family-wide allergy disclosure event — screen siblings, brief parents, refer to paediatric allergy clinic.'
-  - 'A peanut-sensitised child has the same biphasic risk profile as the adult — 6–12 h observation minimum for severe reactions.'
+  - 'A peanut-sensitised child has the same biphasic risk profile as the adult — 6–12 h observation minimum for severe reactions (biphasic incidence ~5% in current meta-analyses; up to 20% in selected severe-reaction cohorts per RCUK 2021).'
   - 'Sam''s timeline (mild lip swelling at 14:30, settled with antihistamine, systemic reaction at 19:30) is a "protracted / delayed-presentation" pattern rather than classic biphasic (which implies a *severe* index reaction with later recurrence). Either way the management is the same — risk-stratified observation per RCUK 2021.'
-  - 'Discharge bundle: 2× EpiPen Jr (150 mcg) for <30 kg, 2× EpiPen (300 mcg) for ≥30 kg, written action plan, paeds allergy referral, school + family briefing.'
+  - 'Discharge bundle (UK May 2026 per MHRA/BNFc): 2× EpiPen Jr (150 mcg) for **7.5–25 kg**; 2× EpiPen / Jext 300 mcg for **≥25 kg** (the threshold changed from 30 kg to 25 kg in 2024). Sam is 28 kg → receives **2× EpiPen 300 mcg (adult)**, NOT EpiPen Jr. Plus written action plan, paeds allergy referral, school + family briefing.'
 
 pitfalls:
   - 'Adult-dose adrenaline in a child.'

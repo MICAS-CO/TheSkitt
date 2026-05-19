@@ -1,6 +1,7 @@
 # Convulsive status epilepticus — first-of-life seizure in a young
 # adult woman. Built against NICE NG217 (Epilepsies in children, young
-# people and adults; 2022 update changing 2nd-line to levetiracetam),
+# people and adults; last updated 30 January 2025 — confirming
+# levetiracetam alongside phenytoin/valproate as IV 2nd-line),
 # the Resuscitation Council UK ALS Algorithm, and the RCEM Best
 # Practice Guideline on the Emergency Management of Adults with First
 # Seizure (2024). hCG-before-valproate is the safeguarding pivot.
@@ -203,7 +204,7 @@ investigations:
     sources:
       - {
           type: rcog,
-          ref: 'MHRA Valproate Pregnancy Prevention Programme 2024 — valproate must not be used in pregnancy in any indication unless no alternative.',
+          ref: 'MHRA Valproate Pregnancy Prevention Programme (2024, with 2025 paternal-precaution update) — valproate must not be used in pregnancy in any indication unless no alternative.',
         }
 
   - id: ix_vbg
@@ -258,7 +259,10 @@ investigations:
     abnormal: true
     sources:
       - { type: nice, id: 'NG217', ref: 'NICE NG217 — imaging in first seizure of life in adults' }
-      - { type: rcem, ref: 'RCEM Best Practice — First Seizure (2024)' }
+      - {
+          type: rcem,
+          ref: 'RCEM Position Statement / Recommendations for Adults Presenting to the ED with Seizures (August 2024)',
+        }
 
   - id: ix_lp
     name: 'Lumbar puncture'
@@ -348,7 +352,7 @@ management:
       benzodiazepine: diminishing return, increasing risk of apnoea.
     must_do: true
     drug:
-      amount: '4 mg (0.1 mg/kg, max 4 mg)'
+      amount: '4 mg IV fixed dose (adult); paeds: 0.1 mg/kg IV, max 4 mg'
       route: IV
       frequency: 'single dose; repeat once if still seizing 5–10 min later'
     sources:
@@ -362,9 +366,16 @@ management:
     category: drug
     name: 'IV levetiracetam 60 mg/kg over 10 min (max 4500 mg)'
     detail: |
-      Per the 2022 NICE NG217 update (post-EcLiPSE / ESETT data), IV
-      levetiracetam is the preferred second-line agent after benzos.
-      Safe in pregnancy (Category C, but the safest of the IV AEDs).
+      NICE NG217 (Jan 2025 update) lists IV levetiracetam alongside
+      phenytoin / valproate as 2nd-line; levetiracetam "may be
+      quicker to administer and have fewer adverse effects" — so it
+      is often the practical first pick after benzos, not formally
+      ranked above the others. Post-EcLiPSE (Lyttle Lancet 2019) +
+      ESETT (Kapur NEJM 2019) data support equivalent efficacy with
+      a better tolerability signal. Use in pregnancy supported by
+      UKTIS — the lowest teratogenic signal among the IV AEDs
+      (FDA PLLR narrative system since 2015; older "Category C"
+      labels are deprecated).
       Onset within ~10 min of completion of the infusion.
     must_do: true
     drug:
@@ -375,7 +386,7 @@ management:
       - {
           type: nice,
           id: 'NG217',
-          ref: 'NICE NG217 (2022 update) — IV levetiracetam preferred over phenytoin as 2nd-line; EcLiPSE & ESETT informed the change.',
+          ref: 'NICE NG217 (last updated 30 January 2025) — IV levetiracetam alongside phenytoin/valproate as 2nd-line in convulsive status; EcLiPSE & ESETT informed the elevation of levetiracetam.',
         }
 
   - id: mx_phenytoin_alt
@@ -484,7 +495,10 @@ management:
       effective. Levetiracetam IS an alternative.
     must_not_do: true
     sources:
-      - { type: rcog, ref: 'MHRA Valproate Pregnancy Prevention Programme 2024' }
+      - {
+          type: rcog,
+          ref: 'MHRA Valproate Pregnancy Prevention Programme (2024, with 2025 paternal-precaution update)',
+        }
 
   - id: mx_no_diazepam_iv
     category: drug
@@ -563,7 +577,7 @@ state_machine:
 # ─── Pearls + pitfalls ──────────────────────────────────────────────────
 pearls:
   - 'Convulsive status = ≥5 min of continuous seizure OR ≥2 seizures without recovery between (definition changed from 30 min over the last decade as outcomes improved with earlier treatment).'
-  - 'NICE NG217 (2022): IV lorazepam ×2 → IV levetiracetam 60 mg/kg → anaesthetic RSI. Levetiracetam beat phenytoin in EcLiPSE & ESETT.'
+  - 'NICE NG217 (last updated Jan 2025): IV lorazepam ×2 → IV levetiracetam 60 mg/kg (alongside phenytoin/valproate) → anaesthetic RSI. EcLiPSE (Lyttle Lancet 2019) + ESETT (Kapur NEJM 2019) showed equivalent efficacy with better tolerability for levetiracetam.'
   - 'In a woman of childbearing age: urgent βhCG before any anti-epileptic. Valproate is forbidden in pregnancy (MHRA PPP).'
   - 'First seizure of life mandates imaging — CT head looking for structural cause. SAH, tumour, abscess, vascular malformation are all on the list.'
   - 'A pregnant woman with a first seizure: eclampsia >20 weeks gestation; SAH at any gestation (vascular changes raise aneurysm risk).'
@@ -581,14 +595,25 @@ sources:
   - {
       type: nice,
       id: 'NG217',
-      ref: 'NICE NG217 — Epilepsies in children, young people and adults (2022 update — levetiracetam preferred 2nd-line)',
+      ref: 'NICE NG217 — Epilepsies in children, young people and adults (last updated 30 January 2025).',
     }
   - { type: resus_council_uk, ref: 'Resuscitation Council UK ALS algorithm' }
   - {
       type: rcem,
-      ref: 'RCEM Best Practice — Emergency management of adults with a first seizure (2024)',
+      ref: 'RCEM Position Statement — Recommendations for Adults Presenting to the ED with Seizures (August 2024).',
     }
-  - { type: rcog, ref: 'MHRA Valproate Pregnancy Prevention Programme (2024)' }
+  - {
+      type: rcog,
+      ref: 'MHRA Valproate Pregnancy Prevention Programme (2024, with 2025 paternal-precaution update softening dual-specialist review for established male users; absolute pregnancy contraindication unchanged).',
+    }
+  - {
+      type: textbook,
+      ref: 'Kapur J et al. ESETT trial — randomised trial of three anticonvulsant medications for status epilepticus. NEJM 2019.',
+    }
+  - {
+      type: textbook,
+      ref: 'Lyttle MD et al. EcLiPSE — levetiracetam vs phenytoin for paediatric convulsive status epilepticus. Lancet 2019.',
+    }
   - {
       type: rcog,
       ref: 'RCOG Green-top 10A — Management of severe pre-eclampsia / eclampsia (magnesium sulphate)',

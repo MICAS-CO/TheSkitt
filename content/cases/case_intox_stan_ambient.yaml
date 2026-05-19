@@ -194,23 +194,38 @@ management:
 
   - id: mx_pabrinex
     category: drug
-    name: 'IV Pabrinex (high-potency vitamins B&C) for Wernicke prevention'
+    name: 'IV Pabrinex — empirical treatment for suspected Wernicke'
     detail: |
-      Life-threatening hypoglycaemia is treated FIRST — do not delay IV
-      glucose to give thiamine. Pabrinex follows promptly (concurrent
-      or immediately after) in malnourished / chronic-alcohol-misuse
-      adults to mitigate Wernicke risk from the glucose load.
-      Pabrinex 1 pair IV TDS for 3 days in this population.
+      Life-threatening hypoglycaemia is treated FIRST — do not delay
+      IV glucose to give thiamine. Pabrinex follows promptly
+      (concurrent or immediately after) in malnourished /
+      chronic-alcohol-misuse adults.
+
+      **NICE CG100 dosing** distinguishes two contexts:
+      - **Suspected / established Wernicke** (confusion + chronic
+        alcohol misuse — Stan qualifies; gait/eye signs cannot be
+        reliably tested in his agitated state): **Pabrinex 2 pairs
+        IV TDS for 3 days**, then 1 pair OD until oral thiamine
+        tolerated.
+      - **Prophylaxis only** in at-risk drinker without Wernicke
+        features: 1 pair IV OD for 3–5 days.
+
+      Stan's confusion + chronic misuse meets the treatment-dose
+      indication.
     must_do: true
     drug:
-      amount: 'Pabrinex 1 pair IV'
+      amount: 'Pabrinex 2 pairs IV (treatment-dose for suspected Wernicke)'
       route: IV
-      frequency: 'TDS for 3 days'
+      frequency: 'TDS for 3 days, then 1 pair OD until oral thiamine tolerated'
     sources:
       - {
           type: nice,
           id: 'CG100',
-          ref: 'NICE CG100 — alcohol-use disorders, Pabrinex (acute Wernicke prevention in malnourished adults)',
+          ref: 'NICE CG100 — alcohol-use disorders, physical complications: Pabrinex 2 pairs IV TDS for suspected/established Wernicke (1 pair OD for prophylaxis only).',
+        }
+      - {
+          type: textbook,
+          ref: 'SPS (Specialist Pharmacy Service) — Using and prescribing thiamine in alcohol dependence (current UK guidance).',
         }
 
   - id: mx_ct_head

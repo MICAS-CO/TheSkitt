@@ -185,7 +185,11 @@ investigations:
     category: blood
     turnaround_min: 30
     result_summary: |
-      4280 IU/L. Above the UK discriminatory zone (~1500 IU/L) — an
+      4280 IU/L. Empty uterus on TVUSS with serum βhCG >1500 IU/L
+      raises ectopic strongly (RCOG GTG 21, 2016) — though current
+      practice emphasises TVUSS-based diagnosis over serum-βhCG
+      "discriminatory zone" alone, which has been largely deprecated
+      as a stand-alone criterion. Here the imaging plus this hCG —
       empty uterus on TVUSS with this level is ectopic until proven
       otherwise.
     abnormal: true
@@ -350,13 +354,24 @@ management:
     category: drug
     name: 'Give methotrexate in ED for medical management'
     detail: |
-      ❌ Wrong on multiple grounds: methotrexate is given by gynae/EPAU,
-      not ED; criteria are not met here (βhCG >1500 + likely rupture +
-      free fluid). NICE NG126 specifies clinical stability and βhCG
-      <1500 IU/L for medical management.
+      ❌ Wrong on multiple grounds:
+      • Methotrexate is given by gynae/EPAU, NOT in ED.
+      • NICE NG126 tiered criteria: offer MTX if βhCG <1500 IU/L;
+        between 1500–5000 IU/L offer choice of MTX or surgery; above
+        5000 IU/L surgery is preferred.
+      • Sarah's βhCG 4280 sits in the "offer choice" band BUT
+        surgery is preferred because of likely rupture / free fluid
+        / haemodynamic compromise — NOT because the hCG alone
+        disqualifies MTX.
+      • Other MTX criteria: unruptured ectopic, adnexal mass <35 mm,
+        no fetal cardiac activity, willing/able to attend follow-up.
     must_not_do: true
     sources:
-      - { type: nice, id: 'NG126', ref: 'Methotrexate criteria' }
+      - {
+          type: nice,
+          id: 'NG126',
+          ref: 'NICE NG126 §1.6.5-6 — tiered methotrexate criteria by βhCG (<1500 offer / 1500-5000 choice / >5000 surgery preferred).',
+        }
 
   - id: mx_no_discharge
     category: disposition
@@ -448,11 +463,11 @@ state_machine:
 
 pearls:
   - 'Any woman of reproductive age with abdo pain or PV bleeding gets urine βhCG as the FIRST ED investigation (NICE NG126).'
-  - 'UK discriminatory zone: empty uterus on TVUSS with serum βhCG > ~1500 IU/L is ectopic until proven otherwise (RCOG GTG 21).'
+  - 'Empty uterus on TVUSS with serum βhCG >1500 IU/L raises ectopic strongly (RCOG GTG 21), but TVUSS findings drive the diagnosis — the term "discriminatory zone" has been largely deprecated as a stand-alone criterion in favour of serial hCG + TVUSS correlation.'
   - "Ectopic patients can look deceptively well right up until they don't — postural BP drop, mild tachycardia, and an interval Hb fall are the early signs."
-  - 'Methotrexate criteria (NICE NG126): clinically stable, βhCG <1500 IU/L, no rupture, no fetal cardiac activity, willing to attend follow-up. Decision made by gynae, not by ED.'
+  - 'Methotrexate criteria (NICE NG126 tiered by βhCG): <1500 = offer MTX; 1500–5000 = offer choice MTX or surgery; >5000 = surgery preferred. Plus: clinically stable, no rupture, adnexal mass <35 mm, no fetal cardiac activity, willing/able to attend follow-up. Decision by gynae, not ED.'
   - 'Bimanual pelvic exam is NOT routinely required in ED for suspected ectopic — low yield, theoretical disturbance risk, gynae will repeat.'
-  - 'Anti-D prophylaxis: not routine for surgical management of ectopic in RhD-negative women per RCOG, but check the protocol locally; document clearly.'
+  - 'Anti-D in early-pregnancy events (UK May 2026): the **NICE NG126 update (May 2026)** recommends AGAINST routine anti-D prophylaxis for ectopic or miscarriage at <12 weeks gestation, regardless of management. This supersedes the older 12-week surgical-management threshold. Check current local protocol; document clearly.'
 
 pitfalls:
   - 'Anchoring on UTI, gastro, or threatened miscarriage and not sending serum βhCG.'
@@ -465,7 +480,7 @@ sources:
   - {
       type: nice,
       id: 'NG126',
-      ref: 'Ectopic pregnancy and miscarriage: diagnosis and initial management (NICE 2019, updated 2023)',
+      ref: 'NICE NG126 — Ectopic pregnancy and miscarriage: diagnosis and initial management (2019, updated June 2025; anti-D update May 2026).',
       url: 'https://www.nice.org.uk/guidance/ng126',
     }
   - {
