@@ -1,5 +1,6 @@
 # Authored against Resus Council UK 2021 paediatric anaphylaxis algorithm,
-# NICE CG134, BTS/SIGN 158 (nebulised salbutamol doses), APLS principles,
+# NICE CG134, BTS/SIGN 158 acute asthma sections (chronic management now
+# superseded by NICE NG244 Nov 2024) for paeds nebulised doses, APLS principles,
 # and Oxford Handbook of EM 5e Ch 15.
 #
 # Sam Cartwright is Beth's 8y/o brother. While Beth was at her hen-do
@@ -310,7 +311,7 @@ management:
       route: other
       frequency: 'continuous via paeds non-rebreather mask'
     sources:
-      - { type: bts_sign, ref: 'BTS/SIGN 158 — oxygen in paeds acute asthma' }
+      - { type: bts_sign, ref: 'BTS/SIGN 158 acute asthma sections (chronic mgmt now superseded by NICE NG244 Nov 2024) — oxygen in paeds acute asthma' }
 
   - id: mx_adrenaline_paeds_im
     category: drug
@@ -389,7 +390,7 @@ management:
       route: NEB
       frequency: 'salbutamol 20–30 min as needed or continuous; ipratropium 4–6 hourly'
     sources:
-      - { type: bts_sign, ref: 'BTS/SIGN 158 — paediatric acute asthma nebuliser doses' }
+      - { type: bts_sign, ref: 'BTS/SIGN 158 acute asthma sections (chronic mgmt now superseded by NICE NG244 Nov 2024) — paediatric acute asthma nebuliser doses' }
 
   - id: mx_tryptase_paeds
     category: monitoring

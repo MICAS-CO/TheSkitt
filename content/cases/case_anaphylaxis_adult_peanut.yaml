@@ -358,7 +358,7 @@ management:
     sources:
       - {
           type: bts_sign,
-          ref: 'BTS/SIGN 158 — acute asthma nebuliser doses (salbutamol back-to-back; ipratropium 4–6 hourly)',
+          ref: 'BTS/SIGN 158 (acute asthma sections — chronic management now superseded by NICE NG244 Nov 2024) — nebuliser doses (salbutamol back-to-back; ipratropium 4–6 hourly)',
         }
 
   - id: mx_tryptase_samples

@@ -1,5 +1,5 @@
-# Authored against BSPED Paediatric DKA Guideline 2020 (with the
-# 2021 fluid-bolus clarification) and APLS 7th edition. Key
+# Authored against BSPED Paediatric DKA Guideline 2021 (last reviewed
+# 26 Nov 2024) and APLS 7th edition. Key
 # differences from adult JBDS-IP that this case teaches:
 #   - 0.9% saline boluses 10 mL/kg over 30 min (NOT 500 mL adult bolus)
 #   - Fluid deficit replaced over 48 h (not 24 h) — slower correction
@@ -203,7 +203,7 @@ investigations:
     abnormal: true
     result_summary: |
       pH 7.04, pCO₂ 1.8, HCO₃ 6, BE −22, lactate 3.2, glucose 36,
-      Na 134, K 5.4. Ketones 5.6 mmol/L. Severe DKA by BSPED 2020:
+      Na 134, K 5.4. Ketones 5.6 mmol/L. Severe DKA by BSPED 2021:
       pH <7.1 OR HCO3 <5 + ketones >3.
     supports: ['Severe paediatric DKA — first presentation of type 1 diabetes mellitus']
 
@@ -330,7 +330,7 @@ management:
       frequency: 'over 30 min, repeat once if shocked'
       paeds_dose: '10 mL/kg over 30 min'
     detail: |
-      BSPED 2020 paediatric DKA: smaller bolus (10 mL/kg) than
+      BSPED 2021 paediatric DKA: smaller bolus (10 mL/kg) than
       adult JBDS-IP. Reduces rapid-osmolality cerebral-oedema risk.
 
   - id: mx_paeds_maintenance_fluid
@@ -401,7 +401,7 @@ management:
     name: 'Start IV insulin at the same time as the saline bolus'
     must_not_do: true
     detail: |
-      ❌ TRAP. Paeds BSPED 2020 deliberately delays insulin by 1
+      ❌ TRAP. Paeds BSPED 2021 deliberately delays insulin by 1
       hour. Concurrent insulin in children is a cerebral-oedema
       risk factor.
 
@@ -473,22 +473,22 @@ state_machine:
           Safety-net transition — acidosis declares itself with time.
 
 pearls:
-  - 'Paediatric DKA: 10 mL/kg saline bolus (NOT 20), 48-h deficit replacement (NOT 24 h), insulin 1 HOUR AFTER fluids — all to reduce cerebral-oedema risk. (BSPED 2020.)'
-  - 'No insulin bolus in DKA — paediatric OR adult. (BSPED 2020 + JBDS-IP 2023.)'
+  - 'Paediatric DKA: 10 mL/kg saline bolus (NOT 20), 48-h deficit replacement (NOT 24 h), insulin 1 HOUR AFTER fluids — all to reduce cerebral-oedema risk. (BSPED 2021, last reviewed Nov 2024.)'
+  - 'No insulin bolus in DKA — paediatric OR adult. (BSPED 2021 + JBDS-IP 2023.)'
   - 'No routine sodium bicarbonate in DKA — even at pH 7.04.'
   - 'Hourly neuro obs for 24 h: cerebral oedema = leading cause of paeds DKA mortality (0.5–1%), peaks 4–12 h into treatment.'
   - 'Corrected Na = Na + 0.4 × (gluc − 5.5). FALLING corrected Na during treatment = cerebral-oedema warning — slow the fluids, reassess GCS.'
   - 'New-onset T1DM: diabetes specialist nurse should see the family in ED before transfer. Reduces later DKA readmissions.'
 
 pitfalls:
-  - "Applying adult JBDS-IP doses to a paediatric patient (20 mL/kg, concurrent insulin). Both wrong in BSPED 2020 paediatric DKA."
+  - "Applying adult JBDS-IP doses to a paediatric patient (20 mL/kg, concurrent insulin). Both wrong in BSPED 2021 paediatric DKA."
   - 'Treating reduced GCS as a separate problem (LP, CT) before correcting acidosis.'
   - 'Giving an insulin bolus. No evidence of benefit; rapid osmolality shift risk.'
   - 'Forgetting to subtract resuscitation boluses from the calculated deficit.'
   - 'Discharging when glucose is "normal" without confirming ketones <0.6 + pH >7.30 + SC insulin transition.'
 
 sources:
-  - { type: bsped, ref: 'BSPED Paediatric DKA Guideline 2020 (with 2021 fluid clarification)' }
+  - { type: bsped, ref: 'BSPED Paediatric DKA Guideline 2021 (last reviewed 26 Nov 2024)' }
   - { type: rcpch, ref: 'RCPCH State of Child Health 2023 — diabetes section' }
   - { type: nice_cks, ref: 'NICE CKS Diabetes type 1 (paediatric section)' }
   - { type: other, ref: 'APLS 7th edition — paediatric DKA chapter' }

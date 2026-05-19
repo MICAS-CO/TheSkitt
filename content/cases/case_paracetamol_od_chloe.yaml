@@ -439,7 +439,7 @@ management:
       Early hepatology liaison even before INR rises — they will
       advise on King's College Hospital transfer if the patient meets
       transplant criteria (pH <7.30 OR INR >6.5 + creatinine >300
-      + GCS ≥3).
+      + grade III–IV hepatic encephalopathy).
     sources:
       - { type: rcem, ref: 'RCEM Best Practice — Paracetamol Overdose' }
 
@@ -545,7 +545,7 @@ disposition_options:
   - label: "Transfer to King's College Hospital liver unit now"
     criteria: |
       Premature without King's criteria met (pH <7.30 OR INR >6.5 +
-      creatinine >300 + GCS ≥3). Early hepatology liaison is correct;
+      creatinine >300 + grade III–IV hepatic encephalopathy). Early hepatology liaison is correct;
       transfer is reserved for those who meet criteria, usually after
       12–24 h of NAC.
     appropriate: false

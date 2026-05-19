@@ -531,8 +531,8 @@ sources:
   - {
       type: nice,
       id: 'NG253',
-      ref: 'Sepsis: recognition, diagnosis and early management (NICE 2016, updated 2024)',
-      url: 'https://www.nice.org.uk/guidance/ng51',
+      ref: 'Suspected sepsis in people aged 16 or over: recognition, assessment and early management (NICE 2024, evidence reviewed 2025; supersedes NG51)',
+      url: 'https://www.nice.org.uk/guidance/ng253',
     }
   - { type: rcem, ref: 'RCEM Best Practice — The Septic Patient in the Emergency Department' }
   - { type: nhs, ref: 'NEWS2 — Royal College of Physicians national early warning score (2017)' }
