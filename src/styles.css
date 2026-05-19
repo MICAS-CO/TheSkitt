@@ -2262,6 +2262,10 @@ a {
 .enc__breakdown-row--trap_picked {
   border-color: var(--danger);
 }
+.enc__breakdown-row--sequence_error {
+  border-color: var(--warn);
+  background: linear-gradient(180deg, rgba(224, 168, 46, 0.08), transparent);
+}
 .enc__breakdown-status {
   color: var(--muted);
   font-size: 12px;

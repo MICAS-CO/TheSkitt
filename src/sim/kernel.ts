@@ -38,6 +38,8 @@ export interface CaseRuntime {
   unlockedHistoryIds: Set<string>;
   /** Findings unlocked by an arc reveal effect (e.g. extra exam findings). */
   unlockedFindingIds: Set<string>;
+  /** Management ids taken out of their authored sequence (M20). */
+  sequenceErrors: Set<string>;
 }
 
 export type LogLevel = 'info' | 'warn' | 'danger';
@@ -98,6 +100,7 @@ export interface SerializedCaseRuntime {
   reasons: string[];
   unlockedHistoryIds: string[];
   unlockedFindingIds: string[];
+  sequenceErrors?: string[];
 }
 
 export interface SerializedKernelSnapshot {
@@ -135,6 +138,7 @@ export class SimKernel {
         reasons: [],
         unlockedHistoryIds: new Set(),
         unlockedFindingIds: new Set(),
+        sequenceErrors: new Set(),
       });
     }
     this.state = {
@@ -177,6 +181,7 @@ export class SimKernel {
         reasons: [...cs.reasons],
         unlockedHistoryIds: [...cs.unlockedHistoryIds],
         unlockedFindingIds: [...cs.unlockedFindingIds],
+        sequenceErrors: [...cs.sequenceErrors],
       })),
       revealedArcIds: [...this.state.revealedArcIds],
       firedEventIds: [...this.state.firedEventIds],
@@ -209,6 +214,7 @@ export class SimKernel {
       cs.reasons = [...sc.reasons];
       cs.unlockedHistoryIds = new Set(sc.unlockedHistoryIds);
       cs.unlockedFindingIds = new Set(sc.unlockedFindingIds);
+      cs.sequenceErrors = new Set(sc.sequenceErrors ?? []);
     }
     this.state.revealedArcIds = new Set(snap.revealedArcIds);
     this.state.firedEventIds = new Set(snap.firedEventIds);
@@ -307,6 +313,21 @@ export class SimKernel {
     } else {
       cs.actions.add(actionId);
       this.log('info', `Action: ${actionLabel(cs, actionId)}.`, caseId);
+      // Sequence check: any unmet prereq → mark as out-of-order (M20).
+      const action = cs.data.management.find((m) => m.id === actionId);
+      const missing = (action?.prereq_action_ids ?? []).filter((p) => !cs.actions.has(p));
+      if (missing.length > 0) {
+        cs.sequenceErrors.add(actionId);
+        const missingNames = missing.map((mid) => actionLabel(cs, mid)).join(', ');
+        cs.reasons.push(
+          `Sequence error: ${actionLabel(cs, actionId)} taken before ${missingNames}.`,
+        );
+        this.log(
+          'danger',
+          `Sequence error — ${actionLabel(cs, actionId)} before ${missingNames}.`,
+          caseId,
+        );
+      }
     }
     this.checkTransitions(cs);
     this.checkAllArcReveals();

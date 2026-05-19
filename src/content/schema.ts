@@ -299,6 +299,14 @@ export const ManagementAction = z.object({
   must_not_do: z.boolean().default(false).describe('If true, doing it is an examiner trap.'),
   /** ABCDE bucket for the resus action wheel (M13). Optional. */
   resus_letter: ResusLetter.optional(),
+  /**
+   * This action must be preceded by every listed management id. Taking it
+   * out-of-order is a sequence error — the kernel logs a danger entry,
+   * records it as a per-case sequence error, and the debrief penalises
+   * the score (M20). Distinct from `must_not_do`: the action itself
+   * is correct, but only in the right order.
+   */
+  prereq_action_ids: z.array(z.string()).optional(),
   sources: z.array(Citation).optional(),
 });
 

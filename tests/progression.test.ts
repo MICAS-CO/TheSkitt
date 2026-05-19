@@ -48,6 +48,7 @@ function fakeScore(overrides: Partial<ScoreReport> = {}): ScoreReport {
     mustDoTotal: 1,
     mustDoDone: 1,
     mustNotDoChosen: 0,
+    sequenceErrors: 0,
     dispositionCorrect: true,
     workingDxCorrect: true,
     percent: 100,

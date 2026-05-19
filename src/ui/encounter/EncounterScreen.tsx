@@ -999,6 +999,13 @@ function DebriefPhase({ cs }: { cs: CaseRuntime }) {
           <li>
             Final patient state: <strong>{cs.state}</strong>
           </li>
+          {score.sequenceErrors > 0 && (
+            <li className="enc__score-warn">
+              <strong>Sequence errors:</strong> {score.sequenceErrors} action
+              {score.sequenceErrors === 1 ? '' : 's'} taken out of order (−
+              {score.sequenceErrors * 10})
+            </li>
+          )}
           {trapsTotal > 0 && (
             <li className={score.mustNotDoChosen > 0 ? 'enc__score-warn' : 'enc__score-good'}>
               <strong>Ward traps:</strong> avoided {trapsAvoided}/{trapsTotal}
@@ -1080,7 +1087,7 @@ function pickCardClass({
   return parts.join(' ');
 }
 
-function statusLabel(s: 'done' | 'missed' | 'trap_avoided' | 'trap_picked') {
+function statusLabel(s: 'done' | 'missed' | 'trap_avoided' | 'trap_picked' | 'sequence_error') {
   switch (s) {
     case 'done':
       return '✓ done';
@@ -1090,6 +1097,8 @@ function statusLabel(s: 'done' | 'missed' | 'trap_avoided' | 'trap_picked') {
       return '✓ trap avoided';
     case 'trap_picked':
       return '✗ trap picked';
+    case 'sequence_error':
+      return '↯ out of sequence';
   }
 }
 

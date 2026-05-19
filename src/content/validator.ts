@@ -229,6 +229,26 @@ export function validateContent(rootDir: string): ValidationReport {
     for (const ix of entry.data.investigations) {
       checkSupports(`case ${entry.data.id} → investigation ${ix.id}`, ix.supports);
     }
+    // Per-case integrity: prereq_action_ids reference real mx in the same case (M20).
+    const mxIds = new Set(entry.data.management.map((m) => m.id));
+    for (const m of entry.data.management) {
+      for (const p of m.prereq_action_ids ?? []) {
+        if (!mxIds.has(p)) {
+          report.errors.push({
+            file: entry.file,
+            path: `case ${entry.data.id} → management ${m.id}`,
+            message: `prereq_action_ids references unknown management id "${p}"`,
+          });
+        }
+        if (p === m.id) {
+          report.errors.push({
+            file: entry.file,
+            path: `case ${entry.data.id} → management ${m.id}`,
+            message: 'management action cannot list itself as a prereq',
+          });
+        }
+      }
+    }
   }
 
   // Soft warnings

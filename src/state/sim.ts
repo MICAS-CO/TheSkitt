@@ -157,6 +157,7 @@ export interface ScoreReport {
   mustDoTotal: number;
   mustDoDone: number;
   mustNotDoChosen: number;
+  sequenceErrors: number;
   dispositionCorrect: boolean;
   workingDxCorrect: boolean;
   percent: number;
@@ -164,7 +165,7 @@ export interface ScoreReport {
   details: {
     mxId: string;
     name: string;
-    status: 'done' | 'missed' | 'trap_avoided' | 'trap_picked';
+    status: 'done' | 'missed' | 'trap_avoided' | 'trap_picked' | 'sequence_error';
   }[];
 }
 
@@ -174,18 +175,32 @@ export function scoreCase(cs: CaseRuntime): ScoreReport {
 
   const mustDoDone = mustDo.filter((m) => cs.actions.has(m.id)).length;
   const mustNotDoChosen = mustNotDo.filter((m) => cs.actions.has(m.id)).length;
+  const sequenceErrors = cs.sequenceErrors.size;
 
   const details: ScoreReport['details'] = [
     ...mustDo.map((m) => ({
       mxId: m.id,
       name: m.name,
-      status: cs.actions.has(m.id) ? ('done' as const) : ('missed' as const),
+      status: cs.sequenceErrors.has(m.id)
+        ? ('sequence_error' as const)
+        : cs.actions.has(m.id)
+          ? ('done' as const)
+          : ('missed' as const),
     })),
     ...mustNotDo.map((m) => ({
       mxId: m.id,
       name: m.name,
       status: cs.actions.has(m.id) ? ('trap_picked' as const) : ('trap_avoided' as const),
     })),
+    // Sequence errors on non-mustDo actions also appear in details so the
+    // player sees them in the debrief breakdown.
+    ...cs.data.management
+      .filter((m) => !m.must_do && !m.must_not_do && cs.sequenceErrors.has(m.id))
+      .map((m) => ({
+        mxId: m.id,
+        name: m.name,
+        status: 'sequence_error' as const,
+      })),
   ];
 
   const dispositionCorrect = !!cs.data.disposition_options.find(
@@ -195,11 +210,13 @@ export function scoreCase(cs: CaseRuntime): ScoreReport {
   const workingDxCorrect = !!topDx && cs.workingDx === topDx.diagnosis;
 
   const safetyPenalty = mustNotDoChosen * 20;
+  const sequencePenalty = sequenceErrors * 10;
   const score =
     (mustDoDone / Math.max(1, mustDo.length)) * 70 +
     (workingDxCorrect ? 15 : 0) +
     (dispositionCorrect ? 15 : 0) -
-    safetyPenalty;
+    safetyPenalty -
+    sequencePenalty;
   const percent = Math.max(0, Math.min(100, Math.round(score)));
 
   let band: ScoreReport['band'];
@@ -213,6 +230,7 @@ export function scoreCase(cs: CaseRuntime): ScoreReport {
     mustDoTotal: mustDo.length,
     mustDoDone,
     mustNotDoChosen,
+    sequenceErrors,
     dispositionCorrect,
     workingDxCorrect,
     percent,
