@@ -99,6 +99,29 @@ history:
     topic: 'Ask Stan directly.'
     prereq_history_ids: [hx_paramedics]
     npc_voice: "Stan blinks slowly. Pupils tight as pinpricks."
+    branch_choices:
+      - id: compassionate
+        label: "Stan. I'm Dr [you]. I'm not here to tell you off. How are you actually doing, between the drinks?"
+        npc_voice: "Stan looks at you. Properly. His eyes water but he doesn't break the gaze."
+        rapport_delta: 2
+        response: |
+          "Not… not well, doc. It's been a hard year. Two years. I can't
+          sleep without it now. Lost my Maggie. Place is empty. I just
+          don't want to be there alone. (Pause.) Don't tell my daughter
+          I said that."
+      - id: clinical
+        label: "Just need a quick history — last drink, regular drinks, any falls, any seizures?"
+        rapport_delta: 0
+        response: |
+          "Yeah. Last drink hour ago, maybe two. Usual. Couple bottles
+          of wine plus what was in the cupboard. No fits. Falls,
+          sometimes. Yeah."
+      - id: dismissive
+        label: "Stan, this is the third time this month. We can't keep doing this."
+        npc_voice: "Stan closes his eyes. Turns his face away."
+        rapport_delta: -2
+        response: |
+          "Sorry, doc. I'll go in a bit. Just let me sleep."
     response: |
       "Hello. Yeah. Just had a couple. No, three. My… my head hurts.
       Sleepy. Don't take me to the ward, I just need to sleep it off."

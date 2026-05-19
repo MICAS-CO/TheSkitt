@@ -214,6 +214,13 @@ function CasesPanel({ cases, title }: { cases: PerCaseReport[]; title: string })
                   {c.score.sequenceErrors === 1 ? '' : 's'}
                 </li>
               )}
+              {c.score.branchesAvailable > 0 && (
+                <li>
+                  Pivotal moments engaged: <strong>{c.score.branchesPicked}</strong>/
+                  {c.score.branchesAvailable}
+                  {c.score.rapport !== 0 ? ` · rapport ${c.score.rapport > 0 ? '+' : ''}${c.score.rapport}` : ''}
+                </li>
+              )}
               {!c.attended && (
                 <li className="ep-debrief__warn">
                   <strong>Never attended</strong>

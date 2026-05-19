@@ -181,3 +181,75 @@ describe('SimKernel — determinism', () => {
     ]);
   });
 });
+
+describe('SimKernel — branching dialogue (M34)', () => {
+  it('records a chosen branch and applies its rapport delta', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const { parse } = await import('yaml');
+    const { Case, Episode } = await import('../src/content/schema');
+    const chloe = Case.parse(
+      parse(
+        readFileSync(
+          join(process.cwd(), 'content/cases/case_paracetamol_od_chloe.yaml'),
+          'utf8',
+        ),
+      ),
+    );
+    const ep = Episode.parse({
+      schema_version: 1,
+      id: 'ep_chloe_branch_test',
+      title: 'Chloe branch test',
+      learning_objectives: ['x'],
+      curriculum_tags: ['MHC1'],
+      difficulty_band: 'CT2',
+      shift_duration_min: 20,
+      focus_cases: [chloe.id],
+    });
+    const k = new SimKernel({ episode: ep, cases: new Map([[chloe.id, chloe]]) });
+    k.enterCase(chloe.id);
+    // Unlock the gated item by asking its prereq.
+    k.recordAsk(chloe.id, 'hx_chloe_ingestion');
+    k.recordAsk(chloe.id, 'hx_chloe_intent');
+    k.pickBranchChoice(chloe.id, 'hx_chloe_intent', 'compassionate');
+
+    const cs = k.getState().cases.get(chloe.id)!;
+    expect(cs.branchChoices.get('hx_chloe_intent')).toBe('compassionate');
+    expect(cs.rapport).toBe(2);
+  });
+
+  it('picking the same branch twice is a no-op (idempotent)', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const { parse } = await import('yaml');
+    const { Case, Episode } = await import('../src/content/schema');
+    const chloe = Case.parse(
+      parse(
+        readFileSync(
+          join(process.cwd(), 'content/cases/case_paracetamol_od_chloe.yaml'),
+          'utf8',
+        ),
+      ),
+    );
+    const ep = Episode.parse({
+      schema_version: 1,
+      id: 'ep_chloe_idempotent_test',
+      title: 'Chloe idempotent test',
+      learning_objectives: ['x'],
+      curriculum_tags: ['MHC1'],
+      difficulty_band: 'CT2',
+      shift_duration_min: 20,
+      focus_cases: [chloe.id],
+    });
+    const k = new SimKernel({ episode: ep, cases: new Map([[chloe.id, chloe]]) });
+    k.enterCase(chloe.id);
+    k.recordAsk(chloe.id, 'hx_chloe_ingestion');
+    k.recordAsk(chloe.id, 'hx_chloe_intent');
+    k.pickBranchChoice(chloe.id, 'hx_chloe_intent', 'compassionate');
+    // Try to overwrite — must be a no-op.
+    k.pickBranchChoice(chloe.id, 'hx_chloe_intent', 'deflecting');
+    const cs = k.getState().cases.get(chloe.id)!;
+    expect(cs.branchChoices.get('hx_chloe_intent')).toBe('compassionate');
+    expect(cs.rapport).toBe(2);
+  });
+});

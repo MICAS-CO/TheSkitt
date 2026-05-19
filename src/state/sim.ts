@@ -158,6 +158,15 @@ export interface ScoreReport {
   mustDoDone: number;
   mustNotDoChosen: number;
   sequenceErrors: number;
+  /** Net rapport across the case (M34). Only meaningful when the
+   *  case has at least one HistoryItem.branch_choices authored.
+   *  Otherwise stays at 0. */
+  rapport: number;
+  /** Number of branching dialogue moments the player actually engaged
+   *  with (M34) — used by the debrief to show "you reflected on 2 / 3
+   *  pivotal moments". */
+  branchesPicked: number;
+  branchesAvailable: number;
   dispositionCorrect: boolean;
   workingDxCorrect: boolean;
   percent: number;
@@ -226,11 +235,17 @@ export function scoreCase(cs: CaseRuntime): ScoreReport {
   else if (percent >= 75) band = 'good';
   else band = 'borderline';
 
+  const branchesAvailable = cs.data.history.filter((h) => h.branch_choices).length;
+  const branchesPicked = cs.branchChoices.size;
+
   return {
     mustDoTotal: mustDo.length,
     mustDoDone,
     mustNotDoChosen,
     sequenceErrors,
+    rapport: cs.rapport,
+    branchesPicked,
+    branchesAvailable,
     dispositionCorrect,
     workingDxCorrect,
     percent,

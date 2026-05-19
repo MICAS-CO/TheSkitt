@@ -167,7 +167,11 @@ export function EncounterScreen({
             <ResusMode cs={cs} onAction={(id) => kernel.toggleAction(caseId, id)} />
           ) : null}
           {!resusActive && section === 'history' && (
-            <HistoryPhase cs={cs} onAsk={(id) => kernel.recordAsk(caseId, id)} />
+            <HistoryPhase
+              cs={cs}
+              onAsk={(id) => kernel.recordAsk(caseId, id)}
+              onPickBranch={(hxId, choiceId) => kernel.pickBranchChoice(caseId, hxId, choiceId)}
+            />
           )}
           {!resusActive && section === 'examination' && (
             <ExaminationPhase cs={cs} onExamine={(s) => kernel.recordExamine(caseId, s)} />
@@ -490,7 +494,23 @@ function isHistorySilenced(
 
 // ─── Section bodies ─────────────────────────────────────────────────────────
 
-function HistoryPhase({ cs, onAsk }: { cs: CaseRuntime; onAsk: (id: string) => void }) {
+function rapportLabel(r: number): { mood: string; tone: 'good' | 'neutral' | 'bad' } {
+  if (r >= 2) return { mood: 'warming up', tone: 'good' };
+  if (r >= 1) return { mood: 'engaging', tone: 'good' };
+  if (r <= -2) return { mood: 'pulling away', tone: 'bad' };
+  if (r <= -1) return { mood: 'guarded', tone: 'bad' };
+  return { mood: 'neutral', tone: 'neutral' };
+}
+
+function HistoryPhase({
+  cs,
+  onAsk,
+  onPickBranch,
+}: {
+  cs: CaseRuntime;
+  onAsk: (id: string) => void;
+  onPickBranch: (hxId: string, choiceId: string) => void;
+}) {
   const kernel = useSim((s) => s.kernel)!;
   const ks = kernel.getState();
   const items = useMemo(() => visibleHistoryItems(cs, ks), [cs, ks]);
@@ -508,9 +528,25 @@ function HistoryPhase({ cs, onAsk }: { cs: CaseRuntime; onAsk: (id: string) => v
 
   const patientSilenced = cs.state === 'deteriorating' || cs.state === 'arrested';
 
+  // Rapport surfaces only once the encounter actually has at least one
+  // branching dialogue moment authored on it (M34).
+  const hasAnyBranching = cs.data.history.some((h) => h.branch_choices);
+  const rapport = rapportLabel(cs.rapport);
+
   return (
     <section className="enc__phase">
-      <h2>History</h2>
+      <header className="enc__phase-head">
+        <h2>History</h2>
+        {hasAnyBranching && (
+          <span
+            className={`enc__rapport enc__rapport--${rapport.tone}`}
+            title={`Net rapport: ${cs.rapport}`}
+            aria-label={`Patient rapport: ${rapport.mood}`}
+          >
+            Patient: <strong>{rapport.mood}</strong>
+          </span>
+        )}
+      </header>
       {patientSilenced && (
         <div className="enc__banner enc__banner--danger" role="status">
           <strong>{firstName(cs.data.title)} can&rsquo;t talk right now.</strong> They need urgent
@@ -520,6 +556,12 @@ function HistoryPhase({ cs, onAsk }: { cs: CaseRuntime; onAsk: (id: string) => v
       )}
       <p className="enc__hint">
         Ask a topic to start. Some answers will open follow-up questions.
+        {hasAnyBranching && (
+          <>
+            {' '}
+            <em>Some questions let you choose tone — how you ask matters.</em>
+          </>
+        )}
         {hiddenByPrereq > 0 && (
           <>
             {' '}
@@ -567,6 +609,30 @@ function HistoryPhase({ cs, onAsk }: { cs: CaseRuntime; onAsk: (id: string) => v
               {isAsked && (
                 <div className="enc__card-body enc__card-body--dialogue">
                   {h.npc_voice && <p className="enc__npc-voice">{h.npc_voice}</p>}
+                  {h.branch_choices && !cs.branchChoices.has(h.id) ? (
+                    <BranchPicker
+                      choices={h.branch_choices}
+                      onPick={(cid) => onPickBranch(h.id, cid)}
+                    />
+                  ) : null}
+                  {h.branch_choices && cs.branchChoices.has(h.id)
+                    ? (() => {
+                        const pickedId = cs.branchChoices.get(h.id)!;
+                        const picked = h.branch_choices.find((c) => c.id === pickedId);
+                        if (!picked) return null;
+                        return (
+                          <div className="enc__branch-picked">
+                            <p className="enc__branch-picked-tag">
+                              You asked: <em>“{picked.label}”</em>
+                            </p>
+                            {picked.npc_voice && (
+                              <p className="enc__npc-voice">{picked.npc_voice}</p>
+                            )}
+                            <p className="enc__response">{picked.response}</p>
+                          </div>
+                        );
+                      })()
+                    : null}
                   <p className="enc__response">{h.response}</p>
                 </div>
               )}
@@ -575,6 +641,34 @@ function HistoryPhase({ cs, onAsk }: { cs: CaseRuntime; onAsk: (id: string) => v
         })}
       </ul>
     </section>
+  );
+}
+
+function BranchPicker({
+  choices,
+  onPick,
+}: {
+  choices: { id: string; label: string }[];
+  onPick: (id: string) => void;
+}) {
+  return (
+    <div className="enc__branch-picker" role="group" aria-label="How do you ask?">
+      <p className="enc__branch-picker-prompt">How do you ask?</p>
+      <ul className="enc__branch-picker-options">
+        {choices.map((c) => (
+          <li key={c.id}>
+            <button
+              type="button"
+              className="enc__branch-picker-button"
+              onClick={() => onPick(c.id)}
+            >
+              <span className="enc__branch-picker-marker">▸</span>
+              {c.label}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

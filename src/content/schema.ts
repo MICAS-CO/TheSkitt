@@ -196,6 +196,28 @@ export const HistoryItem = z.object({
    * differentials the player's evidence points at. Optional — clues
    * without supports are listed but unweighted.
    */
+  /**
+   * Branching dialogue choices (M34). When set, the player picks ONE
+   * option before the canonical `response` is revealed; the picked
+   * branch's `response` is shown alongside it and may shift case
+   * rapport via `rapport_delta`. Once a choice is made it's locked
+   * for the encounter.
+   *
+   * Use for pivotal moments — disclosure of intent, prior MH, trauma —
+   * where *how* the question is asked matters more than the answer.
+   */
+  branch_choices: z
+    .array(
+      z.object({
+        id: z.string(),
+        label: z.string(),
+        response: z.string(),
+        npc_voice: z.string().optional(),
+        rapport_delta: z.number().int().min(-3).max(3).optional(),
+      }),
+    )
+    .min(2)
+    .optional(),
   supports: z.array(z.string()).optional(),
 });
 

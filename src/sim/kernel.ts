@@ -44,6 +44,10 @@ export interface CaseRuntime {
    *  Untoggling removes the entry (M30). Drives the drug-chart
    *  TIME column. */
   actionsAt: Map<string, number>;
+  /** Branching dialogue picks (M34). historyId → branch_choice id. */
+  branchChoices: Map<string, string>;
+  /** Net rapport score across the encounter (M34). Clamped −3..+3. */
+  rapport: number;
 }
 
 export type LogLevel = 'info' | 'warn' | 'danger';
@@ -106,6 +110,8 @@ export interface SerializedCaseRuntime {
   unlockedFindingIds: string[];
   sequenceErrors?: string[];
   actionsAt?: [string, number][];
+  branchChoices?: [string, string][];
+  rapport?: number;
 }
 
 export interface SerializedKernelSnapshot {
@@ -145,6 +151,8 @@ export class SimKernel {
         unlockedFindingIds: new Set(),
         sequenceErrors: new Set(),
         actionsAt: new Map(),
+        branchChoices: new Map(),
+        rapport: 0,
       });
     }
     this.state = {
@@ -189,6 +197,8 @@ export class SimKernel {
         unlockedFindingIds: [...cs.unlockedFindingIds],
         sequenceErrors: [...cs.sequenceErrors],
         actionsAt: [...cs.actionsAt.entries()],
+        branchChoices: [...cs.branchChoices.entries()],
+        rapport: cs.rapport,
       })),
       revealedArcIds: [...this.state.revealedArcIds],
       firedEventIds: [...this.state.firedEventIds],
@@ -223,6 +233,8 @@ export class SimKernel {
       cs.unlockedFindingIds = new Set(sc.unlockedFindingIds);
       cs.sequenceErrors = new Set(sc.sequenceErrors ?? []);
       cs.actionsAt = new Map(sc.actionsAt ?? []);
+      cs.branchChoices = new Map(sc.branchChoices ?? []);
+      cs.rapport = sc.rapport ?? 0;
     }
     this.state.revealedArcIds = new Set(snap.revealedArcIds);
     this.state.firedEventIds = new Set(snap.firedEventIds);
@@ -355,6 +367,25 @@ export class SimKernel {
       for (const r of item.reveals) cs.unlockedHistoryIds.add(r);
     }
     this.checkAllArcReveals();
+    this.notify();
+  }
+
+  /**
+   * Record the player's pick among a history item's branch_choices
+   * (M34). Idempotent — choosing again is a no-op. Clamps rapport to
+   * −3..+3 to keep the gauge in range.
+   */
+  pickBranchChoice(caseId: string, hxId: string, choiceId: string): void {
+    const cs = this.state.cases.get(caseId);
+    if (!cs) return;
+    if (cs.branchChoices.has(hxId)) return;
+    const item = cs.data.history.find((h) => h.id === hxId);
+    const choice = item?.branch_choices?.find((c) => c.id === choiceId);
+    if (!choice) return;
+    cs.branchChoices.set(hxId, choiceId);
+    if (choice.rapport_delta) {
+      cs.rapport = Math.max(-3, Math.min(3, cs.rapport + choice.rapport_delta));
+    }
     this.notify();
   }
 

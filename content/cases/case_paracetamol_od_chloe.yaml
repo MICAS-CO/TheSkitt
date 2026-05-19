@@ -131,6 +131,29 @@ history:
     prereq_history_ids: [hx_chloe_ingestion]
     npc_voice: "She closes her eyes. A long pause."
     supports: ['Self-poisoning with suicidal intent (clinical risk)']
+    branch_choices:
+      - id: compassionate
+        label: "Take your time. Whatever you tell me stays between us and the team looking after you."
+        npc_voice: "Her shoulders drop. She turns her face toward you for the first time."
+        rapport_delta: 2
+        response: |
+          "I planned it. For weeks. I just wanted it to stop —
+          the noise in my head. I knew about paracetamol from a
+          training module at work. I'm not sorry I did it. I'm
+          sorry Mira found me."
+      - id: clinical
+        label: "Was this an attempt to end your life, or to feel better?"
+        npc_voice: "(She blinks once. Eyes back on the ceiling.)"
+        rapport_delta: 0
+        response: |
+          "An attempt. I knew the dose. I took it in stages because
+          I kept being sick. Mira found me."
+      - id: deflecting
+        label: "Sounds like you've had a tough night. Lots of people do this and regret it."
+        npc_voice: "(She turns her face to the wall. The silence stretches.)"
+        rapport_delta: -2
+        response: |
+          "...Yeah. Tough night."
     response: |
       "I just wanted it to stop. The noise in my head. I planned to
       take them all but I couldn't do it in one go, I kept being
