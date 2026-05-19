@@ -81,6 +81,7 @@ history:
   - id: hx_uti_history
     source: records
     topic: 'Any recent infections or culture results?'
+    prereq_history_ids: [hx_baseline]
     response: |
       "Recurrent UTIs through the year. Last episode 6 weeks ago,
       trimethoprim — culture showed E. coli sensitive to nitrofurantoin
@@ -89,6 +90,7 @@ history:
   - id: hx_patient_speech
     source: patient
     topic: 'Ask Mrs Morrison directly.'
+    npc_voice: 'Mrs Morrison plucks at the blanket, eyes scanning the room.'
     response: |
       "Hello dear. Where's Bob? I want to go home. Is it morning yet?"
       (Disoriented to place and time; orientated to self. No specific
@@ -97,6 +99,7 @@ history:
   - id: hx_anticoag_dnacpr
     source: records
     topic: 'Clarify the anticoagulant and resus status.'
+    prereq_history_ids: [hx_baseline]
     response: |
       "Apixaban 5 mg BD for AF (CHA₂DS₂-VASc 5, started 2022). DNACPR
       in place — signed by GP. Advance care plan: active treatment of

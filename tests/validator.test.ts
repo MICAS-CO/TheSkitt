@@ -202,6 +202,89 @@ describe('validateContent', () => {
     }
   });
 
+  it('flags a history item whose prereq_history_ids points at an unknown id', () => {
+    const root = makeRoot();
+    try {
+      writeFileSync(
+        join(root, 'content/cases/case_a.yaml'),
+        yamlStringify({
+          ...minimalCase,
+          history: [
+            { id: 'hx_a', source: 'patient', topic: 'A?', response: 'a' },
+            {
+              id: 'hx_b',
+              source: 'patient',
+              topic: 'B?',
+              response: 'b',
+              prereq_history_ids: ['hx_does_not_exist'],
+            },
+          ],
+        }),
+      );
+      const report = validateContent(root);
+      expect(report.ok).toBe(false);
+      expect(
+        report.errors.some((e) => e.message.includes('prereq_history_ids') && e.message.includes('hx_does_not_exist')),
+      ).toBe(true);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('flags a history item that lists itself as a prereq', () => {
+    const root = makeRoot();
+    try {
+      writeFileSync(
+        join(root, 'content/cases/case_a.yaml'),
+        yamlStringify({
+          ...minimalCase,
+          history: [
+            {
+              id: 'hx_a',
+              source: 'patient',
+              topic: 'A?',
+              response: 'a',
+              prereq_history_ids: ['hx_a'],
+            },
+          ],
+        }),
+      );
+      const report = validateContent(root);
+      expect(report.ok).toBe(false);
+      expect(report.errors.some((e) => /cannot list itself/i.test(e.message))).toBe(true);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('flags a history item whose reveals points at an unknown id', () => {
+    const root = makeRoot();
+    try {
+      writeFileSync(
+        join(root, 'content/cases/case_a.yaml'),
+        yamlStringify({
+          ...minimalCase,
+          history: [
+            {
+              id: 'hx_a',
+              source: 'patient',
+              topic: 'A?',
+              response: 'a',
+              reveals: ['hx_does_not_exist'],
+            },
+          ],
+        }),
+      );
+      const report = validateContent(root);
+      expect(report.ok).toBe(false);
+      expect(
+        report.errors.some((e) => e.message.includes('reveals') && e.message.includes('hx_does_not_exist')),
+      ).toBe(true);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
   it('flags an arc history_asked reveal that points to an unknown history_id', () => {
     const root = makeRoot();
     try {

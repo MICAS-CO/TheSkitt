@@ -938,6 +938,39 @@ a {
   background: var(--panel-2);
 }
 
+/* Dialogue-tree history (M10) */
+.enc__banner {
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.enc__banner--danger {
+  border-color: var(--danger);
+  background: linear-gradient(180deg, rgba(217, 107, 92, 0.1), transparent 60%);
+}
+.enc__npc-voice {
+  margin: 0 0 6px;
+  font-style: italic;
+  color: var(--muted);
+  font-size: 12px;
+}
+.enc__response {
+  margin: 0;
+  white-space: pre-wrap;
+}
+.enc__card-body--dialogue {
+  padding-top: 8px;
+}
+.enc__card.is-silenced {
+  opacity: 0.4;
+}
+.enc__card.is-silenced .enc__card-head {
+  cursor: not-allowed;
+}
+
 .enc__body {
   flex: 1;
 }

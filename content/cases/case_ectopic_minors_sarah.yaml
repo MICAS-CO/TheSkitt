@@ -78,6 +78,7 @@ history:
   - id: hx_pregnancy
     source: patient
     topic: 'Tell me about the pregnancy — dates, scans, anything?'
+    prereq_history_ids: [hx_pain]
     response: |
       "My last period was — let me think — seven weeks ago tomorrow. We
       were trying. Tested positive last Wednesday with a home kit. GP
@@ -87,6 +88,7 @@ history:
   - id: hx_risk_factors
     source: patient
     topic: 'Any risk factors — previous infections, surgery, IVF, IUCD?'
+    prereq_history_ids: [hx_pregnancy]
     response: |
       "I had chlamydia when I was 22, got treated. No surgery. We
       conceived naturally. Never had a coil. No previous miscarriage
@@ -114,6 +116,7 @@ history:
   - id: hx_friend_in_resus
     source: patient
     topic: 'Is the friend you came in with the same one in resus?'
+    npc_voice: "Sarah's eyes fill. 'Is Beth — my friend — okay?'"
     response: |
       "Yes — Beth, my maid of honour. She had something at the restaurant —
       a reaction. We came in the same ambulance. Is she okay? She knew

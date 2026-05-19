@@ -84,6 +84,8 @@ history:
   - id: hx_meds_compliance
     source: family
     topic: 'Wife — what happened with the BP tablets?'
+    prereq_history_ids: [hx_headache_details]
+    npc_voice: "Mrs Oduya keeps her voice even. 'He said the side-effects… made him feel old.'"
     response: |
       "GP told him 6 weeks ago his blood pressure was too high to
       drive a bus safely. He said the tablets made him tired and
@@ -111,6 +113,7 @@ history:
   - id: hx_secondary_screen
     source: patient
     topic: 'Screen for secondary hypertension causes — drugs, supplements, family, sleep, snoring?'
+    prereq_history_ids: [hx_meds_compliance]
     response: |
       "I don't take drugs. No cocaine, no amphetamines. I drink
       maybe four pints on a Friday. No herbal supplements. No
@@ -121,6 +124,7 @@ history:
   - id: hx_gp_letter
     source: gp_letter
     topic: 'Recent GP letters / urgent referral?'
+    prereq_history_ids: [hx_meds_compliance]
     response: |
       "Last GP visit 6 weeks ago: BP 184/108 in clinic, ambulatory
       mean 178/106. Advised to stop driving until controlled, told

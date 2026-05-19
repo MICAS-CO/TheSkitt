@@ -52,7 +52,6 @@ history:
       Felt itchy on her chest a few minutes later, then a rash came up.
       By the time we arrived at 19:02 she was wheezing and her voice
       sounded different. We gave one IM adrenaline 500 mcg en route."
-    reveals: ['finding_rapid_progression']
 
   - id: hx_trigger
     source: patient
@@ -65,6 +64,7 @@ history:
   - id: hx_previous_reactions
     source: patient
     topic: 'Any food reactions before?'
+    prereq_history_ids: [hx_trigger]
     response: |
       "There was a wedding two years ago where my lips swelled after a
       Thai meal. GP said hayfever flare. Didn't think much of it."
@@ -79,6 +79,7 @@ history:
   - id: hx_partner
     source: family
     topic: "Speak to the partner (Tom) in the relatives' room."
+    npc_voice: "Tom shifts his weight, glancing back toward the relatives' room."
     response: |
       "She's been getting hayfever worse the last few summers. Carries
       antihistamine tablets in her bag. There was that Thai place two
@@ -97,6 +98,7 @@ history:
   - id: hx_eaten_today
     source: patient
     topic: 'Anything else eaten or taken in the last 24 hours?'
+    prereq_history_ids: [hx_meds_allergies]
     response: |
       "Just normal stuff. Coffee, salad at work, two glasses of wine
       tonight. I haven't taken any new medicines."

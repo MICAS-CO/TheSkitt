@@ -178,6 +178,38 @@ export function validateContent(rootDir: string): ValidationReport {
     }
   }
 
+  // Per-case integrity: prereq + reveal history ids exist within the same case.
+  for (const [, entry] of parsed.cases) {
+    const ids = new Set(entry.data.history.map((h) => h.id));
+    for (const h of entry.data.history) {
+      for (const prereqId of h.prereq_history_ids ?? []) {
+        if (!ids.has(prereqId)) {
+          report.errors.push({
+            file: entry.file,
+            path: `case ${entry.data.id} → history ${h.id}`,
+            message: `prereq_history_ids references unknown history id "${prereqId}"`,
+          });
+        }
+        if (prereqId === h.id) {
+          report.errors.push({
+            file: entry.file,
+            path: `case ${entry.data.id} → history ${h.id}`,
+            message: 'history item cannot list itself as a prereq',
+          });
+        }
+      }
+      for (const revealId of h.reveals ?? []) {
+        if (!ids.has(revealId)) {
+          report.errors.push({
+            file: entry.file,
+            path: `case ${entry.data.id} → history ${h.id}`,
+            message: `reveals references unknown history id "${revealId}"`,
+          });
+        }
+      }
+    }
+  }
+
   // Soft warnings
   for (const [, entry] of parsed.cases) {
     if (entry.data.sources.length < 1) {

@@ -73,6 +73,7 @@ history:
   - id: hx_onset
     source: patient
     topic: 'Describe what happened — when did you feel breathless?'
+    npc_voice: "She speaks in short bursts, the nasal cannula hissing. 'I just… can't… catch it.'"
     response: |
       "Yesterday I had to stop on the stairs to catch my breath, but
       I thought I was just unfit after surgery. Today my left chest
@@ -83,6 +84,7 @@ history:
   - id: hx_post_op
     source: patient
     topic: 'Post-operative course — mobilisation, leg pain, swelling?'
+    prereq_history_ids: [hx_onset]
     response: |
       "Surgery 12 days ago — keyhole, three port sites. Discharged
       next day. They said walk every couple of hours. I tried but I
@@ -94,6 +96,7 @@ history:
   - id: hx_cocp
     source: gp_letter
     topic: 'Hormonal contraception — when was the COCP restarted?'
+    prereq_history_ids: [hx_post_op]
     response: |
       "GP letter (locum) 5 days ago, one-week post-op review at
       day 7: 'Patient requests recommencement of combined oral
@@ -125,6 +128,7 @@ history:
   - id: hx_anticoag_screen
     source: patient
     topic: 'Any blood thinners, herbal supplements, prior VTE?'
+    prereq_history_ids: [hx_onset]
     response: |
       "No blood thinners now. No supplements. I've never had a clot.
       I had enoxaparin injections for a week after surgery — they

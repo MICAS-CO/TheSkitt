@@ -78,6 +78,7 @@ history:
   - id: hx_anticoagulant
     source: gp_letter
     topic: 'Anticoagulant — agent, dose, time of last dose, renal function.'
+    prereq_history_ids: [hx_mechanism]
     response: |
       "Apixaban 5 mg BD. Last dose 07:30 this morning per her dosette.
       Started 2023 for PAF. CHA2DS2-VASc 4 (age, sex, HTN, DM).
@@ -86,6 +87,7 @@ history:
   - id: hx_other_drugs
     source: patient
     topic: 'Any antiplatelets, NSAIDs, alcohol, or herbal medicines?'
+    prereq_history_ids: [hx_anticoagulant]
     response: |
       "I take paracetamol for my knees, maybe 2 tablets in the
       morning. No aspirin, no ibuprofen. I don't drink. The
@@ -113,6 +115,8 @@ history:
   - id: hx_son
     source: family
     topic: 'Speak to the son — concerns, what he saw, advance care plans.'
+    prereq_history_ids: [hx_mechanism]
+    npc_voice: "Her son arrives in damp coat, eyes immediately on the bandage. 'How bad?'"
     response: |
       "She's just keen to get home — my daughter's bringing
       the grandkids round at five. She's been getting more

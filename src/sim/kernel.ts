@@ -317,6 +317,12 @@ export class SimKernel {
     const cs = this.state.cases.get(caseId);
     if (!cs) return;
     cs.asked.add(hxId);
+    // Apply push-driven dialogue unlocks: asking an item with `reveals: [...]`
+    // makes those history ids available regardless of their prereqs.
+    const item = cs.data.history.find((h) => h.id === hxId);
+    if (item?.reveals) {
+      for (const r of item.reveals) cs.unlockedHistoryIds.add(r);
+    }
     this.checkAllArcReveals();
     this.notify();
   }

@@ -68,6 +68,7 @@ history:
   - id: hx_flatmate
     source: family
     topic: 'Speak to the flatmate at reception.'
+    npc_voice: "The flatmate sits forward, voice low — 'I probably shouldn't be telling you but…'"
     response: |
       "We were halfway through dinner. She said the lights looked weird
       and then she just went stiff and slid off the chair. I've never
@@ -93,6 +94,7 @@ history:
   - id: hx_pregnancy_status
     source: family
     topic: "Pregnancy — what's in the bag?"
+    prereq_history_ids: [hx_flatmate]
     response: |
       "It's a positive test stick. She did the test on Saturday but
       she didn't tell me the result, I just saw it in her wash bag
@@ -101,6 +103,7 @@ history:
   - id: hx_drug_screen
     source: family
     topic: 'Any drug use — recreational, prescription, supplements?'
+    prereq_history_ids: [hx_flatmate]
     response: |
       "No drugs. She's got vitamin tablets in her bag and the open
       paracetamol packet she's been taking for the headaches — maybe
@@ -109,6 +112,7 @@ history:
   - id: hx_past_seizures
     source: gp_letter
     topic: 'Check the GP record / Summary Care Record.'
+    prereq_history_ids: [hx_paramedic]
     response: |
       "Migraine with aura since age 19. Three migraine episodes a
       year, last neurology review 2024 — discharged. Never any

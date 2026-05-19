@@ -365,8 +365,30 @@ function ShiftLog({ log, caseId }: { log: LogEntry[]; caseId: string }) {
 // ─── Helpers used by both badges and the history section ─────────────────────
 
 function visibleHistoryItems(cs: CaseRuntime, ks: KernelState) {
-  const gated = gatedHistoryIds(cs.caseId, ks);
-  return cs.data.history.filter((h) => !gated.has(h.id) || cs.unlockedHistoryIds.has(h.id));
+  const arcGated = gatedHistoryIds(cs.caseId, ks);
+  return cs.data.history.filter((h) => {
+    // Arc-gated items hide until the arc reveals (or push-reveal via `reveals`).
+    if (arcGated.has(h.id) && !cs.unlockedHistoryIds.has(h.id)) return false;
+    // Prereq-gated items hide until every prereq has been asked, OR until
+    // explicitly unlocked by another item's `reveals`/an arc effect.
+    const prereqs = h.prereq_history_ids ?? [];
+    if (prereqs.length === 0) return true;
+    if (cs.unlockedHistoryIds.has(h.id)) return true;
+    return prereqs.every((p) => cs.asked.has(p));
+  });
+}
+
+/**
+ * The patient cannot answer questions when actively deteriorating or
+ * arrested. Family and other indirect sources stay available; first-person
+ * patient history is silenced until the player stabilises them.
+ */
+function isHistorySilenced(
+  cs: CaseRuntime,
+  source: 'patient' | 'family' | 'paramedic' | 'gp_letter' | 'triage_note' | 'nurse' | 'records',
+): boolean {
+  if (cs.state !== 'deteriorating' && cs.state !== 'arrested') return false;
+  return source === 'patient';
 }
 
 // ─── Section bodies ─────────────────────────────────────────────────────────
@@ -375,46 +397,90 @@ function HistoryPhase({ cs, onAsk }: { cs: CaseRuntime; onAsk: (id: string) => v
   const kernel = useSim((s) => s.kernel)!;
   const ks = kernel.getState();
   const items = useMemo(() => visibleHistoryItems(cs, ks), [cs, ks]);
-  const gatedIds = useMemo(() => gatedHistoryIds(cs.caseId, ks), [cs.caseId, ks]);
-  const stillLocked = cs.data.history.filter(
-    (h) => gatedIds.has(h.id) && !cs.unlockedHistoryIds.has(h.id),
+  const arcGatedIds = useMemo(() => gatedHistoryIds(cs.caseId, ks), [cs.caseId, ks]);
+  const hiddenByArc = cs.data.history.filter(
+    (h) => arcGatedIds.has(h.id) && !cs.unlockedHistoryIds.has(h.id),
   ).length;
+  const hiddenByPrereq = cs.data.history.filter((h) => {
+    const prereqs = h.prereq_history_ids ?? [];
+    if (prereqs.length === 0) return false;
+    if (arcGatedIds.has(h.id) && !cs.unlockedHistoryIds.has(h.id)) return false;
+    if (cs.unlockedHistoryIds.has(h.id)) return false;
+    return !prereqs.every((p) => cs.asked.has(p));
+  }).length;
+
+  const patientSilenced = cs.state === 'deteriorating' || cs.state === 'arrested';
 
   return (
     <section className="enc__phase">
       <h2>History</h2>
+      {patientSilenced && (
+        <div className="enc__banner enc__banner--danger" role="status">
+          <strong>{firstName(cs.data.title)} can&rsquo;t talk right now.</strong> They need urgent
+          stabilisation before you take more first-person history. Family, paramedic and triage
+          sources remain available.
+        </div>
+      )}
       <p className="enc__hint">
-        Tap a topic to ask. You can ask all of them.
-        {stillLocked > 0 && (
+        Ask a topic to start. Some answers will open follow-up questions.
+        {hiddenByPrereq > 0 && (
           <>
             {' '}
-            <em>{stillLocked} more would open if an arc reveals.</em>
+            <em>{hiddenByPrereq} more would open if you ask the right questions.</em>
+          </>
+        )}
+        {hiddenByArc > 0 && (
+          <>
+            {' '}
+            <em>{hiddenByArc} more would open if an arc reveals.</em>
           </>
         )}
       </p>
       <ul className="enc__cards">
         {items.map((h) => {
           const isAsked = cs.asked.has(h.id);
-          const isNewlyUnlocked = cs.unlockedHistoryIds.has(h.id) && !isAsked;
+          const isNewlyUnlocked =
+            !isAsked &&
+            (cs.unlockedHistoryIds.has(h.id) ||
+              ((h.prereq_history_ids?.length ?? 0) > 0 &&
+                (h.prereq_history_ids ?? []).every((p) => cs.asked.has(p))));
+          const silenced = !isAsked && isHistorySilenced(cs, h.source);
           return (
             <li
               key={h.id}
               className={`enc__card ${isAsked ? 'is-revealed' : ''} ${
                 isNewlyUnlocked ? 'is-unlocked' : ''
-              }`}
+              } ${silenced ? 'is-silenced' : ''}`}
             >
-              <button className="enc__card-head" onClick={() => onAsk(h.id)} disabled={isAsked}>
+              <button
+                className="enc__card-head"
+                onClick={() => onAsk(h.id)}
+                disabled={isAsked || silenced}
+                title={silenced ? 'Patient cannot answer right now.' : undefined}
+              >
                 <span className="enc__chip">{h.source.replace('_', ' ')}</span>
                 <span>{h.topic}</span>
                 {isNewlyUnlocked && <span className="enc__chip enc__chip--unlock">new</span>}
               </button>
-              {isAsked && <p className="enc__card-body">{h.response}</p>}
+              {isAsked && (
+                <div className="enc__card-body enc__card-body--dialogue">
+                  {h.npc_voice && <p className="enc__npc-voice">{h.npc_voice}</p>}
+                  <p className="enc__response">{h.response}</p>
+                </div>
+              )}
             </li>
           );
         })}
       </ul>
     </section>
   );
+}
+
+function firstName(title: string): string {
+  // Cases are titled e.g. "Anaphylaxis — adult, peanut at restaurant".
+  // We don't have a firstName field, so fall back to a neutral pronoun.
+  const m = title.match(/—\s*([A-Z][a-z]+)/);
+  return m?.[1] ?? 'They';
 }
 
 function ExaminationPhase({ cs, onExamine }: { cs: CaseRuntime; onExamine: (s: string) => void }) {

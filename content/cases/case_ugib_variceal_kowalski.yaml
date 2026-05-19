@@ -88,6 +88,8 @@ history:
   - id: hx_drinking
     source: family
     topic: 'Housemate — drinking pattern, last drink, any cessation attempts?'
+    prereq_history_ids: [hx_paramedics]
+    npc_voice: "The housemate hesitates, eyes on the floor. 'It's been a rough year.'"
     response: |
       "He drinks all day every day. Vodka mostly. He'd been worse this
       week — drinking through the night. Last drink was about 4 hours
@@ -106,6 +108,7 @@ history:
   - id: hx_meds_compliance
     source: gp_letter
     topic: 'Recent gastroenterology / GP letters.'
+    prereq_history_ids: [hx_drinking]
     response: |
       "Last gastro clinic 4 months ago: Child-Pugh C, MELD 18. On
       propranolol 80 mg BD for secondary prevention of variceal
@@ -125,6 +128,7 @@ history:
   - id: hx_advance_care
     source: gp_letter
     topic: 'Any documented advance care plan or DNACPR?'
+    prereq_history_ids: [hx_meds_compliance]
     response: |
       "No advance care plan documented. No DNACPR. Brother in Warsaw
       is listed as next of kin; community alcohol team have been in

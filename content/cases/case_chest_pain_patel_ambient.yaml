@@ -49,6 +49,7 @@ history:
   - id: hx_pain
     source: patient
     topic: 'Tell me about the pain.'
+    npc_voice: "Mrs Patel rests a flat hand on her sternum. 'It's like a band, tight, here.'"
     response: |
       "It started about an hour ago when we were in the supermarket.
       It's not really a pain — more a heaviness, here, in the middle.
@@ -58,6 +59,7 @@ history:
   - id: hx_associated
     source: patient
     topic: 'Anything else with it?'
+    prereq_history_ids: [hx_pain]
     response: |
       "I felt a bit sweaty in the shop. And a bit short of breath when I
       walked to the car. Bit of a queasy feeling. No vomiting."
@@ -65,6 +67,7 @@ history:
   - id: hx_pmh_targeted
     source: patient
     topic: 'Risk factors — diabetes, hypertension, family history?'
+    prereq_history_ids: [hx_pain]
     response: |
       "Yes — sugar diabetes for 8 years, blood pressure for longer.
       My older brother had a heart attack at 68. Cholesterol tablets
@@ -73,6 +76,7 @@ history:
   - id: hx_daughter
     source: family
     topic: 'Speak to the daughter.'
+    prereq_history_ids: [hx_associated]
     response: |
       "She had something similar two weeks ago — I made her see the GP
       who said reflux. She refused to come in last week when she had a

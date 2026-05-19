@@ -170,7 +170,25 @@ export const HistoryItem = z.object({
   source: HistorySource,
   topic: z.string(),
   response: z.string(),
+  /**
+   * Asking this item explicitly *makes available* the listed history ids
+   * regardless of their prereqs. Push-driven dialogue unlock — used when the
+   * parent answer naturally opens a follow-up the player wouldn't otherwise
+   * think to ask.
+   */
   reveals: z.array(z.string()).optional(),
+  /**
+   * This item is only available once every listed history id has been
+   * asked. Pull-driven dialogue gating — the natural way to author a
+   * branching history tree.
+   */
+  prereq_history_ids: z.array(z.string()).optional(),
+  /**
+   * Short stage direction shown above the response, e.g. "Tom glances
+   * toward the relatives' room" or "(through the nasal cannula)".
+   * Author-optional; renders as italic flavour text.
+   */
+  npc_voice: z.string().optional(),
 });
 
 export const ExamSystem = z.enum([

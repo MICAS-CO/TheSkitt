@@ -58,6 +58,7 @@ history:
   - id: hx_history
     source: records
     topic: 'Pull the records.'
+    prereq_history_ids: [hx_paramedics]
     response: |
       "Last attendance 9 days ago: intoxication, discharged. 3 months
       ago: blood test showed normal LFTs. No anticoagulant or DOAC
@@ -66,6 +67,8 @@ history:
   - id: hx_stan_speech
     source: patient
     topic: 'Ask Stan directly.'
+    prereq_history_ids: [hx_paramedics]
+    npc_voice: "Stan blinks slowly. Pupils tight as pinpricks."
     response: |
       "Hello. Yeah. Just had a couple. No, three. My… my head hurts.
       Sleepy. Don't take me to the ward, I just need to sleep it off."
@@ -74,6 +77,7 @@ history:
   - id: hx_fall_mechanism
     source: paramedic
     topic: 'Was the fall witnessed?'
+    prereq_history_ids: [hx_paramedics]
     response: |
       "Yes — eye-witness says he just dropped. No warning. No fitting.
       Could've been a syncope, could've been the drink. We weren't

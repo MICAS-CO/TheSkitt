@@ -96,6 +96,8 @@ history:
   - id: hx_meds_stop
     source: family
     topic: 'Ask the wife about meds — has anything changed recently?'
+    prereq_history_ids: [hx_paramedic]
+    npc_voice: "His wife reaches into her bag for the medication list. Her hands are unsteady."
     response: |
       "The pre-op nurse said to stop his water tablets 10 days
       before surgery so his potassium would be 'normal' on the day.
@@ -112,6 +114,7 @@ history:
   - id: hx_recent_function
     source: family
     topic: 'Pre-morbid function — NYHA class and walking distance?'
+    prereq_history_ids: [hx_meds_stop]
     response: |
       "He was NYHA II — comfortable walking on the flat, breathless
       after one flight of stairs. Last week he was OK doing four
@@ -132,6 +135,7 @@ history:
   - id: hx_acp_status
     source: gp_letter
     topic: 'Advance care plan / ceiling of care?'
+    prereq_history_ids: [hx_recent_chest_event]
     response: |
       "No DNACPR. Advance care plan from cardiology 2023: 'patient
       wishes active treatment of reversible illness including HDU

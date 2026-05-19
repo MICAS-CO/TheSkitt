@@ -84,6 +84,8 @@ history:
   - id: hx_drug_history
     source: patient
     topic: 'Any drugs, supplements, recreational substances?'
+    prereq_history_ids: [hx_symptoms]
+    npc_voice: 'Marcus glances at Joe in the corner, then back at you.'
     response: |
       "Just paracetamol last night. No protein powder, no steroids, no
       drugs. I don't really drink — I'm trying to save for next term."
@@ -91,6 +93,7 @@ history:
   - id: hx_infection_screen
     source: patient
     topic: 'Any cough, urinary symptoms, sore throat, foot wounds?'
+    prereq_history_ids: [hx_symptoms]
     response: |
       "I had a sore throat two weeks ago — thought it was flu, took
       paracetamol and slept it off. No cough. Wee burns a bit since

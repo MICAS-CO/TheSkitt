@@ -65,6 +65,7 @@ history:
   - id: hx_carol
     source: family
     topic: 'Speak to Carol — exact time of onset?'
+    npc_voice: 'Carol grips her phone with both hands. She speaks fast.'
     response: |
       "It was 08:05 — I know because the kettle had just clicked off
       and I was looking at the kitchen clock. He'd been fine, drinking
@@ -72,11 +73,11 @@ history:
       mouth pulled down on the same side. I asked if he was OK and he
       tried to say something but it came out wrong. I got him into the
       car immediately — we live 8 minutes away."
-    reveals: ['finding_onset_witnessed']
 
   - id: hx_anticoagulation
     source: family
     topic: 'When did he last take the apixaban?'
+    prereq_history_ids: [hx_carol]
     response: |
       "Yesterday evening, around eight. He takes it with dinner.
       Hasn't had this morning's dose."
@@ -92,6 +93,7 @@ history:
   - id: hx_drug_history
     source: records
     topic: 'Confirm anticoagulation and contraindications to thrombolysis.'
+    prereq_history_ids: [hx_anticoagulation]
     response: |
       "Apixaban 5 mg BD started 2022 for paroxysmal AF (CHA2DS2-VASc 5).
       No documented intracranial haemorrhage history. No GI bleed. No
@@ -109,6 +111,7 @@ history:
   - id: hx_mimics
     source: records
     topic: 'Screen for mimics — recent seizure, migraine, hypoglycaemia?'
+    prereq_history_ids: [hx_carol]
     response: |
       "No prior seizures. Migraine with aura noted in his 30s, none
       for two decades. BM at home was checked by Carol — meter read

@@ -74,6 +74,7 @@ history:
   - id: hx_pain_quality
     source: patient
     topic: 'Describe the pain — character, onset, radiation.'
+    npc_voice: "Mr Okafor presses his palm flat to his sternum, jaw tight."
     response: |
       "It came on in a second. Between my shoulder blades, like
       somebody'd shoved a knife through me. Then it punched through
@@ -83,6 +84,7 @@ history:
   - id: hx_pain_radiation
     source: patient
     topic: 'Has the pain moved or changed?'
+    prereq_history_ids: [hx_pain_quality]
     response: |
       "It started in my back. Now it's in my chest and the front of
       my neck on the right. My right arm feels strange too — pins
@@ -122,6 +124,7 @@ history:
   - id: hx_recent_bp
     source: gp_letter
     topic: 'Check the recent BP and clinic letters.'
+    prereq_history_ids: [hx_anticoag_screen]
     response: |
       "BP at last GP review (3 months ago): 168/98 untreated white-
       coat-effect cuff, 162/94 ambulatory. Amlodipine titrated to
@@ -132,6 +135,7 @@ history:
   - id: hx_marfanoid_screen
     source: patient
     topic: 'Marfanoid screen — wingspan, joint hypermobility, lens dislocation?'
+    prereq_history_ids: [hx_family]
     response: |
       "Tall and thin as a young man, but not unusually so. No lens
       problems I know of. I broke my wrist falling off a bike at 30

@@ -83,6 +83,7 @@ history:
   - id: hx_previous_reactions
     source: family
     topic: 'Has Sam ever had a reaction like this before?'
+    prereq_history_ids: [hx_lunch_timeline]
     response: |
       "Maybe? He's had hives once or twice. Eczema flares around his
       mouth when he eats certain things — I always thought it was
@@ -100,6 +101,8 @@ history:
   - id: hx_paeds_aware
     source: patient
     topic: 'Ask Sam directly — what does he feel right now?'
+    prereq_history_ids: [hx_lunch_timeline]
+    npc_voice: 'Sam looks up from the trolley, eyes wide and rimmed red.'
     response: |
       "My… my chest feels really tight. And my lip is fat. Mum, am I
       gonna die like in films?" (Anxious, but talking in short
