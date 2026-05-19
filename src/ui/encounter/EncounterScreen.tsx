@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSim, scoreCase, type ScoreReport, type SimSpeedKey } from '../../state/sim';
 import type { CitationT } from '../../content/schema';
-import type { CaseRuntime, KernelState, LogEntry } from '../../sim/kernel';
+import type {
+  CaseRuntime,
+  ConsultantInterrupt,
+  KernelState,
+  LogEntry,
+} from '../../sim/kernel';
 import { ClockBar } from '../shift/ClockBar';
 import { PatientPanel } from './PatientPanel';
 import { ResusMode } from './ResusMode';
@@ -111,8 +116,15 @@ export function EncounterScreen({
     cs.state === 'arrested' ||
     cs.state === 'deteriorating';
 
+  const pendingInterrupt = ks.pendingInterrupt;
   return (
     <div className="enc">
+      {pendingInterrupt && (
+        <ConsultantInterruptModal
+          interrupt={pendingInterrupt}
+          onDismiss={() => kernel.dismissConsultantInterrupt()}
+        />
+      )}
       <EncounterHeader
         cs={cs}
         clockMin={ks.clockMin}
@@ -686,6 +698,67 @@ function HistoryPhase({
         })}
       </ul>
     </section>
+  );
+}
+
+/**
+ * Bedside interrupt modal (M39). Renders over the encounter when
+ * \`KernelState.pendingInterrupt\` is set. Dr McGrath has stepped into
+ * the bay — the player reads her line and presses 'noted' to continue.
+ * Identity-stable across triggers; tone shifts by trigger via the
+ * composer module (state/consultantInterrupts.ts).
+ */
+function ConsultantInterruptModal({
+  interrupt,
+  onDismiss,
+}: {
+  interrupt: ConsultantInterrupt;
+  onDismiss: () => void;
+}) {
+  // Auto-focus the dismiss button so 'Enter' or 'Space' closes the modal.
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
+        e.preventDefault();
+        onDismiss();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onDismiss]);
+
+  const triggerLabel =
+    interrupt.trigger === 'trap_caught'
+      ? 'pausing you'
+      : interrupt.trigger === 'deterioration_takeover'
+        ? 'taking over'
+        : 'pulling you aside';
+
+  return (
+    <div
+      className="consultant-interrupt"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="consultant-interrupt-title"
+      onClick={(e) => {
+        // Click on backdrop dismisses; click on dialog body doesn't.
+        if (e.target === e.currentTarget) onDismiss();
+      }}
+    >
+      <div className={`consultant-interrupt__dialog consultant-interrupt__dialog--${interrupt.trigger}`}>
+        <header className="consultant-interrupt__head">
+          <span className="consultant-interrupt__name" id="consultant-interrupt-title">
+            Dr Aoife McGrath
+          </span>
+          <span className="consultant-interrupt__role">ED consultant · {triggerLabel}</span>
+        </header>
+        <p className="consultant-interrupt__line">{interrupt.line}</p>
+        {interrupt.aside && <p className="consultant-interrupt__aside">{interrupt.aside}</p>}
+        <button type="button" className="consultant-interrupt__dismiss" onClick={onDismiss} autoFocus>
+          Noted — back to the bay
+        </button>
+      </div>
+    </div>
   );
 }
 

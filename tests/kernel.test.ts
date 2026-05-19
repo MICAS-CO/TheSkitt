@@ -218,6 +218,43 @@ describe('SimKernel — branching dialogue (M34)', () => {
     expect(cs.rapport).toBe(2);
   });
 
+  it('emits a trap_caught interrupt when must_not_do is ticked (M39)', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const { parse } = await import('yaml');
+    const { Case, Episode } = await import('../src/content/schema');
+    const amir = Case.parse(
+      parse(readFileSync(join(process.cwd(), 'content/cases/case_paeds_dka_amir.yaml'), 'utf8')),
+    );
+    const ep = Episode.parse({
+      schema_version: 1,
+      id: 'ep_amir_interrupt_test',
+      title: 'Amir interrupt test',
+      learning_objectives: ['x'],
+      curriculum_tags: ['EnC1'],
+      difficulty_band: 'CT2',
+      shift_duration_min: 20,
+      focus_cases: [amir.id],
+    });
+    const k = new SimKernel({ episode: ep, cases: new Map([[amir.id, amir]]) });
+    k.enterCase(amir.id);
+    // Unlock the gated trap by asking paramedics first.
+    k.recordAsk(amir.id, 'hx_paramedics');
+    expect(k.getState().pendingInterrupt).toBeNull();
+    // Tick the adult-bolus trap → McGrath should pause us.
+    k.toggleAction(amir.id, 'mx_adult_bolus_20');
+    const pending = k.getState().pendingInterrupt;
+    expect(pending).not.toBeNull();
+    expect(pending!.trigger).toBe('trap_caught');
+    expect(pending!.line).toMatch(/walk me through/i);
+    // Dismiss and verify state clears.
+    k.dismissConsultantInterrupt();
+    expect(k.getState().pendingInterrupt).toBeNull();
+    // Ticking a SECOND trap on the same case must NOT re-fire — one per case.
+    k.toggleAction(amir.id, 'mx_insulin_bolus');
+    expect(k.getState().pendingInterrupt).toBeNull();
+  });
+
   it('management gated_by_history references valid history ids (M35)', async () => {
     // Validate the M35 gating contract structurally: every gated_by
     // history id on Amir must exist on the case's history list.

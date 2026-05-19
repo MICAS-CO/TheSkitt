@@ -7,6 +7,12 @@ import type {
   ScheduledEventT,
   TransitionTriggerT,
 } from '../content/schema';
+import {
+  composeDeteriorationTakeoverInterrupt,
+  composeTrapCaughtInterrupt,
+  composeUnsafeMidshiftInterrupt,
+  type InterruptContext,
+} from '../state/consultantInterrupts';
 
 /**
  * Runtime state of one patient case while a shift is in progress.
@@ -48,6 +54,24 @@ export interface CaseRuntime {
   branchChoices: Map<string, string>;
   /** Net rapport score across the encounter (M34). Clamped −3..+3. */
   rapport: number;
+  /** Consultant interrupt ids that have already fired for this case
+   *  (M39). Prevents re-fire of the same beat within an encounter. */
+  consultantInterruptsFired: Set<string>;
+}
+
+/**
+ * In-flight bedside interrupt from Dr McGrath (M39). Lives on
+ * KernelState until the UI dismisses it. Not snapshotted — interrupts
+ * are run-only beats, not save-state.
+ */
+export interface ConsultantInterrupt {
+  id: string;
+  trigger: 'trap_caught' | 'deterioration_takeover' | 'unsafe_midshift';
+  caseId: string;
+  caseName: string;
+  line: string;
+  /** Optional follow-up shown smaller after the main line. */
+  aside?: string;
 }
 
 export type LogLevel = 'info' | 'warn' | 'danger';
@@ -76,6 +100,12 @@ export interface KernelState {
   /** Scheduled event ids that HAVE fired (for trigger lookup). */
   firedEventIds: Set<string>;
   log: LogEntry[];
+  /**
+   * The most recent un-dismissed Dr McGrath bedside interrupt (M39),
+   * or null. UI shows a modal until cleared via dismissConsultantInterrupt().
+   * Not part of the serialised snapshot — beats are run-only.
+   */
+  pendingInterrupt: ConsultantInterrupt | null;
 }
 
 const TERMINAL_STATES: ReadonlySet<CaseStateT> = new Set<CaseStateT>([
@@ -153,6 +183,7 @@ export class SimKernel {
         actionsAt: new Map(),
         branchChoices: new Map(),
         rapport: 0,
+        consultantInterruptsFired: new Set(),
       });
     }
     this.state = {
@@ -167,6 +198,7 @@ export class SimKernel {
       unfiredEvents: [...opts.episode.scheduled_events].sort((a, b) => a.t_min - b.t_min),
       firedEventIds: new Set(),
       log: [{ t_min: 0, level: 'info', text: 'Shift handover received.' }],
+      pendingInterrupt: null,
     };
     if (opts.restore) {
       this.applySnapshot(opts.restore);
@@ -298,6 +330,7 @@ export class SimKernel {
     this.processInvestigationResults();
     this.checkAllTransitions();
     this.checkAllArcReveals();
+    this.checkUnsafeMidshiftInterrupt();
 
     if (this.state.clockMin >= this.state.shiftDurationMin) {
       this.state.isRunning = false;
@@ -306,6 +339,68 @@ export class SimKernel {
     }
 
     this.notify();
+  }
+
+  /**
+   * Drop the pending bedside interrupt (M39). Called by the UI when
+   * the player dismisses the McGrath modal. Idempotent.
+   */
+  dismissConsultantInterrupt(): void {
+    if (this.state.pendingInterrupt === null) return;
+    this.state.pendingInterrupt = null;
+    this.notify();
+  }
+
+  /**
+   * Emit a bedside interrupt onto the kernel state. UI subscribes via
+   * \`pendingInterrupt\`. The composer (state/consultantInterrupts.ts)
+   * picks the line; the kernel owns the trigger ledger.
+   */
+  private emitInterrupt(
+    trigger: 'trap_caught' | 'deterioration_takeover' | 'unsafe_midshift',
+    cs: CaseRuntime,
+    ctx: Omit<InterruptContext, 'caseName'>,
+  ): void {
+    const fullCtx: InterruptContext = { caseName: cs.data.title, ...ctx };
+    const composed =
+      trigger === 'trap_caught'
+        ? composeTrapCaughtInterrupt(fullCtx)
+        : trigger === 'deterioration_takeover'
+          ? composeDeteriorationTakeoverInterrupt(fullCtx)
+          : composeUnsafeMidshiftInterrupt(fullCtx);
+    this.state.pendingInterrupt = {
+      id: `${trigger}_${cs.caseId}_${this.state.clockMin}`,
+      trigger,
+      caseId: cs.caseId,
+      caseName: cs.data.title,
+      line: composed.line,
+      aside: composed.aside,
+    };
+    this.log(
+      'warn',
+      `Dr McGrath (bedside): ${composed.line.replace(/\s+/g, ' ').slice(0, 80)}…`,
+      cs.caseId,
+    );
+  }
+
+  /**
+   * Once per shift, at the half-clock mark, McGrath pulls the player
+   * aside if any attended case is already arrested or deceased. The
+   * interrupt is purely supportive — no penalty, no choice. Fires
+   * at most once per kernel via the 'unsafe_midshift' ledger entry
+   * on the first available case.
+   */
+  private checkUnsafeMidshiftInterrupt(): void {
+    if (this.state.pendingInterrupt) return;
+    if (this.state.clockMin < Math.floor(this.state.shiftDurationMin / 2)) return;
+    for (const cs of this.state.cases.values()) {
+      if (cs.enteredAt === null) continue;
+      if (cs.consultantInterruptsFired.has('unsafe_midshift')) continue;
+      if (cs.state !== 'arrested' && cs.state !== 'deceased') continue;
+      cs.consultantInterruptsFired.add('unsafe_midshift');
+      this.emitInterrupt('unsafe_midshift', cs, {});
+      return; // one beat at a time
+    }
   }
 
   // ─── Player actions (record-and-react) ───────────────────────────────────
@@ -349,6 +444,12 @@ export class SimKernel {
           `Sequence error — ${actionLabel(cs, actionId)} before ${missingNames}.`,
           caseId,
         );
+      }
+      // M39: McGrath steps in if the player ticks an examiner trap.
+      // Fires once per case to avoid being preachy across replays.
+      if (action?.must_not_do && !cs.consultantInterruptsFired.has('trap_caught')) {
+        cs.consultantInterruptsFired.add('trap_caught');
+        this.emitInterrupt('trap_caught', cs, { actionName: action.name });
       }
     }
     this.checkTransitions(cs);
@@ -522,6 +623,18 @@ export class SimKernel {
             `${cs.data.title}: deterioration (${prev} → ${cs.state}) — required actions not completed.`,
             cs.caseId,
           );
+          // M39: McGrath takes over when a deterioration fires due to
+          // missing actions. Fires once per case.
+          if (!cs.consultantInterruptsFired.has('deterioration_takeover')) {
+            cs.consultantInterruptsFired.add('deterioration_takeover');
+            const missingActionLabels = ev.required_action_ids
+              .filter((a) => !cs.actions.has(a))
+              .map((id) => actionLabel(cs, id));
+            this.emitInterrupt('deterioration_takeover', cs, {
+              missingActionLabels,
+              newState: cs.state,
+            });
+          }
         } else {
           this.log(
             'info',
