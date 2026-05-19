@@ -63,6 +63,13 @@ visual integration from Claude Design + new content.
 | M55 | One branch per flat case — Sam (non-tonal) / Morrison / Kowalski / Okafor |
 | M56 | One-line case epilogue on every disposition option (59 lines / 17 cases) |
 | M57 | Branches on the last four flat cases — Oduya / Okonkwo / Amir / Priya |
+| M58 | Branch source diversification — first nurse / triage_note / paramedic / gp_letter forks |
+| M59 | Snapshot migration shim — SNAPSHOT_VERSION + migrateSnapshot(raw) |
+| M60 | Second non-tonal fork — Brennan son disclosure-timing trilemma |
+| M61 | Split EncounterScreen.tsx — 4 phase components → ./phases/ |
+| M62 | Five more exam manoeuvres — Marcus / Sam / Ahmed / Okonkwo / Williams |
+| M63 | Case practice library — flat 17-card menu route |
+| M64 | Code-split AssetLibraryScreen — lazy-loaded behind ?style-guide=1 |
 
 ## ⏳ WAITING ON DESIGN
 

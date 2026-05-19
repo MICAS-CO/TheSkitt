@@ -4,6 +4,63 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M64 — code-split the style guide route
+
+- AssetLibraryScreen + url-gate split. Main bundle unchanged
+  (~1.1 MB); style guide is a 9 kB chunk loaded only on
+  ?style-guide=1.
+
+### M63 — case practice library
+
+- Flat 17-card grid in a new 'Case library' menu route. Each
+  card routes to the patient's most-focused episode. 13 solos +
+  4 multi-case routes (Sam, Sarah, Marcus, Patel pending future
+  dedicated solo episodes).
+
+### M62 — five more discoverable exam manoeuvres
+
+- Marcus circulation: hydration assessment + ketone-smell.
+- Sam paeds: paeds-airway focused (stridor on count 5, no
+  drooling) + PEFR.
+- Ahmed circulation: precise JVP angle (9 cm above sternal angle,
+  hepatojugular reflux) + dependent oedema mapping.
+- Okonkwo circulation: targeted DVT screen (calf 4 cm
+  larger) + sit-to-stand pre-syncope.
+- Williams disability: NIHSS-focused (aphasia, hemianopia,
+  neglect) + gait-if-safe.
+- Coverage 6/17 → 11/17 cases.
+
+### M61 — split EncounterScreen.tsx
+
+- Extracted ExaminationPhase, ManagementPhase, DispositionPhase,
+  InvestigationsPhase into ./phases/. EncounterScreen.tsx
+  1743 → 1200 lines.
+
+### M60 — second non-tonal fork (Brennan disclosure-timing)
+
+- hx_son trilemma: now_outside / wait_for_results /
+  in_bay_together — disclosure-timing trade-off without a
+  compassionate/dismissive axis.
+
+### M59 — snapshot migration shim
+
+- export const SNAPSHOT_VERSION = 1.
+- migrateSnapshot(raw: unknown) bridges pre-M59 payloads
+  (versionless), rejects future versions, rejects non-objects.
+- SimKernel constructor calls migrateSnapshot on restore.
+
+### M58 — branch source diversification
+
+- Morrison hx_nurse_marian: NEW item, source: nurse. Marian's
+  pattern-recognition.
+- Patel hx_triage_note: NEW item, source: triage_note. Anya's
+  'I almost made her cat 2'.
+- Beth hx_onset: paramedic branch. Dom's hunch about Sarah.
+- Ahmed hx_recent_chest_event: gp_letter branch. Pre-op nurse
+  apology, SOP gap, datix tomorrow.
+- Branch source distribution: family 11 / patient 7 / paramedic
+  1 → 2 / nurse 0 → 1 / triage_note 0 → 1 / gp_letter 0 → 1.
+
 ### M57 — branches on the last four flat cases (Oduya / Okonkwo / Amir / Priya)
 
 - Branch_choices: 12/17 → 16/17. Only Priya's patient-source remains

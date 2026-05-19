@@ -73,8 +73,15 @@ log and `RESUME.md` for current state at a glance.
 | 55    | One branch / flat case             | Sam non-tonal trilemma · Morrison · Kowalski · Okafor · coverage 8/17 → 12/17                             |
 | 56    | Case epilogue on every disposition | 59 narrative codas · schema add · UI wired · 'cup of tea she doesn't drink' becomes canonical             |
 | 57    | Branches on the final flat 4       | Oduya · Okonkwo · Amir · Priya flatmate · coverage 12/17 → 16/17                                          |
+| 58    | Branch source diversification      | First nurse (Marian) · triage_note (Anya) · paramedic (Dom) · gp_letter (pre-op nurse) forks              |
+| 59    | Snapshot migration shim            | SNAPSHOT_VERSION + migrateSnapshot — future-proofs save/restore                                            |
+| 60    | Second non-tonal fork              | Brennan son disclosure-timing trilemma — proves the pattern is repeatable                                  |
+| 61    | Split EncounterScreen.tsx          | 4 phases → ./phases/* · 1743 → 1200 lines                                                                  |
+| 62    | Five more exam manoeuvres          | Marcus / Sam / Ahmed / Okonkwo / Williams · coverage 6/17 → 11/17                                         |
+| 63    | Case practice library              | Flat 17-card grid · 'drill any patient on their most-focused shift'                                       |
+| 64    | Code-split styleguide              | AssetLibraryScreen lazy-loaded · style guide is a 9 kB chunk                                              |
 
-Numbers: **297 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
+Numbers: **300 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
 16 daily ECGs · 8 NPC sprites · 12 encounter props · 11 world tiles**.
 Lint clean, typecheck clean, validator green.
 
