@@ -63,9 +63,12 @@ log and `RESUME.md` for current state at a glance.
 | 45    | Encounter props in drug chart      | 12 props (syringe / IV bag / vials / ECG dots / O2 / BVM / chart / cannula / glucometer / defib / ETT)   |
 | 46    | World tiles + Style Guide          | 11 environment tiles parked · hidden ?style-guide=1 asset library                                         |
 | 47    | ECG drill at the bedside           | EcgInlineQuiz upgraded to full multi-step · new bank entry · Patel + Okonkwo + Ahmed wired               |
+| 48    | Two more bedside ECG drills        | New ecg_016 (paroxysmal AF stroke) · Marcus + Williams wired · coverage 5/17                              |
+| 49    | Three more branch_choices          | Williams Carol · Marcus Joe · Brennan DOAC-compliance · coverage 8/17                                     |
+| 50    | Four more discoverable manoeuvres  | Sarah pelvic · Patel auscultation · Beth airway · Priya post-ictal · coverage 6/17                        |
 
-Numbers: **295 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
-15 daily ECGs · 8 NPC sprites · 12 encounter props · 11 world tiles**.
+Numbers: **296 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
+16 daily ECGs · 8 NPC sprites · 12 encounter props · 11 world tiles**.
 Lint clean, typecheck clean, validator green.
 
 ## Stack

@@ -53,6 +53,9 @@ visual integration from Claude Design + new content.
 | M45 | Inline encounter prop sprites in the drug chart — syringe / IV bag / O2 mask / etc per action |
 | M46 | World tiles parked + hidden Visual Style Guide (?style-guide=1) |
 | M47 | Full multi-step ECG drill at the bedside — coverage Patel + Okonkwo + Ahmed |
+| M48 | Two more ECG drills — Marcus (peaked T → hyperkalaemia) + Williams (AF + apixaban + lysis decision) |
+| M49 | Three more branch_choices — Williams (Carol), Marcus (Joe), Brennan (DOAC compliance) |
+| M50 | Four more exam manoeuvres — Sarah pelvic, Patel auscultation, Beth airway, Priya post-ictal |
 
 ## ⏳ WAITING ON DESIGN
 
@@ -63,7 +66,7 @@ template. No code changes needed beyond the registry entry.
 
 ## Numbers
 
-- **295 / 295** unit tests passing (Vitest)
+- **296 / 296** unit tests passing (Vitest)
 - **2 / 2** E2E tests passing (Playwright)
 - **17 fully-authored cases**, **17 episodes**, **3 arcs**, 44-topic
   high-yield map

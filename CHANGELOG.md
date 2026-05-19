@@ -4,6 +4,44 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M50 — four more discoverable exam manoeuvres
+
+- Sarah obstetric: bedside FAST + pelvic exam (consent + chaperone)
+  reveal Morison's-pouch free fluid + cervical motion tenderness.
+- Patel circulation: full auscultation (apex / LSE / aortic /
+  pulmonic, left-lateral + sit-forward) + peripheral pulse compare
+  reveal S3 gallop + dissection ruled out.
+- Beth airway: oropharynx inspection + voice provocation reveal
+  uvular oedema + stridor on count 4.
+- Priya disability: post-ictal neuro + meningism screen reveal
+  Todd's paresis + tongue bite, no neck stiffness.
+- Coverage 2/17 → 6/17.
+
+### M49 — three more branch_choices
+
+- Williams hx_carol: 'before anything else, you got him here within
+  the hour' branch opens Carol's full narrative + her prognostic
+  question.
+- Marcus hx_family_pmh: 'Joe — you got him here, he's alive because
+  you didn't wait' branch addresses Joe's guilt + gets the prodrome
+  details.
+- Brennan hx_other_drugs: '(gently) the apixaban — have you been
+  getting it down twice a day?' branch elicits the missed-doses +
+  catch-up-doses pattern that materially changes anti-Xa
+  interpretation. Coverage 5/17 → 8/17.
+
+### M48 — two more ECG drills at the bedside
+
+- New bank entry ecg_016_paroxysmal_af_stroke teaches the
+  apixaban + thrombolysis rule (anti-Xa <50 ng/mL) and the
+  thrombectomy preference when lysis is blocked.
+- Marcus DKA: VBG K+ rewritten 4.8 → 5.9 (medically accurate for
+  severe DKA acidosis), ECG result_summary now shows classic
+  tented T waves V2-V5, K+ replacement detail updated to the
+  JBDS-IP banding's 'no K+ in bag 1, add to bag 2 once shifted
+  back below 5.5'. Wired to ecg_004_hyperkalaemia.
+- Williams stroke wired to ecg_016. Coverage 3/17 → 5/17.
+
 ### M47 — full multi-step ECG drill at the bedside + new bank entry
 
 - EcgInlineQuiz upgraded from single-question preview to full
