@@ -4,6 +4,47 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Audit pass on the 3 newest cases
+
+Subagent audit caught 10+ real clinical/arithmetic issues across the
+3 newest cases. Each fix cites the source-of-truth UK guideline or
+RCT.
+
+- **Okafor (AD)**: STEMI fibrinolytic in the must-not-miss
+  discriminator changed from alteplase → **tenecteplase** (UK STEMI
+  agent per NICE TA52 / ESC 2023 ACS). Labetalol per-kg figure
+  corrected (0.25 mg/kg was inconsistent with 10–20 mg in adults —
+  changed to ≈0.1–0.2 mg/kg). Right-arm neuro finding re-labelled
+  as **innominate-artery malperfusion** (not a C5–T1 dermatomal
+  pattern, which would imply brachial-plexus pathology).
+- **Kowalski (UGIB)**: GP letter wording corrected to **secondary**
+  prevention of variceal rebleed (post-banding) — previously said
+  "primary". GBS arithmetic breakdown now itemises each component
+  (Urea +3, Hb +6, sBP +3, pulse +1, melaena +1, hepatic +2 = 16);
+  the syncope component (+2) is removed because the vignette does
+  not describe a frank syncope event. NICE CG141 outpatient cut-off
+  corrected to **GBS = 0** (was "GBS <1") — minor but a real
+  threshold.
+- **Okonkwo (PE)**: alteplase risks at consent corrected from
+  "~3% major bleeding + ~1% ICH" to **~10% major bleeding + ~2%
+  ICH** per MAPPET / PEITHO / ESC 2019 — the previous figures
+  materially understated risk at the consent moment. Wells score
+  arithmetic corrected from 8 → **9** (3+3+1.5+1.5 = 9). Switched
+  to **NICE NG158 two-tier Wells** (>4 = "PE likely" → CTPA),
+  cross-referenced to the legacy three-tier (>6 = "high"). PESI vs
+  ESC terminology disentangled: PESI is binary, the four-tier
+  intermediate-low / intermediate-high / high naming is the
+  **ESC 2019 risk stratification**. Date math fixed: COCP restarted
+  5 days ago at the **day-7 (one-week) post-op review**, not "two
+  weeks" (was inconsistent with day-12 vignette). Post-op
+  prophylaxis re-attributed from "aspirin" to **LMWH (enoxaparin
+  40 mg OD ×7 days)** per NICE NG89 / RCOG GT 37b. Action id
+  renamed `mx_thrombolysis_call` → `mx_cardio_itu_pert_referral`
+  to avoid implying the action gives thrombolysis (it's the
+  referral).
+
+13 cases / 12 episodes / 2 arcs validate; 156 tests pass.
+
 ### Content: massive PE (Okonkwo) — shock + thrombolysis decision
 
 - `content/cases/case_massive_pe_okonkwo.yaml` — 13th authored

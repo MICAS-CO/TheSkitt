@@ -1,10 +1,11 @@
 # Massive (high-risk) pulmonary embolism with haemodynamic instability
 # requiring thrombolysis decision. Ms Okonkwo is 39, day-12 post-
-# laparoscopic hysterectomy, on the COCP (restarted at her two-week
-# post-op visit by an out-of-area GP who didn't see the recent
-# operation note). She presents in resus with shock-state vitals,
-# syncope on standing, RV-strain ECG, dilated RV on POCUS, and a
-# bedside Wells of 8. The shift is the textbook massive-PE decision:
+# laparoscopic hysterectomy, on the COCP (restarted at her day-7
+# post-op visit by a locum GP who didn't see the recent operation
+# note; the discharge LMWH stopped the same day per the discharge
+# letter). She presents in resus with shock-state vitals, syncope on
+# standing, RV-strain ECG, dilated RV on POCUS, and a bedside Wells
+# of 9. The shift is the textbook massive-PE decision:
 # CTPA vs immediate bedside thrombolysis when the patient is too
 # unstable for the scanner.
 #
@@ -54,7 +55,8 @@ demographics:
     - 'BMI 31'
   medications:
     - 'Ramipril 5 mg OD'
-    - 'COCP (microgynon) — restarted 5 days ago at post-op GP review (locum GP, not aware she had recent surgery)'
+    - 'COCP (microgynon) — restarted at day-7 post-op GP review (5 days ago, locum GP, not aware she had recent surgery)'
+    - 'Enoxaparin 40 mg SC OD for 7 days post-op (stopped at day 7 per discharge letter — discharge thromboprophylaxis duration is the SAQ teaching point)'
     - 'Paracetamol PRN for post-op'
   allergies: ['NKDA']
   social: |
@@ -93,8 +95,8 @@ history:
     source: gp_letter
     topic: 'Hormonal contraception — when was the COCP restarted?'
     response: |
-      "GP letter (locum) 5 days ago, two-week post-op review:
-      'Patient requests recommencement of combined oral
+      "GP letter (locum) 5 days ago, one-week post-op review at
+      day 7: 'Patient requests recommencement of combined oral
       contraception. No contraindications elicited.' She had been
       off the COCP for the perimenopause work-up that led to the
       hysterectomy. The locum GP did not have access to the
@@ -124,9 +126,11 @@ history:
     source: patient
     topic: 'Any blood thinners, herbal supplements, prior VTE?'
     response: |
-      "No blood thinners. No supplements. I've never had a clot. I
-      took the post-op aspirin for a week — that was a routine thing
-      they said."
+      "No blood thinners now. No supplements. I've never had a clot.
+      I had enoxaparin injections for a week after surgery — they
+      said it was the routine. I stopped them at day 7 like the
+      discharge letter said. Have been on the COCP since the GP
+      review on day 7."
 
 # ─── Examination ──────────────────────────────────────────────────────────
 examination:
@@ -208,15 +212,19 @@ investigations:
     category: bedside
     turnaround_min: 1
     result_summary: |
-      **Wells = 8 (high probability of PE)**:
+      **Wells = 9 (PE likely)**:
       • Clinical signs of DVT (right calf asymmetric tenderness/swelling): +3
       • PE is the most likely diagnosis: +3
       • Tachycardia >100 bpm: +1.5
       • Recent surgery / immobilisation in last 4 weeks: +1.5
       • No haemoptysis (+0), no previous DVT/PE (+0), no malignancy (+0).
 
-      Wells >6 = "high probability" → straight to CTPA, no D-dimer
-      needed (D-dimer cannot rule out at this pretest probability).
+      **NICE NG158 two-tier Wells: >4 = "PE likely" → CTPA without
+      D-dimer.** (The legacy three-tier system also classifies
+      Wells >6 as "high probability".) Either way: D-dimer cannot
+      rule out at this pretest probability — proceed directly to
+      CTPA, or to bedside echo + DVT scan if she is too unstable to
+      leave resus.
     abnormal: true
     sources:
       - { type: nice, id: 'NG158', ref: 'NICE NG158 — Wells score in suspected PE' }
@@ -331,9 +339,12 @@ investigations:
       Lactate 3.4 mmol/L — shock-driven.
       Fibrinogen 3.8 (normal — no DIC).
 
-      Trop + BNP both raised → **intermediate-HIGH risk PESI
-      category** at minimum; combined with shock = **high-risk
-      (massive) PE** by ESC 2019.
+      Trop + BNP both raised → **ESC 2019 intermediate-HIGH risk**
+      by biomarker + RV-dysfunction criteria (NOT a PESI category —
+      sPESI is binary; the four-tier intermediate-low/intermediate-
+      high/high naming is the ESC stratification). Combined with
+      shock she escalates to **ESC HIGH-RISK (massive) PE** — the
+      reperfusion-mandate category.
     abnormal: true
 
   - id: ix_pesi
@@ -497,7 +508,7 @@ management:
     sources:
       - { type: nice, id: 'NG158', ref: 'NICE NG158 — anticoagulation in confirmed PE' }
 
-  - id: mx_thrombolysis_call
+  - id: mx_cardio_itu_pert_referral
     category: referral
     name: 'Cardiology + ITU + interventional radiology referral (catheter-directed thrombolysis if available)'
     detail: |
@@ -528,9 +539,11 @@ management:
     detail: |
       She is alert, GCS 15. Even shocked, she retains capacity for
       the thrombolysis decision. Explain: 30-day mortality 25-50%
-      without reperfusion; alteplase carries ~3% major bleeding
-      risk + ~1% intracranial haemorrhage risk; recent surgery
-      raises bleed risk further. Document the conversation.
+      without reperfusion; alteplase in PE carries roughly **10%
+      major bleeding** and **~2% intracranial haemorrhage** risk
+      (MAPPET / PEITHO / ESC 2019); recent surgery raises the
+      bleed risk further. Document the conversation, the sister as
+      witness, and the time of consent.
     must_do: true
 
   # ─── Examiner traps ──────────────────────────────────────────────────
@@ -627,12 +640,12 @@ state_machine:
       to: admitted
       trigger:
         on: action
-        action_id: mx_thrombolysis_call
+        action_id: mx_cardio_itu_pert_referral
         note: 'Cardiology + ITU accept; transferred from ED to a monitored bed.'
 
 # ─── Pearls + pitfalls ──────────────────────────────────────────────────
 pearls:
-  - 'Wells >6 = high pretest probability for PE → straight to CTPA (or bedside echo + DVT scan if too unstable to scan). D-dimer is for LOW pretest probability only.'
+  - 'NICE NG158 uses the two-tier Wells: >4 = "PE likely" → CTPA without D-dimer. (Legacy three-tier: >6 = "high probability".) Either way: at high pretest probability the D-dimer cannot rule out.'
   - 'PERC rule: 8 criteria for excluding PE in low-probability + clinical-gestalt-low patients. ALL must be negative to "perc out". Not applicable at high pretest probability.'
   - 'Age-adjusted D-dimer (ADJUST-PE, JAMA 2014): use age × 10 ng/mL as the cutoff for patients >50 y/o — improves specificity in elderly without compromising NPV.'
   - 'High-risk (massive) PE = haemodynamic instability (sustained hypotension, shock, syncope, or arrest). Mortality 25-50% at 30 days without reperfusion.'

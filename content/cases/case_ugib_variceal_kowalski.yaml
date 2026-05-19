@@ -108,8 +108,9 @@ history:
     topic: 'Recent gastroenterology / GP letters.'
     response: |
       "Last gastro clinic 4 months ago: Child-Pugh C, MELD 18. On
-      propranolol 80 mg BD for primary prevention of variceal
-      rebleed, spironolactone for ascites, lactulose and rifaximin
+      propranolol 80 mg BD for secondary prevention of variceal
+      rebleed (post-banding), spironolactone for ascites, lactulose
+      and rifaximin
       for encephalopathy. Patient frequently runs out — non-compliance
       noted. SBP episode March 2023 treated with ceftriaxone. Last
       OGD: 3 columns of grade 2 varices post-banding, residual."
@@ -229,11 +230,16 @@ investigations:
     category: bedside
     turnaround_min: 2
     result_summary: |
-      **GBS = 16 (high risk)** — Urea 18.6, Hb 78, systolic <90,
-      pulse >100, melaena, syncope (presumed from drop), hepatic
-      disease, cardiac failure no. A GBS ≥1 mandates endoscopy
-      pathway; <1 is the safe-for-outpatient threshold (avoids
-      19-24% of admissions per NICE CG141 risk stratification).
+      **GBS = 16 (high risk)** — Urea 18.6 (≥10–<25: +3), Hb 78 g/L
+      (=7.8 g/dL, male <10 g/dL: +6), systolic <90 (+3), pulse >100
+      (+1), melaena (+1), hepatic disease (+2), no cardiac failure
+      (0). Score totals 16. (Syncope is not documented in the
+      vignette so its +2 is excluded; if a frank syncope event is
+      confirmed the score would be 18.) A GBS of **0** is the
+      "safe-for-outpatient" cut-off per NICE CG141; any GBS ≥1
+      mandates the inpatient endoscopy pathway. Mr Kowalski sits at
+      the top of the high-risk band — high-care admission, urgent
+      OGD, transfusion pathway.
     abnormal: true
     sources:
       - {
@@ -650,7 +656,7 @@ state_machine:
 
 # ─── Pearls + pitfalls ──────────────────────────────────────────────────
 pearls:
-  - "Glasgow-Blatchford <1 = safe for outpatient management (NICE CG141; avoids 19-24% of admissions). Mr Kowalski's GBS of 16 puts him at the top end of the risk spectrum."
+  - "Glasgow-Blatchford = 0 is the safe-for-outpatient cut-off per NICE CG141 (avoids ~19-24% of admissions). Any GBS ≥1 mandates inpatient management; Mr Kowalski's GBS of 16 puts him at the top end of the risk spectrum."
   - 'Variceal bleed bundle (per NICE CG141 + BSG 2015): empirical terlipressin + ceftriaxone within the first hour, restrictive transfusion Hb 7-8, OGD within 12-24 h.'
   - 'Restrictive transfusion (Hb 7-8) BEATS liberal (Hb 9) in cirrhotic variceal bleed — over-transfusion raises portal pressure and worsens haemorrhage (Villanueva NEJM 2013).'
   - 'HALT-IT trial 2020: TXA does NOT help in acute UGIB and increases VTE risk. The CRASH-2 trauma reflex does not apply here.'

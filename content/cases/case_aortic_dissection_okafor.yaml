@@ -215,8 +215,8 @@ examination:
 
   - system: neuro
     findings:
-      - name: 'Right arm sensation'
-        value: 'paraesthesia in C5-T1 dermatomes; cap refill 4 s right hand vs <2 s left'
+      - name: 'Right arm malperfusion pattern'
+        value: 'global paraesthesia of the right arm (not strictly dermatomal); cap refill 4 s right hand vs <2 s left; radial pulse reduced — consistent with innominate-artery malperfusion, NOT a single nerve-root lesion'
         present: true
         red_flag: true
       - name: 'Lower limb power and pulses'
@@ -383,8 +383,8 @@ differential:
       ECG fits. Troponin fits. BUT: tearing radiating-to-back pain,
       BP differential >86 mmHg, right radial pulse deficit, and a
       new AR murmur are NOT MI features. Treating as STEMI (heparin,
-      ticagrelor, alteplase if no PCI) would be lethal if AD is
-      missed — anticoagulation expands the haematoma.
+      ticagrelor, tenecteplase if no PCI available) would be lethal
+      if AD is missed — anticoagulation expands the haematoma.
 
   - diagnosis: 'Pulmonary embolism (massive)'
     likelihood: worth_considering
@@ -436,9 +436,10 @@ management:
     name: 'IV labetalol bolus + infusion — target HR 60–80, systolic <120 mmHg'
     detail: |
       Combined alpha/beta blockade lowers shear stress (dP/dt) on the
-      flap. Bolus 10–20 mg IV (0.25 mg/kg), repeat every 10 min as
-      tolerated to a max ~300 mg, then infusion 0.5–2 mg/min titrated
-      to HR + BP. Heart-rate control is as important as BP control —
+      flap. Bolus 10–20 mg IV (≈0.1–0.2 mg/kg in an adult), repeat
+      every 10 min as tolerated to a max ~300 mg, then infusion
+      0.5–2 mg/min titrated to HR + BP. Heart-rate control is as
+      important as BP control —
       lowering BP without slowing HR can paradoxically raise dP/dt.
     must_do: true
     drug:
