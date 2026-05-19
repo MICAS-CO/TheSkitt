@@ -171,6 +171,52 @@ history:
     topic: 'Speak to the son — concerns, what he saw, advance care plans.'
     prereq_history_ids: [hx_mechanism]
     npc_voice: "Her son arrives in damp coat, eyes immediately on the bandage. 'How bad?'"
+    branch_choices:
+      # Non-tonal fork (M60) — disclosure timing. The audit's #3 asked
+      # for a second non-tonal branch to demonstrate the pattern is
+      # repeatable. This trilemma trades information-completeness,
+      # the son's emotional readiness, and the mother's consent /
+      # autonomy in different proportions. There is no clean 'right'
+      # answer; each option pays a different cost.
+      - id: now_outside
+        label: "Liam — step outside with me for a minute. I'd rather speak to you before we go further."
+        npc_voice: "Liam walks with you to the corridor. He keeps glancing back through the curtain. He has not put his coat down."
+        rapport_delta: 0
+        response: |
+          "Right. (Pause.) Don't fluff it, doc. Give it me straight.
+          (You explain: CT pending, anti-Xa pending, on apixaban,
+          fall + possible bleed.) She's just keen to get home — my
+          daughter's bringing the grandkids round at five. She's
+          been getting more forgetful in the last year but no formal
+          dementia diagnosis. No advance care plan documented.
+          She'd want everything done. (Pause.) Thank you for telling
+          me out here. I needed to get my face together before I
+          go back in. Five minutes. Then I'll be ready."
+      - id: wait_for_results
+        label: "Hold on, Liam — let me get the CT result first, then I'll have something concrete to tell you."
+        npc_voice: "He nods slowly. He sits in the relatives' room. He will sit there for fifty minutes."
+        rapport_delta: 0
+        response: |
+          "Yeah. OK. (Pause.) I'll wait. (He waits.) (When you
+          come back at the 50-minute mark with the bleed
+          confirmation, his face is grey. He has spent the
+          waiting time alone with the worst-case scenario.
+          'Could've told me earlier, doc.' He still has not put
+          his coat down.)"
+      - id: in_bay_together
+        label: "Liam — come in. Mrs Brennan, this is the conversation about what we've found, with Liam here too."
+        npc_voice: "Both faces turn to you. Brennan is alert enough to track the conversation. Liam stands at the foot of the bed."
+        rapport_delta: 0
+        response: |
+          (You deliver the disclosure in front of both of them. The
+          son hears the news at the same moment as his mother.) Liam:
+          'Mum, listen to him. I'm here.' Brennan: '(quiet) Liam, I'm
+          alright. (To you:) I'd like to know everything, doctor.
+          Don't soften it because he's here.' (You note for the chart:
+          patient retains capacity. She asks for the full information.
+          Liam steadies as she steadies; the family unit holds.) The
+          information is delivered once, to both of them, together.
+          The son does not have to repeat it later.
     response: |
       "She's just keen to get home — my daughter's bringing
       the grandkids round at five. She's been getting more
