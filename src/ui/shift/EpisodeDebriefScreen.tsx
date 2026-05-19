@@ -9,6 +9,7 @@ import {
   type Progression,
   type PerCaseXp,
 } from '../../state/progression';
+import { memoFromEpisodeReport, saveLastShiftMemo } from '../../state/consultant';
 
 interface Props {
   onExit: () => void;
@@ -50,6 +51,8 @@ export function EpisodeDebriefScreen({ onExit, onReplay }: Props) {
     if (awards.length > 0) {
       saveProgression(progression);
     }
+    // M37: persist a co-worker memo for the next session's menu.
+    saveLastShiftMemo(memoFromEpisodeReport(report));
     setAwarded({ awards, before, after: progression });
   }, [kernel, report, awarded]);
 

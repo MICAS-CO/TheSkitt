@@ -3,6 +3,11 @@ import { parse as parseYaml } from 'yaml';
 import { PhaserGame } from './ui/PhaserGame';
 import { ShiftView } from './ui/shift/ShiftView';
 import { useSim, loadShift, clearSavedShift, type SavedShift } from './state/sim';
+import {
+  composeConsultantMessage,
+  CONSULTANT_ROLE,
+  loadLastShiftMemo,
+} from './state/consultant';
 import { Arc, Case, Episode, type ArcT, type CaseT, type EpisodeT } from './content/schema';
 import { SimKernel } from './sim/kernel';
 import { EcgChallengeScreen } from './ui/ecg/EcgChallengeScreen';
@@ -485,10 +490,25 @@ function MenuView({
   onClearSave: () => void;
 }) {
   const dailyShiftId = useMemo(() => pickShiftOfTheDay(shifts), [shifts]);
+  const consultantMemo = useMemo(() => loadLastShiftMemo(), []);
+  const consultantMessage = useMemo(
+    () => (consultantMemo ? composeConsultantMessage(consultantMemo) : null),
+    [consultantMemo],
+  );
   return (
     <div className="menu">
       <div className="menu__inner">
         <h2 className="menu__title">Shift menu</h2>
+        {consultantMessage && (
+          <aside className={`menu__memo menu__memo--${consultantMemo!.band}`} aria-label="Note from your consultant">
+            <header className="menu__memo-head">
+              <span className="menu__memo-name">{consultantMessage.greeting}</span>
+              <span className="menu__memo-role">{CONSULTANT_ROLE}</span>
+            </header>
+            <p className="menu__memo-body">{consultantMessage.body}</p>
+            <p className="menu__memo-signoff">{consultantMessage.signoff}</p>
+          </aside>
+        )}
         <p className="menu__copy">
           Pick a shift. Each runs on a 20-minute simulated clock. <strong>The hen-do</strong> and{' '}
           <strong>First seizure</strong> are the showcase shifts;{' '}
