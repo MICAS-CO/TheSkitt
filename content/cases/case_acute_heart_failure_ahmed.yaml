@@ -307,6 +307,7 @@ investigations:
     name: '12-lead ECG'
     category: ecg
     turnaround_min: 2
+    ecg_challenge_id: ecg_015_af_rvr_pulmonary_oedema
     result_summary: |
       **AF at 118/min, no acute ST elevation, no Q waves, T-wave
       flattening anteriorly (chronic).** The pre-hospital strip is

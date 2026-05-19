@@ -1042,20 +1042,51 @@ function InvestigationsPhase({
 }
 
 /**
- * Inline ECG-bank challenge (M31). When a case's ECG investigation is
- * tagged with an `ecg_challenge_id`, the resulted card surfaces the
- * first interpretation question right here — so the player exercises
- * rhythm-recognition skill at the point of clinical relevance rather
- * than purely in the side-room daily-ECG screen.
+ * Inline ECG-bank challenge (M31, expanded M47). When a case's ECG
+ * investigation is tagged with an \`ecg_challenge_id\`, the resulted
+ * card surfaces the full multi-step interpretation drill right here
+ * — so the player exercises rhythm-recognition skill at the point of
+ * clinical relevance rather than purely in the side-room daily-ECG
+ * screen.
+ *
+ * The drill is gated behind a 'interpret the rhythm strip' toggle so
+ * the rest of the investigation panel still reads as the textual
+ * result envelope by default.
  */
 function EcgInlineQuiz({ challengeId }: { challengeId: string }) {
   const ecg = useMemo(() => ECG_BANK.find((e) => e.id === challengeId), [challengeId]);
   const [expanded, setExpanded] = useState(false);
-  const [picked, setPicked] = useState<number | null>(null);
-  const [revealed, setRevealed] = useState(false);
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState<(number | null)[]>(() =>
+    ecg ? ecg.steps.map(() => null) : [],
+  );
+  const [revealed, setRevealed] = useState<boolean[]>(() =>
+    ecg ? ecg.steps.map(() => false) : [],
+  );
 
   if (!ecg) return null;
-  const step = ecg.steps[0]!;
+  const total = ecg.steps.length;
+  const current = ecg.steps[step]!;
+  const isStepRevealed = revealed[step] === true;
+  const allDone = revealed.every(Boolean);
+  const correctCount = revealed.reduce((acc, r, i) => {
+    if (!r) return acc;
+    return answers[i] === ecg.steps[i]!.correctIndex ? acc + 1 : acc;
+  }, 0);
+
+  function answer(idx: number) {
+    if (isStepRevealed) return;
+    setAnswers((a) => a.map((v, i) => (i === step ? idx : v)));
+  }
+  function reveal() {
+    setRevealed((r) => r.map((v, i) => (i === step ? true : v)));
+  }
+  function next() {
+    if (step < total - 1) setStep((s) => s + 1);
+  }
+  function prev() {
+    if (step > 0) setStep((s) => s - 1);
+  }
 
   if (!expanded) {
     return (
@@ -1069,33 +1100,58 @@ function EcgInlineQuiz({ challengeId }: { challengeId: string }) {
     );
   }
 
-  const isCorrect = revealed && picked === step.correctIndex;
+  const isCorrect = isStepRevealed && answers[step] === current.correctIndex;
   return (
     <div className="ecg-inline">
       <div className="ecg-inline__strip-head">
-        <span className="ecg-inline__title">Rhythm strip</span>
+        <span className="ecg-inline__title">Rhythm strip — {ecg.title}</span>
         <button
           type="button"
           className="ecg-inline__close"
           onClick={() => {
             setExpanded(false);
-            setPicked(null);
-            setRevealed(false);
           }}
-          aria-label="Hide ECG quiz"
+          aria-label="Hide ECG drill"
         >
           ✕
         </button>
       </div>
       <pre className="ecg-inline__strip">{ecg.strip}</pre>
-      <p className="ecg-inline__prompt">{step.prompt}</p>
+      <nav className="ecg-inline__progress" aria-label="ECG drill progress">
+        {ecg.steps.map((_, i) => {
+          const r = revealed[i] === true;
+          const correct = r && answers[i] === ecg.steps[i]!.correctIndex;
+          const cls = [
+            'ecg-inline__dot',
+            i === step ? 'is-active' : '',
+            r && correct ? 'is-correct' : '',
+            r && !correct ? 'is-wrong' : '',
+          ]
+            .filter(Boolean)
+            .join(' ');
+          return (
+            <button
+              key={i}
+              type="button"
+              className={cls}
+              onClick={() => setStep(i)}
+              aria-label={`Question ${i + 1}`}
+            >
+              {i + 1}
+            </button>
+          );
+        })}
+      </nav>
+      <p className="ecg-inline__prompt">{current.prompt}</p>
       <ul className="ecg-inline__options">
-        {step.options.map((opt, i) => {
+        {current.options.map((opt, i) => {
           const cls = [
             'ecg-inline__option',
-            picked === i ? 'is-picked' : '',
-            revealed && i === step.correctIndex ? 'is-correct' : '',
-            revealed && picked === i && i !== step.correctIndex ? 'is-wrong' : '',
+            answers[step] === i ? 'is-picked' : '',
+            isStepRevealed && i === current.correctIndex ? 'is-correct' : '',
+            isStepRevealed && answers[step] === i && i !== current.correctIndex
+              ? 'is-wrong'
+              : '',
           ]
             .filter(Boolean)
             .join(' ');
@@ -1104,8 +1160,8 @@ function EcgInlineQuiz({ challengeId }: { challengeId: string }) {
               <button
                 type="button"
                 className={cls}
-                onClick={() => !revealed && setPicked(i)}
-                disabled={revealed}
+                onClick={() => answer(i)}
+                disabled={isStepRevealed}
               >
                 {opt}
               </button>
@@ -1113,19 +1169,37 @@ function EcgInlineQuiz({ challengeId }: { challengeId: string }) {
           );
         })}
       </ul>
-      {!revealed && (
-        <button
-          type="button"
-          className="ecg-inline__reveal"
-          onClick={() => setRevealed(true)}
-          disabled={picked === null}
-        >
-          Reveal answer
-        </button>
-      )}
-      {revealed && (
+      {isStepRevealed && (
         <div className={`ecg-inline__rationale ${isCorrect ? 'is-correct' : 'is-wrong'}`}>
-          <strong>{isCorrect ? '✓ Correct.' : '✗ Not quite.'}</strong> {step.rationale}
+          <strong>{isCorrect ? '✓ Correct.' : '✗ Not quite.'}</strong> {current.rationale}
+        </div>
+      )}
+      <div className="ecg-inline__nav">
+        <button type="button" onClick={prev} disabled={step === 0}>
+          ← back
+        </button>
+        {!isStepRevealed && (
+          <button
+            type="button"
+            className="ecg-inline__reveal"
+            onClick={reveal}
+            disabled={answers[step] === null}
+          >
+            Reveal answer
+          </button>
+        )}
+        {isStepRevealed && step < total - 1 && (
+          <button type="button" className="ecg-inline__reveal" onClick={next}>
+            next question →
+          </button>
+        )}
+      </div>
+      {allDone && (
+        <div className="ecg-inline__summary">
+          <strong>
+            {correctCount}/{total} correct.
+          </strong>{' '}
+          {ecg.sources.length > 0 ? <em>Sources: {ecg.sources.join(' · ')}</em> : null}
         </div>
       )}
     </div>

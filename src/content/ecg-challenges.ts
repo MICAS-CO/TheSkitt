@@ -675,6 +675,54 @@ export const ECG_BANK: EcgChallenge[] = [
     ],
     sources: ['de Winter et al, NEJM 2008', 'NICE NG185 ACS 2020'],
   },
+
+  {
+    id: 'ecg_015_af_rvr_pulmonary_oedema',
+    title: 'AF with rapid ventricular response in acute pulmonary oedema',
+    context:
+      '78 y/o man, breathless at rest, peripheral oedema worse over 2 weeks. Pre-op diuretic stopped 10 days ago. Crackles to the apices, BP 102/64, SpO2 88% on air.',
+    strip:
+      'Lead II rhythm strip:\n  Irregular, irregular, irregular.\n  No P waves. Fine fibrillatory baseline.\n  QRS narrow (88 ms), rate ~140/min.\n  No ST elevation. T-wave flattening V1–V4 (chronic).',
+    steps: [
+      {
+        prompt: 'Identify the rhythm.',
+        options: [
+          'Sinus tachycardia',
+          'Atrial flutter with 2:1 block',
+          'Atrial fibrillation with rapid ventricular response',
+          'Multifocal atrial tachycardia',
+        ],
+        correctIndex: 2,
+        rationale:
+          'Irregularly irregular, no P waves, fibrillatory baseline, narrow complex — AF. The 140/min rate makes it "rapid ventricular response" (RVR).',
+      },
+      {
+        prompt: 'Which factor most argues AGAINST DC cardioversion as the first move?',
+        options: [
+          'Patient age 78',
+          'The AF is unlikely to be new (no documented prior sinus)',
+          'BP is mildly low at 102/64',
+          'Chronic anterior T-wave flattening',
+        ],
+        correctIndex: 1,
+        rationale:
+          'AF of unknown duration ≥48 h carries a stroke risk on cardioversion unless on therapeutic anticoagulation for ≥3 weeks or after TOE excludes LAA thrombus. Rate control + diuresis is the safer initial path in pulmonary oedema unless there is haemodynamic compromise (severe hypotension, ongoing ischaemia, refractory pulmonary oedema).',
+      },
+      {
+        prompt: 'Best first drug for rate control in pulmonary oedema?',
+        options: [
+          'Bisoprolol 5 mg PO',
+          'Digoxin IV loading dose',
+          'Diltiazem IV infusion',
+          'Adenosine 6 mg IV bolus',
+        ],
+        correctIndex: 1,
+        rationale:
+          'In acute pulmonary oedema with reduced LV function, beta-blockers and non-dihydropyridine CCBs (verapamil/diltiazem) can worsen failure. Digoxin offers rate control without negative inotropy and is the standard choice per ESC 2020 + NICE NG196 (heart failure). Adenosine is for SVT termination, not AF.',
+      },
+    ],
+    sources: ['ESC 2020 AF guideline', 'NICE NG196 heart failure', 'RCEM Acute AF best-practice'],
+  },
 ];
 
 /**
