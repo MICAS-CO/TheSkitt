@@ -50,6 +50,10 @@ history:
     source: patient
     topic: 'Tell me about the pain.'
     npc_voice: "Mrs Patel rests a flat hand on her sternum. 'It's like a band, tight, here.'"
+    supports:
+      - 'Anterior ST-elevation myocardial infarction (STEMI)'
+      - 'NSTEMI / unstable angina'
+      - 'Aortic dissection'
     response: |
       "It started about an hour ago when we were in the supermarket.
       It's not really a pain — more a heaviness, here, in the middle.
@@ -60,6 +64,9 @@ history:
     source: patient
     topic: 'Anything else with it?'
     prereq_history_ids: [hx_pain]
+    supports:
+      - 'Anterior ST-elevation myocardial infarction (STEMI)'
+      - 'NSTEMI / unstable angina'
     response: |
       "I felt a bit sweaty in the shop. And a bit short of breath when I
       walked to the car. Bit of a queasy feeling. No vomiting."
@@ -68,6 +75,9 @@ history:
     source: patient
     topic: 'Risk factors — diabetes, hypertension, family history?'
     prereq_history_ids: [hx_pain]
+    supports:
+      - 'Anterior ST-elevation myocardial infarction (STEMI)'
+      - 'NSTEMI / unstable angina'
     response: |
       "Yes — sugar diabetes for 8 years, blood pressure for longer.
       My older brother had a heart attack at 68. Cholesterol tablets

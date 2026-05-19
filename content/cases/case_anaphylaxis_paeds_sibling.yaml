@@ -72,6 +72,7 @@ history:
   - id: hx_lunch_timeline
     source: family
     topic: 'Mum — walk me through today.'
+    supports: ['Paediatric anaphylaxis — peanut (food-IgE)']
     response: |
       "He had a peanut-butter sandwich for lunch about 12:30 — same
       brand we always buy. His lip felt funny by half-two and looked
@@ -84,6 +85,7 @@ history:
     source: family
     topic: 'Has Sam ever had a reaction like this before?'
     prereq_history_ids: [hx_lunch_timeline]
+    supports: ['Paediatric anaphylaxis — peanut (food-IgE)']
     response: |
       "Maybe? He's had hives once or twice. Eczema flares around his
       mouth when he eats certain things — I always thought it was
@@ -93,6 +95,7 @@ history:
   - id: hx_asthma
     source: family
     topic: 'Tell me about his asthma.'
+    supports: ['Acute severe asthma exacerbation', 'Viral wheeze']
     response: |
       "Diagnosed at 5. He has a salbutamol pump. Hasn't really used it
       this year — last time he wheezed was March. No nebulisers,

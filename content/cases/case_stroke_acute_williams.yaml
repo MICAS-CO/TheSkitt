@@ -66,6 +66,9 @@ history:
     source: family
     topic: 'Speak to Carol — exact time of onset?'
     npc_voice: 'Carol grips her phone with both hands. She speaks fast.'
+    supports:
+      - 'Acute ischaemic stroke — left MCA territory (LVO)'
+      - "Seizure with Todd's palsy"
     response: |
       "It was 08:05 — I know because the kettle had just clicked off
       and I was looking at the kitchen clock. He'd been fine, drinking
@@ -78,6 +81,7 @@ history:
     source: family
     topic: 'When did he last take the apixaban?'
     prereq_history_ids: [hx_carol]
+    supports: ['Intracranial haemorrhage']
     response: |
       "Yesterday evening, around eight. He takes it with dinner.
       Hasn't had this morning's dose."

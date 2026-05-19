@@ -49,6 +49,9 @@ history:
   - id: hx_paramedics
     source: paramedic
     topic: 'Anything on the way in?'
+    supports:
+      - 'Hypoglycaemia (BM 2.4) on a background of intoxication'
+      - 'Acute intracranial haemorrhage from witnessed fall'
     response: |
       "Found seated on the pavement outside the Crown. Eye-witness said
       he stood up, took two steps, and went down. Hit his head on the
@@ -78,6 +81,7 @@ history:
     source: paramedic
     topic: 'Was the fall witnessed?'
     prereq_history_ids: [hx_paramedics]
+    supports: ['Acute intracranial haemorrhage from witnessed fall']
     response: |
       "Yes — eye-witness says he just dropped. No warning. No fitting.
       Could've been a syncope, could've been the drink. We weren't

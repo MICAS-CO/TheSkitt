@@ -90,6 +90,7 @@ history:
     topic: 'Housemate — drinking pattern, last drink, any cessation attempts?'
     prereq_history_ids: [hx_paramedics]
     npc_voice: "The housemate hesitates, eyes on the floor. 'It's been a rough year.'"
+    supports: ['Acute variceal upper GI haemorrhage in decompensated alcoholic cirrhosis']
     response: |
       "He drinks all day every day. Vodka mostly. He'd been worse this
       week — drinking through the night. Last drink was about 4 hours
@@ -109,6 +110,7 @@ history:
     source: gp_letter
     topic: 'Recent gastroenterology / GP letters.'
     prereq_history_ids: [hx_drinking]
+    supports: ['Acute variceal upper GI haemorrhage in decompensated alcoholic cirrhosis']
     response: |
       "Last gastro clinic 4 months ago: Child-Pugh C, MELD 18. On
       propranolol 80 mg BD for secondary prevention of variceal
@@ -121,6 +123,7 @@ history:
   - id: hx_anticoag_screen
     source: records
     topic: 'Anticoagulants, antiplatelets, NSAIDs?'
+    supports: ['Peptic ulcer disease (NSAID + alcohol)']
     response: |
       "No documented anticoagulant or antiplatelet. No regular NSAID.
       Took ibuprofen 'about a week ago' for backache — three doses."

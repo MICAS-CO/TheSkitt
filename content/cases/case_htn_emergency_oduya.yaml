@@ -73,6 +73,9 @@ history:
   - id: hx_headache_details
     source: patient
     topic: 'Describe the headache — onset, character, severity, red flags?'
+    supports:
+      - 'Hypertensive emergency with hypertensive encephalopathy + PRES + AKI + retinopathy'
+      - 'Subarachnoid haemorrhage'
     response: |
       (Slow, deliberate.) "Started two days ago, dull and pulsing
       at the back of my head. Worse if I bend forward or strain.
@@ -86,6 +89,8 @@ history:
     topic: 'Wife — what happened with the BP tablets?'
     prereq_history_ids: [hx_headache_details]
     npc_voice: "Mrs Oduya keeps her voice even. 'He said the side-effects… made him feel old.'"
+    supports:
+      - 'Hypertensive emergency with hypertensive encephalopathy + PRES + AKI + retinopathy'
     response: |
       "GP told him 6 weeks ago his blood pressure was too high to
       drive a bus safely. He said the tablets made him tired and

@@ -351,6 +351,15 @@ export class SimKernel {
     const cs = this.state.cases.get(caseId);
     if (!cs) return;
     cs.workingDx = dx;
+    this.log('info', `Working dx: ${dx}.`, caseId);
+    this.notify();
+  }
+
+  /** Clear a previously-set working diagnosis (e.g. player un-locks to re-think). */
+  clearWorkingDx(caseId: string): void {
+    const cs = this.state.cases.get(caseId);
+    if (!cs) return;
+    cs.workingDx = null;
     this.notify();
   }
 

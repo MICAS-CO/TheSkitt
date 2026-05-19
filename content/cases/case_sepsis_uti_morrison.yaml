@@ -73,6 +73,7 @@ history:
   - id: hx_baseline
     source: records
     topic: 'What is her baseline cognition and mobility?'
+    supports: ['Encephalopathy / delirium from a non-infective cause']
     response: |
       "Care plan notes she is usually orientated to person and place,
       not always time. She mobilises with a frame. Mild Alzheimer
@@ -82,6 +83,9 @@ history:
     source: records
     topic: 'Any recent infections or culture results?'
     prereq_history_ids: [hx_baseline]
+    supports:
+      - 'Sepsis from a urinary tract source (urosepsis)'
+      - 'Acute pyelonephritis with bacteraemia'
     response: |
       "Recurrent UTIs through the year. Last episode 6 weeks ago,
       trimethoprim — culture showed E. coli sensitive to nitrofurantoin

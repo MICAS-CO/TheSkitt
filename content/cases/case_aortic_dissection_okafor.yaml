@@ -75,6 +75,7 @@ history:
     source: patient
     topic: 'Describe the pain — character, onset, radiation.'
     npc_voice: "Mr Okafor presses his palm flat to his sternum, jaw tight."
+    supports: ['Type A aortic dissection extending into RCA, with malperfusion of right upper limb']
     response: |
       "It came on in a second. Between my shoulder blades, like
       somebody'd shoved a knife through me. Then it punched through
@@ -85,6 +86,7 @@ history:
     source: patient
     topic: 'Has the pain moved or changed?'
     prereq_history_ids: [hx_pain_quality]
+    supports: ['Type A aortic dissection extending into RCA, with malperfusion of right upper limb']
     response: |
       "It started in my back. Now it's in my chest and the front of
       my neck on the right. My right arm feels strange too — pins
@@ -93,6 +95,7 @@ history:
   - id: hx_family
     source: patient
     topic: 'Any family history of vascular or aortic problems?'
+    supports: ['Type A aortic dissection extending into RCA, with malperfusion of right upper limb']
     response: |
       "My dad died at 64 — they said his aorta had ruptured. I always
       thought it was a heart attack. My sister had her aortic valve
@@ -136,6 +139,7 @@ history:
     source: patient
     topic: 'Marfanoid screen — wingspan, joint hypermobility, lens dislocation?'
     prereq_history_ids: [hx_family]
+    supports: ['Type A aortic dissection extending into RCA, with malperfusion of right upper limb']
     response: |
       "Tall and thin as a young man, but not unusually so. No lens
       problems I know of. I broke my wrist falling off a bike at 30

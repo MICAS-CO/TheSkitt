@@ -163,3 +163,39 @@ describe('history dialogue tree — content discipline', () => {
     }
   });
 });
+
+describe('M11 — clue-board supports integrity', () => {
+  const cases = readdirSync(join(ROOT, 'content/cases'))
+    .filter((f) => f.endsWith('.yaml'))
+    .map((f) => loadCase(`content/cases/${f}`));
+
+  it('every supports entry references a real differential in the same case', () => {
+    for (const c of cases) {
+      const diagnoses = new Set(c.differential.map((d) => d.diagnosis));
+      for (const h of c.history) {
+        for (const dx of h.supports ?? []) {
+          expect(diagnoses.has(dx), `${c.id} → hx ${h.id} supports unknown dx "${dx}"`).toBe(true);
+        }
+      }
+      for (const e of c.examination) {
+        for (const f of e.findings) {
+          for (const dx of f.supports ?? []) {
+            expect(diagnoses.has(dx), `${c.id} → ex ${e.system} → ${f.name} supports unknown dx "${dx}"`).toBe(true);
+          }
+        }
+      }
+      for (const ix of c.investigations) {
+        for (const dx of ix.supports ?? []) {
+          expect(diagnoses.has(dx), `${c.id} → ix ${ix.id} supports unknown dx "${dx}"`).toBe(true);
+        }
+      }
+    }
+  });
+
+  it('every case authors supports for at least one clue (otherwise clue board is silent)', () => {
+    for (const c of cases) {
+      const hxSupports = c.history.some((h) => (h.supports?.length ?? 0) > 0);
+      expect(hxSupports, `${c.id} has no history items with supports authored`).toBe(true);
+    }
+  });
+});

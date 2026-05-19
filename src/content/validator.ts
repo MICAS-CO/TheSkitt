@@ -181,6 +181,18 @@ export function validateContent(rootDir: string): ValidationReport {
   // Per-case integrity: prereq + reveal history ids exist within the same case.
   for (const [, entry] of parsed.cases) {
     const ids = new Set(entry.data.history.map((h) => h.id));
+    const diagnoses = new Set(entry.data.differential.map((d) => d.diagnosis));
+    const checkSupports = (path: string, supports: string[] | undefined) => {
+      for (const dx of supports ?? []) {
+        if (!diagnoses.has(dx)) {
+          report.errors.push({
+            file: entry.file,
+            path,
+            message: `supports references unknown differential diagnosis "${dx}"`,
+          });
+        }
+      }
+    };
     for (const h of entry.data.history) {
       for (const prereqId of h.prereq_history_ids ?? []) {
         if (!ids.has(prereqId)) {
@@ -207,6 +219,15 @@ export function validateContent(rootDir: string): ValidationReport {
           });
         }
       }
+      checkSupports(`case ${entry.data.id} → history ${h.id}`, h.supports);
+    }
+    for (const e of entry.data.examination) {
+      for (const f of e.findings) {
+        checkSupports(`case ${entry.data.id} → examination ${e.system} → ${f.name}`, f.supports);
+      }
+    }
+    for (const ix of entry.data.investigations) {
+      checkSupports(`case ${entry.data.id} → investigation ${ix.id}`, ix.supports);
     }
   }
 

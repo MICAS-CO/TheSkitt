@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSim, scoreCase, type ScoreReport, type SimSpeedKey } from '../../state/sim';
 import type { CitationT } from '../../content/schema';
 import type { CaseRuntime, KernelState, LogEntry } from '../../sim/kernel';
@@ -138,7 +138,11 @@ export function EncounterScreen({
             />
           )}
           {section === 'differential' && (
-            <DifferentialPhase cs={cs} onChoose={(dx) => kernel.setWorkingDx(caseId, dx)} />
+            <DifferentialPhase
+              cs={cs}
+              onLockIn={(dx) => kernel.setWorkingDx(caseId, dx)}
+              onClear={() => kernel.clearWorkingDx(caseId)}
+            />
           )}
           {section === 'management' && (
             <ManagementPhase cs={cs} onToggle={(id) => kernel.toggleAction(caseId, id)} />
@@ -576,37 +580,189 @@ function InvestigationsPhase({
   );
 }
 
-function DifferentialPhase({ cs, onChoose }: { cs: CaseRuntime; onChoose: (dx: string) => void }) {
+interface Clue {
+  id: string;
+  /** Display label for the clue card. */
+  label: string;
+  /** Where the clue came from — drives the source chip. */
+  origin: 'history' | 'exam' | 'investigation';
+  /** Diagnosis labels this clue clinically supports (from the case data). */
+  supports: string[];
+  /** Whether the clue is a red-flag finding (exam) or abnormal (ix). */
+  flagged?: boolean;
+}
+
+function collectClues(cs: CaseRuntime): Clue[] {
+  const out: Clue[] = [];
+  for (const h of cs.data.history) {
+    if (!cs.asked.has(h.id)) continue;
+    out.push({
+      id: `hx:${h.id}`,
+      label: h.topic.replace(/[?.]+$/, ''),
+      origin: 'history',
+      supports: h.supports ?? [],
+    });
+  }
+  for (const e of cs.data.examination) {
+    if (!cs.examined.has(e.system)) continue;
+    for (const f of e.findings) {
+      // Skip pertinent-negatives and unflagged routine findings — clue board
+      // surfaces what actually moves the differential.
+      const valueLabel = f.value ? `${f.name}: ${f.value}` : f.name;
+      if (f.pertinent_negative) continue;
+      if (!f.red_flag && !f.supports) continue;
+      out.push({
+        id: `ex:${e.system}:${f.name}`,
+        label: valueLabel,
+        origin: 'exam',
+        supports: f.supports ?? [],
+        flagged: f.red_flag,
+      });
+    }
+  }
+  for (const ix of cs.data.investigations) {
+    if (!cs.resulted.has(ix.id)) continue;
+    if (!ix.abnormal && !ix.supports) continue;
+    out.push({
+      id: `ix:${ix.id}`,
+      label: ix.name,
+      origin: 'investigation',
+      supports: ix.supports ?? [],
+      flagged: ix.abnormal,
+    });
+  }
+  return out;
+}
+
+function DifferentialPhase({
+  cs,
+  onLockIn,
+  onClear,
+}: {
+  cs: CaseRuntime;
+  onLockIn: (dx: string) => void;
+  onClear: () => void;
+}) {
+  const clues = useMemo(() => collectClues(cs), [cs]);
+  const [selectedClues, setSelectedClues] = useState<Set<string>>(new Set());
   const hasPicked = cs.workingDx !== null;
+
+  function toggleClue(id: string) {
+    setSelectedClues((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  // Per-differential support tally: how many of the player's selected clues
+  // actually point at this diagnosis (per author's `supports` field)?
+  const supportTally = useMemo(() => {
+    const tally = new Map<string, number>();
+    for (const d of cs.data.differential) tally.set(d.diagnosis, 0);
+    for (const c of clues) {
+      if (!selectedClues.has(c.id)) continue;
+      for (const dx of c.supports) {
+        tally.set(dx, (tally.get(dx) ?? 0) + 1);
+      }
+    }
+    return tally;
+  }, [cs.data.differential, clues, selectedClues]);
+
   return (
     <section className="enc__phase">
-      <h2>Differential — pick your working diagnosis</h2>
+      <h2>Differential — build a case, then lock it in</h2>
       <p className="enc__hint">
         {hasPicked
-          ? 'Likelihood revealed. You can change your pick before moving on.'
-          : 'Use each discriminator to test the diagnosis. Likelihoods reveal once you choose.'}
+          ? 'Working diagnosis locked. Likelihood revealed. Use ✗ to un-lock and reconsider.'
+          : 'Tap a clue to add it to your reasoning. The differential cards tally how many of your linked clues point at each diagnosis. When you have a working diagnosis, lock it in.'}
       </p>
+
+      {clues.length === 0 ? (
+        <div className="enc__banner">
+          <strong>No clues yet.</strong> Take a history, examine the patient, or order
+          investigations to build the clue board.
+        </div>
+      ) : (
+        <div className="enc__clueboard" role="group" aria-label="Clue board">
+          <h3 className="enc__clueboard-title">Clue board</h3>
+          <ul className="enc__cluelist">
+            {clues.map((c) => {
+              const isSelected = selectedClues.has(c.id);
+              return (
+                <li key={c.id} className={`enc__clue ${isSelected ? 'is-selected' : ''}`}>
+                  <button
+                    type="button"
+                    className="enc__clue-btn"
+                    onClick={() => toggleClue(c.id)}
+                    aria-pressed={isSelected}
+                  >
+                    <span className={`enc__chip enc__chip--clue-${c.origin}`}>
+                      {c.origin === 'history' ? 'hx' : c.origin === 'exam' ? 'O/E' : 'ix'}
+                    </span>
+                    {c.flagged && (
+                      <span className="enc__chip enc__chip--red-flag" aria-label="Red flag">
+                        ⚠
+                      </span>
+                    )}
+                    <span className="enc__clue-label">{c.label}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+
+      <h3 className="enc__diff-heading">Differential diagnoses</h3>
       <ul className="enc__cards">
         {cs.data.differential.map((d) => {
           const isPicked = cs.workingDx === d.diagnosis;
+          const supports = supportTally.get(d.diagnosis) ?? 0;
           const isTop = d.likelihood === 'top';
           return (
             <li
               key={d.diagnosis}
               className={pickCardClass({ isPicked, hasPicked, isCorrect: isTop })}
             >
-              <button
-                className="enc__card-head enc__card-head--toggle"
-                onClick={() => onChoose(d.diagnosis)}
-                data-picked={isPicked}
-              >
-                {hasPicked && (
-                  <span className={`enc__chip enc__chip--${d.likelihood}`}>
-                    {d.likelihood.replace('_', ' ')}
-                  </span>
+              <div className="enc__diff-card-head">
+                <div className="enc__diff-card-left">
+                  {hasPicked && (
+                    <span className={`enc__chip enc__chip--${d.likelihood}`}>
+                      {d.likelihood.replace('_', ' ')}
+                    </span>
+                  )}
+                  <span className="enc__diff-name">{d.diagnosis}</span>
+                  {supports > 0 && (
+                    <span
+                      className="enc__chip enc__chip--support"
+                      aria-label={`${supports} supporting clues linked`}
+                    >
+                      +{supports} linked
+                    </span>
+                  )}
+                </div>
+                {!hasPicked && (
+                  <button
+                    type="button"
+                    className="enc__diff-lockin"
+                    onClick={() => onLockIn(d.diagnosis)}
+                  >
+                    lock in →
+                  </button>
                 )}
-                <span>{d.diagnosis}</span>
-              </button>
+                {isPicked && (
+                  <button
+                    type="button"
+                    className="enc__diff-unlock"
+                    onClick={() => onClear()}
+                    aria-label="Un-lock working diagnosis"
+                  >
+                    ✗
+                  </button>
+                )}
+              </div>
               <p className="enc__card-body">{d.discriminator}</p>
             </li>
           );

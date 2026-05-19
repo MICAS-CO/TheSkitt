@@ -971,6 +971,125 @@ a {
   cursor: not-allowed;
 }
 
+/* Differential clue board (M11) */
+.enc__clueboard {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.enc__clueboard-title {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.enc__cluelist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.enc__clue-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid var(--border-2);
+  background: var(--panel-2);
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--text);
+  min-height: 30px;
+}
+.enc__clue-btn:hover {
+  background: var(--panel);
+}
+.enc__clue.is-selected .enc__clue-btn {
+  border-color: var(--info);
+  background: linear-gradient(180deg, rgba(94, 164, 212, 0.18), rgba(94, 164, 212, 0.04));
+  color: var(--text);
+  box-shadow: 0 0 0 1px var(--info) inset;
+}
+.enc__chip--clue-history {
+  background: rgba(94, 164, 212, 0.18);
+  color: var(--info);
+}
+.enc__chip--clue-exam {
+  background: rgba(122, 219, 122, 0.18);
+  color: var(--accent);
+}
+.enc__chip--clue-investigation {
+  background: rgba(225, 162, 71, 0.18);
+  color: var(--warn);
+}
+.enc__chip--support {
+  background: var(--info);
+  color: #000;
+  font-weight: 600;
+}
+
+.enc__diff-heading {
+  margin: 18px 0 4px;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.enc__diff-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 14px;
+}
+.enc__diff-card-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+.enc__diff-name {
+  font-weight: 500;
+}
+.enc__diff-lockin {
+  font-size: 11px;
+  padding: 4px 10px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  border-radius: 4px;
+  cursor: pointer;
+  min-height: 28px;
+  flex-shrink: 0;
+}
+.enc__diff-lockin:hover {
+  background: rgba(122, 219, 122, 0.12);
+}
+.enc__diff-unlock {
+  font-size: 14px;
+  padding: 2px 8px;
+  border: 1px solid var(--border-2);
+  background: transparent;
+  color: var(--muted);
+  border-radius: 4px;
+  cursor: pointer;
+  min-height: 28px;
+}
+.enc__diff-unlock:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
 .enc__body {
   flex: 1;
 }

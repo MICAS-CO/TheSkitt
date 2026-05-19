@@ -98,6 +98,8 @@ history:
     topic: 'Ask the wife about meds — has anything changed recently?'
     prereq_history_ids: [hx_paramedic]
     npc_voice: "His wife reaches into her bag for the medication list. Her hands are unsteady."
+    supports:
+      - 'Acute decompensated heart failure — wet-and-warm cardiogenic pulmonary oedema, precipitated by held diuretic'
     response: |
       "The pre-op nurse said to stop his water tablets 10 days
       before surgery so his potassium would be 'normal' on the day.
@@ -115,6 +117,8 @@ history:
     source: family
     topic: 'Pre-morbid function — NYHA class and walking distance?'
     prereq_history_ids: [hx_meds_stop]
+    supports:
+      - 'Acute decompensated heart failure — wet-and-warm cardiogenic pulmonary oedema, precipitated by held diuretic'
     response: |
       "He was NYHA II — comfortable walking on the flat, breathless
       after one flight of stairs. Last week he was OK doing four

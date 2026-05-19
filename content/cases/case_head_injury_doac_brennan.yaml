@@ -79,6 +79,7 @@ history:
     source: gp_letter
     topic: 'Anticoagulant — agent, dose, time of last dose, renal function.'
     prereq_history_ids: [hx_mechanism]
+    supports: ['Mild traumatic brain injury with traumatic subdural haematoma on anticoagulation']
     response: |
       "Apixaban 5 mg BD. Last dose 07:30 this morning per her dosette.
       Started 2023 for PAF. CHA2DS2-VASc 4 (age, sex, HTN, DM).
@@ -106,6 +107,7 @@ history:
   - id: hx_post_fall
     source: patient
     topic: 'How have you felt since the fall?'
+    supports: ['Mild traumatic brain injury with traumatic subdural haematoma on anticoagulation']
     response: |
       "Bit of a sore head. Some neck stiffness when I look up.
       My eyesight feels OK. I haven't been sick. No double

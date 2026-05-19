@@ -285,6 +285,34 @@ describe('validateContent', () => {
     }
   });
 
+  it('flags a history item whose supports references an unknown differential', () => {
+    const root = makeRoot();
+    try {
+      writeFileSync(
+        join(root, 'content/cases/case_a.yaml'),
+        yamlStringify({
+          ...minimalCase,
+          history: [
+            {
+              id: 'hx_a',
+              source: 'patient',
+              topic: 'A?',
+              response: 'a',
+              supports: ['Not a real diagnosis'],
+            },
+          ],
+        }),
+      );
+      const report = validateContent(root);
+      expect(report.ok).toBe(false);
+      expect(
+        report.errors.some((e) => e.message.includes('supports') && e.message.includes('Not a real diagnosis')),
+      ).toBe(true);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
   it('flags an arc history_asked reveal that points to an unknown history_id', () => {
     const root = makeRoot();
     try {

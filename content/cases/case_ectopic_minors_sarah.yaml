@@ -61,6 +61,10 @@ history:
   - id: hx_pain
     source: patient
     topic: 'Tell me about the pain.'
+    supports:
+      - 'Right tubal ectopic pregnancy with probable rupture'
+      - 'Pelvic inflammatory disease (PID)'
+      - 'Appendicitis'
     response: |
       "It started this morning, around 7 — kind of crampy, low down on
       the left side. It comes and goes. I thought it was a bad period
@@ -79,6 +83,9 @@ history:
     source: patient
     topic: 'Tell me about the pregnancy — dates, scans, anything?'
     prereq_history_ids: [hx_pain]
+    supports:
+      - 'Right tubal ectopic pregnancy with probable rupture'
+      - 'Threatened miscarriage with corpus luteum cyst'
     response: |
       "My last period was — let me think — seven weeks ago tomorrow. We
       were trying. Tested positive last Wednesday with a home kit. GP
@@ -89,6 +96,7 @@ history:
     source: patient
     topic: 'Any risk factors — previous infections, surgery, IVF, IUCD?'
     prereq_history_ids: [hx_pregnancy]
+    supports: ['Right tubal ectopic pregnancy with probable rupture']
     response: |
       "I had chlamydia when I was 22, got treated. No surgery. We
       conceived naturally. Never had a coil. No previous miscarriage
@@ -97,6 +105,7 @@ history:
   - id: hx_systems
     source: patient
     topic: 'Any other symptoms — shoulder tip pain, dizziness, fainting?'
+    supports: ['Ruptured ectopic with active intra-abdominal haemorrhage']
     response: |
       "I felt light-headed twice today. No shoulder pain. No fever.
       Bowels normal. I haven't been able to eat — feels a bit nauseous."
@@ -125,6 +134,7 @@ history:
   - id: hx_pain_started_earlier
     source: patient
     topic: 'Looking back, when did the pain really start?'
+    supports: ['Ruptured ectopic with active intra-abdominal haemorrhage']
     response: |
       "Honestly… two days ago. I didn't want to ruin the hen-do, so I
       took paracetamol and a hot water bottle. Today it got worse. I'm

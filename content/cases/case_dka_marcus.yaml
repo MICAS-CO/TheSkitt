@@ -66,6 +66,7 @@ history:
   - id: hx_symptoms
     source: patient
     topic: 'Marcus, when did you start feeling unwell?'
+    supports: ['Severe diabetic ketoacidosis — first presentation of type 1 diabetes mellitus']
     response: |
       "I dunno — a couple of weeks? I've been so thirsty. Up to the loo
       five or six times a night. Lost weight — my trousers don't fit.
@@ -94,6 +95,9 @@ history:
     source: patient
     topic: 'Any cough, urinary symptoms, sore throat, foot wounds?'
     prereq_history_ids: [hx_symptoms]
+    supports:
+      - 'Sepsis with metabolic acidosis'
+      - 'Severe diabetic ketoacidosis — first presentation of type 1 diabetes mellitus'
     response: |
       "I had a sore throat two weeks ago — thought it was flu, took
       paracetamol and slept it off. No cough. Wee burns a bit since

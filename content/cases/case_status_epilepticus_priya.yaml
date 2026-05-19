@@ -69,6 +69,9 @@ history:
     source: family
     topic: 'Speak to the flatmate at reception.'
     npc_voice: "The flatmate sits forward, voice low — 'I probably shouldn't be telling you but…'"
+    supports:
+      - 'Convulsive status epilepticus secondary to subarachnoid haemorrhage'
+      - 'Encephalitis (HSV)'
     response: |
       "We were halfway through dinner. She said the lights looked weird
       and then she just went stiff and slid off the chair. I've never
@@ -85,6 +88,9 @@ history:
   - id: hx_recent_illness
     source: family
     topic: 'Any fever, headache, or recent illness?'
+    supports:
+      - 'Convulsive status epilepticus secondary to subarachnoid haemorrhage'
+      - 'Encephalitis (HSV)'
     response: |
       "She's had three days of really bad headache. Not the migraine
       kind — she said it was different. Worst at night. She wasn't
@@ -95,6 +101,7 @@ history:
     source: family
     topic: "Pregnancy — what's in the bag?"
     prereq_history_ids: [hx_flatmate]
+    supports: ['Eclampsia (if >20 weeks gestation)']
     response: |
       "It's a positive test stick. She did the test on Saturday but
       she didn't tell me the result, I just saw it in her wash bag

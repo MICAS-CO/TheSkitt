@@ -189,6 +189,14 @@ export const HistoryItem = z.object({
    * Author-optional; renders as italic flavour text.
    */
   npc_voice: z.string().optional(),
+  /**
+   * Differential diagnosis labels (exact match against
+   * `case.differential[i].diagnosis`) that this finding clinically
+   * supports. Used by the clue-board reasoning surface to show which
+   * differentials the player's evidence points at. Optional — clues
+   * without supports are listed but unweighted.
+   */
+  supports: z.array(z.string()).optional(),
 });
 
 export const ExamSystem = z.enum([
@@ -216,6 +224,8 @@ export const ExamFinding = z.object({
   present: z.boolean().default(true),
   pertinent_negative: z.boolean().default(false),
   red_flag: z.boolean().default(false),
+  /** Differentials this finding clinically supports — see HistoryItem.supports. */
+  supports: z.array(z.string()).optional(),
 });
 
 export const ExamSystemFindings = z.object({
@@ -244,6 +254,8 @@ export const Investigation = z.object({
   result_summary: z.string(),
   abnormal: z.boolean().default(false),
   sources: z.array(Citation).optional(),
+  /** Differentials this result clinically supports — see HistoryItem.supports. */
+  supports: z.array(z.string()).optional(),
 });
 
 // ─── Differential & management ──────────────────────────────────────────────
