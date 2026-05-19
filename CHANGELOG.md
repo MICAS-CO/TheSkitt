@@ -4,6 +4,40 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Test: state-machine reachability; backfill missing case transitions
+
+Added `tests/state-machine-reachability.test.ts` — would have caught
+the Oduya hypertensive-emergency dead-end (no transitions out of
+`deteriorating`) before review. Two invariants per case:
+
+1. No case-internal "dead-end" non-terminal state — if the case
+   routes the player INTO a state (e.g. `deteriorating`), it must
+   route them OUT.
+2. At least one transition leads to a success state (`admitted`
+   or `discharged`).
+
+The test surfaced **4 pre-existing authoring gaps** the validator
+hadn't caught:
+
+- **Patel (STEMI)**: added `stable → admitted` on `mx_ppci_pathway`
+  and `deteriorating → stable` on `mx_aspirin` (recovery + success
+  paths).
+- **Sarah (ectopic)**: added `stable → admitted` on `mx_call_gynae`
+  and `deteriorating → stable` on `mx_iv_fluids`.
+- **Brennan (head injury / DOAC)**: added `deteriorating → stable`
+  on `mx_haem_neurosurg_discuss` (had success path already).
+- **Stan (intox)**: added `stable → admitted` on `mx_ct_head`
+  (CT-cleared → admit AMU for sliding-scale glucose + Pabrinex +
+  alcohol-team referral).
+
+These weren't strict bugs (kernel's `setDisposition` will close any
+case regardless of state-machine transitions), but the case
+"narrative" was incomplete — failing to give the player a recovery
+or admission path within the simulation state machine. All 4 cases
+now have full deteriorating ↔ stable ↔ admitted loops in YAML.
+
+Test count: 162 → 192 (added 2 invariants × 15 cases = 30).
+
 ### Audit: Ahmed (AHF) + Oduya (HTN emergency) accuracy fixes
 
 Subagent audit caught 8 real clinical accuracy issues in the two

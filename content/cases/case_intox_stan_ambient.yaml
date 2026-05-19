@@ -276,6 +276,12 @@ state_machine:
         min: 15
         required_actions: [mx_iv_dextrose]
         note: 'Severe hypoglycaemic seizure → arrest if untreated.'
+    - from: stable
+      to: admitted
+      trigger:
+        on: action
+        action_id: mx_ct_head
+        note: 'CT head excluded acute bleed; admit AMU on a sliding-scale glucose + Pabrinex + alcohol-team referral.'
 
 pearls:
   - 'Reduced GCS in an intoxicated patient is not "just the drink" — check a BM and consider CT head per NICE NG232.'

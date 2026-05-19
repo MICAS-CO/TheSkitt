@@ -286,6 +286,18 @@ state_machine:
         min: 14
         required_actions: [mx_aspirin, mx_ppci_pathway]
         note: 'VF arrest in the waiting room — preventable with timely STEMI workup.'
+    - from: deteriorating
+      to: stable
+      trigger:
+        on: action
+        action_id: mx_aspirin
+        note: 'Aspirin given + PCI pathway activation rescues from waiting-room deterioration.'
+    - from: stable
+      to: admitted
+      trigger:
+        on: action
+        action_id: mx_ppci_pathway
+        note: 'PCI cath lab pathway activated — patient handed over to cardiology.'
 
 pearls:
   - 'Stoic elderly patients with chest discomfort framed as "indigestion" are an SAQ classic for atypical/silent MI — never wait for a queue to clear before ECG.'

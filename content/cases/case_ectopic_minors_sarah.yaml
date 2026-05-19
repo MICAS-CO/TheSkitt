@@ -433,6 +433,18 @@ state_machine:
         min: 18
         required_actions: [mx_iv_fluids]
         note: 'Persistent hypotension without resuscitation.'
+    - from: deteriorating
+      to: stable
+      trigger:
+        on: action
+        action_id: mx_iv_fluids
+        note: 'Crystalloid resus restores perfusion as gynae mobilise.'
+    - from: stable
+      to: admitted
+      trigger:
+        on: action
+        action_id: mx_call_gynae
+        note: 'Gynae accept and transfer her to theatre / GAU — case closes from ED.'
 
 pearls:
   - 'Any woman of reproductive age with abdo pain or PV bleeding gets urine βhCG as the FIRST ED investigation (NICE NG126).'

@@ -509,6 +509,12 @@ state_machine:
         min: 25
         required_actions: [mx_ct_head_within_8h, mx_apixaban_hold]
         note: 'Anticoagulant on board + untreated SDH → expanding haematoma; if no CT and no apixaban-hold by T+25 the bleed enlarges silently — case deteriorates.'
+    - from: deteriorating
+      to: stable
+      trigger:
+        on: action
+        action_id: mx_haem_neurosurg_discuss
+        note: 'Haematology + neurosurgery engaged — reversal decision underway; haematoma expansion controlled.'
     - from: stable
       to: admitted
       trigger:
