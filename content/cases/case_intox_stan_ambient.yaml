@@ -79,6 +79,35 @@ history:
     supports:
       - 'Hypoglycaemia (BM 2.4) on a background of intoxication'
       - 'Acute intracranial haemorrhage from witnessed fall'
+    branch_choices:
+      - id: probing
+        label: "Take me through it slowly. 'A few' meaning what — and the head — was it witnessed?"
+        npc_voice: "The paramedic looks up from his tablet. He didn't expect to be asked."
+        rapport_delta: 1
+        response: |
+          "Right — sorry, doc. So: 'a few' is what he told us, but
+          the publican said five pints minimum before he got kicked
+          out at half-six. Found him seated on the pavement outside
+          the Crown. Eye-witness — a courier, sober, said he'd
+          stand up to it — said Stan stood up, took two steps, and
+          went down. Hit the back of his head on the kerb. He
+          couldn't remember after — but he never can. No seizure
+          seen. Sats 96% room air. We didn't check a BM. Sorry, doc.
+          Should we have? He didn't smell like a hypo to us."
+      - id: routine
+        label: "Standard handover please."
+        rapport_delta: 0
+        response: |
+          "Found seated on the pavement outside the Crown. Eye-witness
+          said he stood up, took two steps, and went down. Hit his
+          head on the kerb. He couldn't remember after — but he never
+          can. No seizure seen. Sats 96% room air, BM not checked."
+      - id: dismissive
+        label: "Stan again. The usual, then. Let me know if anything new came up — otherwise I've got it."
+        npc_voice: "The paramedic nods. He doesn't add the witnessed-fall detail. Or the missing BM."
+        rapport_delta: -2
+        response: |
+          "Yeah. The usual. He's all yours, doc."
     response: |
       "Found seated on the pavement outside the Crown. Eye-witness said
       he stood up, took two steps, and went down. Hit his head on the

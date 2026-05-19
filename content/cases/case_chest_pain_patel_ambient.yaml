@@ -112,10 +112,43 @@ history:
     source: family
     topic: 'Speak to the daughter.'
     prereq_history_ids: [hx_associated]
+    npc_voice: "Priya stands a metre back from the bay, fingertips on the curtain rail. She'd rather not be in the way."
+    supports:
+      - 'Anterior ST-elevation myocardial infarction (STEMI)'
+      - 'NSTEMI / unstable angina'
+    branch_choices:
+      - id: compassionate
+        label: "You know her best. Tell me what you've seen this week — anything that worried you."
+        npc_voice: "Priya's eyes prickle. She stops apologising for being in the way."
+        rapport_delta: 2
+        response: |
+          "Thank you. (Breath.) She had this exact thing two weeks ago,
+          shopping. Made me sit her down in M&S. Saw the GP, who said
+          reflux. Last Thursday she had a twinge while she was teaching
+          a piano lesson and she didn't tell me until I came home — she
+          said it was the curry from lunch. She is the most stoic
+          person I know. She told my father she had appendicitis as
+          'a stitch' for three days in 1991. Please don't send her home
+          because she's smiling. She is smiling because you are
+          looking at her. Please take her seriously."
+      - id: clinical
+        label: "Past episodes? Any changes recently?"
+        rapport_delta: 0
+        response: |
+          "Similar pain two weeks ago — saw GP, told reflux. Twinge
+          last Thursday she didn't mention until I came home. She's
+          stoic; she'll undersell what she's feeling."
+      - id: dismissive
+        label: "She doesn't look acutely unwell. We'll work her up but it may well be reflux."
+        npc_voice: "Priya stops crying. She straightens. She doesn't trust you any more."
+        rapport_delta: -2
+        response: |
+          "Right. (Pause.) I see. Thank you, doctor. I'll be quiet."
     response: |
-      "She had something similar two weeks ago — I made her see the GP
-      who said reflux. She refused to come in last week when she had a
-      twinge. She's stoic. Please take her seriously."
+      Daughter Priya reports a similar episode 2 weeks ago managed as
+      reflux by the GP, plus a missed warning twinge last Thursday.
+      Strong family insistence that the patient routinely undersells
+      symptoms. Concerned that stoicism is masking severity.
 
 examination:
   - system: general

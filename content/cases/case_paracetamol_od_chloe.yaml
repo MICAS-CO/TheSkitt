@@ -177,14 +177,44 @@ history:
     topic: 'Speak to Mira in the relatives’ room.'
     npc_voice: "Mira hasn't put the blister sleeves down. She's still wearing pyjamas."
     supports: ['Staggered paracetamol overdose with potential acute liver failure']
+    branch_choices:
+      - id: compassionate
+        label: "Mira — sit down. Whatever you tell me now, you're not in trouble, and Chloe isn't either. What did you see?"
+        npc_voice: "Mira sits. The blister sleeves are still in her lap. She puts them on the table only when she starts talking."
+        rapport_delta: 2
+        response: |
+          "She bought the 32-pack from the corner shop last
+          Wednesday — I saw her with it and I asked her why and she
+          said it was for her headaches. She's been weird for two
+          weeks. Not eating. Crying at night through the wall. She
+          broke up with someone last month. I tried — I asked, three
+          times, I asked. She wouldn't talk to me. (Beat.) Tonight
+          I heard her throwing up at midnight, and again at half-two,
+          and that's when I went in. The packs were all popped out.
+          She told me she'd taken 'most of them, spread out'. I
+          dialled 999 immediately. (Pause.) I should have said
+          something earlier. I should have made her see someone."
+      - id: clinical
+        label: "How many did she take, over what time, and when did you find her?"
+        rapport_delta: 0
+        response: |
+          "Bought 32 last Wednesday. Tonight I heard her vomiting at
+          midnight and 02:30. Found her at 02:50 on the bathroom
+          floor — empty packs, all popped out. She said 'most of
+          them, spread out'. I called 999."
+      - id: investigative
+        label: "Mira — were you aware she was struggling? Did she tell anyone?"
+        npc_voice: "Mira looks down at the blister sleeves. Her hands tighten on them."
+        rapport_delta: -2
+        response: |
+          "I — yes. I knew she was struggling. I should have done
+          more. (Pause.) I'm sorry."
     response: |
-      "She bought a 32-pack from the corner shop last week — I saw
-      her with it. She's been weird for two weeks, not eating,
-      crying at night. She broke up with someone last month, I think
-      that's part of it. She wouldn't talk to me. Tonight I heard her
-      throwing up at midnight and again at half-two — that's when I
-      went in. The packs were all popped out. She told me she'd taken
-      'most of them, spread out'. I dialled 999 immediately."
+      Mira reports a 2-week prodrome of low mood, anorexia and nocturnal
+      crying, a recent break-up, and tonight a witnessed pattern of
+      vomiting twice (midnight, 02:30) before she found Chloe on the
+      bathroom floor with empty blister packs. Chloe told her she had
+      taken 'most of them, spread out'. Mira called 999.
 
   - id: hx_paeds_safeguarding
     source: records
