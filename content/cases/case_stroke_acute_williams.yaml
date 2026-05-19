@@ -472,6 +472,7 @@ pearls:
   - 'Large vessel occlusion + NIHSS ≥6 + ASPECTS ≥6 = thrombectomy candidate, time window extended to 6 h (24 h with perfusion imaging).'
   - 'Anticoagulated patient with LVO → thrombectomy is the preferred reperfusion path; alteplase is the alternative only if DOAC effect is excluded.'
   - 'Always speak to the witness. Time of onset is the single most consequential data point in the whole encounter.'
+  - 'This is an anterior (LMCA) stroke and FAST is positive. **FAST misses up to ~50% of posterior circulation strokes** (vertigo, truncal ataxia, headache, isolated cranial-nerve signs). For posterior-circulation suspicion in acute vestibular syndrome use HINTS (Head Impulse, Nystagmus, Test of Skew) — performed by appropriately trained clinicians.'
 
 pitfalls:
   - 'Giving alteplase without confirming DOAC timing.'

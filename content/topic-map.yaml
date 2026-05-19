@@ -469,6 +469,187 @@ topics:
     sources: [{ type: nhs, ref: 'NHS EPRR Concept of Operations — Mass Casualty Incidents' }]
     arc_hooks: ['frame an entire episode as the MAJAX call — every focus case is from the incident']
 
+  # ─── Tier 1-2 topics surfaced by TheCase.Report podcast (S1-S6) ───────────
+  - id: upper_gi_bleed
+    label: Upper GI bleed (variceal + peptic)
+    tier: 1
+    curriculum_codes: [GP4, GC2]
+    slos: [SLO1, SLO3]
+    paeds: no
+    rationale: 'Glasgow-Blatchford for risk stratification (<1 → safe outpatient), Rockall pre/post-endoscopy. Variceal: terlipressin + ceftriaxone prophylaxis (reduces mortality). Restrictive Hb 7–8 transfusion target. SALAD for soiled airway. SAQ regular.'
+    sources:
+      - {
+          type: nice,
+          id: 'CG141',
+          ref: 'NICE CG141 — Acute upper gastrointestinal bleeding in over-16s: management',
+        }
+      - { type: rcem, ref: 'RCEM Best Practice — Upper GI Haemorrhage' }
+      - {
+          type: textbook,
+          ref: 'BSG/UK Guidelines on the management of variceal haemorrhage in cirrhotic patients (2015)',
+        }
+    arc_hooks: ['variceal bleed in known cirrhotic + alcohol withdrawal arc']
+    inspiration: 'TheCase.Report S1E3 — Upper GI Bleed + SALAD'
+
+  - id: acute_heart_failure
+    label: Acute heart failure (de novo + decompensated)
+    tier: 1
+    curriculum_codes: [CC4, CP2]
+    slos: [SLO1, SLO3]
+    paeds: no
+    rationale: 'Wet-and-warm vs cold-and-dry phenotype. CPAP first-line for cardiogenic pulmonary oedema. Diuresis + GTN. POCUS for B-lines and IVC. Distinguish from RVF (different management).'
+    sources:
+      - {
+          type: nice,
+          id: 'NG106',
+          ref: 'NICE NG106 — Chronic heart failure in adults: diagnosis and management',
+        }
+      - { type: esc, ref: 'ESC 2021 — Acute and chronic heart failure' }
+    arc_hooks: ['decompensation triggered by a missed STEMI / med-non-compliance']
+    inspiration: 'TheCase.Report S1E10 + S1E11 — Acute HF (Prof Amal Mattu bonus)'
+
+  - id: hypertensive_emergency
+    label: Hypertensive emergency
+    tier: 2
+    curriculum_codes: [CC3]
+    slos: [SLO1, SLO3]
+    paeds: no
+    rationale: 'Urgency vs emergency (end-organ damage = emergency). Targets: BP reduction 10–20% in 1 h. Labetalol IV; GTN for rapid onset. Avoid amlodipine (delayed onset = dose stacking).'
+    sources:
+      - { type: rcem, ref: 'RCEM Learning — Hypertensive Emergency' }
+      - {
+          type: nice,
+          id: 'NG136',
+          ref: 'NICE NG136 — Hypertension in adults: diagnosis and management',
+        }
+    arc_hooks:
+      ['hypertensive encephalopathy presenting as confusion / seizure → broaden the differential']
+    inspiration: 'TheCase.Report S1E13'
+
+  - id: tca_overdose
+    label: TCA (tricyclic) overdose
+    tier: 2
+    curriculum_codes: [PhP2, PhC1]
+    slos: [SLO1, SLO3]
+    paeds: yes
+    rationale: 'Cardiotoxicity gated on QRS >100 ms; sodium bicarbonate at QRS >100 ms (or signs of conduction toxicity). Goal pH 7.5–7.55. Lipid emulsion if refractory.'
+    sources:
+      - { type: toxbase, ref: 'TOXBASE — Tricyclic antidepressant monograph' }
+      - { type: rcem, ref: 'RCEM Best Practice — TCA overdose' }
+      - { type: textbook, ref: 'RCEM/NPIS Antidote Guideline List' }
+    arc_hooks: ['TCA in a deliberate ingestion with mental health context (depression + access)']
+    inspiration: 'TheCase.Report S1E2 — TCA overdose'
+
+  - id: perimortem_caesarean
+    label: Maternal collapse / perimortem caesarean
+    tier: 1
+    curriculum_codes: [OP1, OC1]
+    slos: [SLO1, SLO3, SLO4]
+    paeds: no
+    rationale: 'Resuscitative hysterotomy within 5 min of arrest in ≥20-week gestation. Manual left uterine displacement during CPR; IV access above diaphragm; compressions higher on the sternum.'
+    sources:
+      - { type: rcog, ref: 'RCOG Green-top — Maternal collapse in pregnancy and the puerperium' }
+      - { type: resus_council_uk, ref: 'Resus Council UK ALS — Maternal cardiac arrest section' }
+    arc_hooks: ['unwitnessed collapse in a maternity-floor handover — bleed source identification']
+    inspiration: 'TheCase.Report S1E7'
+
+  - id: posterior_circulation_stroke
+    label: Posterior circulation stroke (and HINTS)
+    tier: 2
+    curriculum_codes: [NeuP1, NeuC11]
+    slos: [SLO1, SLO3]
+    paeds: no
+    rationale: 'FAST misses ~50% of posterior strokes. HINTS (Head Impulse + Nystagmus + Test of Skew) distinguishes central from peripheral acute vestibular syndrome. Different thrombolysis/thrombectomy considerations than anterior.'
+    sources:
+      - { type: nice, id: 'NG128', ref: 'NICE NG128 — Stroke and TIA' }
+      - { type: textbook, ref: 'RCP National Clinical Guideline for Stroke 2023' }
+    arc_hooks: ['"dizzy elderly" → HINTS-confirmed PCS vs vestibular neuritis triage decision']
+    inspiration: 'TheCase.Report S2E3 — Posterior Circulation Stroke + GEM'
+
+  - id: delirium_geriatric
+    label: Delirium in the older ED patient
+    tier: 1
+    curriculum_codes: [GeC1, GP1]
+    slos: [SLO1, SLO3]
+    paeds: no
+    rationale: '4AT screen. Hyperactive vs hypoactive vs mixed (hypoactive most missed, most severe). >60% of cases missed/late-diagnosed. Urine dipstick caution in elderly (positive without UTI symptoms common). Haloperidol 0.5–1 mg first-line; lorazepam if PD/LBD.'
+    sources:
+      - {
+          type: nice,
+          id: 'CG103',
+          ref: 'NICE CG103 — Delirium: prevention, diagnosis and management',
+        }
+      - { type: rcem, ref: 'RCEM Learning — Delirium in the Elderly' }
+    arc_hooks:
+      ['hypoactive delirium misclassified as "tired patient" by triage — escalation cascade']
+    inspiration: 'TheCase.Report S1E19'
+
+  - id: chest_trauma_blunt
+    label: Blunt chest trauma (flail, haemothorax, cardiac box)
+    tier: 1
+    curriculum_codes: [TP4, TC2]
+    slos: [SLO1, SLO3]
+    paeds: no
+    rationale: 'Silver-trauma masks severity. CXR misses flail in 2D — CT reveals. Serratus anterior plane block for rib fracture pain. DOAC-on-board chest trauma: reversal decision with haematology.'
+    sources:
+      - {
+          type: nice,
+          id: 'NG39',
+          ref: 'NICE NG39 — Major trauma: assessment and initial management',
+        }
+      - { type: rcem, ref: 'IAEM Blunt Chest Trauma Guideline' }
+      - { type: textbook, ref: 'SABRE trial — Serratus Anterior Block in Rib Fracture' }
+    arc_hooks: ['silver trauma on DOAC — pairs with case_head_injury_doac_brennan']
+    inspiration: 'TheCase.Report S5E9 — Chest Trauma'
+
+  - id: liver_cirrhosis_decompensated
+    label: Decompensated liver cirrhosis
+    tier: 2
+    curriculum_codes: [GP4, GC2]
+    slos: [SLO1, SLO3]
+    paeds: no
+    rationale: 'Hepatic encephalopathy (West Haven grading) + variceal bleed risk + SBP screening. Lactulose / rifaximin. Restrictive transfusion. Avoid sedatives.'
+    sources:
+      - {
+          type: nice,
+          id: 'NG50',
+          ref: 'NICE NG50 — Cirrhosis in over-16s: assessment and management',
+        }
+      - {
+          type: textbook,
+          ref: 'British Society of Gastroenterology — UK guidelines on hepatic encephalopathy',
+        }
+    arc_hooks: ['known alcoholic with variceal bleed + withdrawal arc']
+    inspiration: 'TheCase.Report S3E2'
+
+  - id: nof_geriatric
+    label: Fractured neck of femur (geriatric)
+    tier: 2
+    curriculum_codes: [TC4, GeC1]
+    slos: [SLO1, SLO3, SLO4]
+    paeds: no
+    rationale: 'Fascia iliaca compartment block in ED. Time-to-surgery <36h target. Anticoagulation reversal pathway. Falls cause-screen alongside fracture management.'
+    sources:
+      - { type: nice, id: 'NG124', ref: 'NICE NG124 — Hip fracture: management' }
+      - { type: rcem, ref: 'RCEM Best Practice — Pain Management in NOF' }
+    arc_hooks: ['mechanical fall on DOAC — also surface SDH consideration (cf. Brennan)']
+    inspiration: 'TheCase.Report S4E8'
+
+  - id: hypothermia_drowning
+    label: Hypothermia and drowning
+    tier: 2
+    curriculum_codes: [EnC1, EnP1]
+    slos: [SLO1, SLO3]
+    paeds: yes
+    rationale: '"Not dead until warm and dead" — modified ALS for core temp <30. ECMO-CPR for refractory <28°C with witnessed arrest. Drowning + immersion physiology distinct from submersion.'
+    sources:
+      - {
+          type: resus_council_uk,
+          ref: 'Resus Council UK / ERC 2021 — Special Circumstances (hypothermia + drowning)',
+        }
+    arc_hooks: ['cold-water rescue — pre-hospital + ED interface']
+    inspiration: 'TheCase.Report S2E4 — Hypothermia and Drowning'
+
 # ─── Recommended first end-to-end case (build-prompt milestone 3) ────────────
 recommended_first_case:
   id: anaphylaxis

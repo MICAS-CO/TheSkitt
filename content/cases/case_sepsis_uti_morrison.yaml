@@ -153,6 +153,28 @@ investigations:
       - { type: nhs, ref: 'NEWS2 (Royal College of Physicians)' }
       - { type: nice, id: 'NG51', ref: 'NICE NG51 — risk stratification of suspected sepsis' }
 
+  - id: ix_4at
+    name: '4AT delirium screen'
+    category: bedside
+    turnaround_min: 2
+    result_summary: |
+      **4AT = 7** (Alertness abnormal +4, AMT4 +2, Attention months-
+      backwards inattentive +1, Acute change confirmed by care-home
+      staff +4 → score ≥4 = "possible delirium + cognitive
+      impairment"). Hypoactive picture — easily missed.
+
+      Note: 4AT is the recommended bedside screen for older ED
+      presentations (no training needed). Hypoactive delirium is
+      associated with more severe underlying illness.
+    abnormal: true
+    sources:
+      - {
+          type: nice,
+          id: 'CG103',
+          ref: 'NICE CG103 — Delirium: prevention, diagnosis and management',
+        }
+      - { type: rcem, ref: 'RCEM Learning — Delirium in the Elderly' }
+
   - id: ix_vbg_lactate
     name: 'Venous blood gas + lactate'
     category: gas
@@ -447,6 +469,8 @@ pearls:
   - 'Confusion in an elderly woman with a fever is sepsis until proven otherwise.'
   - 'Always re-read the advance care plan before bedside CPR discussions: re-litigating a documented DNACPR is unkind and clinically unnecessary.'
   - 'Penicillin allergy of "rash in childhood" is usually safe for piperacillin-tazobactam in non-severe reactions — but check local guidance and document the discussion.'
+  - 'Delirium is missed or late-diagnosed in >60% of older ED patients. Screen with 4AT in any older patient with acute change. Hypoactive (quiet) delirium is the most-missed subtype and associated with more severe underlying illness.'
+  - 'Urine dipstick in older adults: positive nitrites/leucs are common without UTI symptoms — interpret in context with clinical features, not in isolation.'
 
 pitfalls:
   - 'Waiting for blood cultures before giving antibiotics.'

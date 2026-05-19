@@ -4,6 +4,43 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### TheCase.Report integration — index + verification patches + topic backlog
+
+The user owns TheCase.Report (Irish EM podcast, IEMTA + IAEM-produced)
+and asked me to pull from it. Pulled the full episode archive (~64
+episodes across S1–S6) and deep-read 10 strategic episodes for both
+verification against existing Skitt cases AND case-authoring backlog.
+
+- **New `content/sources/tcr-podcast.md`** — full episode index by
+  season, deep-read clinical pearls (aortic dissection, posterior
+  stroke, paeds seizures, delirium, TCA OD, UGIB, chest trauma,
+  hypertensive emergency, VTE, perimortem CS), and the
+  cross-reference table between TCR episodes and existing Skitt
+  cases. **Authoring rule preserved:** Skitt cases continue to cite
+  the source-of-truth UK guideline that TCR itself references (NICE,
+  RCEM, Resus Council UK, etc.); TCR is acknowledged as inspiration
+  in `content/sources/tcr-podcast.md`, NOT in case YAMLs.
+- **Verification patches** to existing cases driven by TCR pearls:
+  - `case_stroke_acute_williams`: pearl added that FAST misses ~50%
+    of posterior-circulation strokes; HINTS for acute vestibular
+    syndrome. Frames Williams as the anterior-stroke teaching point.
+  - `case_sepsis_uti_morrison`: new `ix_4at` bedside investigation
+    (4AT delirium screen), plus pearls on hypoactive delirium being
+    most-missed and urine-dipstick interpretation caution in older
+    adults.
+  - `case_chest_pain_patel_ambient`: pearl added on AD mortality
+    (~1–2% per hour untreated), 20% normal CXR, 6% painless — the
+    must-not-miss aortic dissection narrative.
+- **Topic backlog**: added 11 TCR-derived topics to
+  `content/topic-map.yaml` (upper_gi_bleed, acute_heart_failure,
+  hypertensive_emergency, tca_overdose, perimortem_caesarean,
+  posterior_circulation_stroke, delirium_geriatric,
+  chest_trauma_blunt, liver_cirrhosis_decompensated, nof_geriatric,
+  hypothermia_drowning). All now show up in `pnpm new-case --list`
+  and can be scaffolded directly.
+
+10 cases / 9 episodes / 2 arcs validate; 147 tests pass.
+
 ### Simplify pass: shared ClockBar, lookup tables, CSS variable
 
 Driven by three parallel review agents (reuse / quality / efficiency).

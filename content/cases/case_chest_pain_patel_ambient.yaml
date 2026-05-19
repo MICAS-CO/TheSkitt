@@ -293,6 +293,7 @@ pearls:
   - 'Primary PCI is the UK STEMI pathway when achievable within 120 min of diagnosis.'
   - 'Oxygen is not routine in MI — only if SpO2 <94% (or <88% if at risk of T2RF).'
   - 'A daughter who insists "she''s stoic, take her seriously" is collateral history that should weight your differential.'
+  - 'Aortic dissection caveat: ~20% have a normal CXR and ~6% are painless. Mortality rises ≈1–2% per untreated hour. ADD-RS + BP differential + pulse deficit lower the threshold for CTA, even when troponin is up (which can mislead toward ACS).'
 
 pitfalls:
   - 'Believing the waiting-room narrative (reflux / indigestion).'
