@@ -609,12 +609,12 @@ function HistoryPhase({
               {isAsked && (
                 <div className="enc__card-body enc__card-body--dialogue">
                   {h.npc_voice && <p className="enc__npc-voice">{h.npc_voice}</p>}
-                  {h.branch_choices && !cs.branchChoices.has(h.id) ? (
+                  {h.branch_choices && !cs.branchChoices.has(h.id) && (
                     <BranchPicker
                       choices={h.branch_choices}
                       onPick={(cid) => onPickBranch(h.id, cid)}
                     />
-                  ) : null}
+                  )}
                   {h.branch_choices && cs.branchChoices.has(h.id)
                     ? (() => {
                         const pickedId = cs.branchChoices.get(h.id)!;
@@ -633,7 +633,12 @@ function HistoryPhase({
                         );
                       })()
                     : null}
-                  <p className="enc__response">{h.response}</p>
+                  {/* The canonical response only renders when the item carries
+                      no branch_choices, OR while the player has not yet picked
+                      one (so they can see the topic before committing). Once a
+                      branch is picked, only its response shows — keeping the
+                      choice consequential rather than additive flavour. */}
+                  {!h.branch_choices && <p className="enc__response">{h.response}</p>}
                 </div>
               )}
             </li>
