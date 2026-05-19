@@ -13,6 +13,7 @@ import { SimKernel } from './sim/kernel';
 import { EcgChallengeScreen } from './ui/ecg/EcgChallengeScreen';
 import { SkillTreeScreen } from './ui/progression/SkillTreeScreen';
 import { SettingsScreen } from './ui/settings/SettingsScreen';
+import { AssetLibraryScreen, isStyleGuideRequested } from './ui/styleguide/AssetLibraryScreen';
 
 // Solo shift (Milestone 4)
 import bethYaml from '../content/cases/case_anaphylaxis_adult_peanut.yaml?raw';
@@ -87,7 +88,7 @@ import safetyNetEpYaml from '../content/episodes/ep_overnight_safety_net.yaml?ra
 import amirYaml from '../content/cases/case_paeds_dka_amir.yaml?raw';
 import paedsDkaEpYaml from '../content/episodes/ep_paeds_dka_solo.yaml?raw';
 
-type View = 'menu' | 'shift' | 'hub' | 'ecg' | 'skilltree' | 'settings';
+type View = 'menu' | 'shift' | 'hub' | 'ecg' | 'skilltree' | 'settings' | 'styleguide';
 
 const SUBTITLES: Record<View, string> = {
   menu: 'Episodic UK FRCEM study RPG · 17 shifts, 17 cases, 3 arcs',
@@ -96,6 +97,7 @@ const SUBTITLES: Record<View, string> = {
   ecg: 'Daily ECG challenge',
   skilltree: 'Skill tree — progression across shifts',
   settings: 'Settings — preferences and local data',
+  styleguide: 'Visual Style Guide — internal asset library',
 };
 
 interface ShiftPack {
@@ -360,7 +362,9 @@ const KNOWN_SHIFTS: Record<string, () => ShiftPack> = Object.fromEntries(
 );
 
 export function App() {
-  const [view, setView] = useState<View>('menu');
+  // M46: hidden ?style-guide=1 URL gate opens the Asset Library without
+  // exposing it on the menu. Design uses this to verify drops in-browser.
+  const [view, setView] = useState<View>(() => (isStyleGuideRequested() ? 'styleguide' : 'menu'));
   const [saved, setSaved] = useState<SavedShift | null>(null);
   const initSim = useSim((s) => s.init);
   const destroySim = useSim((s) => s.destroy);
@@ -450,6 +454,7 @@ export function App() {
         {view === 'ecg' && <EcgChallengeScreen onExit={() => setView('menu')} />}
         {view === 'skilltree' && <SkillTreeScreen onExit={() => setView('menu')} />}
         {view === 'settings' && <SettingsScreen onExit={() => setView('menu')} />}
+        {view === 'styleguide' && <AssetLibraryScreen onExit={() => setView('menu')} />}
       </main>
 
       <footer className="app__footer">

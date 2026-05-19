@@ -1565,6 +1565,126 @@ a {
   margin-left: 4px;
 }
 
+/* Hidden Visual Style Guide (M46) — reached via ?style-guide=1. */
+.asset-lib {
+  padding: 24px;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.5;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.asset-lib__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+  gap: 16px;
+}
+.asset-lib__head h1 {
+  margin: 0 0 4px 0;
+  font-size: 20px;
+}
+.asset-lib__head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.asset-lib__head button {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.asset-lib__section {
+  margin-bottom: 32px;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.asset-lib__section h2 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.asset-lib__caption {
+  font-size: 11px;
+  color: var(--muted);
+  font-style: italic;
+  margin: 0 0 12px 0;
+}
+.asset-lib__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.asset-lib__grid figure {
+  margin: 0;
+  text-align: center;
+  background: var(--panel-2);
+  padding: 12px;
+  border-radius: 3px;
+  min-width: 80px;
+}
+.asset-lib__grid figcaption {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.asset-lib__ramps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+.asset-lib__ramp {
+  flex: 1 1 220px;
+  min-width: 220px;
+}
+.asset-lib__ramp h3 {
+  margin: 0 0 4px 0;
+  font-size: 12px;
+  color: var(--text);
+}
+.asset-lib__stops {
+  list-style: none;
+  margin: 8px 0 0 0;
+  padding: 0;
+}
+.asset-lib__stops li {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 11px;
+}
+.asset-lib__swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+}
+.asset-lib__stop-name {
+  color: var(--muted);
+  font-size: 10px;
+}
+.asset-lib__patient {
+  margin-bottom: 16px;
+}
+.asset-lib__patient h3 {
+  font-size: 12px;
+  font-family: monospace;
+  color: var(--muted);
+  margin: 0 0 6px 0;
+}
+
 /* NPC sprite in history cards (M43) — diegetic 'I went and spoke to them'. */
 .enc__card-head--with-npc {
   display: grid;
