@@ -30,8 +30,25 @@ const STATE_COLOR: Record<string, number> = {
   triaged: PALETTE.patient_triaged,
 };
 
+interface PatientToken {
+  caseId: string;
+  rect: Phaser.GameObjects.Rectangle;
+  cx: number;
+  cy: number;
+  /** Original stroke colour, so we can restore after un-highlighting. */
+  baseStroke: number;
+}
+
 export class EDScene extends Phaser.Scene {
   private sceneData: EDSceneData = { patients: [] };
+  private avatar?: Phaser.GameObjects.Container;
+  private avatarVx = 0;
+  private avatarVy = 0;
+  private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
+  private wasd?: { W: Phaser.Input.Keyboard.Key; A: Phaser.Input.Keyboard.Key; S: Phaser.Input.Keyboard.Key; D: Phaser.Input.Keyboard.Key };
+  private patientTokens: PatientToken[] = [];
+  private nearestPatient: PatientToken | null = null;
+  private prompt?: Phaser.GameObjects.Text;
 
   constructor() {
     super('ed');
@@ -39,6 +56,8 @@ export class EDScene extends Phaser.Scene {
 
   init(data?: EDSceneData): void {
     this.sceneData = data ?? { patients: [] };
+    this.patientTokens = [];
+    this.nearestPatient = null;
   }
 
   create(): void {
@@ -80,20 +99,116 @@ export class EDScene extends Phaser.Scene {
     // Render patient cards in their bays
     this.renderPatients();
 
-    this.add
-      .text(
-        GAME_WIDTH / 2,
-        GAME_HEIGHT - 30,
-        this.sceneData.patients.length === 0
-          ? 'Placeholder department layout · Study tool, not clinical guidance'
-          : 'Tap a patient to enter their bay · Study tool, not clinical guidance',
-        {
-          fontFamily: 'monospace',
-          fontSize: '11px',
-          color: '#8a93a3',
-        },
-      )
+    // Phaser-resident avatar (M17): a placeholder square the player walks
+    // between bays. Walking up to a patient highlights them; pressing E
+    // (or Space) opens that encounter. Click still works on mobile / mouse.
+    this.spawnAvatar();
+    this.cursors = this.input.keyboard?.createCursorKeys();
+    const kb = this.input.keyboard;
+    if (kb) {
+      this.wasd = {
+        W: kb.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+        A: kb.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+        S: kb.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+        D: kb.addKey(Phaser.Input.Keyboard.KeyCodes.D),
+      };
+      kb.on('keydown-SPACE', () => this.interact());
+      kb.on('keydown-E', () => this.interact());
+    }
+
+    this.prompt = this.add
+      .text(GAME_WIDTH / 2, GAME_HEIGHT - 30, this.staticHelpText(), {
+        fontFamily: 'monospace',
+        fontSize: '11px',
+        color: '#8a93a3',
+      })
       .setOrigin(0.5, 0.5);
+  }
+
+  override update(_time: number, deltaMs: number): void {
+    if (!this.avatar) return;
+    const speed = 0.25; // px / ms
+    let vx = 0;
+    let vy = 0;
+    if (this.cursors?.left?.isDown || this.wasd?.A.isDown) vx -= 1;
+    if (this.cursors?.right?.isDown || this.wasd?.D.isDown) vx += 1;
+    if (this.cursors?.up?.isDown || this.wasd?.W.isDown) vy -= 1;
+    if (this.cursors?.down?.isDown || this.wasd?.S.isDown) vy += 1;
+    if (vx !== 0 && vy !== 0) {
+      vx *= 0.7071;
+      vy *= 0.7071;
+    }
+    this.avatarVx = vx * speed;
+    this.avatarVy = vy * speed;
+    this.avatar.x = clamp(this.avatar.x + this.avatarVx * deltaMs, 30, GAME_WIDTH - 30);
+    this.avatar.y = clamp(this.avatar.y + this.avatarVy * deltaMs, 60, GAME_HEIGHT - 60);
+
+    this.updateNearestPatient();
+  }
+
+  private interact(): void {
+    if (this.nearestPatient) this.sceneData.onCaseClick?.(this.nearestPatient.caseId);
+  }
+
+  private spawnAvatar(): void {
+    const startX = GAME_WIDTH / 2;
+    const startY = 330; // mid-corridor by the nurses' station
+    const container = this.add.container(startX, startY);
+    const body = this.add.rectangle(0, 6, 22, 28, 0x4fa3a0).setStrokeStyle(2, 0x2b5f5d);
+    const head = this.add.circle(0, -14, 9, 0xd4ad8c).setStrokeStyle(1, 0xa6815d);
+    const label = this.add.text(0, 24, 'YOU', {
+      fontFamily: 'monospace',
+      fontSize: '10px',
+      color: '#ffffff',
+    });
+    label.setOrigin(0.5, 0);
+    container.add([body, head, label]);
+    this.avatar = container;
+  }
+
+  private updateNearestPatient(): void {
+    if (!this.avatar) return;
+    const ax = this.avatar.x;
+    const ay = this.avatar.y;
+    let best: PatientToken | null = null;
+    let bestDist = Infinity;
+    for (const tok of this.patientTokens) {
+      const dx = tok.cx - ax;
+      const dy = tok.cy - ay;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < 90 && d < bestDist) {
+        best = tok;
+        bestDist = d;
+      }
+    }
+    if (best !== this.nearestPatient) {
+      if (this.nearestPatient) {
+        this.nearestPatient.rect.setStrokeStyle(2, this.nearestPatient.baseStroke);
+      }
+      this.nearestPatient = best;
+      if (best) {
+        best.rect.setStrokeStyle(4, 0xffffff);
+      }
+    }
+    if (this.prompt) {
+      this.prompt.setText(
+        this.nearestPatient
+          ? `Press E (or Space) to enter ${this.shortLabel(this.nearestPatient.caseId)} · arrows/WASD to move`
+          : this.staticHelpText(),
+      );
+    }
+  }
+
+  private shortLabel(caseId: string): string {
+    return this.patientTokens.find((t) => t.caseId === caseId)
+      ? this.sceneData.patients.find((p) => p.caseId === caseId)?.title ?? caseId
+      : caseId;
+  }
+
+  private staticHelpText(): string {
+    return this.sceneData.patients.length === 0
+      ? 'Placeholder department layout · Arrows/WASD to walk · Study tool, not clinical guidance'
+      : 'Arrows/WASD to walk · click or press E near a patient to enter their bay · Study tool, not clinical guidance';
   }
 
   private renderPatients(): void {
@@ -164,6 +279,14 @@ export class EDScene extends Phaser.Scene {
       card.on('pointerdown', () => {
         this.sceneData.onCaseClick?.(p.caseId);
       });
+
+      this.patientTokens.push({
+        caseId: p.caseId,
+        rect: card,
+        cx: cardX + cardWidth / 2,
+        cy: cardY + cardHeight / 2,
+        baseStroke: color,
+      });
     });
   }
 
@@ -176,4 +299,8 @@ export class EDScene extends Phaser.Scene {
 
 function toCss(n: number): string {
   return `#${n.toString(16).padStart(6, '0')}`;
+}
+
+function clamp(n: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, n));
 }
