@@ -723,6 +723,54 @@ export const ECG_BANK: EcgChallenge[] = [
     ],
     sources: ['ESC 2020 AF guideline', 'NICE NG196 heart failure', 'RCEM Acute AF best-practice'],
   },
+
+  {
+    id: 'ecg_016_paroxysmal_af_stroke',
+    title: 'Acute stroke with paroxysmal AF — does the rhythm change the lytic decision?',
+    context:
+      '72 y/o man on apixaban for paroxysmal AF, acute right hemiparesis at 06:40, last seen well 06:00. NIHSS 14. Background: AF diagnosed 18 months ago, no prior strokes.',
+    strip:
+      'Lead II rhythm strip:\n  No discernible P waves.\n  Irregularly irregular QRS, narrow,\n  rate ~92/min.\n  V1 fibrillatory baseline.\n  No ST elevation; no Q waves.',
+    steps: [
+      {
+        prompt: 'Identify the rhythm.',
+        options: [
+          'Sinus rhythm with frequent atrial ectopics',
+          'Atrial fibrillation, rate-controlled',
+          'Atrial flutter with variable block',
+          '2:1 second-degree AV block',
+        ],
+        correctIndex: 1,
+        rationale:
+          'Irregularly irregular, no P waves, fibrillatory baseline at narrow complex rate ~92/min — rate-controlled AF. This is the likely substrate for the cardioembolic stroke event.',
+      },
+      {
+        prompt: 'He is on apixaban 5 mg BD, last dose ~22:30 last night (≈8 h ago). Which is most accurate?',
+        options: [
+          'Apixaban within 48 h is an absolute contraindication to thrombolysis',
+          'Thrombolysis is safe if apixaban-calibrated anti-Xa is <50 ng/mL',
+          'Idarucizumab will reverse apixaban for thrombolysis',
+          'AF on the ECG is itself a contraindication to thrombolysis',
+        ],
+        correctIndex: 1,
+        rationale:
+          'Per RCP 2023 / ESO 2021: thrombolysis CAN be considered if apixaban-calibrated anti-Xa <50 ng/mL (some centres use the andexanet alfa pathway). Idarucizumab is for dabigatran, not apixaban. AF as a rhythm is not itself a thrombolysis contraindication — the anticoag is the variable.',
+      },
+      {
+        prompt: 'What is the priority disposition decision?',
+        options: [
+          'Discuss with stroke registrar for hyperacute MRI to confirm stroke before any decision',
+          'Refer for primary thrombectomy assessment — large-vessel occlusion is likely; thrombectomy is preferred when DOAC excludes lytic',
+          'Hold all neuro intervention and treat the AF first with rate control',
+          'Discharge after 24 h of stroke unit observation if NIHSS settles',
+        ],
+        correctIndex: 1,
+        rationale:
+          'Cardioembolic stroke with NIHSS 14 strongly suggests large-vessel occlusion. Thrombectomy is the safer pathway when thrombolysis is blocked by recent DOAC and anti-Xa is unavailable or elevated. Window is up to 6 h for anterior circulation, longer with imaging selection.',
+      },
+    ],
+    sources: ['RCP National Clinical Guideline for Stroke 2023', 'ESO 2021 thrombolysis update', 'NICE NG128 stroke + TIA'],
+  },
 ];
 
 /**

@@ -186,7 +186,10 @@ investigations:
     essential: true
     result_summary: |
       **pH 7.04 · HCO3 7 mmol/L · pCO2 1.9 kPa · BE -25 ·
-      K+ 4.8 mmol/L · Na 134 mmol/L · Lactate 1.8 · Glucose 38.4.**
+      K+ 5.9 mmol/L · Na 134 mmol/L · Lactate 1.8 · Glucose 38.4.**
+      K+ is elevated as expected in severe acidosis (extracellular
+      shift) despite total-body K depletion — anticipate a rapid
+      fall once insulin/fluid replacement is underway.
       JBDS-IP 2023 severity criteria (ANY of): pH <7.0, HCO3 <5,
       ketones >6, K+ <3.5, GCS <12, sats <92, systolic <90, HR <60
       or >100, anion gap >16. **Marcus meets severity by HR 124
@@ -222,7 +225,12 @@ investigations:
     name: '12-lead ECG'
     category: ecg
     turnaround_min: 2
-    result_summary: 'Sinus tachycardia 124/min. No K-related ST/T changes. QTc 410 ms.'
+    ecg_challenge_id: ecg_004_hyperkalaemia
+    result_summary: |
+      Sinus tachycardia 118/min. **Tall, tented T waves V2–V5 with
+      narrow base.** PR 168 ms, QRS 88 ms, QTc 408 ms. No ST
+      elevation. Peaked T-pattern consistent with hyperkalaemia
+      (VBG K 5.9 mmol/L) on a background of DKA.
 
   - id: ix_cxr
     name: 'Erect portable chest X-ray'
@@ -321,7 +329,10 @@ management:
         K+ 3.5–5.5      → 40 mmol/L
         K+ <3.5         → senior input, potentially central access
                           for higher concentrations.
-      Marcus is 4.8 → 40 mmol/L in bag 2. Recheck VBG hourly.
+      Marcus is **5.9 → NO K+ in the first replacement bag.**
+      He will shift back to the 3.5–5.5 band rapidly once insulin
+      and saline are running — recheck VBG hourly and add K+ to
+      bag 2 if he has dropped below 5.5.
     must_do: true
     sources:
       - { type: jbds, ref: 'JBDS-IP Adult DKA 2023 — K+ replacement schedule' }

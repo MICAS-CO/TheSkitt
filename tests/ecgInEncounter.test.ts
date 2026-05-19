@@ -33,8 +33,16 @@ describe('M47 — ECG bank wiring inside encounters', () => {
         }
       }
     }
-    // Floor for the milestone: at least 3 cases wired (Patel, Okonkwo, Ahmed).
-    expect(wired).toBeGreaterThanOrEqual(3);
+    // Floor: at least 5 cases wired as of M48 (Patel, Okonkwo, Ahmed,
+    // Marcus, Williams). Raise when more mappings land.
+    expect(wired).toBeGreaterThanOrEqual(5);
+  });
+
+  it('ecg_016_paroxysmal_af_stroke teaches the DOAC + thrombolysis decision', () => {
+    const ecg = ECG_BANK.find((e) => e.id === 'ecg_016_paroxysmal_af_stroke');
+    expect(ecg).toBeDefined();
+    expect(ecg!.steps).toHaveLength(3);
+    expect(ecg!.steps[1]!.rationale).toMatch(/anti-Xa|apixaban/i);
   });
 
   it('the new AF-with-RVR-in-pulmonary-oedema bank entry is callable', () => {

@@ -222,6 +222,7 @@ investigations:
     name: '12-lead ECG'
     category: ecg
     turnaround_min: 2
+    ecg_challenge_id: ecg_016_paroxysmal_af_stroke
     result_summary: |
       AF at ~92/min (irregularly irregular). No acute ischaemic change.
       Likely cardioembolic source given history of paroxysmal AF.
