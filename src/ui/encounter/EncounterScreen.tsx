@@ -901,7 +901,10 @@ function DifferentialPhase({
 }
 
 function ManagementPhase({ cs, onToggle }: { cs: CaseRuntime; onToggle: (id: string) => void }) {
-  const trapHints = trapHintsEnabled();
+  // Read the setting once per mount rather than per render. The setting
+  // is changed in the menu; the encounter remounts when the player exits
+  // back to the menu and re-enters, which is enough to pick up changes.
+  const trapHints = useMemo(() => trapHintsEnabled(), []);
   return (
     <section className="enc__phase">
       <h2>Management — tick what you do</h2>

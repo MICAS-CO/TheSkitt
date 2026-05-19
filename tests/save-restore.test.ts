@@ -87,4 +87,56 @@ describe('SimKernel — save / restore', () => {
     const wrong = { ...snap, episodeId: 'ep_wrong_one' };
     expect(() => new SimKernel({ episode, cases, arcs, restore: wrong })).toThrow();
   });
+
+  it('preserves sequenceErrors across serialize → restore (M20)', () => {
+    // Build a small dissection-solo kernel — Okafor's GTN action
+    // (mx_gtn_after_beta) has prereq_action_ids: [mx_iv_labetalol].
+    // Taking GTN first triggers a sequence error; that record must
+    // survive save/resume.
+    const okafor = load('content/cases/case_aortic_dissection_okafor.yaml', Case);
+    const ep = Episode.parse({
+      schema_version: 1,
+      id: 'ep_dissection_seq_test',
+      title: 'Dissection seq test',
+      learning_objectives: ['x'],
+      curriculum_tags: ['CC2'],
+      difficulty_band: 'ST3',
+      shift_duration_min: 20,
+      focus_cases: [okafor.id],
+    });
+    const cases = new Map([[okafor.id, okafor]]);
+
+    const k1 = new SimKernel({ episode: ep, cases });
+    k1.enterCase(okafor.id);
+    // GTN BEFORE β-blockade → sequence error recorded.
+    k1.toggleAction(okafor.id, 'mx_gtn_after_beta');
+    const s1 = k1.getState().cases.get(okafor.id)!;
+    expect(s1.sequenceErrors.has('mx_gtn_after_beta')).toBe(true);
+
+    const snap = k1.serialize();
+    const k2 = new SimKernel({ episode: ep, cases, restore: snap });
+    const s2 = k2.getState().cases.get(okafor.id)!;
+    expect(s2.sequenceErrors.has('mx_gtn_after_beta')).toBe(true);
+    expect([...s2.sequenceErrors]).toEqual([...s1.sequenceErrors]);
+  });
+
+  it('older snapshots without sequenceErrors restore safely', () => {
+    // Backwards-compat: a v:1 snapshot authored before M20 won't have
+    // sequenceErrors in its per-case payload. Restore must default to
+    // an empty Set without throwing.
+    const { episode, cases, arcs, beth } = mkKernel();
+    const k = new SimKernel({ episode, cases, arcs });
+    const snap = k.serialize();
+    // Simulate pre-M20 snapshot by stripping the field.
+    const stripped = {
+      ...snap,
+      cases: snap.cases.map((c) => {
+        const { sequenceErrors: _omit, ...rest } = c;
+        void _omit;
+        return rest;
+      }),
+    } as typeof snap;
+    const k2 = new SimKernel({ episode, cases, arcs, restore: stripped });
+    expect(k2.getState().cases.get(beth.id)!.sequenceErrors.size).toBe(0);
+  });
 });

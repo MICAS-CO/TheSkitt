@@ -251,6 +251,21 @@ export function validateContent(rootDir: string): ValidationReport {
     }
   }
 
+  // Topic-map cross-check: every case's topic_id must exist in
+  // content/topic-map.yaml (M29). Catches typos like 'head_injry'.
+  const topicMap = loadTopicMapIds(rootDir);
+  if (topicMap.size > 0) {
+    for (const [, entry] of parsed.cases) {
+      if (!topicMap.has(entry.data.topic_id)) {
+        report.errors.push({
+          file: entry.file,
+          path: `case ${entry.data.id}`,
+          message: `topic_id "${entry.data.topic_id}" is not in content/topic-map.yaml`,
+        });
+      }
+    }
+  }
+
   // Soft warnings
   for (const [, entry] of parsed.cases) {
     if (entry.data.sources.length < 1) {
@@ -260,10 +275,54 @@ export function validateContent(rootDir: string): ValidationReport {
         message: 'no sources — every clinical claim should be cited',
       });
     }
+    // Empty npc_voice strings render as orphan italic blanks — warn.
+    for (const h of entry.data.history) {
+      if (h.npc_voice !== undefined && h.npc_voice.trim().length === 0) {
+        report.warnings.push({
+          file: entry.file,
+          path: `case ${entry.data.id} → history ${h.id}`,
+          message: 'npc_voice is present but empty — remove the field or fill it',
+        });
+      }
+    }
+  }
+
+  // Orphan-case warning: any case authored but not referenced in an
+  // episode's focus_cases or ambient_cases (M29).
+  const usedCaseIds = new Set<string>();
+  for (const [, entry] of parsed.episodes) {
+    for (const id of entry.data.focus_cases) usedCaseIds.add(id);
+    for (const id of entry.data.ambient_cases) usedCaseIds.add(id);
+  }
+  for (const [caseId, entry] of parsed.cases) {
+    if (!usedCaseIds.has(caseId)) {
+      report.warnings.push({
+        file: entry.file,
+        path: `case ${caseId}`,
+        message: 'orphan case — not referenced by any episode',
+      });
+    }
   }
 
   report.ok = report.errors.length === 0;
   return report;
+}
+
+function loadTopicMapIds(rootDir: string): Set<string> {
+  try {
+    // Lazy require so the validator doesn't crash when the topic map
+    // file is absent (e.g. test-fixture tmp dirs).
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const fs = require('node:fs') as typeof import('node:fs');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const yaml = require('yaml') as typeof import('yaml');
+    const raw = fs.readFileSync(`${rootDir}/content/topic-map.yaml`, 'utf8');
+    const parsed = yaml.parse(raw) as { topics?: Array<{ id?: string }> };
+    if (!parsed || !Array.isArray(parsed.topics)) return new Set();
+    return new Set(parsed.topics.map((t) => t.id).filter((id): id is string => !!id));
+  } catch {
+    return new Set();
+  }
 }
 
 function checkRevealRef(reveal: ArcRevealTriggerT, c: CaseT): string | null {

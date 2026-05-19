@@ -208,6 +208,12 @@ function CasesPanel({ cases, title }: { cases: PerCaseReport[]; title: string })
                   Traps picked: <strong>{c.score.mustNotDoChosen}</strong>
                 </li>
               )}
+              {c.score.sequenceErrors > 0 && (
+                <li className="ep-debrief__warn">
+                  Out-of-sequence: <strong>{c.score.sequenceErrors}</strong> action
+                  {c.score.sequenceErrors === 1 ? '' : 's'}
+                </li>
+              )}
               {!c.attended && (
                 <li className="ep-debrief__warn">
                   <strong>Never attended</strong>

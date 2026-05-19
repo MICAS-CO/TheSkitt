@@ -94,4 +94,35 @@ describe('scoreEpisode — hen-do shift', () => {
     const sarahReport = report.cases.find((c) => c.caseId.includes('sarah'))!;
     expect(sarahReport.attended).toBe(false);
   });
+
+  it('rolls up per-case sequenceErrors into the episode report (M20 + M29)', async () => {
+    // Use the dissection-solo case where Okafor's mx_gtn_after_beta
+    // carries prereq_action_ids: [mx_iv_labetalol]. Take GTN before
+    // labetalol and verify the per-case ScoreReport.sequenceErrors
+    // surfaces in scoreEpisode's per-case rollup.
+    const { readFileSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const { parse } = await import('yaml');
+    const { Case, Episode } = await import('../src/content/schema');
+    const okafor = Case.parse(
+      parse(readFileSync(join(process.cwd(), 'content/cases/case_aortic_dissection_okafor.yaml'), 'utf8')),
+    );
+    const ep = Episode.parse({
+      schema_version: 1,
+      id: 'ep_dissection_seq_episode_test',
+      title: 'Dissection seq episode test',
+      learning_objectives: ['x'],
+      curriculum_tags: ['CC2'],
+      difficulty_band: 'ST3',
+      shift_duration_min: 20,
+      focus_cases: [okafor.id],
+    });
+    const k = new SimKernel({ episode: ep, cases: new Map([[okafor.id, okafor]]) });
+    k.enterCase(okafor.id);
+    k.toggleAction(okafor.id, 'mx_gtn_after_beta');
+
+    const report = scoreEpisode(k.getState());
+    const okaforReport = report.cases.find((c) => c.caseId === okafor.id)!;
+    expect(okaforReport.score.sequenceErrors).toBe(1);
+  });
 });
