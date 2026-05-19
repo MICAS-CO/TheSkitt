@@ -77,10 +77,14 @@ import paracetamolEpYaml from '../content/episodes/ep_paracetamol_solo.yaml?raw'
 import safetyNetArcYaml from '../content/arcs/arc_overnight_safety_net.yaml?raw';
 import safetyNetEpYaml from '../content/episodes/ep_overnight_safety_net.yaml?raw';
 
+// Paediatric DKA — first presentation, BSPED 2020 dose-bands
+import amirYaml from '../content/cases/case_paeds_dka_amir.yaml?raw';
+import paedsDkaEpYaml from '../content/episodes/ep_paeds_dka_solo.yaml?raw';
+
 type View = 'menu' | 'shift' | 'hub' | 'ecg' | 'skilltree';
 
 const SUBTITLES: Record<View, string> = {
-  menu: 'Episodic UK FRCEM study RPG · 16 shifts, 16 cases, 3 arcs',
+  menu: 'Episodic UK FRCEM study RPG · 17 shifts, 17 cases, 3 arcs',
   shift: 'Shift in progress',
   hub: 'ED hub (preview)',
   ecg: 'Daily ECG challenge',
@@ -192,6 +196,12 @@ const OVERNIGHT_SAFETY_NET: () => ShiftPack = () => ({
   episode: Episode.parse(parseYaml(safetyNetEpYaml)),
   cases: [Case.parse(parseYaml(chloeYaml)), Case.parse(parseYaml(stanYaml))],
   arcs: [Arc.parse(parseYaml(safetyNetArcYaml))],
+});
+
+const PAEDS_DKA_SOLO: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(paedsDkaEpYaml)),
+  cases: [Case.parse(parseYaml(amirYaml))],
+  arcs: [],
 });
 
 interface ShiftDef {
@@ -309,6 +319,13 @@ const SHIFT_DEFS: ShiftDef[] = [
     eyebrow: 'Shift · ST3 · 25 min · 2 cases · 1 arc',
     meta: 'Chloe (staggered paracetamol) + Stan (intoxicated witnessed fall). The arc surfaces the shared system-failure: each had prior ED visits with no MH follow-up. NICE NG225 thinking applied across two presentations.',
     factory: OVERNIGHT_SAFETY_NET,
+  },
+  {
+    id: 'ep_paeds_dka_solo',
+    title: 'Paediatric DKA — BSPED-vs-JBDS dose bands',
+    eyebrow: 'Shift · ST3 · 25 min · 1 case · paeds',
+    meta: '8 y/o new-onset T1DM, severe DKA (pH 7.04, ketones 5.6). Tests the paediatric-vs-adult dose-band discipline: 10 mL/kg saline bolus, 48-h deficit, insulin H+1 after fluids. Cerebral oedema vigilance.',
+    factory: PAEDS_DKA_SOLO,
   },
   {
     id: 'ep_anaphylaxis_solo',
