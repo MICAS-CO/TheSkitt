@@ -1,0 +1,106 @@
+# 20-min single-case shift built around Mr Ahmed's wet-and-warm
+# acute pulmonary oedema, precipitated by a pre-op-clinic diuretic
+# hold. The teaching reflex: keep the patient sitting up, escalate
+# CPAP, run GTN + furosemide; resist the urge to bolus fluid or give
+# morphine.
+
+schema_version: 1
+id: ep_ahf_solo
+title: 'Acute heart failure — pre-op diuretic-hold decomp'
+
+learning_objectives:
+  - 'Recognise the wet-and-warm AHF phenotype (high BP, raised JVP, S3, bibasal crackles, B-lines, oedema) and treat with NIPPV + IV GTN + IV furosemide.'
+  - 'Apply the 3CPO trial (NEJM 2008): NIPPV first-line in cardiogenic pulmonary oedema, reduces intubation rate vs standard O2.'
+  - 'Dose IV loop diuretic correctly in chronic users — at least the usual oral 24-h dose converted to IV (bumetanide 1 mg ≈ furosemide 40 mg).'
+  - 'Avoid the wet-and-warm traps: routine IV morphine (NICE NG106 advises against), fluid bolus, IV beta-blocker bolus for AF, premature intubation, aggressive BP-lowering.'
+  - 'Identify pre-op-clinic medication holds as a recurring AHF precipitant and document the patient-safety conversation.'
+
+curriculum_tags: [CC4, CP2]
+difficulty_band: ST3
+shift_duration_min: 20
+
+focus_cases:
+  - case_acute_heart_failure_ahmed
+
+ambient_cases: []
+
+scheduled_events:
+  # T+2 — VBG back: mild type-2 respiratory failure
+  - id: ev_ahmed_vbg
+    type: results_back
+    t_min: 2
+    case_id: case_acute_heart_failure_ahmed
+    investigation_id: ix_vbg
+
+  # T+3 — wife asks "is it his heart attack again?"
+  - id: ev_ahmed_wife
+    type: family_arrival
+    t_min: 3
+    case_id: case_acute_heart_failure_ahmed
+    npc: "Wife Aisha — confirms pre-op clinic stopped the diuretic 10 days ago; she's the LPA for health and welfare."
+
+  # T+5 — POCUS findings — bilateral B-lines + plethoric IVC + LV dysfunction
+  - id: ev_ahmed_pocus
+    type: results_back
+    t_min: 5
+    case_id: case_acute_heart_failure_ahmed
+    investigation_id: ix_pocus_lung_cardiac
+
+  # T+8 — CXR back: bat-wing alveolar oedema
+  - id: ev_ahmed_cxr
+    type: results_back
+    t_min: 8
+    case_id: case_acute_heart_failure_ahmed
+    investigation_id: ix_cxr
+
+  # T+11 — troponin back. Mild rise — the audit anchor for "is it ACS?"
+  - id: ev_ahmed_trop
+    type: results_back
+    t_min: 11
+    case_id: case_acute_heart_failure_ahmed
+    investigation_id: ix_troponin
+
+  # T+14 — NT-proBNP back, markedly raised
+  - id: ev_ahmed_bnp
+    type: results_back
+    t_min: 14
+    case_id: case_acute_heart_failure_ahmed
+    investigation_id: ix_bnp
+
+  # T+16 — cardiology phone for handover; HDU bed found
+  - id: ev_ahmed_cardio_call
+    type: lab_callback
+    t_min: 16
+    case_id: case_acute_heart_failure_ahmed
+    investigation_id: ix_pocus_lung_cardiac
+    urgent_finding: "Cardiology reg: 'We've cleared a level-2 bed. Bring him up on the CPAP + GTN + 40 mg furosemide done; we'll continue the bundle on CCU.'"
+
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 17
+    severity: gentle
+
+arcs: []
+
+author_notes: |
+  Solo Tier-1 shift. Pacing:
+
+  - T+0: paramedic handover with CPAP already started (Boussignac).
+  - T+2: VBG confirms mild type-2 respiratory failure.
+  - T+3: wife arrives with the diuretic-hold history — the
+    precipitant becomes clear.
+  - T+5: POCUS pivot — bilateral B-lines + plethoric IVC + LV
+    hypokinesis = cardiogenic pulmonary oedema confirmed at the
+    bedside.
+  - T+8: CXR bat-wing pattern.
+  - T+11: troponin mildly raised — the anchor for the team that
+    wants to chase NSTEMI.
+  - T+14: NT-proBNP 6480 confirms AHF as the dominant cause.
+  - T+16: cardiology accept the handover (gates the admitted-state
+    transition).
+  - T+18: hard deterioration deadline if CPAP + GTN + furosemide
+    not all initiated (case-level inaction_by transition).
+
+  Inspiration: TheCase.Report S1E10 + S1E11 (Acute Heart Failure +
+  Prof Amal Mattu bonus). Player-facing citations remain NICE NG106
+  + ESC 2021 + 3CPO NEJM 2008.

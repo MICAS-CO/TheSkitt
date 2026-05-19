@@ -59,10 +59,14 @@ import ugibEpYaml from '../content/episodes/ep_ugib_solo.yaml?raw';
 import okonkwoYaml from '../content/cases/case_massive_pe_okonkwo.yaml?raw';
 import peEpYaml from '../content/episodes/ep_pe_solo.yaml?raw';
 
+// Acute heart failure — wet-and-warm cardiogenic pulmonary oedema
+import ahmedYaml from '../content/cases/case_acute_heart_failure_ahmed.yaml?raw';
+import ahfEpYaml from '../content/episodes/ep_ahf_solo.yaml?raw';
+
 type View = 'menu' | 'shift' | 'hub';
 
 const SUBTITLES: Record<View, string> = {
-  menu: 'Episodic UK FRCEM study RPG · 12 shifts, 13 cases',
+  menu: 'Episodic UK FRCEM study RPG · 13 shifts, 14 cases',
   shift: 'Shift in progress',
   hub: 'ED hub (preview)',
 };
@@ -147,6 +151,12 @@ const UGIB_SOLO: () => ShiftPack = () => ({
 const PE_SOLO: () => ShiftPack = () => ({
   episode: Episode.parse(parseYaml(peEpYaml)),
   cases: [Case.parse(parseYaml(okonkwoYaml))],
+  arcs: [],
+});
+
+const AHF_SOLO: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(ahfEpYaml)),
+  cases: [Case.parse(parseYaml(ahmedYaml))],
   arcs: [],
 });
 
@@ -237,6 +247,13 @@ const SHIFT_DEFS: ShiftDef[] = [
     eyebrow: 'Shift · ST3 · 20 min · 1 case',
     meta: 'Post-op + COCP shock-state PE with RV strain. NICE NG158 + ESC 2019. The bedside-echo + DVT scan pivot lets you start reperfusion without leaving resus.',
     factory: PE_SOLO,
+  },
+  {
+    id: 'ep_ahf_solo',
+    title: 'Acute heart failure — pre-op diuretic-hold decomp',
+    eyebrow: 'Shift · ST3 · 20 min · 1 case',
+    meta: 'Wet-and-warm cardiogenic pulmonary oedema in a 78y/o off-diuretic for elective surgery. NICE NG106 + ESC 2021 + 3CPO. CPAP + GTN + furosemide bundle; no fluid, no morphine.',
+    factory: AHF_SOLO,
   },
   {
     id: 'ep_anaphylaxis_solo',

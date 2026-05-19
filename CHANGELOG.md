@@ -4,6 +4,43 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Content: acute heart failure (Ahmed) — wet-and-warm pulmonary oedema
+
+- `content/cases/case_acute_heart_failure_ahmed.yaml` — 14th
+  authored case. Mr Ahmed, 78M, woken at 02:00 by suffocating
+  dyspnoea, pink frothy sputum, JVP to the jaw, BP 188/104. Known
+  HFrEF off his diuretic for 10 days because the pre-op clinic
+  stopped his bumetanide before a planned knee replacement next
+  week. The shift's defining teaching points:
+  1. **Wet-and-warm phenotype** = NIPPV + IV GTN + IV furosemide;
+     no fluid, no morphine, no beta-blocker bolus.
+  2. **Chronic loop-diuretic dosing** — for chronic users, give at
+     least the usual oral 24-h dose converted to IV (bumetanide
+     1 mg ≈ furosemide 40 mg).
+  3. **Pre-op-clinic medication holds** as a recurring AHF
+     precipitant — document the patient-safety conversation with
+     anaesthetics + cardiology for the next surgery.
+- Five `must_not_do` traps: IV fluid bolus, routine IV morphine
+  (NICE NG106 advises against — Iakobishvili EuroHF Eur Heart J
+  2011), IV beta-blocker bolus for AF, premature intubation
+  without CPAP trial (3CPO NEJM 2008), aggressive IV labetalol BP
+  lowering.
+- Authored against **NICE NG106**, **ESC 2021 Heart Failure
+  Guideline** (McDonagh), **3CPO trial** (Gray NEJM 2008), Volpicelli
+  POCUS 2012, BTS Emergency Oxygen 2017. Inspiration: TheCase.Report
+  S1E10 + S1E11 (Acute HF + Prof Amal Mattu bonus).
+- `content/episodes/ep_ahf_solo.yaml` — 20-min single-case shift.
+  T+2 VBG, T+3 wife arrives with diuretic-hold history, T+5 POCUS
+  pivot, T+8 CXR, T+11 troponin (the type-2 anchor), T+14 NT-proBNP,
+  T+16 cardiology hand-over, T+18 deterioration deadline.
+- Pairs thematically with case_chest_pain_patel_ambient (STEMI)
+  and case_aortic_dissection_okafor (AD) as a "chest pain +
+  dyspnoea" differential — same presenting cluster, three different
+  mechanisms.
+- New "Acute heart failure — pre-op diuretic-hold decomp" entry
+  on the menu via `SHIFT_DEFS`. App subtitle: 13 shifts, 14 cases.
+- 14 cases / 13 episodes / 2 arcs; 159 tests pass.
+
 ### Audit pass on the 3 newest cases
 
 Subagent audit caught 10+ real clinical/arithmetic issues across the
