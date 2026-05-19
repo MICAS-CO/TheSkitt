@@ -51,8 +51,15 @@ log and `RESUME.md` for current state at a glance.
 | 35    | must_not_do gating                 | Management.gated_by_history hides traps until you've heard the cue; Amir DKA + Okafor dissection       |
 | 36    | Workup parsimony                   | Investigation.essential + −2%/extra beyond 2 (cap −10%); Beth + Marcus + Patel backfilled               |
 | 37    | Co-worker NPC                      | Dr Aoife McGrath leaves a 3-line memo on the menu after each shift; tone shifts by band                |
+| audit | Game-design re-audit               | M30/M35/M36 deep · M34 best content but weakest wiring · next pass: wire systems together               |
+| 34.1  | Branch responses consequential     | Stop rendering canonical when a branch is picked — the choice becomes the response                       |
+| 38    | Rapport gates content              | HistoryItem.min_rapport hides disclosures; rapport ≤ -2 silences the patient; consultant references it  |
+| 39    | McGrath in the bay                 | Three bedside interrupts — trap caught · deterioration takeover · unsafe-trajectory midshift coffee     |
+| 40    | Discoverable manoeuvres            | ExamSystemFindings.manoeuvres splits system-eyeball from technique (log-roll, pronator drift, CN II–XII) |
+| 41    | Interpolated vitals                | HR/RR/SpO2/BP lerp toward kernel target over 6-10s wall-clock; trend arrows in the strip                |
+| 42    | Content backfill                   | Branches +3 cases · essentials +3 cases · gated_by_history +3 traps                                      |
 
-Numbers: **276 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
+Numbers: **280 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
 14 daily ECGs**. Lint clean, typecheck clean, validator green.
 
 ## Stack

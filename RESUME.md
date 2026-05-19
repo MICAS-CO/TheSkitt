@@ -41,6 +41,13 @@ visual integration from Claude Design + new content.
 | M35 | must_not_do gated behind clinical reasoning (Amir + Okafor) |
 | M36 | Investigation workup parsimony — essential ix + extras penalty (Beth + Marcus + Patel) |
 | M37 | Co-worker NPC — Dr Aoife McGrath comments on the last shift on the menu |
+| **Re-audit** | Game-design re-audit. M30/M35/M36 landed deep; M31/M32/M33/M37 shallow; M34 best content, weakest wiring. Next pass: wire systems into each other. |
+| M34.1 | Stop rendering canonical response when a branch is picked — choice becomes consequence |
+| M38 | Rapport gates content (Chloe / Stan) + silences source at ≤−2 + reaches the consultant memo |
+| M39 | Dr McGrath enters the bay — three bedside interrupts (trap_caught / deterioration_takeover / unsafe_midshift) |
+| M40 | Discoverable examination manoeuvres (Stan log-roll, Brennan pronator-drift + cranial nerves) |
+| M41 | Interpolated vitals + trend arrows — patients deteriorate in real time, no jump-cut |
+| M42 | Content backfill across new systems — branches on +3 cases, essentials on +3, gating on +3 |
 
 ## ⏳ WAITING ON DESIGN
 
@@ -51,7 +58,7 @@ template. No code changes needed beyond the registry entry.
 
 ## Numbers
 
-- **276 / 276** unit tests passing (Vitest)
+- **280 / 280** unit tests passing (Vitest)
 - **2 / 2** E2E tests passing (Playwright)
 - **17 fully-authored cases**, **17 episodes**, **3 arcs**, 44-topic
   high-yield map

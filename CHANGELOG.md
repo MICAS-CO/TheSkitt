@@ -4,6 +4,62 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M42 — content backfill across new systems
+
+- Branching choices on +3 cases (Beth partner, Sarah pregnancy
+  disclosure, Ahmed CHF adherence) — 2/17 → 5/17.
+- Essential workup markers on +3 cases (Sarah, Williams, Brennan) —
+  3/17 → 6/17.
+- gated_by_history on +3 traps (Marcus insulin-bolus, Williams
+  thrombolyse-on-DOAC, Priya third-benzo) — 2/17 → 7/17.
+
+### M41 — interpolated vitals + trend arrows
+
+- PatientPanel now lerps HR/RR/SpO2/BP between baseline and target
+  over a 6-10s wall-clock window via requestAnimationFrame.
+- Per-vital trend arrows (▲ / ▼) render in the strip while
+  interpolation is in flight. Snap-to-target at <0.05 delta.
+- Kernel stays speed-agnostic; this is pure UI.
+
+### M40 — discoverable examination manoeuvres
+
+- ExamSystemFindings.manoeuvres?: Array<{ id, label, findings[] }>
+  splits per-system findings from per-technique discoveries.
+- Kernel CaseRuntime.performedManoeuvres (Set) keyed as
+  'system::manoeuvreId'; idempotent; serialise/restore extended.
+- UI: 'Specific manoeuvres (N)' block beneath examined-system
+  findings; click-to-reveal with marker flipping from ▸ to ✓.
+- Backfill: Stan exposure 'Log-roll' hides occipital scalp
+  laceration + boggy haematoma; Brennan disability 'Pronator drift'
+  + 'Cranial nerves II-XII' hide subtle right-sided focal signs.
+
+### M39 — Dr McGrath bedside interrupts
+
+- New \`src/state/consultantInterrupts.ts\` composes three triggers:
+  trap_caught, deterioration_takeover, unsafe_midshift. Each line
+  cites the case name so she lands as a presence.
+- KernelState.pendingInterrupt + CaseRuntime.consultantInterruptsFired
+  ledger (one beat per trigger per case). Not snapshotted.
+- New \`<ConsultantInterruptModal>\` over the encounter with
+  keyboard dismiss; tone-coloured left border per trigger.
+
+### M38 — rapport gates content + silences source
+
+- HistoryItem.min_rapport hides patient disclosures until earned;
+  rapport ≤ −2 silences patient-source items (they 'pull away').
+- ShiftMemo.rapportBucket (warm/neutral/cold/null); Dr McGrath
+  references it on the menu memo.
+- Backfill: Chloe hx_chloe_aftercare (min_rapport: 1 — 'Don't call
+  my mum yet'), Stan hx_stan_maggies_birthday (min_rapport: 2 —
+  'Friday's her birthday. Maggie's.').
+
+### M34.1 — stop rendering canonical response when a branch is picked
+
+- The HistoryItem.response field stays as the schema-level fallback
+  but only renders on items without branch_choices, or before the
+  player picks. Once branched, only the picked branch's response
+  shows — the choice is now consequential, not additive.
+
 ### M37 — co-worker NPC: Dr Aoife McGrath comments on your last shift
 
 - New \`src/state/consultant.ts\`: persists a \`ShiftMemo\`
