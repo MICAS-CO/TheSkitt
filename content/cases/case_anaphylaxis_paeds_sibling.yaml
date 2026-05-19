@@ -129,6 +129,25 @@ history:
       this year — last time he wheezed was March. No nebulisers,
       never been admitted."
 
+  - id: hx_mum_self_blame
+    source: family
+    topic: '(after the second IM adrenaline, with Sam stabilising) How are *you* doing, Mum?'
+    prereq_history_ids: [hx_lunch_timeline]
+    min_rapport: 1
+    npc_voice: "Sam's mum has been standing in the same spot for thirty minutes. She doesn't sit when you ask. She does start to cry."
+    supports: ['Paediatric anaphylaxis — peanut (food-IgE)']
+    response: |
+      "I gave him her sauce. (Pause.) Beth's. He saw it on her plate
+      and asked, and I said 'just a little finger' because the
+      waiter said it was fine. I — I — when they wheeled Beth past
+      me into resus, I knew. I knew before he started coughing. I
+      just stood there in A&E reception watching her go past on a
+      trolley and I thought 'don't be peanut, please don't be
+      peanut'. Then forty minutes later he started scratching his
+      lip. (Breath.) Doctor — will I be allowed in there with him?
+      When you… do whatever you need to do next? Please. I won't
+      get in the way. I just can't be out here on my own with this."
+
   - id: hx_paeds_aware
     source: patient
     topic: 'Ask Sam directly — what does he feel right now?'

@@ -150,6 +150,25 @@ history:
       Strong family insistence that the patient routinely undersells
       symptoms. Concerned that stoicism is masking severity.
 
+  - id: hx_patel_confides
+    source: patient
+    topic: '(quiet, after Priya steps out for the phone) Mrs Patel — are you scared?'
+    prereq_history_ids: [hx_daughter]
+    min_rapport: 2
+    npc_voice: "Mrs Patel watches her daughter walk away through the curtain. She waits until the curtain is still."
+    supports: ['Anterior ST-elevation myocardial infarction (STEMI)']
+    response: |
+      "Yes, doctor. (Pause.) Priya is forty-three. She still lives
+      with me. She gave up her own flat in 2019 to look after me
+      when her father went. She has not had a holiday in three
+      years. (Pause.) I didn't tell her how bad it got last
+      Thursday. I thought it would pass and she would never know.
+      (Beat.) When you tell her what this is — and I know what
+      this is, doctor, I taught biology for thirty-five years —
+      please tell her I wasn't scared. Even if I am. She mustn't
+      think I was lying alone in the dark frightened. She'd never
+      forgive herself."
+
 examination:
   - system: general
     findings:

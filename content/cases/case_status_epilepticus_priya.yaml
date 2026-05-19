@@ -136,6 +136,24 @@ history:
       she didn't tell me the result, I just saw it in her wash bag
       this morning. She must be… 8 weeks? Maybe 10?"
 
+  - id: hx_flatmate_pregnancy_secret
+    source: family
+    topic: '(after the pregnancy disclosure, gently) Has she told her family?'
+    prereq_history_ids: [hx_pregnancy_status]
+    min_rapport: 2
+    npc_voice: "The flatmate looks at the floor. When she speaks her voice is thin."
+    supports: ['Eclampsia (if >20 weeks gestation)']
+    response: |
+      "No. (Pause.) Her parents — they've been on her about marrying
+      him properly. The boyfriend isn't from their community. She
+      was so happy yesterday — she said maybe she'd finally tell
+      them at Christmas, with him there. (Beat.) Doctor — if she
+      doesn't make it through this, or if she loses the pregnancy
+      — when you tell them, please don't tell them she was
+      pregnant. She wanted to choose her own moment. They'll find
+      out from notes, I know, but not from your mouth. Not first.
+      She'd want to be the one."
+
   - id: hx_drug_screen
     source: family
     topic: 'Any drug use — recreational, prescription, supplements?'

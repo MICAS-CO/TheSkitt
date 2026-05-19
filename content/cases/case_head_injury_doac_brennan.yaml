@@ -178,6 +178,23 @@ history:
       diagnosis. No advance care plan documented. She'd want
       everything done."
 
+  - id: hx_brennan_alone
+    source: patient
+    topic: '(after the CT decision, sitting beside the trolley) Mrs Brennan — what are you most worried about?'
+    prereq_history_ids: [hx_other_drugs]
+    min_rapport: 1
+    npc_voice: "She looks toward the curtain, then back at you. Her voice drops."
+    supports: ['Mild traumatic brain injury with traumatic subdural haematoma on anticoagulation']
+    response: |
+      "It's the falls, isn't it. They'll move me to the nursing
+      home now. (Pause.) Liam — my son — he hates the home. He
+      thinks I'm fine because I act fine. I don't want him to
+      think I lied. (Beat.) Doctor — if it turns out I've had a
+      bleed, can you tell him? Not me. Not first. Tell him alone.
+      He'll need a minute to get his face together before he
+      comes back in to me. He's a soft lad. He'll think I knew
+      and didn't say."
+
 # ─── Examination ──────────────────────────────────────────────────────────
 examination:
   - system: general

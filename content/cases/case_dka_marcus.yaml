@@ -144,6 +144,23 @@ history:
       "Just paracetamol last night. No protein powder, no steroids, no
       drugs. I don't really drink — I'm trying to save for next term."
 
+  - id: hx_marcus_mum
+    source: patient
+    topic: '(quiet, while the FRII is running) Marcus — is there anyone we should call for you?'
+    prereq_history_ids: [hx_family_pmh]
+    min_rapport: 2
+    npc_voice: "Marcus closes his eyes. He doesn't open them again for a while."
+    supports: ['Severe diabetic ketoacidosis — first presentation of type 1 diabetes mellitus']
+    response: |
+      "My mum. (Pause.) Don't ring her yet. She's at work, she's a
+      ward sister at Princess Royal, she'll come straight here and
+      she shouldn't drive in this state. (Pause.) Doc — when do I
+      tell her? I haven't said the word out loud. 'Diabetes'. I
+      haven't even said it to myself, properly. She'll know what
+      this means. She'll know exactly what this means for the rest
+      of my life. I can't be the one who has to tell her. Will you
+      be there? When she gets here? I don't want to do it alone."
+
   - id: hx_infection_screen
     source: patient
     topic: 'Any cough, urinary symptoms, sore throat, foot wounds?'
