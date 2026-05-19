@@ -4,6 +4,29 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M27 — settings screen + hub board live mini-vitals & deterioration timers
+
+- New menu card 'Settings' → \`src/ui/settings/SettingsScreen.tsx\`
+  surfaces existing preferences (monitor-audio default, sim-speed
+  default) and adds two new toggles:
+  · Trap hints (when on, must_not_do actions show an IconTrap chip on
+    the management list — useful for revision warm-up; off by default
+    so traps stay traps).
+  · Reduce motion (manual override beyond OS prefers-reduced-motion;
+    adds \`.skitt--reduce-motion\` to \`<html>\` at boot in main.tsx).
+- Local data section: Reset progression, Discard saved shift, Wipe
+  all local data — each with a confirm prompt and inline toast.
+- Hub board (\`ShiftBoardScreen\`) case cards now carry:
+  · Live mini-vitals (HR · BP · SpO₂ · GCS · NEWS2) in JetBrains Mono,
+    with NEWS2-traffic-light left border (green / amber / red).
+  · Live deterioration countdown chip when an
+    \`deterioration_if_not_x_by_t\` event is unfired and still has
+    missing required actions. Tone shifts at ≤5 min (warn) and ≤2 min
+    (critical, pulsing).
+  · IconRedFlag leads the 'awaiting clinician' warn pill.
+  · Arrested patients show '—' instead of zeros, matching the
+    encounter behaviour.
+
 ### M26 — new case + episode: Amir, severe paediatric DKA (BSPED 2020)
 
 - `case_paeds_dka_amir` (~430 lines, ST3, paeds, EnC2 + GC3,

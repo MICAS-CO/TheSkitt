@@ -29,6 +29,7 @@ visual integration from Claude Design + new content.
 | M24 | ECG bank +3 (14 total, 2-week rotation) |
 | M25 | Third arc — Overnight Safety-Net connecting Chloe + Stan via NICE NG225 system-failure narrative |
 | M26 | New case + episode — Amir, severe paediatric DKA, BSPED 2020 dose-band trap (pairs with Marcus) |
+| M27 | Settings screen + hub board live mini-vitals & deterioration timers · trap-hints + reduce-motion toggles |
 
 ## ⏳ WAITING ON DESIGN
 
