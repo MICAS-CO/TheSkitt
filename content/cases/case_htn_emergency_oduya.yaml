@@ -64,8 +64,8 @@ demographics:
     taking the tablets after that conversation because "they made
     him tired".
 
-triage_category: 2
-initial_state: stable
+triage_category: 1
+initial_state: deteriorating
 bay: majors
 
 # ─── History ──────────────────────────────────────────────────────────────
@@ -357,19 +357,20 @@ management:
       First-line in hypertensive emergency. Combined alpha + beta
       blockade gives controlled BP reduction without reflex
       tachycardia. Bolus 10–20 mg over 1–2 min, repeat every 10
-      min up to total ~300 mg, then infusion 0.5–2 mg/min titrated
-      to MAP.
+      min up to a cumulative bolus dose of **~200 mg** (RCEM /
+      BNF cap), then move to infusion 0.5–2 mg/min titrated to MAP.
 
-      **Target: reduce BP by 10–25% over the first hour. Do NOT
-      drop below MAP 100–110 in the first 24 h** — over-rapid
-      correction causes watershed infarcts and AKI deterioration.
-      Goal at 24 h: 160/100 or so, then onward to normal over
-      days-to-weeks.
+      **Target: reduce MAP by ≤25% in the first hour.** Then
+      target ~160/100 over 2–6 hours, then gradual normalisation
+      over the next 24-48 hours. His arrival BP 226/132 = MAP
+      163, so a 25% reduction = MAP ~122 (≈ 160/100). DO NOT
+      undershoot — over-rapid correction causes watershed
+      cerebral infarcts and AKI worsening.
     must_do: true
     drug:
-      amount: '10–20 mg IV bolus (repeat every 10 min, max ~300 mg); 0.5–2 mg/min infusion'
+      amount: '10–20 mg IV bolus (repeat every 10 min, max ~200 mg cumulative); then 0.5–2 mg/min infusion'
       route: IV
-      frequency: 'titrate to MAP; target 10–25% reduction in 1 h, do NOT exceed'
+      frequency: 'titrate to ≤25% MAP reduction in first hour, then ~160/100 over 2-6 h'
     sources:
       - { type: rcem, ref: 'RCEM Learning — Hypertensive Emergency (labetalol first-line)' }
       - {
@@ -456,10 +457,10 @@ management:
     detail: |
       ❌ Aggressive BP reduction in hypertensive emergency causes
       watershed cerebral infarcts and AKI worsening. The
-      autoregulation curve has shifted; reducing too fast drops
-      perfusion below the new autoregulatory floor. Target
-      10–25% reduction in the first hour, MAP 100–110 floor in
-      the first 24 h.
+      autoregulation curve has shifted upward; reducing too fast
+      drops perfusion below the new autoregulatory floor. Correct
+      target: ≤25% MAP reduction in the first hour, then ~160/100
+      over 2-6 h, then gradual normalisation over 24-48 h.
     must_not_do: true
     sources:
       - {
@@ -535,15 +536,21 @@ disposition_options:
 
 # ─── State machine ──────────────────────────────────────────────────────
 state_machine:
-  states: [stable, deteriorating, arrested, admitted]
+  states: [deteriorating, stable, arrested, admitted]
   transitions:
-    - from: stable
-      to: deteriorating
+    - from: deteriorating
+      to: stable
+      trigger:
+        on: action
+        action_id: mx_iv_labetalol_infusion
+        note: 'IV labetalol infusion + monitoring initiated; controlled BP reduction begins; encephalopathy stable.'
+    - from: deteriorating
+      to: arrested
       trigger:
         on: inaction_by
-        min: 20
+        min: 25
         required_actions: [mx_iv_labetalol_infusion, mx_a_to_e_monitoring]
-        note: 'Without controlled BP reduction by T+20 the encephalopathy progresses; risk of hypertensive ICH rises sharply.'
+        note: 'Without controlled BP reduction + monitoring by T+25 the encephalopathy progresses to seizure / hypertensive ICH / cardiac arrest.'
     - from: stable
       to: admitted
       trigger:
@@ -554,7 +561,7 @@ state_machine:
 # ─── Pearls + pitfalls ──────────────────────────────────────────────────
 pearls:
   - 'Hypertensive urgency vs emergency: urgency = elevated BP, NO end-organ damage; emergency = elevated BP + end-organ damage (encephalopathy, ICH, MI, aortic dissection, AHF, AKI, eclampsia).'
-  - 'BP reduction target: **10–25% in the first hour; MAP floor 100–110 in the first 24 h**. Aggressive correction causes watershed infarcts.'
+  - 'BP reduction target: **≤25% MAP reduction in the first hour**; then ~160/100 over 2-6 h; then gradual normalisation over 24-48 h. Aggressive correction (e.g. <140/90 within 1 h) causes watershed infarcts because the autoregulation curve has shifted upward.'
   - 'IV labetalol is first-line in the UK (RCEM Learning / NICE NG136). Bolus 10–20 mg, infusion 0.5–2 mg/min, titrate to MAP.'
   - 'Avoid amlodipine (slow onset = dose stacking → precipitous drop later) and sublingual nifedipine (banned for hypertensive emergencies for decades).'
   - 'PRES (posterior reversible encephalopathy syndrome) is the radiological correlate of hypertensive encephalopathy: bilateral parieto-occipital subcortical vasogenic oedema; reversible with BP control.'

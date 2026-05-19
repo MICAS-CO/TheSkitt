@@ -227,10 +227,13 @@ investigations:
     turnaround_min: 5
     result_summary: |
       **pH 7.31 · pCO2 6.2 kPa · HCO3 22 · BE -3 · Lactate 2.4 ·
-      K 4.6 · Na 138 · Glucose 8.4.** Mild type-2 respiratory failure
-      on CPAP — pCO2 raised from work-of-breathing fatigue. NO need
-      to take the mask off for an arterial sample; serial VBG is
-      adequate.
+      K 4.6 · Na 138 · Glucose 8.4.** VBG pCO2 of 6.2 kPa typically
+      maps to an arterial pCO2 ~5.2-5.7 kPa (venous is 0.5-1 kPa
+      higher than arterial), so he is NOT yet in formal type-2
+      respiratory failure (T2RF threshold arterial pCO2 >6) but is
+      showing hypercapnic strain from work-of-breathing fatigue.
+      Escalate to BiPAP if serial VBG pCO2 climbs further. No need
+      to remove the mask for an ABG; serial VBG is adequate.
     abnormal: true
 
   - id: ix_ecg
@@ -264,9 +267,11 @@ investigations:
       both anterior and lateral lung zones — "wet lung" pattern.
       **IVC 2.4 cm, plethoric, no respirophasic variation** —
       volume-overloaded. **LV global hypokinesis, EF visually
-      ~25%** (was 32% on last echo — acute deterioration). No
-      pericardial effusion. Septum normal (excludes RV-strain PE
-      pattern).
+      depressed** (qualitatively worse than the documented 32% from
+      2024; bedside visual EF carries ±10% inter-rater variability,
+      so the specific number is less reliable than the qualitative
+      worsening + the volume status). No pericardial effusion.
+      Septum normal (excludes RV-strain PE pattern).
 
       POCUS is a rule-IN: wet lung + plethoric IVC + impaired LV
       function = cardiogenic pulmonary oedema with high sensitivity
@@ -285,8 +290,10 @@ investigations:
     result_summary: |
       **NT-proBNP 6480 pg/mL** (markedly elevated — confirms heart
       failure as the dominant cause of dyspnoea). In the acute
-      setting, NT-proBNP >300 pg/mL has high NPV for excluding AHF;
-      >2000 pg/mL is the chronic-clinic threshold per NICE NG106.
+      setting NT-proBNP <400 pg/mL has high NPV for excluding AHF
+      (NICE NG106 rule-out cut-off); >2000 pg/mL is the
+      specialist-referral threshold per NG106 for chronic clinic
+      work-up.
     abnormal: true
     sources:
       - { type: nice, id: 'NG106', ref: 'NICE NG106 — NT-proBNP thresholds in heart failure' }
@@ -446,22 +453,21 @@ management:
 
   - id: mx_iv_furosemide
     category: drug
-    name: 'IV furosemide 40 mg STAT then 40-80 mg further dose'
+    name: 'IV furosemide 40-80 mg STAT (start higher in chronic loop-diuretic users)'
     detail: |
-      For diuretic-naive: 40 mg IV bolus. For chronic diuretic users
-      give AT LEAST their usual oral 24-h dose converted to IV
-      (bumetanide 1 mg ≈ furosemide 40 mg). His bumetanide has been
-      held 10 days, so he is functionally diuretic-naive again;
-      40 mg IV is appropriate as the first dose. Repeat in 1-2 h
-      if no response. Some units prefer an infusion (5-10 mg/h)
-      over bolus.
-
-      Monitor U&E + K+ closely.
+      For diuretic-naive adults: 40 mg IV. For chronic users — like
+      Mr Ahmed — start at least equivalent to the usual oral 24-h
+      dose with a safety factor of 2-2.5 (bumetanide 1 mg ≈
+      furosemide 40 mg; ×2 = 80 mg). The 10-day washout does NOT
+      reset receptor-level diuretic resistance — under-dosing
+      delays decongestion. Reassess at 1 h; switch to 5-10 mg/h
+      infusion if oral-converted bolus dose is inadequate. Monitor
+      U&E + K+ closely.
     must_do: true
     drug:
-      amount: '40 mg IV (escalate to 80 mg / infusion if poor response)'
+      amount: '40-80 mg IV STAT (chronic users start at the higher end); escalate to 5-10 mg/h infusion if response inadequate'
       route: IV
-      frequency: 'STAT bolus; reassess at 1-2 h'
+      frequency: 'STAT bolus; reassess at 1 h; do NOT anchor on a "diuretic-naive" dose for a chronic user'
     sources:
       - { type: nice, id: 'NG106', ref: 'NICE NG106 — IV loop diuretic in acute heart failure' }
       - { type: esc, ref: 'ESC 2021 — IV furosemide dosing in AHF' }
@@ -512,12 +518,22 @@ management:
 
   - id: mx_apixaban_continue
     category: drug
-    name: 'Continue apixaban (AF stroke prevention); dose-check vs eGFR'
+    name: 'Continue apixaban (AF stroke prevention); apply SmPC dose-reduction rules'
     detail: |
-      No bleed, no thrombotic event. Apixaban continues. The mild
-      AKI may warrant dose-check (eGFR <30 is the apixaban dose-
-      reduction threshold; his eGFR 42 stays on 5 mg BD).
+      No bleed, no thrombotic event. Apixaban continues. For NVAF
+      the SmPC dose-reduction trigger (to 2.5 mg BD) is meeting
+      **≥2 of**: age ≥80, weight ≤60 kg, serum creatinine
+      ≥133 µmol/L. Mr Ahmed: age 78 (does NOT meet), weight 88 kg
+      (does NOT meet), creatinine 142 (DOES meet — 1 of 3). One
+      criterion only → continue **5 mg BD**. Apixaban is
+      contraindicated below CrCl 15 mL/min (NOT below 30); his
+      CrCl is well above this threshold.
     must_do: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'Apixaban SmPC — UK EMC product information; dose reduction in NVAF requires ≥2 of {age ≥80, weight ≤60 kg, Cr ≥133 µmol/L}.',
+        }
 
   # ─── Examiner traps ──────────────────────────────────────────────────
   - id: mx_no_iv_fluid_bolus
@@ -537,9 +553,11 @@ management:
     name: 'IV morphine 5 mg routinely "for anxiety / breathlessness"'
     detail: |
       ❌ NICE NG106 explicitly removes routine opiates from AHF
-      management — opiate use is associated with WORSE outcomes
-      (Iakobishvili Eur Heart J 2011 — EuroHF survey). Treat the
-      pulmonary oedema; do not sedate the breathlessness away.
+      management — opiate use is associated with WORSE outcomes.
+      The primary signal is from the ADHERE registry (Peacock,
+      Emerg Med J 2008); secondary support from the EuroHF survey
+      (Iakobishvili, Eur Heart J 2011). Treat the pulmonary oedema;
+      do not sedate the breathlessness away.
     must_not_do: true
     sources:
       - {
@@ -549,7 +567,11 @@ management:
         }
       - {
           type: textbook,
-          ref: 'Iakobishvili Z et al. Use of intravenous morphine for acute decompensated heart failure in EuroHF survey. Eur Heart J 2011.',
+          ref: 'Peacock WF et al. Morphine use in the ADHERE registry — associated with worse outcomes in acute decompensated heart failure. Emerg Med J 2008.',
+        }
+      - {
+          type: textbook,
+          ref: 'Iakobishvili Z et al. Use of intravenous morphine for acute decompensated heart failure (EuroHF survey, secondary analysis). Eur Heart J 2011.',
         }
 
   - id: mx_no_beta_blocker_bolus

@@ -4,6 +4,56 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Audit: Ahmed (AHF) + Oduya (HTN emergency) accuracy fixes
+
+Subagent audit caught 8 real clinical accuracy issues in the two
+newest cases.
+
+**Ahmed (acute heart failure):**
+
+- **Apixaban dose-reduction criteria corrected**: SmPC rule for
+  NVAF is ≥2 of {age ≥80, weight ≤60 kg, Cr ≥133 µmol/L} — NOT
+  an eGFR cutoff. Apixaban contraindicated below CrCl 15 mL/min
+  (not <30). Mr Ahmed meets 1 criterion only → continues 5 mg BD.
+- **IV furosemide dose for chronic users corrected**: 40 mg
+  starting dose was too low. Now 40–80 mg with safety factor 2–
+  2.5× the oral equivalent (his bumetanide 1 mg ≈ furosemide 40 mg
+  × 2 = 80 mg). 10-day washout does NOT reset receptor-level
+  diuretic resistance.
+- **VBG type-2 respiratory failure mislabel**: VBG pCO2 6.2 kPa
+  ≠ arterial pCO2 >6 (venous typically 0.5–1 kPa higher than
+  arterial). Now framed as hypercapnic strain not formal T2RF.
+- **NT-proBNP threshold corrected**: NICE NG106 rule-out
+  threshold in acute setting is <400 ng/L, not 300 pg/mL.
+- **POCUS EF softened**: visual EF carries ±10% inter-rater
+  variability; specific "25% vs 32%" overcalled — now framed as
+  qualitative worsening.
+- **Morphine citation primary source added**: Peacock W et al.
+  ADHERE registry (Emerg Med J 2008) is the primary signal;
+  Iakobishvili 2011 is a secondary analysis.
+
+**Oduya (hypertensive emergency):**
+
+- **`initial_state` corrected**: was `stable`, now `deteriorating`
+  (AMT 7/10 + GCS 14 + papilloedema + AKI Stage 2 is not stable).
+  Triage category bumped 2 → 1 to match the severity.
+- **State machine completed**: previously had only stable →
+  deteriorating + stable → admitted (dead-end on deteriorating).
+  Now includes deteriorating → stable (on labetalol initiation)
+  and deteriorating → arrested (inaction by T+25), giving the
+  player a full recovery / failure path.
+- **BP reduction target corrected**: was "MAP floor 100–110 in
+  first 24 h" (too low), now "≤25% MAP reduction in first hour;
+  ~160/100 over 2–6 h; gradual normalisation over 24–48 h".
+  Calculated his arrival MAP 163 → 25% reduction ≈ MAP 122
+  (≈ 160/100) so the worked example matches.
+- **Labetalol cumulative bolus cap corrected**: was 300 mg, now
+  200 mg (RCEM / BNF cap) before switching to infusion.
+- Matching pearl + must_not_do detail updated to the corrected
+  target.
+
+15 cases / 14 episodes / 2 arcs validate; 162 tests pass.
+
 ### Content: hypertensive emergency (Oduya) — discipline over speed
 
 - `content/cases/case_htn_emergency_oduya.yaml` — 15th authored
