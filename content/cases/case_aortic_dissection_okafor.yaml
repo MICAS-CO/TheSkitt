@@ -114,6 +114,37 @@ history:
     topic: 'Has the pain moved or changed?'
     prereq_history_ids: [hx_pain_quality]
     supports: ['Type A aortic dissection extending into RCA, with malperfusion of right upper limb']
+    npc_voice: "He grips the trolley rail with his left hand. His right arm is across his lap."
+    branch_choices:
+      - id: probing
+        label: "Be precise — where did it start, where is it now, and exactly when did it move?"
+        npc_voice: "He thinks. He answers slowly, in order, like he's trying to be a good witness."
+        rapport_delta: 1
+        response: |
+          "Started about 90 minutes ago, between my shoulder blades —
+          high up, tearing, like the worst muscle tear of my life.
+          (Pause.) Twenty minutes in it moved forward, into the
+          front of my chest. Now it's also up here, the right side
+          of my neck. My right arm feels strange — pins and needles
+          since about ten minutes ago. (Pause.) I thought it was a
+          muscle. I drove myself in. I'm sorry, doctor — is that the
+          heart attack? Is that what this is?"
+      - id: clinical
+        label: "Where is the pain now and where did it start?"
+        rapport_delta: 0
+        response: |
+          "Started in my back, now in my chest and right side of
+          my neck. Right arm has pins and needles. Is that the
+          heart attack?"
+      - id: reassuring_wrong
+        label: "Could just be a muscle tear with referred pain — let's get an ECG and bloods to be safe."
+        npc_voice: "His shoulders drop. He looks relieved. Then his right hand picks at the trolley sheet — he doesn't quite believe you."
+        rapport_delta: -2
+        response: |
+          "Right. (Pause.) That's what I thought. Muscle. (He stops
+          talking about the migrating pain. The detail about the
+          back-to-front-to-neck progression is NOT volunteered;
+          neither is the right-arm paraesthesia.)"
     response: |
       "It started in my back. Now it's in my chest and the front of
       my neck on the right. My right arm feels strange too — pins

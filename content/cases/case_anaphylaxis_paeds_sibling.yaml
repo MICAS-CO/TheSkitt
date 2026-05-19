@@ -101,6 +101,46 @@ history:
     source: family
     topic: 'Mum — walk me through today.'
     supports: ['Paediatric anaphylaxis — peanut (food-IgE)']
+    npc_voice: "Sam's mum is half-turned toward the trolley. She doesn't take her eyes off him as she talks."
+    branch_choices:
+      # Non-tonal fork (M55) — this is a *prioritisation* dilemma, not a
+      # tone selector. The three options trade history-completeness
+      # against time-to-treatment in different ways. There is no clean
+      # 'right' answer; the cost of each is paid in a different
+      # currency. The clinical bones still get to the player no matter
+      # which one they pick — only the route differs.
+      - id: now_full
+        label: "Mum, two minutes — every detail of today, slowly, from when he woke up. I need it before we go further."
+        npc_voice: "She makes herself stop watching Sam. She makes herself look at you. It is visibly difficult."
+        rapport_delta: -1
+        response: |
+          "He woke at seven, normal breakfast — Weetabix, milk, no
+          peanut. Lunch around 12:30: peanut-butter sandwich, same
+          brand we always buy. Lip felt funny by half-two and looked
+          a bit puffy. I gave him cetirizine. He settled. He played
+          in his room all afternoon. Six o'clock — fish fingers and
+          chips, no nuts. Seven thirty he came down wheezing and
+          pale and I thought asthma. Then my phone went off — the
+          messages about Beth. (Pause.) Can we — can we please go
+          to him now?"
+      - id: brief_then_treat
+        label: "Quick: what did he eat, when did this start, anything before? Then I'm starting adrenaline."
+        rapport_delta: 1
+        response: |
+          "Peanut butter sandwich at 12:30 — same brand always.
+          Lip puffy at 14:30, gave cetirizine, settled. Wheezing and
+          pale at 19:30. Then the Beth messages came in. Go. Go."
+      - id: defer_to_nurse
+        label: "Mum — Sam needs me right now. Sister, can you take a full history from Mum while I start?"
+        npc_voice: "She nods immediately. The paeds nurse appears at her elbow with a notepad. The mum's shoulders come down a fraction."
+        rapport_delta: 2
+        response: |
+          (The paeds nurse takes the history at the bay door. You hear
+          fragments — 'peanut butter…', 'half-past-two…', 'cetirizine
+          and he settled…', 'wheezing at half-seven and then she saw
+          the messages…'. The nurse hands you the timeline on a
+          sticky note four minutes later. The mum has not left
+          Sam's side.)
     response: |
       "He had a peanut-butter sandwich for lunch about 12:30 — same
       brand we always buy. His lip felt funny by half-two and looked

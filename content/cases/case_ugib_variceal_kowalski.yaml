@@ -119,6 +119,40 @@ history:
     prereq_history_ids: [hx_paramedics]
     npc_voice: "The housemate hesitates, eyes on the floor. 'It's been a rough year.'"
     supports: ['Acute variceal upper GI haemorrhage in decompensated alcoholic cirrhosis']
+    branch_choices:
+      - id: compassionate
+        label: "I'm not here to judge him. The honest answer helps me treat him properly — what's it actually been like at home?"
+        npc_voice: "The housemate looks up. He exhales the breath he came in holding. He starts again."
+        rapport_delta: 2
+        response: |
+          "Right. Right, OK. (Sits.) He drinks all day, every day.
+          Vodka mostly — half-litre bottles in the kitchen, more in
+          the bedroom drawer he thinks I don't know about. He's been
+          worse this past week — drinking through the night. Last
+          drink about four hours ago. (Pause.) Two weeks ago he tried
+          to stop. He was shaky and being sick by lunchtime — saw a
+          thing in the bathroom that wasn't there. By the evening he
+          was drinking again. He had that camera test on his throat
+          last year, said they put bands on something. I should have
+          made him go back to the GP. I should have."
+      - id: clinical
+        label: "How much, how often, any past withdrawal?"
+        rapport_delta: 0
+        response: |
+          "Half-litre vodka daily, more in the past week. Last drink
+          4 hours ago. Withdrawal symptoms two weeks ago when he
+          tried to stop — tremor, vomiting. Banding on his throat
+          last year, no follow-up that I know of."
+      - id: judgemental
+        label: "He's drinking how much, and you let it get to this?"
+        npc_voice: "The housemate's jaw tightens. He looks at the floor for the rest of the conversation. His next answer is shorter."
+        rapport_delta: -2
+        response: |
+          "Half a bottle of vodka a day. Last one this afternoon.
+          (Pause.) I'm not his keeper, doctor. (The detail about
+          the withdrawal attempt two weeks ago is not volunteered.
+          The detail about the previous variceal banding is not
+          volunteered. The player must triangulate via records.)"
     response: |
       "He drinks all day every day. Vodka mostly. He'd been worse this
       week — drinking through the night. Last drink was about 4 hours

@@ -122,6 +122,37 @@ history:
     source: patient
     topic: 'Ask Mrs Morrison directly.'
     npc_voice: 'Mrs Morrison plucks at the blanket, eyes scanning the room.'
+    branch_choices:
+      - id: compassionate
+        label: "Mrs Morrison — I'm Dr [you]. It's the hospital. You came in tonight because you were poorly. Can I sit on the edge of your bed?"
+        npc_voice: "Her eyes find you, hold for two seconds, then drift. She nods. Then she nods again."
+        rapport_delta: 2
+        response: |
+          "Hospital. Right. Right, I — (looks at the blanket) — is
+          it Bob's brought me in? Where's Bob? (Pause.) I'm sorry,
+          dear, I'm getting muddled. (Settles slightly.) My back
+          hurts. Down here. (Indicates her flank with a vague hand.)
+          And I haven't passed water properly. Bob does the tea."
+          Disoriented to place and time, orientated to self;
+          flank pain disclosed; functional baseline contextual.
+      - id: clinical
+        label: "Mrs Morrison — what's your name, where are you, what's the date?"
+        rapport_delta: 0
+        response: |
+          "Annie. I'm — I'm where? (Pause.) Hospital? It's — I don't
+          know what day, dear. Where's Bob?" (No focal pain elicited.
+          4AT 8: alertness OK, age fail, year fail, attention fail
+          with months-backwards.)
+      - id: dismissive
+        label: "(to the nurse) She's not orientated, no point. Let's move on to the bloods."
+        npc_voice: "Mrs Morrison's eyes follow you both. She doesn't speak. The pluck on the blanket gets faster."
+        rapport_delta: -2
+        response: |
+          (No history obtained directly. The flank-pain clue stays
+          buried — the player must rely on examination + urinalysis
+          to triangulate to UTI as the source. The nursing notes
+          later record 'patient distressed when not addressed
+          directly; needed reassurance from HCA'.)
     response: |
       "Hello dear. Where's Bob? I want to go home. Is it morning yet?"
       (Disoriented to place and time; orientated to self. No specific
