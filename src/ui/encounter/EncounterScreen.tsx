@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSim, scoreCase, type ScoreReport, type SimSpeedKey } from '../../state/sim';
-import type { CitationT } from '../../content/schema';
+import type { CitationT, HistoryItemT } from '../../content/schema';
 import type {
   CaseRuntime,
   ConsultantInterrupt,
@@ -12,6 +12,7 @@ import { PatientPanel } from './PatientPanel';
 import { ResusMode } from './ResusMode';
 import { IconCitation, IconCountdown, IconNewInfo, IconRedFlag, IconTrap } from '../../style/icons';
 import { ResultsEnvelope } from '../../style/frames';
+import { NPC_SPRITES, npcFrameToSvg, npcSpriteIdForSource } from '../../style/npcSprites';
 import { ECG_BANK } from '../../content/ecg-challenges';
 import { hasPerk } from '../../state/progression';
 
@@ -648,11 +649,12 @@ function HistoryPhase({
               }`}
             >
               <button
-                className="enc__card-head"
+                className="enc__card-head enc__card-head--with-npc"
                 onClick={() => onAsk(h.id)}
                 disabled={isAsked || silenced}
                 title={silenceTitle}
               >
+                <HistoryNpcSprite source={h.source} silenced={silenced} />
                 <span className="enc__chip">{h.source.replace('_', ' ')}</span>
                 <span>{h.topic}</span>
                 {isNewlyUnlocked && (
@@ -763,6 +765,36 @@ function ConsultantInterruptModal({
         </button>
       </div>
     </div>
+  );
+}
+
+/**
+ * Render the matching NPC sprite next to a history card (M43). Skip
+ * for patient/records/gp_letter sources — those have no NPC voice.
+ * The sprite is memoised by source so we're not re-rendering an SVG
+ * string on every history-list update.
+ */
+function HistoryNpcSprite({
+  source,
+  silenced,
+}: {
+  source: HistoryItemT['source'];
+  silenced: boolean;
+}) {
+  const id = npcSpriteIdForSource(source);
+  const svg = useMemo(() => {
+    if (!id) return null;
+    const rows = NPC_SPRITES[id];
+    if (!rows) return null;
+    return npcFrameToSvg(rows, 2);
+  }, [id]);
+  if (!svg) return <span className="enc__npc enc__npc--placeholder" aria-hidden="true" />;
+  return (
+    <span
+      className={`enc__npc ${silenced ? 'enc__npc--silenced' : ''}`}
+      aria-hidden="true"
+      dangerouslySetInnerHTML={{ __html: svg }}
+    />
   );
 }
 

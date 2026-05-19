@@ -668,6 +668,7 @@ export type ArcT = z.infer<typeof Arc>;
 export type ScheduledEventT = z.infer<typeof ScheduledEvent>;
 export type CitationT = z.infer<typeof Citation>;
 export type CaseStateT = z.infer<typeof CaseState>;
+export type HistoryItemT = z.infer<typeof HistoryItem>;
 export type TransitionTriggerT = z.infer<typeof TransitionTrigger>;
 export type ArcRevealTriggerT = z.infer<typeof ArcRevealTrigger>;
 export type ArcEffectT = z.infer<typeof ArcEffect>;

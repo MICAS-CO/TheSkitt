@@ -1565,6 +1565,32 @@ a {
   margin-left: 4px;
 }
 
+/* NPC sprite in history cards (M43) — diegetic 'I went and spoke to them'. */
+.enc__card-head--with-npc {
+  display: grid;
+  grid-template-columns: 32px auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+.enc__npc {
+  width: 32px;
+  height: 48px;
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
+}
+.enc__npc--placeholder {
+  visibility: hidden;
+}
+.enc__npc--silenced {
+  filter: grayscale(0.6) opacity(0.45);
+}
+.enc__card.is-revealed .enc__npc {
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4)) brightness(0.85);
+}
+
 /* Examination manoeuvres (M40) — specific clinical techniques. */
 .enc__manoeuvres {
   margin-top: 8px;
