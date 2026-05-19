@@ -1,5 +1,7 @@
+import { useEffect, useRef, useState } from 'react';
 import type { CaseRuntime } from '../../sim/kernel';
 import { deriveVitals, news2 } from '../../sim/vitals';
+import { MonitorAudio, loadAudioEnabled, saveAudioEnabled } from '../../sim/audio';
 
 /**
  * Persistent patient panel — portrait + live vitals strip.
@@ -11,8 +13,49 @@ export function PatientPanel({ cs }: { cs: CaseRuntime }) {
   const v = deriveVitals(cs.state, cs.data.vitals);
   const score = news2(v);
   const newsBand = score.total >= 7 ? 'red' : score.total >= 5 ? 'amber' : 'green';
+  const [audioOn, setAudioOn] = useState<boolean>(() => loadAudioEnabled());
+  const audioRef = useRef<MonitorAudio | null>(null);
+
+  useEffect(() => {
+    if (!audioOn) {
+      audioRef.current?.stop();
+      audioRef.current = null;
+      return;
+    }
+    if (!audioRef.current) audioRef.current = new MonitorAudio();
+    audioRef.current.ensure();
+    audioRef.current.update(v.hr ?? 0, score.total, cs.state === 'arrested');
+    return () => {
+      // Don't stop on every render — only on unmount or audio-toggle off.
+    };
+  }, [audioOn, v.hr, score.total, cs.state]);
+
+  useEffect(() => {
+    return () => {
+      audioRef.current?.stop();
+      audioRef.current = null;
+    };
+  }, []);
+
+  function toggleAudio() {
+    const next = !audioOn;
+    setAudioOn(next);
+    saveAudioEnabled(next);
+  }
+
   return (
     <aside className="patient-panel" aria-label="Patient panel">
+      <div className="patient-panel__toolbar">
+        <button
+          type="button"
+          className={`patient-panel__audio-toggle ${audioOn ? 'is-on' : ''}`}
+          onClick={toggleAudio}
+          aria-pressed={audioOn}
+          title={audioOn ? 'Mute monitor' : 'Unmute monitor'}
+        >
+          {audioOn ? '♪ monitor on' : '♪ monitor off'}
+        </button>
+      </div>
       <PatientPortrait state={cs.state} hr={v.hr ?? 80} rr={v.rr ?? 16} />
       <div className="patient-panel__vitals">
         <div className={`patient-panel__news patient-panel__news--${newsBand}`}>

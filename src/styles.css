@@ -1555,6 +1555,174 @@ a {
   color: var(--accent);
 }
 
+.patient-panel__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin: -4px -4px 0;
+}
+.patient-panel__audio-toggle {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  min-height: 24px;
+  cursor: pointer;
+}
+.patient-panel__audio-toggle.is-on {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Daily ECG challenge (M15) */
+.ecg {
+  width: 100%;
+  max-width: 880px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  margin: 0 auto;
+}
+.ecg__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+.ecg__eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.ecg__title {
+  margin: 4px 0 6px;
+  font-size: 20px;
+}
+.ecg__context {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.ecg__exit {
+  font-size: 12px;
+  padding: 6px 12px;
+}
+.ecg__strip-card {
+  background: #0d0e12;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+  overflow-x: auto;
+}
+.ecg__strip {
+  margin: 0;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #6fd47c;
+  white-space: pre;
+}
+.ecg__progress {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.ecg__progress-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border-2);
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ecg__progress-dot.is-active {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.ecg__progress-dot.is-correct {
+  background: rgba(122, 219, 122, 0.18);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.ecg__progress-dot.is-wrong {
+  background: rgba(217, 107, 92, 0.18);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.ecg__question {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ecg__prompt {
+  margin: 0;
+  font-size: 16px;
+}
+.ecg__options {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ecg__option {
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+  min-height: 44px;
+}
+.ecg__option:hover:not(:disabled) {
+  background: var(--panel);
+}
+.ecg__option.is-picked {
+  border-color: var(--info);
+}
+.ecg__option.is-correct {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, rgba(122, 219, 122, 0.12), var(--panel-2));
+}
+.ecg__option.is-wrong {
+  border-color: var(--danger);
+  background: linear-gradient(180deg, rgba(217, 107, 92, 0.12), var(--panel-2));
+}
+.ecg__rationale {
+  padding: 10px 12px;
+  background: var(--panel-2);
+  border-left: 3px solid var(--info);
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.ecg__actions {
+  display: flex;
+  justify-content: space-between;
+}
+.ecg__summary {
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 16px;
+}
+
 .enc__body {
   flex: 1;
 }

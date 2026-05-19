@@ -5,6 +5,7 @@ import { ShiftView } from './ui/shift/ShiftView';
 import { useSim, loadShift, clearSavedShift, type SavedShift } from './state/sim';
 import { Arc, Case, Episode, type ArcT, type CaseT, type EpisodeT } from './content/schema';
 import { SimKernel } from './sim/kernel';
+import { EcgChallengeScreen } from './ui/ecg/EcgChallengeScreen';
 
 // Solo shift (Milestone 4)
 import bethYaml from '../content/cases/case_anaphylaxis_adult_peanut.yaml?raw';
@@ -67,12 +68,13 @@ import ahfEpYaml from '../content/episodes/ep_ahf_solo.yaml?raw';
 import oduyaYaml from '../content/cases/case_htn_emergency_oduya.yaml?raw';
 import htnEpYaml from '../content/episodes/ep_htn_emergency_solo.yaml?raw';
 
-type View = 'menu' | 'shift' | 'hub';
+type View = 'menu' | 'shift' | 'hub' | 'ecg';
 
 const SUBTITLES: Record<View, string> = {
   menu: 'Episodic UK FRCEM study RPG · 14 shifts, 15 cases',
   shift: 'Shift in progress',
   hub: 'ED hub (preview)',
+  ecg: 'Daily ECG challenge',
 };
 
 interface ShiftPack {
@@ -363,6 +365,7 @@ export function App() {
               if (def) startShift(def.factory());
             }}
             onShowHub={() => setView('hub')}
+            onShowEcg={() => setView('ecg')}
             saved={saved}
             onResume={resumeSavedShift}
             onClearSave={clearAndForget}
@@ -370,6 +373,7 @@ export function App() {
         )}
         {view === 'shift' && <ShiftView onExit={exitShift} onReplay={replayShift} />}
         {view === 'hub' && <PhaserGame />}
+        {view === 'ecg' && <EcgChallengeScreen onExit={() => setView('menu')} />}
       </main>
 
       <footer className="app__footer">
@@ -392,6 +396,7 @@ function MenuView({
   shifts,
   onStart,
   onShowHub,
+  onShowEcg,
   saved,
   onResume,
   onClearSave,
@@ -399,6 +404,7 @@ function MenuView({
   shifts: ShiftDef[];
   onStart: (id: string) => void;
   onShowHub: () => void;
+  onShowEcg: () => void;
   saved: SavedShift | null;
   onResume: () => void;
   onClearSave: () => void;
@@ -442,6 +448,11 @@ function MenuView({
             <span className="menu__card-eyebrow">Preview</span>
             <span className="menu__card-title">ED hub layout</span>
             <span className="menu__card-meta">Placeholder Phaser scene from Milestone 1</span>
+          </button>
+          <button className="menu__card menu__card--secondary" onClick={onShowEcg}>
+            <span className="menu__card-eyebrow">Daily</span>
+            <span className="menu__card-title">ECG challenge</span>
+            <span className="menu__card-meta">One rotating ECG-interpretation set per day.</span>
           </button>
         </div>
       </div>
