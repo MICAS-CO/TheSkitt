@@ -87,6 +87,14 @@ const PAL: PaletteMap = {
   a: '#e0f0f8', // sweat highlight
   I: '#dcc46a', // jaundice
   i: '#f0dc8a',
+
+  // Williams (M44) — grey-going-white hair + navy pyjama top.
+  // Remapped from the design drop's G/g/v/V to avoid clashing with the
+  // existing flushed-G/g and cyanosed-V/v tints already in use above.
+  K: '#d6d4cd', // grey hair light
+  J: '#9c9a93', // grey hair mid
+  E: '#0c1c3c', // pyjama navy dark
+  y: '#1b2f5a', // pyjama navy mid
 };
 
 // ─── Beth ───────────────────────────────────────────────────────────────────
@@ -270,6 +278,140 @@ function bethPostResus(): string[][] {
   return [applyDiffs(substSkin(bethSupineBase, map), diffs)];
 }
 
+// ─── Williams (M44) ─────────────────────────────────────────────────────────
+// Older man, grey-white short hair, navy pyjama top. Grid is 24×32 to
+// match Beth so the patient-panel layout doesn't shift between cases.
+// The drop's G/g/v/V have been remapped to K/J/E/y above so they don't
+// collide with the existing tint slots.
+
+const williamsUpright = [
+  '........................',
+  '........................',
+  '.........KKKKKK.........',
+  '........KJJJJJJJK.......',
+  '........#JJJJJJ#........',
+  '........#sssss#H........',
+  '........ksSSSSSk........',
+  '........ksSLLLSk........',
+  '........kSLLLLLSk.......',
+  '.......ksSLwewewLSk.....',
+  '.......ksSLLLLLLLSk.....',
+  '.......ksSLL~~LLSSk.....',
+  '.......ksSLLeLLLSk......',
+  '.......ksSLLLLLLSk......',
+  '.......ksSSLOOLSSk......',
+  '........ksSSSSSk........',
+  '........ksssssh.........',
+  '.........SSSSk..........',
+  '.........EyyyE..........',
+  '........EyyyyyyE........',
+  '.......EyyyyyyyyE.......',
+  '......EyyyyyyyyyyE......',
+  '.....EyyyyyyyyyyyyE.....',
+  '.....EyyrrrrrrrryyE.....',
+  '.....EyyyyyyyyyyyyE.....',
+  '.....EyyyyyyyyyyyyE.....',
+  '.....EyyyyyyyyyyyyE.....',
+  '.....EyyyyyyyyyyyyE.....',
+  '.....EyyyyyyyyyyyyE.....',
+  '.....EyyyyyyyyyyyyE.....',
+  '.....EEEEEEEEEEEEEE.....',
+  '........................',
+];
+
+const williamsUprightExhale = williamsUpright.slice();
+williamsUprightExhale[18] = '........EyyyyyyE........';
+williamsUprightExhale[19] = '.......EyyyyyyyyE.......';
+
+const williamsSupine = [
+  '........................',
+  '........................',
+  '..............KKKK......',
+  '............KJJJJJJK....',
+  '...........#JJJJJJ#.....',
+  '..........#sssssss#.....',
+  '..........ksSSSSSSsk....',
+  '..........ksSLLLLLSsk...',
+  '.........ksSLL~~LLSSk...',
+  '.........ksSLLLLLLLSk...',
+  '.........ksSLLLLLLLSk...',
+  '.........ksSLLeeLLLSk...',
+  '.........ksSLLqqqLLSk...',
+  '.........ksSLqqqqqLSk...',
+  '..........ksSSSSSSsk....',
+  '...........hsssssh......',
+  '..........WWWWWWWWW.....',
+  '.........WWWWWWWWWWW....',
+  '........WWWWWWWWWWWWW...',
+  '.......WWWWWWWWWWWWWWW..',
+  '.......WWWWWWWWWWWWWWW..',
+  '.......WYWYWYWYWYWYWWW..',
+  '.......WWWWWWWWWWWWWWW..',
+  '.......WWWWWWWWWWWWWWW..',
+  '.......WWWWWWWWWWWWWWW..',
+  '.......WWWWWWWWWWWWWWW..',
+  '.......WWWWWWWWWWWWWWW..',
+  '.......WWWWWWWWWWWWWWW..',
+  '.......WWWWWWWWWWWWWWW..',
+  '........WWWWWWWWWWWWW...',
+  '........................',
+  '........................',
+];
+
+function williamsStable(): string[][] {
+  return [williamsUpright, williamsUprightExhale];
+}
+
+function williamsTriaged(): string[][] {
+  // Drawn brow + flat mouth — concerned but not yet focal.
+  const diffs: SpriteDiff[] = [
+    { row: 9, col: 10, ch: 'k' },
+    { row: 9, col: 16, ch: 'k' },
+    { row: 14, col: 11, ch: 'O' },
+    { row: 14, col: 12, ch: 'O' },
+    { row: 14, col: 13, ch: 'O' },
+  ];
+  return [applyDiffs(williamsUpright, diffs), applyDiffs(williamsUprightExhale, diffs)];
+}
+
+function williamsDeteriorating(): string[][] {
+  // Right-sided facial droop (from viewer's left) + right eye half-closed.
+  // The stroke beat: the visual cue mirrors the clinical pronator-drift
+  // / facial-droop manoeuvre findings (M40) on case_stroke_acute_williams.
+  const diffs: SpriteDiff[] = [
+    { row: 14, col: 14, ch: '.' },
+    { row: 14, col: 15, ch: '.' },
+    { row: 15, col: 14, ch: 'O' },
+    { row: 15, col: 15, ch: 'O' },
+    { row: 16, col: 14, ch: 'o' },
+    { row: 16, col: 15, ch: 'o' },
+    { row: 9, col: 15, ch: '~' },
+    { row: 9, col: 16, ch: '~' },
+  ];
+  return [applyDiffs(williamsUpright, diffs), applyDiffs(williamsUprightExhale, diffs)];
+}
+
+function williamsArrested(): string[][] {
+  // Switch skin tint to mottled (M/m/n/N already in PAL).
+  return [substSkin(williamsSupine, { s: 'M', S: 'm', L: 'n', l: 'N' })];
+}
+
+function williamsPostResus(): string[][] {
+  // Clammy skin + ET tube exiting the right corner of the mouth + ECG lead.
+  const supineClammy = substSkin(williamsSupine, { s: 'C', S: 'c', L: 'd', l: 'D' });
+  const diffs: SpriteDiff[] = [
+    { row: 12, col: 11, ch: 'T' },
+    { row: 12, col: 12, ch: 'T' },
+    { row: 12, col: 13, ch: 'T' },
+    { row: 12, col: 14, ch: 'T' },
+    { row: 12, col: 15, ch: 't' },
+    { row: 13, col: 15, ch: 'T' },
+    { row: 16, col: 11, ch: 'Z' },
+    { row: 17, col: 11, ch: 'Z' },
+  ];
+  return [applyDiffs(supineClammy, diffs)];
+}
+
 // ─── Renderer ───────────────────────────────────────────────────────────────
 
 /** Render sprite rows to a crisp-edge SVG string. */
@@ -322,6 +464,17 @@ export const PATIENT_SPRITES: Record<
     admitted: bethPostResus,
     discharged: bethStable,
     post_resus: bethPostResus,
+  },
+  case_stroke_acute_williams: {
+    stable: williamsStable,
+    triaged: williamsTriaged,
+    unseen: williamsStable,
+    deteriorating: williamsDeteriorating,
+    arrested: williamsArrested,
+    deceased: williamsArrested,
+    admitted: williamsPostResus,
+    discharged: williamsStable,
+    post_resus: williamsPostResus,
   },
 };
 
