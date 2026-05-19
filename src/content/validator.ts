@@ -242,6 +242,7 @@ export function validateContent(rootDir: string): ValidationReport {
     }
     // Per-case integrity: prereq_action_ids reference real mx in the same case (M20).
     const mxIds = new Set(entry.data.management.map((m) => m.id));
+    const hxIds = new Set(entry.data.history.map((h) => h.id));
     for (const m of entry.data.management) {
       for (const p of m.prereq_action_ids ?? []) {
         if (!mxIds.has(p)) {
@@ -256,6 +257,16 @@ export function validateContent(rootDir: string): ValidationReport {
             file: entry.file,
             path: `case ${entry.data.id} → management ${m.id}`,
             message: 'management action cannot list itself as a prereq',
+          });
+        }
+      }
+      // M35: gated_by_history references real history items in the case.
+      for (const h of m.gated_by_history ?? []) {
+        if (!hxIds.has(h)) {
+          report.errors.push({
+            file: entry.file,
+            path: `case ${entry.data.id} → management ${m.id}`,
+            message: `gated_by_history references unknown history id "${h}"`,
           });
         }
       }

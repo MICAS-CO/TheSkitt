@@ -218,6 +218,28 @@ describe('SimKernel — branching dialogue (M34)', () => {
     expect(cs.rapport).toBe(2);
   });
 
+  it('management gated_by_history references valid history ids (M35)', async () => {
+    // Validate the M35 gating contract structurally: every gated_by
+    // history id on Amir must exist on the case's history list.
+    const { readFileSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const { parse } = await import('yaml');
+    const { Case } = await import('../src/content/schema');
+    const amir = Case.parse(
+      parse(
+        readFileSync(join(process.cwd(), 'content/cases/case_paeds_dka_amir.yaml'), 'utf8'),
+      ),
+    );
+    const hxIds = new Set(amir.history.map((h) => h.id));
+    const gated = amir.management.filter((m) => m.gated_by_history);
+    expect(gated.length).toBeGreaterThan(0);
+    for (const m of gated) {
+      for (const h of m.gated_by_history ?? []) {
+        expect(hxIds.has(h)).toBe(true);
+      }
+    }
+  });
+
   it('picking the same branch twice is a no-op (idempotent)', async () => {
     const { readFileSync } = await import('node:fs');
     const { join } = await import('node:path');

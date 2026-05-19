@@ -580,6 +580,7 @@ management:
       antiplatelet or anticoagulation. Antiplatelets/anticoagulants
       expand the false lumen and worsen pericardial bleeding.
     must_not_do: true
+    gated_by_history: [hx_paramedic]
     sources:
       - {
           type: rcem,

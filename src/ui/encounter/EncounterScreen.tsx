@@ -1112,7 +1112,14 @@ function ManagementPhase({ cs, onToggle }: { cs: CaseRuntime; onToggle: (id: str
     () => !trapHintsEnabled() && hasPerk('perk_trap_aware'),
     [],
   );
-  const hasStat = cs.data.management.some((m) => m.must_do && m.drug);
+  // Clinical-reasoning gates (M35). An action is visible if either
+  // it has no gate, or at least one of its gated_by_history ids has
+  // been asked.
+  const visibleManagement = cs.data.management.filter(
+    (m) => !m.gated_by_history || m.gated_by_history.some((id) => cs.asked.has(id)),
+  );
+  const hiddenByGate = cs.data.management.length - visibleManagement.length;
+  const hasStat = visibleManagement.some((m) => m.must_do && m.drug);
   return (
     <section className="enc__phase enc__phase--drugchart">
       <header className="drugchart__head">
@@ -1123,6 +1130,12 @@ function ManagementPhase({ cs, onToggle }: { cs: CaseRuntime; onToggle: (id: str
       <p className="enc__hint">
         Tick what you give. The time column stamps each action with the sim-min you ticked it.
         Some options are distractors.
+        {hiddenByGate > 0 && (
+          <>
+            {' '}
+            <em>{hiddenByGate} more option{hiddenByGate === 1 ? '' : 's'} will appear once you ask the right history.</em>
+          </>
+        )}
         {trapHints && (
           <em>
             {' '}
@@ -1136,7 +1149,7 @@ function ManagementPhase({ cs, onToggle }: { cs: CaseRuntime; onToggle: (id: str
         <span className="drugchart__col-h drugchart__col-h--cat">CATEGORY</span>
       </div>
       <ul className="drugchart__rows">
-        {cs.data.management.map((m) => {
+        {visibleManagement.map((m) => {
           const isPicked = cs.actions.has(m.id);
           const atMin = cs.actionsAt.get(m.id);
           const sequenceError = cs.sequenceErrors.has(m.id);

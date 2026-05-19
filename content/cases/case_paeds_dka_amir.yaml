@@ -392,6 +392,7 @@ management:
     category: fluid
     name: '0.9% saline 20 mL/kg bolus (adult JBDS-IP dose)'
     must_not_do: true
+    gated_by_history: [hx_paramedics]
     detail: |
       ❌ TRAP. Paeds bolus is 10 mL/kg (NOT 20). Bigger bolus →
       rapid osmolality shift → cerebral-oedema risk.
@@ -400,6 +401,7 @@ management:
     category: drug
     name: 'Start IV insulin at the same time as the saline bolus'
     must_not_do: true
+    gated_by_history: [hx_paramedics]
     detail: |
       ❌ TRAP. Paeds BSPED 2021 deliberately delays insulin by 1
       hour. Concurrent insulin in children is a cerebral-oedema
@@ -409,6 +411,7 @@ management:
     category: drug
     name: 'IV insulin bolus 0.1 units/kg STAT'
     must_not_do: true
+    gated_by_history: [hx_paramedics]
     detail: |
       ❌ TRAP. No insulin bolus in DKA (paeds or adult). No
       benefit; rapid osmolality shift.

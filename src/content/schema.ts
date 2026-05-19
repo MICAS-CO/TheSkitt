@@ -336,6 +336,15 @@ export const ManagementAction = z.object({
    * is correct, but only in the right order.
    */
   prereq_action_ids: z.array(z.string()).optional(),
+  /**
+   * Clinical-reasoning gate (M35). When set, this action only appears
+   * on the management chart once the player has asked at least one of
+   * the listed history items. Used to hide examiner-trap options
+   * (must_not_do) until the player has heard the *cue* that would
+   * make the trap tempting — simulating the cognitive trap rather
+   * than just displaying it.
+   */
+  gated_by_history: z.array(z.string()).optional(),
   sources: z.array(Citation).optional(),
 });
 
