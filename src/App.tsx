@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { parse as parseYaml } from 'yaml';
 import { PhaserGame } from './ui/PhaserGame';
 import { ShiftView } from './ui/shift/ShiftView';
@@ -13,7 +13,10 @@ import { SimKernel } from './sim/kernel';
 import { EcgChallengeScreen } from './ui/ecg/EcgChallengeScreen';
 import { SkillTreeScreen } from './ui/progression/SkillTreeScreen';
 import { SettingsScreen } from './ui/settings/SettingsScreen';
-import { AssetLibraryScreen, isStyleGuideRequested } from './ui/styleguide/AssetLibraryScreen';
+import { isStyleGuideRequested } from './ui/styleguide/url-gate';
+const AssetLibraryScreen = lazy(() =>
+  import('./ui/styleguide/AssetLibraryScreen').then((m) => ({ default: m.AssetLibraryScreen })),
+);
 import { CasePracticeScreen } from './ui/practice/CasePracticeScreen';
 
 // Solo shift (Milestone 4)
@@ -457,7 +460,11 @@ export function App() {
         {view === 'ecg' && <EcgChallengeScreen onExit={() => setView('menu')} />}
         {view === 'skilltree' && <SkillTreeScreen onExit={() => setView('menu')} />}
         {view === 'settings' && <SettingsScreen onExit={() => setView('menu')} />}
-        {view === 'styleguide' && <AssetLibraryScreen onExit={() => setView('menu')} />}
+        {view === 'styleguide' && (
+          <Suspense fallback={<div className="app__loading">Loading style guide…</div>}>
+            <AssetLibraryScreen onExit={() => setView('menu')} />
+          </Suspense>
+        )}
         {view === 'practice' && (
           <CasePracticeScreen
             onPick={(episodeId) => {

@@ -174,16 +174,6 @@ function WorldTilesSection() {
   );
 }
 
-/**
- * Helper: check whether the current URL contains ?style-guide=1.
- * Used by <App> to route around the menu without exposing a button.
- */
-export function isStyleGuideRequested(): boolean {
-  if (typeof window === 'undefined') return false;
-  try {
-    return new URLSearchParams(window.location.search).get('style-guide') === '1';
-  } catch {
-    return false;
-  }
-}
+// isStyleGuideRequested moved to ./url-gate.ts (M64 code-split) so the
+// gate check stays in the main bundle while this screen is lazy-loaded.
 

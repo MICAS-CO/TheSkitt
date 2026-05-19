@@ -1685,6 +1685,14 @@ a {
   margin: 0 0 6px 0;
 }
 
+/* Suspense fallback for lazy-loaded routes (M64). */
+.app__loading {
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 /* Case Practice library (M63). */
 .practice {
   padding: 24px;
