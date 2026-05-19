@@ -1,0 +1,355 @@
+/**
+ * Pixel-art portrait engine — ported from Claude Design's
+ * `pixel-sprites.js` (Visual Style Guide Phase 1).
+ *
+ * Three-layer model per portrait:
+ *   1) base silhouette + clothing (per-patient sprite rows)
+ *   2) skin-state tint overlay     (per-state substitution map)
+ *   3) per-state diffs             (eyes/mouth/props/urticaria/tube/sweat)
+ *
+ * Sprites are 24×32 base resolution and rendered as crisp-edge SVG.
+ *
+ * Beth Cartwright (anaphylaxis, peanut, hen-do) is the first patient
+ * fully authored. Additional patients will land sprite sets as the
+ * design pipeline delivers them.
+ */
+
+import type { CaseStateT } from '../content/schema';
+
+type PaletteMap = Record<string, string | null>;
+
+// Single-character keys → hex (or null for transparent)
+const PAL: PaletteMap = {
+  '.': null, // transparent
+  '#': '#1a1310', // outline darkest
+  '~': '#3a2a22', // soft outline / closed-eye line
+
+  // Beth hair (brown bob)
+  k: '#2a1c10',
+  h: '#4a3220',
+  H: '#6e4a2e',
+  j: '#8a5e3a', // hair highlight tip
+
+  // Skin — base layer (substituted per-state)
+  s: '#c99680', // shadow
+  S: '#ecbf9f', // mid
+  L: '#f6dcc2', // highlight
+  l: '#fff0dc', // specular
+
+  // State tints (drop into s/S/L/l slots via substSkin)
+  // flushed
+  F: '#e87a72',
+  f: '#f29991',
+  g: '#fbbab2',
+  G: '#ffd2c8', // flushed specular
+  // clammy / pale (shock)
+  C: '#b5a59a',
+  c: '#d2c4b8',
+  d: '#e6dccf',
+  D: '#f0ebdc',
+  // mottled (arrested)
+  M: '#7c6e74',
+  m: '#9a8a8e',
+  n: '#b5a4a6',
+  N: '#c8b9bb',
+  // cyanosed
+  B: '#5a6a8a',
+  b: '#7e8eae',
+  V: '#9aaccd',
+  v: '#b6c4dd',
+
+  // Eyes / mouth
+  e: '#0d0a08', // pupil
+  w: '#f0e8d8', // sclera
+  O: '#a04050', // lip mid
+  o: '#7a2030', // lip shadow
+  q: '#5e2030', // open mouth interior
+  r: '#f29991', // swollen lip pink
+
+  // Dress (Beth — hen-do pink)
+  p: '#8a2548',
+  P: '#c7416f',
+  Q: '#e472a0',
+  R: '#f49ec0', // sparkle
+
+  // Hospital gown / sheet
+  W: '#e8e4d8', // sheet mid
+  Y: '#cfc9b8', // sheet shadow
+  X: '#f4f7f9', // gown highlight
+
+  // Tubes / wires / urticaria / sweat
+  U: '#d04848', // urticaria red
+  u: '#e8786a', // urticaria halo
+  T: '#7a92a8', // ET tube
+  t: '#b2c0ce', // ET tube highlight
+  Z: '#5a5a5a', // ECG lead
+  A: '#a4d4e8', // sweat
+  a: '#e0f0f8', // sweat highlight
+  I: '#dcc46a', // jaundice
+  i: '#f0dc8a',
+};
+
+// ─── Beth ───────────────────────────────────────────────────────────────────
+
+const bethUprightInhale = [
+  '........................', // 0
+  '........................', // 1
+  '..........kkkk..........', // 2
+  '.........khhhhhk........', // 3
+  '........khhHHHHhk.......', // 4
+  '.......khHHHHHHHhk......', // 5
+  '.......khHHHjjHHHhk.....', // 6
+  '.......khHsssssHHhk.....', // 7  forehead emerges
+  '.......khsSSSSSsHhk.....', // 8
+  '.......khSSLLLLSSHk.....', // 9
+  '.......hSSLwewewLSk.....', // 10  eyes
+  '.......hSSLLLLLLLSk.....', // 11
+  '.......hSSLLLLLLLSk.....', // 12
+  '.......hSSLLLeLLLSk.....', // 13  nose
+  '.......hSSLLLLLLLSk.....', // 14
+  '.......hsSSLOOOLSSk.....', // 15  mouth (closed)
+  '........hsSSSSSSsk......', // 16
+  '........hssssssh........', // 17  chin
+  '.........SSSSSk.........', // 18  neck
+  '........QPPPPPPQ........', // 19  strap
+  '.......pPPPPPPPPp.......', // 20
+  '......pPPRPPPPPRPPp.....', // 21  dress collar w/ sparkle
+  '.....pPPPPPPPPPPPPPp....', // 22  chest top INHALE (raised)
+  '.....pPPQQQQQQQQQPPp....', // 23
+  '....pPPQQQQQQQQQQQPPp...', // 24
+  '....pPPQQQQQQQQQQQPPp...', // 25
+  '....pPPQQQQQQQQQQQPPp...', // 26
+  '....pPPPQQQQQQQQQPPPp...', // 27
+  '....pPPPPQQQQQQQPPPPp...', // 28
+  '....pPPPPPPPPPPPPPPPp...', // 29
+  '....ppppppppppppppppp...', // 30
+  '........................', // 31
+];
+
+const bethUprightExhale = bethUprightInhale.slice();
+bethUprightExhale[22] = '......pPPPPPPPPPPPPPp...';
+bethUprightExhale[23] = '......pPPQQQQQQQQQPPp...';
+bethUprightExhale[24] = '.....pPPQQQQQQQQQQQPPp..';
+
+const bethSupineBase = [
+  '........................', // 0
+  '........................', // 1
+  '..............kkkk......', // 2
+  '............khhhhhhk....', // 3
+  '...........khhHHHHHhk...', // 4
+  '..........khHHHHHHHHhk..', // 5
+  '..........khHHHjjHHHhk..', // 6
+  '..........khsssssHHHhk..', // 7
+  '..........khsSSSSsHHhk..', // 8
+  '.........hSSSLLLLSSHk...', // 9
+  '........hSSLL~~LLSSHk...', // 10  half-closed eyes
+  '.......hSSLLLLLLLLSSk...', // 11
+  '.......hSSLLLLLLLLSSk...', // 12
+  '.......hSSLLLeeLLLSSk...', // 13  nose
+  '.......hSSLLqqqqLLSSk...', // 14  open slack mouth
+  '.......hSSLqqqqqqLSSk...', // 15
+  '........hsSSSSSSSsk.....', // 16
+  '..........hssssh........', // 17  neck slack
+  '........WWWWWWWWWWW.....', // 18  sheet edge
+  '.......WWWWWWWWWWWWW....', // 19
+  '......WWWWWWWWWWWWWWW...', // 20
+  '.....WWWWWWWWWWWWWWWWW..', // 21
+  '.....WWWWWWWWWWWWWWWWW..', // 22
+  '.....WWWWWWWWWWWWWWWWW..', // 23
+  '.....WYWYWYWYWYWYWYWWW..', // 24  sheet weave
+  '.....WWWWWWWWWWWWWWWWW..', // 25
+  '.....WWWWWWWWWWWWWWWWW..', // 26
+  '.....WWWWWWWWWWWWWWWWW..', // 27
+  '.....WWWWWWWWWWWWWWWWW..', // 28
+  '......WWWWWWWWWWWWWWW...', // 29
+  '........................', // 30
+  '........................', // 31
+];
+
+interface SpriteDiff {
+  row: number;
+  col: number;
+  ch: string;
+}
+
+function substSkin(rows: string[], map: Record<string, string>): string[] {
+  return rows.map((row) => {
+    let out = '';
+    for (let i = 0; i < row.length; i++) {
+      const ch = row[i]!;
+      out += map[ch] !== undefined ? map[ch] : ch;
+    }
+    return out;
+  });
+}
+
+function applyDiffs(rows: string[], diffs: SpriteDiff[]): string[] {
+  const grid = rows.map((r) => r.split(''));
+  for (const d of diffs) {
+    if (grid[d.row] && d.col < grid[d.row]!.length) {
+      grid[d.row]![d.col] = d.ch;
+    }
+  }
+  return grid.map((r) => r.join(''));
+}
+
+function bethStable(): string[][] {
+  return [bethUprightInhale, bethUprightExhale];
+}
+
+function bethTriaged(): string[][] {
+  const diffs: SpriteDiff[] = [
+    { row: 9, col: 11, ch: 'k' },
+    { row: 9, col: 12, ch: 'k' },
+    { row: 9, col: 14, ch: 'k' },
+    { row: 9, col: 15, ch: 'k' },
+    { row: 15, col: 11, ch: 'o' },
+    { row: 15, col: 12, ch: 'O' },
+    { row: 15, col: 13, ch: 'o' },
+  ];
+  return [applyDiffs(bethUprightInhale, diffs), applyDiffs(bethUprightExhale, diffs)];
+}
+
+function bethDeteriorating(): string[][] {
+  const map = { s: 'F', S: 'f', L: 'g', l: 'G' };
+  const diffs: SpriteDiff[] = [
+    // swollen upper + lower lip
+    { row: 14, col: 11, ch: 'r' },
+    { row: 14, col: 12, ch: 'r' },
+    { row: 14, col: 13, ch: 'r' },
+    { row: 15, col: 10, ch: 'r' },
+    { row: 15, col: 11, ch: 'O' },
+    { row: 15, col: 12, ch: 'O' },
+    { row: 15, col: 13, ch: 'O' },
+    { row: 15, col: 14, ch: 'r' },
+    { row: 16, col: 11, ch: 'r' },
+    { row: 16, col: 12, ch: 'r' },
+    { row: 16, col: 13, ch: 'r' },
+    // sweat droplet on temple
+    { row: 9, col: 17, ch: 'A' },
+    { row: 10, col: 17, ch: 'a' },
+    // urticaria on neck
+    { row: 18, col: 11, ch: 'U' },
+    { row: 18, col: 13, ch: 'U' },
+    { row: 19, col: 10, ch: 'u' },
+    { row: 19, col: 14, ch: 'u' },
+  ];
+  return [
+    applyDiffs(substSkin(bethUprightInhale, map), diffs),
+    applyDiffs(substSkin(bethUprightExhale, map), diffs),
+  ];
+}
+
+function bethArrested(): string[][] {
+  const map = { s: 'M', S: 'm', L: 'n', l: 'N' };
+  return [substSkin(bethSupineBase, map)];
+}
+
+function bethPostResus(): string[][] {
+  const map = { s: 'C', S: 'c', L: 'd', l: 'D' };
+  const diffs: SpriteDiff[] = [
+    { row: 10, col: 12, ch: '~' },
+    { row: 10, col: 13, ch: '~' },
+    { row: 10, col: 14, ch: '~' },
+    { row: 10, col: 15, ch: '~' },
+    // ET tube exits mouth right and tapes to cheek
+    { row: 14, col: 11, ch: 'T' },
+    { row: 14, col: 12, ch: 'T' },
+    { row: 14, col: 13, ch: 'T' },
+    { row: 14, col: 14, ch: 'T' },
+    { row: 14, col: 15, ch: 't' },
+    { row: 15, col: 15, ch: 'T' },
+    { row: 15, col: 16, ch: 'T' },
+    { row: 13, col: 16, ch: 'T' },
+    // ECG lead on sheet
+    { row: 18, col: 11, ch: 'Z' },
+    { row: 19, col: 11, ch: 'Z' },
+    { row: 20, col: 12, ch: 'Z' },
+    { row: 21, col: 13, ch: 'Z' },
+  ];
+  return [applyDiffs(substSkin(bethSupineBase, map), diffs)];
+}
+
+// ─── Renderer ───────────────────────────────────────────────────────────────
+
+/** Render sprite rows to a crisp-edge SVG string. */
+export function frameToSvg(rows: string[], scale = 4): string {
+  if (rows.length === 0) return '';
+  const w = rows[0]!.length;
+  const h = rows.length;
+  let svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" ` +
+    `shape-rendering="crispEdges" style="image-rendering:pixelated;` +
+    `width:${w * scale}px;height:${h * scale}px;display:block">`;
+  for (let y = 0; y < h; y++) {
+    const row = rows[y]!;
+    let x = 0;
+    while (x < row.length) {
+      const ch = row[x]!;
+      const col = PAL[ch];
+      if (col == null) {
+        x++;
+        continue;
+      }
+      let runEnd = x + 1;
+      while (runEnd < row.length && row[runEnd] === ch) runEnd++;
+      svg += `<rect x="${x}" y="${y}" width="${runEnd - x}" height="1" fill="${col}"/>`;
+      x = runEnd;
+    }
+  }
+  svg += '</svg>';
+  return svg;
+}
+
+// ─── Sprite registry per patient ────────────────────────────────────────────
+
+/**
+ * Map case_id → sprite state factories. As Claude Design ships sprite
+ * sets for additional patients, add entries here. Cases without a
+ * registered sprite fall back to the CSS silhouette portrait.
+ */
+export const PATIENT_SPRITES: Record<
+  string,
+  Partial<Record<CaseStateT | 'post_resus', () => string[][]>>
+> = {
+  case_anaphylaxis_adult_peanut: {
+    stable: bethStable,
+    triaged: bethTriaged,
+    unseen: bethStable,
+    deteriorating: bethDeteriorating,
+    arrested: bethArrested,
+    deceased: bethArrested,
+    admitted: bethPostResus,
+    discharged: bethStable,
+    post_resus: bethPostResus,
+  },
+};
+
+/**
+ * Returns the rendered SVG markup for a patient at a given case state,
+ * or null if the patient has no authored sprite yet.
+ */
+export function spriteSvgFor(
+  caseId: string,
+  state: CaseStateT,
+  frameIndex = 0,
+  scale = 6,
+): string | null {
+  const reg = PATIENT_SPRITES[caseId];
+  if (!reg) return null;
+  const factory = reg[state];
+  if (!factory) return null;
+  const frames = factory();
+  const frame = frames[frameIndex % frames.length];
+  if (!frame) return null;
+  return frameToSvg(frame, scale);
+}
+
+/** Returns the number of animation frames for the given state. */
+export function frameCountFor(caseId: string, state: CaseStateT): number {
+  const reg = PATIENT_SPRITES[caseId];
+  if (!reg) return 0;
+  const factory = reg[state];
+  if (!factory) return 0;
+  return factory().length;
+}

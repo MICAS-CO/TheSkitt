@@ -5,6 +5,7 @@ import type { CaseRuntime, KernelState, LogEntry } from '../../sim/kernel';
 import { ClockBar } from '../shift/ClockBar';
 import { PatientPanel } from './PatientPanel';
 import { ResusMode } from './ResusMode';
+import { IconCountdown, IconRedFlag } from '../../style/icons';
 
 /**
  * Sections of the encounter. Replaces the old linear "phase pipeline":
@@ -397,10 +398,12 @@ function DeteriorationTimers({ caseId, ks }: { caseId: string; ks: KernelState }
           .map((a) => cs.data.management.find((m) => m.id === a)?.name ?? a);
         return (
           <div key={e.id} className={`enc__det enc__det--${tone}`}>
-            <span className="enc__det-chip">⚠ T+{e.t_min}</span>
+            <span className="enc__det-chip">
+              <IconCountdown size={12} title="Deterioration timer" />
+              <span>T+{e.t_min}</span>
+            </span>
             <span className="enc__det-text">
-              <strong>{remaining} min</strong> to complete:{' '}
-              <em>{missing.join(', ')}</em>
+              <strong>{remaining} min</strong> to complete: <em>{missing.join(', ')}</em>
             </span>
           </div>
         );
@@ -580,7 +583,8 @@ function ExaminationPhase({ cs, onExamine }: { cs: CaseRuntime; onExamine: (s: s
                     <li key={i} className={f.red_flag ? 'is-red-flag' : ''}>
                       {f.red_flag && (
                         <span className="enc__chip enc__chip--red-flag" aria-label="Red flag">
-                          ⚠ red flag
+                          <IconRedFlag size={12} fill="#fff" />
+                          <span style={{ marginLeft: 4 }}>red flag</span>
                         </span>
                       )}
                       <strong>{f.name}</strong>

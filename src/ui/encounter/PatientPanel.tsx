@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { CaseRuntime } from '../../sim/kernel';
 import { deriveVitals, news2 } from '../../sim/vitals';
 import { MonitorAudio, loadAudioEnabled, saveAudioEnabled } from '../../sim/audio';
+import { frameCountFor, spriteSvgFor } from '../../style/sprites';
 
 /**
  * Persistent patient panel — portrait + live vitals strip.
@@ -56,7 +57,7 @@ export function PatientPanel({ cs }: { cs: CaseRuntime }) {
           {audioOn ? '♪ monitor on' : '♪ monitor off'}
         </button>
       </div>
-      <PatientPortrait state={cs.state} hr={v.hr ?? 80} rr={v.rr ?? 16} />
+      <PatientPortrait caseId={cs.caseId} state={cs.state} hr={v.hr ?? 80} rr={v.rr ?? 16} />
       <div className="patient-panel__vitals">
         <div className={`patient-panel__news patient-panel__news--${newsBand}`}>
           <div className="patient-panel__news-label">NEWS2</div>
@@ -124,22 +125,54 @@ function fmtBp(sys: number | undefined, dia: number | undefined): string {
 }
 
 /**
- * CSS-driven patient portrait — keys off the runtime state for colour /
- * posture, and uses the HR + RR to drive a breathing animation cadence.
- * Replaceable with sprite art (see /assets/sprites/patients/<name>/) once
- * the design pipeline lands those.
+ * Patient portrait — prefers authored pixel-art sprites (from
+ * Claude Design's style guide) when one exists for this case, with a
+ * frame loop driven by the patient's RR. Falls back to a CSS silhouette
+ * (head + torso on a trolley) for cases without authored sprite art.
  */
 function PatientPortrait({
+  caseId,
   state,
   hr,
   rr,
 }: {
+  caseId: string;
   state: CaseRuntime['state'];
   hr: number;
   rr: number;
 }) {
-  const breath = rr > 0 ? Math.min(60 / Math.max(rr, 6), 5) : 0; // seconds per breath, capped
-  const pulse = hr > 0 ? Math.max(0.4, 60 / Math.max(hr, 30)) : 0; // seconds per beat
+  const breath = rr > 0 ? Math.min(60 / Math.max(rr, 6), 5) : 0; // s per breath, capped
+  const pulse = hr > 0 ? Math.max(0.4, 60 / Math.max(hr, 30)) : 0; // s per beat
+  const frameCount = frameCountFor(caseId, state);
+  const [frameIndex, setFrameIndex] = useState(0);
+
+  // Animate sprite frames in sync with RR (breaths per minute).
+  useEffect(() => {
+    if (frameCount <= 1) return;
+    const periodMs = Math.max(600, 60000 / Math.max(8, rr));
+    const id = setInterval(() => setFrameIndex((i) => (i + 1) % frameCount), periodMs / frameCount);
+    return () => clearInterval(id);
+  }, [frameCount, rr]);
+
+  const svg = spriteSvgFor(caseId, state, frameIndex, 6);
+
+  if (svg) {
+    return (
+      <div className={`patient-portrait patient-portrait--sprite patient-portrait--${state}`}>
+        <div
+          className="patient-portrait__sprite"
+          dangerouslySetInnerHTML={{ __html: svg }}
+          aria-hidden="true"
+        />
+        {state === 'arrested' && (
+          <div className="patient-portrait__overlay" aria-hidden="true">
+            asystole
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className={`patient-portrait patient-portrait--${state}`}>
       <div className="patient-portrait__bed" />

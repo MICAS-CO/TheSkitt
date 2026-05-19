@@ -1,21 +1,29 @@
 :root {
   color-scheme: dark;
-  --bg: #0f1115;
-  --panel: #1a1d24;
-  --panel-2: #20242d;
-  --border: #2a2f3a;
-  --border-2: #3a4250;
-  --text: #e8e8e8;
-  --muted: #8a93a3;
-  --accent: #7adb7a;
-  --warn: #e1a247;
-  --danger: #d96b5c;
-  --danger-strong: #b94434;
-  --info: #5ea4d4;
-  --top: #7adb7a;
-  --must-not-miss: #e1a247;
-  --worth: #b8b8b8;
-  --unlikely: #6b7280;
+  /* Locked palette per Claude Design Visual Style Guide Phase 1.
+     Hex values held in src/style/palette.ts — keep these in sync. */
+  --bg: #0d2120;
+  --panel: #15302f;
+  --panel-2: #1a3837;
+  --border: #264a48;
+  --border-2: #3d8885;
+  --text: #f1ece3;
+  --muted: #9fb5b4;
+  --accent: #5bbf8f; /* mon-ok */
+  --warn: #e0a82e; /* mon-warn */
+  --danger: #e85045; /* alert-50 */
+  --danger-strong: #c8362a; /* alert-100 */
+  --info: #4fa3a0; /* teal-100 */
+  /* Likelihood badges keep their narrative-meaning labels. */
+  --top: #5bbf8f;
+  --must-not-miss: #e0a82e;
+  --worth: #c4c1ba; /* lino-200 */
+  --unlikely: #6b6862; /* lino-400 */
+  /* Typography tokens */
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Manrope', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-hand: 'Caveat', 'Comic Sans MS', cursive;
 }
 
 * {
@@ -30,9 +38,28 @@ body,
   height: 100%;
   background: var(--bg);
   color: var(--text);
-  font-family:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
-    monospace;
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Code, vitals, clock, and any data-dense readouts keep the mono face. */
+pre,
+code,
+kbd,
+samp,
+.vitals-strip__value,
+.vitals-strip__label,
+.enc__clock,
+.enc__clock-text {
+  font-family: var(--font-mono);
 }
 
 button {
@@ -1117,13 +1144,38 @@ a {
 
 .patient-portrait {
   position: relative;
-  height: 160px;
+  height: 200px;
   border-radius: 6px;
   overflow: hidden;
   background:
     radial-gradient(120% 100% at 50% 0%, rgba(255, 255, 255, 0.04), transparent 60%),
     linear-gradient(180deg, #1c1f27 0%, #15171c 100%);
   border: 1px solid var(--border);
+}
+.patient-portrait--sprite {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(120% 100% at 50% 0%, rgba(127, 203, 200, 0.06), transparent 60%),
+    linear-gradient(180deg, #15302f 0%, #0d2120 100%);
+}
+.patient-portrait__sprite {
+  /* Sprite engine sets its own width/height; we just centre + crisp it. */
+  image-rendering: pixelated;
+  display: block;
+  filter: drop-shadow(0 4px 0 rgba(0, 0, 0, 0.4));
+}
+.patient-portrait--sprite.patient-portrait--deteriorating {
+  background:
+    radial-gradient(120% 100% at 50% 0%, rgba(200, 54, 42, 0.16), transparent 60%),
+    linear-gradient(180deg, #2a1715 0%, #15302f 100%);
+}
+.patient-portrait--sprite.patient-portrait--arrested,
+.patient-portrait--sprite.patient-portrait--deceased {
+  background:
+    radial-gradient(120% 100% at 50% 0%, rgba(124, 110, 116, 0.18), transparent 60%),
+    linear-gradient(180deg, #1c1820 0%, #0d0e12 100%);
 }
 .patient-portrait__bed {
   position: absolute;
