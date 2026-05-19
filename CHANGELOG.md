@@ -4,6 +4,34 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M53 — three more pivotal branch_choices (Stan / Chloe / Patel)
+
+- Stan hx_paramedics: dismissive branch literally drops the
+  witnessed-fall detail and missing-BM from the handover. Cost-of-
+  not-listening encoded as mechanical consequence.
+- Chloe hx_housemate: compassionate branch lands Mira's
+  'I should have said something earlier.'
+- Patel hx_daughter: compassionate branch unlocks Priya's
+  'She is smiling because you are looking at her.'
+
+### M52 — ten more gated_by_history traps
+
+- Brennan +2 (aspirin / DOAC reversal on hx_anticoagulant).
+- Patel +1 (thrombolysis on hx_pain).
+- Ahmed +2 (beta-blocker bolus / fluid bolus on hx_paramedic).
+- Morrison +1 (delay abx for cultures on hx_paramedics).
+- Chloe +1 (wait for 4-h level on hx_chloe_ingestion).
+- Sarah +2 (methotrexate / NSAID on hx_pregnancy).
+- Beth +1 (chlorphenamine-first on hx_onset).
+
+### M51 — essential workup markers on every remaining case (6/17 → 17/17)
+
+- Ahmed, Sam, Okafor, Oduya, Stan, Okonkwo, Amir, Chloe, Morrison,
+  Priya, Kowalski backfilled with 2–4 essentials each per
+  NICE/RCEM/ESC/BSPED/JBDS/Surviving-Sepsis guidance.
+- Workup-parsimony metric (M36) now runs on every case.
+- scoring.test.ts updated to a synthetic no-essentials fixture.
+
 ### M50 — four more discoverable exam manoeuvres
 
 - Sarah obstetric: bedside FAST + pelvic exam (consent + chaperone)

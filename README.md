@@ -66,6 +66,9 @@ log and `RESUME.md` for current state at a glance.
 | 48    | Two more bedside ECG drills        | New ecg_016 (paroxysmal AF stroke) · Marcus + Williams wired · coverage 5/17                              |
 | 49    | Three more branch_choices          | Williams Carol · Marcus Joe · Brennan DOAC-compliance · coverage 8/17                                     |
 | 50    | Four more discoverable manoeuvres  | Sarah pelvic · Patel auscultation · Beth airway · Priya post-ictal · coverage 6/17                        |
+| 51    | Essentials on every case           | 6/17 → 17/17 — workup parsimony now runs on every shift                                                  |
+| 52    | Ten more gated traps               | Brennan aspirin / DOAC reversal · Patel lysis · Ahmed BB+fluid · Morrison abx · Chloe level · Sarah · Beth |
+| 53    | Three pivotal branches             | Stan paramedic (dismissive *drops* the witnessed fall + BM) · Chloe Mira · Patel daughter                  |
 
 Numbers: **296 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
 16 daily ECGs · 8 NPC sprites · 12 encounter props · 11 world tiles**.

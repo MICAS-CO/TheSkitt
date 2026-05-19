@@ -56,6 +56,9 @@ visual integration from Claude Design + new content.
 | M48 | Two more ECG drills — Marcus (peaked T → hyperkalaemia) + Williams (AF + apixaban + lysis decision) |
 | M49 | Three more branch_choices — Williams (Carol), Marcus (Joe), Brennan (DOAC compliance) |
 | M50 | Four more exam manoeuvres — Sarah pelvic, Patel auscultation, Beth airway, Priya post-ictal |
+| M51 | Essential workup markers on every remaining case — coverage 6/17 → 17/17 |
+| M52 | Ten more gated_by_history traps — Brennan / Patel / Ahmed / Morrison / Chloe / Sarah / Beth |
+| M53 | Three more pivotal branch_choices — Stan paramedic / Chloe Mira / Patel daughter |
 
 ## ⏳ WAITING ON DESIGN
 
