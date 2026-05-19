@@ -150,20 +150,106 @@ const PE_SOLO: () => ShiftPack = () => ({
   arcs: [],
 });
 
-const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
-  ep_anaphylaxis_solo: SOLO_SHIFT,
-  ep_hendo_shift: HENDO_SHIFT,
-  ep_overnight_sepsis_solo: SEPSIS_SOLO,
-  ep_overnight_metabolic: METABOLIC_SHIFT,
-  ep_birthday_party: FAMILY_SHIFT,
-  ep_stroke_solo: STROKE_SOLO,
-  ep_seizure_solo: SEIZURE_SOLO,
-  ep_head_injury_doac: HEAD_INJURY_DOAC,
-  ep_doac_double: DOAC_DOUBLE,
-  ep_dissection_solo: DISSECTION_SOLO,
-  ep_ugib_solo: UGIB_SOLO,
-  ep_pe_solo: PE_SOLO,
-};
+interface ShiftDef {
+  id: string;
+  title: string;
+  eyebrow: string;
+  meta: string;
+  variant?: 'primary' | 'secondary';
+  factory: () => ShiftPack;
+}
+
+const SHIFT_DEFS: ShiftDef[] = [
+  {
+    id: 'ep_hendo_shift',
+    title: 'The hen-do',
+    eyebrow: 'Shift · ST3 · 20 min · 2 cases · 1 arc',
+    meta: 'Anaphylaxis (resus) + ectopic pregnancy (minors), connected by shared incident. NICE NG126 · Resus Council UK 2021 · RCOG GTG 21',
+    variant: 'primary',
+    factory: HENDO_SHIFT,
+  },
+  {
+    id: 'ep_birthday_party',
+    title: 'Family anaphylaxis — adult + paeds',
+    eyebrow: 'Shift · ST3 · 20 min · 2 cases · 1 arc',
+    meta: 'Beth + her 8y/o brother Sam. Resus Council UK 2021 algorithm, two dose bands, one shift.',
+    factory: FAMILY_SHIFT,
+  },
+  {
+    id: 'ep_overnight_metabolic',
+    title: 'Overnight: metabolic resus',
+    eyebrow: 'Shift · ST3 · 20 min · 2 cases',
+    meta: 'New-onset DKA + urosepsis on the same shift. JBDS-IP + NICE NG51. Two time-critical bundles in parallel.',
+    factory: METABOLIC_SHIFT,
+  },
+  {
+    id: 'ep_overnight_sepsis_solo',
+    title: 'Overnight: sepsis solo',
+    eyebrow: 'Shift · CT2 · 20 min · 1 case',
+    meta: 'Urosepsis with evolving septic shock. NICE NG51 + Sepsis Six + advance care plan.',
+    factory: SEPSIS_SOLO,
+  },
+  {
+    id: 'ep_stroke_solo',
+    title: 'Stroke onset — thrombolysis window',
+    eyebrow: 'Shift · CT2 · 20 min · 1 case',
+    meta: 'Witnessed LMCA stroke on apixaban. NICE NG128 + DOAC contraindication + thrombectomy referral.',
+    factory: STROKE_SOLO,
+  },
+  {
+    id: 'ep_seizure_solo',
+    title: 'First seizure — status pathway',
+    eyebrow: 'Shift · ST3 · 20 min · 1 case',
+    meta: 'Refractory status in a pregnant 28-y/o. NICE NG217 (2022) + MHRA Valproate PPP + a CT twist.',
+    factory: SEIZURE_SOLO,
+  },
+  {
+    id: 'ep_head_injury_doac',
+    title: 'Head injury — DOAC reasoning',
+    eyebrow: 'Shift · CT2 · 20 min · 1 case',
+    meta: 'Anticoagulated faller, GCS 15 on arrival. NICE NG232 + Canadian C-spine + NICE TA697 andexanet.',
+    factory: HEAD_INJURY_DOAC,
+  },
+  {
+    id: 'ep_doac_double',
+    title: 'DOAC double-bill — clot and bleed',
+    eyebrow: 'Shift · ST3 · 20 min · 2 cases',
+    meta: 'Williams (ischaemic LVO on apixaban) + Brennan (SDH on apixaban) on the same shift. Reperfusion vs reversal in parallel.',
+    factory: DOAC_DOUBLE,
+  },
+  {
+    id: 'ep_dissection_solo',
+    title: 'Aortic dissection — the anchor-breaker',
+    eyebrow: 'Shift · ST3 · 20 min · 1 case',
+    meta: 'Type A AD masquerading as inferior STEMI. Cath lab pre-alerted, the call is yours. ADD-RS + ESC 2024 + IRAD mortality clock.',
+    factory: DISSECTION_SOLO,
+  },
+  {
+    id: 'ep_ugib_solo',
+    title: 'Variceal UGIB — Sepsis Six of the liver',
+    eyebrow: 'Shift · ST3 · 20 min · 1 case',
+    meta: 'Massive haematemesis in a Child-Pugh C cirrhotic. NICE CG141 + BSG 2015 + HALT-IT. Restrictive Hb 7–8, terlipressin + ceftriaxone bundle.',
+    factory: UGIB_SOLO,
+  },
+  {
+    id: 'ep_pe_solo',
+    title: 'Massive PE — shock and the thrombolysis decision',
+    eyebrow: 'Shift · ST3 · 20 min · 1 case',
+    meta: 'Post-op + COCP shock-state PE with RV strain. NICE NG158 + ESC 2019. The bedside-echo + DVT scan pivot lets you start reperfusion without leaving resus.',
+    factory: PE_SOLO,
+  },
+  {
+    id: 'ep_anaphylaxis_solo',
+    title: 'Anaphylaxis solo',
+    eyebrow: 'Shift · CT2 · 20 min · 1 case',
+    meta: 'Single-case milestone-4 build. Adult anaphylaxis on the clock.',
+    factory: SOLO_SHIFT,
+  },
+];
+
+const KNOWN_SHIFTS: Record<string, () => ShiftPack> = Object.fromEntries(
+  SHIFT_DEFS.map((s) => [s.id, s.factory]),
+);
 
 export function App() {
   const [view, setView] = useState<View>('menu');
@@ -237,18 +323,11 @@ export function App() {
       <main className="app__stage">
         {view === 'menu' && (
           <MenuView
-            onStartHendo={() => startShift(HENDO_SHIFT())}
-            onStartSolo={() => startShift(SOLO_SHIFT())}
-            onStartSepsis={() => startShift(SEPSIS_SOLO())}
-            onStartMetabolic={() => startShift(METABOLIC_SHIFT())}
-            onStartFamily={() => startShift(FAMILY_SHIFT())}
-            onStartStroke={() => startShift(STROKE_SOLO())}
-            onStartSeizure={() => startShift(SEIZURE_SOLO())}
-            onStartHeadInjury={() => startShift(HEAD_INJURY_DOAC())}
-            onStartDoacDouble={() => startShift(DOAC_DOUBLE())}
-            onStartDissection={() => startShift(DISSECTION_SOLO())}
-            onStartUgib={() => startShift(UGIB_SOLO())}
-            onStartPe={() => startShift(PE_SOLO())}
+            shifts={SHIFT_DEFS}
+            onStart={(id) => {
+              const def = SHIFT_DEFS.find((s) => s.id === id);
+              if (def) startShift(def.factory());
+            }}
             onShowHub={() => setView('hub')}
             saved={saved}
             onResume={resumeSavedShift}
@@ -276,35 +355,15 @@ export function App() {
 }
 
 function MenuView({
-  onStartHendo,
-  onStartSolo,
-  onStartSepsis,
-  onStartMetabolic,
-  onStartFamily,
-  onStartStroke,
-  onStartSeizure,
-  onStartHeadInjury,
-  onStartDoacDouble,
-  onStartDissection,
-  onStartUgib,
-  onStartPe,
+  shifts,
+  onStart,
   onShowHub,
   saved,
   onResume,
   onClearSave,
 }: {
-  onStartHendo: () => void;
-  onStartSolo: () => void;
-  onStartSepsis: () => void;
-  onStartMetabolic: () => void;
-  onStartFamily: () => void;
-  onStartStroke: () => void;
-  onStartSeizure: () => void;
-  onStartHeadInjury: () => void;
-  onStartDoacDouble: () => void;
-  onStartDissection: () => void;
-  onStartUgib: () => void;
-  onStartPe: () => void;
+  shifts: ShiftDef[];
+  onStart: (id: string) => void;
   onShowHub: () => void;
   saved: SavedShift | null;
   onResume: () => void;
@@ -334,102 +393,17 @@ function MenuView({
           </div>
         )}
         <div className="menu__cards">
-          <button className="menu__card menu__card--primary" onClick={onStartHendo}>
-            <span className="menu__card-eyebrow">Shift · ST3 · 20 min · 2 cases · 1 arc</span>
-            <span className="menu__card-title">The hen-do</span>
-            <span className="menu__card-meta">
-              Anaphylaxis (resus) + ectopic pregnancy (minors), connected by shared incident. NICE
-              NG126 · Resus Council UK 2021 · RCOG GTG 21
-            </span>
-          </button>
-          <button className="menu__card menu__card--secondary" onClick={onStartFamily}>
-            <span className="menu__card-eyebrow">Shift · ST3 · 20 min · 2 cases · 1 arc</span>
-            <span className="menu__card-title">Family anaphylaxis — adult + paeds</span>
-            <span className="menu__card-meta">
-              Beth + her 8y/o brother Sam. Resus Council UK 2021 algorithm, two dose bands, one
-              shift.
-            </span>
-          </button>
-          <button className="menu__card menu__card--secondary" onClick={onStartMetabolic}>
-            <span className="menu__card-eyebrow">Shift · ST3 · 20 min · 2 cases</span>
-            <span className="menu__card-title">Overnight: metabolic resus</span>
-            <span className="menu__card-meta">
-              New-onset DKA + urosepsis on the same shift. JBDS-IP + NICE NG51. Two time-critical
-              bundles in parallel.
-            </span>
-          </button>
-          <button className="menu__card menu__card--secondary" onClick={onStartSepsis}>
-            <span className="menu__card-eyebrow">Shift · CT2 · 20 min · 1 case</span>
-            <span className="menu__card-title">Overnight: sepsis solo</span>
-            <span className="menu__card-meta">
-              Urosepsis with evolving septic shock. NICE NG51 + Sepsis Six + advance care plan.
-            </span>
-          </button>
-          <button className="menu__card menu__card--secondary" onClick={onStartStroke}>
-            <span className="menu__card-eyebrow">Shift · CT2 · 20 min · 1 case</span>
-            <span className="menu__card-title">Stroke onset — thrombolysis window</span>
-            <span className="menu__card-meta">
-              Witnessed LMCA stroke on apixaban. NICE NG128 + DOAC contraindication + thrombectomy
-              referral.
-            </span>
-          </button>
-          <button className="menu__card menu__card--secondary" onClick={onStartSeizure}>
-            <span className="menu__card-eyebrow">Shift · ST3 · 20 min · 1 case</span>
-            <span className="menu__card-title">First seizure — status pathway</span>
-            <span className="menu__card-meta">
-              Refractory status in a pregnant 28-y/o. NICE NG217 (2022) + MHRA Valproate PPP + a CT
-              twist.
-            </span>
-          </button>
-          <button className="menu__card menu__card--secondary" onClick={onStartHeadInjury}>
-            <span className="menu__card-eyebrow">Shift · CT2 · 20 min · 1 case</span>
-            <span className="menu__card-title">Head injury — DOAC reasoning</span>
-            <span className="menu__card-meta">
-              Anticoagulated faller, GCS 15 on arrival. NICE NG232 + Canadian C-spine + NICE TA697
-              andexanet.
-            </span>
-          </button>
-          <button className="menu__card menu__card--secondary" onClick={onStartDoacDouble}>
-            <span className="menu__card-eyebrow">Shift · ST3 · 20 min · 2 cases</span>
-            <span className="menu__card-title">DOAC double-bill — clot and bleed</span>
-            <span className="menu__card-meta">
-              Williams (ischaemic LVO on apixaban) + Brennan (SDH on apixaban) on the same shift.
-              Reperfusion vs reversal in parallel.
-            </span>
-          </button>
-          <button className="menu__card menu__card--secondary" onClick={onStartDissection}>
-            <span className="menu__card-eyebrow">Shift · ST3 · 20 min · 1 case</span>
-            <span className="menu__card-title">Aortic dissection — the anchor-breaker</span>
-            <span className="menu__card-meta">
-              Type A AD masquerading as inferior STEMI. Cath lab pre-alerted, the call is yours.
-              ADD-RS + ESC 2024 + IRAD mortality clock.
-            </span>
-          </button>
-          <button className="menu__card menu__card--secondary" onClick={onStartUgib}>
-            <span className="menu__card-eyebrow">Shift · ST3 · 20 min · 1 case</span>
-            <span className="menu__card-title">Variceal UGIB — Sepsis Six of the liver</span>
-            <span className="menu__card-meta">
-              Massive haematemesis in a Child-Pugh C cirrhotic. NICE CG141 + BSG 2015 + HALT-IT.
-              Restrictive Hb 7–8, terlipressin + ceftriaxone bundle.
-            </span>
-          </button>
-          <button className="menu__card menu__card--secondary" onClick={onStartPe}>
-            <span className="menu__card-eyebrow">Shift · ST3 · 20 min · 1 case</span>
-            <span className="menu__card-title">
-              Massive PE — shock and the thrombolysis decision
-            </span>
-            <span className="menu__card-meta">
-              Post-op + COCP shock-state PE with RV strain. NICE NG158 + ESC 2019. The bedside-echo
-              + DVT scan pivot lets you start reperfusion without leaving resus.
-            </span>
-          </button>
-          <button className="menu__card menu__card--secondary" onClick={onStartSolo}>
-            <span className="menu__card-eyebrow">Shift · CT2 · 20 min · 1 case</span>
-            <span className="menu__card-title">Anaphylaxis solo</span>
-            <span className="menu__card-meta">
-              Single-case milestone-4 build. Adult anaphylaxis on the clock.
-            </span>
-          </button>
+          {shifts.map((s) => (
+            <button
+              key={s.id}
+              className={`menu__card menu__card--${s.variant ?? 'secondary'}`}
+              onClick={() => onStart(s.id)}
+            >
+              <span className="menu__card-eyebrow">{s.eyebrow}</span>
+              <span className="menu__card-title">{s.title}</span>
+              <span className="menu__card-meta">{s.meta}</span>
+            </button>
+          ))}
           <button className="menu__card menu__card--secondary" onClick={onShowHub}>
             <span className="menu__card-eyebrow">Preview</span>
             <span className="menu__card-title">ED hub layout</span>
@@ -441,23 +415,8 @@ function MenuView({
   );
 }
 
-const SHIFT_TITLES: Record<string, string> = {
-  ep_anaphylaxis_solo: 'Anaphylaxis solo',
-  ep_hendo_shift: 'The hen-do',
-  ep_overnight_sepsis_solo: 'Overnight: sepsis solo',
-  ep_overnight_metabolic: 'Overnight: metabolic resus',
-  ep_birthday_party: 'Family anaphylaxis — adult + paeds',
-  ep_stroke_solo: 'Stroke onset — thrombolysis window',
-  ep_seizure_solo: 'First seizure — status pathway',
-  ep_head_injury_doac: 'Head injury — DOAC reasoning',
-  ep_doac_double: 'DOAC double-bill — clot and bleed',
-  ep_dissection_solo: 'Aortic dissection — the anchor-breaker',
-  ep_ugib_solo: 'Variceal UGIB — Sepsis Six of the liver',
-  ep_pe_solo: 'Massive PE — shock and the thrombolysis decision',
-};
-
 function savedShiftTitle(episodeId: string): string {
-  return SHIFT_TITLES[episodeId] ?? episodeId;
+  return SHIFT_DEFS.find((s) => s.id === episodeId)?.title ?? episodeId;
 }
 
 function timeAgo(ts: number): string {
