@@ -4,6 +4,27 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M25 — third arc: Overnight Safety-Net (Chloe + Stan)
+
+- `arc_overnight_safety_net.yaml` (shared_incident) connects Chloe
+  (paracetamol OD, M23) and Stan (intox fall, M8) via the shared
+  pattern of prior ED visits with no MH follow-up.
+- Reveal triggers: \`history_asked\` on Chloe's hx_paeds_safeguarding
+  + fallback \`clock_time\` at T+14.
+- Effect: unlocks Stan's new \`hx_stan_prior_mh\` history item (three
+  prior ED visits Mar/Jul/Oct 2024, each discharged with alcohol-team
+  signposting only, no liaison-psych contact).
+- `ep_overnight_safety_net` (25-min ST3) wraps both cases + the arc.
+- Menu subtitle: '15 shifts, 16 cases' → '16 shifts, 16 cases, 3 arcs'.
+
+### M24 — ECG bank +3 challenges (14 total, 2-week rotation)
+
+- ecg_012 · New LBBB with positive Sgarbossa criteria → STEMI equivalent.
+- ecg_013 · Severe hypothermia (Osborn J waves, modified ALS algorithm).
+- ecg_014 · Asymptomatic WPW pattern (Type A) — appropriate ED pathway +
+  the AV-node-blocker safety teaching for any future pre-excited AF.
+- Menu copy: surfaces the 14-day rotation.
+
 ### M23 — new case: Chloe, staggered paracetamol overdose
 
 - `case_paracetamol_od_chloe` (ST3, ~450 lines): 19 y/o student,

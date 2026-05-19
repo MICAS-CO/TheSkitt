@@ -36,9 +36,11 @@ log and `RESUME.md` for current state at a glance.
 | 18–22 | **Claude Design integration**      | Locked palette, fonts, Beth's 5-state pixel sprites, 8 status icons, diegetic frames, palette in Phaser |
 | 20    | Sequence-aware penalty             | `prereq_action_ids` on management actions; 10-pt deduction per out-of-order action                     |
 | 23    | New case: Chloe paracetamol OD     | Staggered-vs-acute trap + NICE NG225 safeguarding parallel                                             |
+| 24    | ECG bank +3 (14 total)             | Sgarbossa-positive LBBB, severe hypothermia, asymptomatic WPW — 14-day rotation                       |
+| 25    | Third arc: Overnight Safety-Net    | Chloe + Stan connected by shared MH-system-failure pattern (NICE NG225)                                |
 
-Numbers: **257 unit tests · 2 E2E · 16 cases · 15 episodes · 2 arcs ·
-11 daily ECGs**. Lint clean, typecheck clean, validator green.
+Numbers: **257 unit tests · 2 E2E · 16 cases · 16 episodes · 3 arcs ·
+14 daily ECGs**. Lint clean, typecheck clean, validator green.
 
 ## Stack
 

@@ -1,13 +1,13 @@
 # Resume — current state
 
 Last activity: 2026-05-19. Branch `claude/add-necessary-files-4THUA`
-now at **70+ commits** total.
+now at **75+ commits** total.
 
-## What just happened (M9–M23)
+## What just happened (M9–M25)
 
 The game-feel feedback ("feels like work, not an RPG") landed as the
-Strategic Blueprint and drove a 15-milestone redesign + a fresh
-visual integration from Claude Design.
+Strategic Blueprint and drove a 17-milestone redesign + a fresh
+visual integration from Claude Design + new content.
 
 | Milestone | Headline |
 |---|---|
@@ -26,6 +26,8 @@ visual integration from Claude Design.
 | M21 | Phaser overworld palette unified with locked design tokens + more icon wire-ins |
 | M22 | ECG bank +4 (11 total) + IconCitation on sources |
 | M23 | New case + episode — Chloe, staggered paracetamol OD with safeguarding parallel |
+| M24 | ECG bank +3 (14 total, 2-week rotation) |
+| M25 | Third arc — Overnight Safety-Net connecting Chloe + Stan via NICE NG225 system-failure narrative |
 
 ## ⏳ WAITING ON DESIGN
 
@@ -38,16 +40,16 @@ template. No code changes needed beyond the registry entry.
 
 - **257 / 257** unit tests passing (Vitest)
 - **2 / 2** E2E tests passing (Playwright)
-- **16 fully-authored cases**, **15 episodes**, **2 arcs**, 44-topic
+- **16 fully-authored cases**, **16 episodes**, **3 arcs**, 44-topic
   high-yield map
-- **11 daily ECG challenges** rotating by day-of-year
+- **14 daily ECG challenges** rotating by day-of-year (2-week cycle)
 - All clinical content cites current UK guidelines as of May 2026
   (NICE NG253 sepsis, NICE NG106 2025, NICE TA990 tenecteplase,
   NICE NG217 Jan 2025, NICE NG126 May 2026 anti-D, NICE NG225 self-harm
   Sep 2022, Baveno VII 2022 pre-emptive TIPS, MHRA 2024 EpiPen 25 kg
   threshold, MHRA Sep 2012 paracetamol IV NAC, TA1029 Jan 2025 ICH)
 
-## Cases on the menu (15 shifts)
+## Cases on the menu (16 shifts)
 
 1. **The hen-do** (ST3, 4 cases + 1 arc) — Beth + Sarah + Stan + Patel
 2. **Family anaphylaxis — adult + paeds** (ST3, 2 cases + 1 arc) — Beth + Sam
@@ -63,7 +65,8 @@ template. No code changes needed beyond the registry entry.
 12. **Acute heart failure — pre-op diuretic-hold decomp** (ST3) — Ahmed
 13. **Hypertensive emergency — controlled BP reduction** (CT2) — Oduya
 14. **Paracetamol overdose — staggered, safeguarding parallel** (ST3) — Chloe
-15. **Anaphylaxis solo** (CT2) — Beth (milestone-4 build)
+15. **Overnight — the safety net** (ST3, 2 cases + 1 arc) — Chloe + Stan
+16. **Anaphylaxis solo** (CT2) — Beth (milestone-4 build)
 
 Plus: **ED hub layout** (Phaser overworld with avatar + proximity
 interact); **Daily ECG challenge** (11-rotation bank);
