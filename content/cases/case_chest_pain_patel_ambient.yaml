@@ -71,6 +71,48 @@ vitals:
     gcs: 3
 
 history:
+  - id: hx_triage_note
+    source: triage_note
+    topic: 'Pull the triage card.'
+    npc_voice: "The card is on the desk. The triage nurse — Anya, second day on triage — looks up briefly when you pick it up."
+    supports:
+      - 'Anterior ST-elevation myocardial infarction (STEMI)'
+    branch_choices:
+      - id: between_lines
+        label: "Read between the lines — and ask Anya what she actually thought."
+        npc_voice: "Anya comes over. She lowers her voice. She is glad you asked."
+        rapport_delta: 1
+        response: |
+          "Card reads: '?reflux, looks well, cat 3, daughter very
+          anxious.' (Pause.) Anya: 'She wouldn't have made the
+          card unless I let her sit on the waiting room bench. The
+          daughter brought her up to me twice. I almost made her
+          cat 2 but the obs were soft and she was talking in full
+          sentences. I'm sorry — I should have. The daughter — Priya?
+          — kept asking me what we'd do if it wasn't reflux.'"
+      - id: literal
+        label: "Read the card as written."
+        rapport_delta: 0
+        response: |
+          "Card: ?reflux, looks well, cat 3, daughter very anxious.
+          BP 132/82, HR 88, SpO2 98%, RR 16, temp 36.6, no pain
+          score documented."
+      - id: trust_and_move_on
+        label: "Cat 3 with normal obs — let's see her when we get to her."
+        npc_voice: "Anya watches you take the card and walk past her station."
+        rapport_delta: -2
+        response: |
+          (You don't ask Anya for her live impression. The 'I almost
+          made her cat 2' admission is NOT volunteered. The 'daughter
+          kept asking what we'd do if it wasn't reflux' clue is NOT
+          volunteered. The player has the card data only.)
+    response: |
+      Triage card reads: '?reflux, looks well, cat 3, daughter very
+      anxious.' Obs documented: BP 132/82, HR 88, SpO2 98%, RR 16,
+      temp 36.6. Anya (the triage nurse, second day on triage)
+      had considered upgrading her but the obs were soft. The
+      daughter Priya had been advocating for upgrade.
+
   - id: hx_pain
     source: patient
     topic: 'Tell me about the pain.'

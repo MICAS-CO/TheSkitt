@@ -74,6 +74,44 @@ history:
     source: paramedic
     topic: 'When did this start? What was the timeline?'
     supports: ['Anaphylaxis (IgE-mediated, peanut)']
+    npc_voice: "The paramedic, Dom, is doing his handover with his tablet open. He's been on shift since 06:30."
+    branch_choices:
+      - id: timeline_first
+        label: "Take me through it minute by minute — when did she change, and what did you see between each step?"
+        npc_voice: "Dom puts the tablet down. He goes through it from memory because he had a feeling this one would matter."
+        rapport_delta: 1
+        response: |
+          "Right. 18:45 — finished her starter, chicken satay. Itchy
+          chest. (Pause.) 18:50 — rash on her chest and arms, her
+          friend Sarah said she went 'like a tomato'. The restaurant
+          rang us. 18:54 — they put her on the floor. 18:55 — her
+          voice changed; her friend recorded it on her phone, sent
+          to her husband, that's how we knew about Tom. 19:00 — wheeze
+          audible across the room per the waiter. 19:02 — we arrived,
+          IM adrenaline 500 mcg in the right vastus lateralis. Sats
+          88 on RA at first contact, came up to 94 by the door. She
+          got a second dose six minutes later because the stridor
+          came back. (Pause.) Doc — the friend Sarah came with us.
+          She had belly pain. Triage took her into minors. I think
+          she's pregnant, just from the way she was guarding."
+      - id: standard
+        label: "Standard handover please."
+        rapport_delta: 0
+        response: |
+          "She finished her starter — chicken satay — at around 18:45.
+          Felt itchy on her chest a few minutes later, then a rash came up.
+          By the time we arrived at 19:02 she was wheezing and her voice
+          sounded different. We gave one IM adrenaline 500 mcg en route."
+      - id: cut_short
+        label: "Got it — anaphylaxis to peanut, you gave one IM."
+        npc_voice: "Dom nods. He doesn't volunteer the second dose, the friend Sarah, or his hunch about her pregnancy."
+        rapport_delta: -2
+        response: |
+          "Yeah. That's it. Good luck, doc."
+          (Player has lost: the second IM at 19:08, Sarah being in
+          minors with abdominal pain, and Dom's hunch that Sarah is
+          pregnant. The Sarah arc reveal will not be triggered by
+          this conversation.)
     response: |
       "She finished her starter — chicken satay — at around 18:45.
       Felt itchy on her chest a few minutes later, then a rash came up.

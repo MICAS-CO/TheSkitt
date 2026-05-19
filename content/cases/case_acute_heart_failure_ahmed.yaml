@@ -184,12 +184,51 @@ history:
   - id: hx_recent_chest_event
     source: gp_letter
     topic: 'Recent cardiology / GP letters?'
+    npc_voice: "Three letters in the EHR. The latest is the pre-op clinic letter from 10 days ago. The cardiology letters are older."
+    branch_choices:
+      - id: phone_the_anaesthetist
+        label: "Read the pre-op letter — then phone the pre-op clinic to ask exactly what they told him about the bumetanide."
+        npc_voice: "The pre-op nurse who saw him picks up after two rings. She is mortified before you finish your sentence."
+        rapport_delta: 1
+        response: |
+          "Cardiology 2024: HFrEF, EF 32%, moderate functional MR.
+          Coronary angio 2022, single-vessel disease, medically
+          managed. AF rate-controlled, on apixaban (CHA2DS2-VASc 5).
+          (Then — the phone call to pre-op clinic.) Pre-op nurse:
+          'I told him to stop the bumetanide ten days before surgery
+          so his potassium would be in range. The anaesthetic
+          consultant signed off. I — we have a SOP. I didn't refer to
+          the heart-failure clinic. I should have. The SOP doesn't
+          have an exception for HFrEF. Doctor — please tell me he's
+          alive.' (You note the SOP gap. You note the apology. You
+          also note this is the third such case in your trust this
+          year. A datix is going in tomorrow.)"
+      - id: read_letters_only
+        label: "Read the letters as they stand."
+        rapport_delta: 0
+        response: |
+          "Cardiology 2024: HFrEF, EF 32%, moderate functional MR.
+          Coronary angio 2022, single-vessel disease, medically
+          managed. AF rate-controlled, on apixaban (CHA2DS2-VASc 5).
+          Pre-op letter 10 days ago: stop bumetanide pre-op, restart
+          post-op."
+      - id: skim_old_letters
+        label: "Skim the cardiology summary — I'll come back to the rest."
+        npc_voice: "You don't open the pre-op letter. You miss the line about stopping the bumetanide."
+        rapport_delta: -1
+        response: |
+          "Cardiology 2024: HFrEF, EF 32%. On apixaban + bisoprolol."
+          (The pre-op clinic letter that documents the diuretic
+          cessation 10 days ago is NOT opened. The player has the
+          chronic-HF context but not the precipitant.)
     response: |
       "Last echo 2024: HFrEF, EF 32%, moderate functional MR, no
       regional wall-motion abnormality at rest. Coronary angio 2022
       after a TWI episode — single-vessel disease, medically managed.
       No new ischaemic events documented. AF rate-controlled on
-      bisoprolol; on apixaban for stroke risk (CHA2DS2-VASc 5)."
+      bisoprolol; on apixaban for stroke risk (CHA2DS2-VASc 5).
+      Pre-op clinic letter 10 days ago: stop bumetanide pre-op,
+      restart post-op."
 
   - id: hx_acp_status
     source: gp_letter

@@ -106,6 +106,52 @@ history:
       not always time. She mobilises with a frame. Mild Alzheimer
       dementia. She is fully verbal at baseline."
 
+  - id: hx_nurse_marian
+    source: nurse
+    topic: "Marian (sister) recognises her — ask her impression."
+    prereq_history_ids: [hx_paramedics]
+    npc_voice: "Marian's been in 27 years. She's holding the obs chart. She doesn't sit down."
+    supports:
+      - 'Sepsis from a urinary tract source (urosepsis)'
+    branch_choices:
+      - id: trust_experience
+        label: "You've seen this exact picture before, haven't you. Talk me through what you're noticing."
+        npc_voice: "Marian nods. She moves the obs chart so you can both see it. She gets specific."
+        rapport_delta: 1
+        response: |
+          "It's the silent kind, doc. She's not feverish — she's
+          36.4 — but look at the lactate when it comes back, it'll
+          be up. (Pause.) I've seen her here twice this year and
+          she always presents flat like this. Her hands are cold
+          and her nail beds are mauve. Her care home flagged her at
+          handover as 'not herself for two days'. Bob — that's her
+          husband — usually calls before she's this far gone. We
+          haven't heard from him this time. Worth a wellbeing
+          check on him too."
+      - id: focused
+        label: "What does she normally present like and what's different today?"
+        rapport_delta: 0
+        response: |
+          "Two prior admissions this year, both urinary sepsis,
+          both presented flat. Today she's quieter, peripherally
+          shut down, mauve nail beds. No fever. Bob hasn't
+          called — that's unusual."
+      - id: dismissive
+        label: "I'm doing the sepsis workup, Marian, I'll come back to you."
+        npc_voice: "Marian's face is professional. She nods once and walks back to her bay."
+        rapport_delta: -2
+        response: |
+          "Of course, doctor."
+          (The Bob wellbeing-check observation and the 'two prior
+          presentations' pattern are NOT volunteered. The player
+          loses Marian's pattern-recognition.)
+    response: |
+      Marian (sister, 27 years' ED experience) recognises Mrs Morrison
+      from two prior urosepsis admissions this year — both presenting
+      flat with no fever, peripherally shut down. Marian flags that
+      Bob (the husband) usually calls before she gets this unwell and
+      hasn't this time — worth a wellbeing check.
+
   - id: hx_uti_history
     source: records
     topic: 'Any recent infections or culture results?'
