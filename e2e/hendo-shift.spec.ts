@@ -22,8 +22,10 @@ test('menu → hen-do shift → board → encounter', async ({ page }) => {
   // Open Beth's encounter
   await page.getByText('Anaphylaxis — adult, peanut at restaurant').click();
   await expect(page.getByRole('heading', { name: 'Arrival' })).toBeVisible();
-  // Clock controls visible
-  await expect(page.getByRole('button', { name: /start/ })).toBeVisible();
+  // Clock controls visible — anchor on the exact ClockBar label.
+  // M10+ default history landing happens to surface a topic containing
+  // 'start', so a loose /start/ regex would match two elements.
+  await expect(page.getByRole('button', { name: '▶ start' })).toBeVisible();
 
   // Return to board
   await page.getByRole('button', { name: '← board' }).click();
