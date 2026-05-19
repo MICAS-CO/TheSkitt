@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { parse as parseYaml } from 'yaml';
 import { PhaserGame } from './ui/PhaserGame';
 import { ShiftView } from './ui/shift/ShiftView';
@@ -205,6 +205,18 @@ const PAEDS_DKA_SOLO: () => ShiftPack = () => ({
   cases: [Case.parse(parseYaml(amirYaml))],
   arcs: [],
 });
+
+/**
+ * Pick today's rotating "case of the day" by day-of-year mod the
+ * number of shifts (M33). Mirrors the daily ECG bank's rotation.
+ */
+function pickShiftOfTheDay(shifts: { id: string }[], now: Date = new Date()): string {
+  if (shifts.length === 0) return '';
+  const dayOfYear = Math.floor(
+    (now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000,
+  );
+  return shifts[dayOfYear % shifts.length]!.id;
+}
 
 interface ShiftDef {
   id: string;
@@ -472,6 +484,7 @@ function MenuView({
   onResume: () => void;
   onClearSave: () => void;
 }) {
+  const dailyShiftId = useMemo(() => pickShiftOfTheDay(shifts), [shifts]);
   return (
     <div className="menu">
       <div className="menu__inner">
@@ -496,17 +509,23 @@ function MenuView({
           </div>
         )}
         <div className="menu__cards">
-          {shifts.map((s) => (
-            <button
-              key={s.id}
-              className={`menu__card menu__card--${s.variant ?? 'secondary'}`}
-              onClick={() => onStart(s.id)}
-            >
-              <span className="menu__card-eyebrow">{s.eyebrow}</span>
-              <span className="menu__card-title">{s.title}</span>
-              <span className="menu__card-meta">{s.meta}</span>
-            </button>
-          ))}
+          {shifts.map((s) => {
+            const isToday = s.id === dailyShiftId;
+            return (
+              <button
+                key={s.id}
+                className={`menu__card menu__card--${s.variant ?? 'secondary'} ${
+                  isToday ? 'menu__card--today' : ''
+                }`}
+                onClick={() => onStart(s.id)}
+              >
+                {isToday && <span className="menu__card-today-badge">TODAY&rsquo;S PICK</span>}
+                <span className="menu__card-eyebrow">{s.eyebrow}</span>
+                <span className="menu__card-title">{s.title}</span>
+                <span className="menu__card-meta">{s.meta}</span>
+              </button>
+            );
+          })}
           <button className="menu__card menu__card--secondary" onClick={onShowHub}>
             <span className="menu__card-eyebrow">Preview</span>
             <span className="menu__card-title">ED hub layout</span>
