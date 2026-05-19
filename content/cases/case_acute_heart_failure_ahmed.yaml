@@ -307,6 +307,7 @@ investigations:
     name: '12-lead ECG'
     category: ecg
     turnaround_min: 2
+    essential: true
     ecg_challenge_id: ecg_015_af_rvr_pulmonary_oedema
     result_summary: |
       **AF at 118/min, no acute ST elevation, no Q waves, T-wave
@@ -319,6 +320,7 @@ investigations:
     name: 'Portable upright chest X-ray'
     category: imaging
     turnaround_min: 8
+    essential: true
     result_summary: |
       **Cardiomegaly (CT ratio 0.65), upper-lobe diversion, perihilar
       "bat-wing" alveolar opacification, Kerley B lines at the bases,
@@ -355,6 +357,7 @@ investigations:
     name: 'NT-proBNP'
     category: blood
     turnaround_min: 60
+    essential: true
     result_summary: |
       **NT-proBNP 6480 pg/mL** (markedly elevated — confirms heart
       failure as the dominant cause of dyspnoea). In the acute
@@ -370,6 +373,7 @@ investigations:
     name: 'High-sensitivity troponin (×2 at 0 + 3 h)'
     category: blood
     turnaround_min: 30
+    essential: true
     result_summary: |
       **hs-cTnI 38 ng/L (mildly elevated, just above upper limit
       14 ng/L).** Repeat at 3 h: 42 ng/L — stable, no rise pattern.

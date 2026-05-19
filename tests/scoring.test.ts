@@ -128,17 +128,18 @@ describe('scoreCase — adult anaphylaxis', () => {
   });
 
   it('cases without any essential markers are untracked (M36)', () => {
-    // Use Chloe paracetamol — not yet backfilled with essential markers
-    // as of M42. Should be excluded from the metric and pay zero penalty
-    // regardless of how many ix the player orders.
-    const chloe = Case.parse(
-      parseYaml(
-        readFileSync(
-          join(process.cwd(), 'content/cases/case_paracetamol_od_chloe.yaml'),
-          'utf8',
-        ),
-      ),
+    // Synthetic case fixture: take a real case (Chloe), strip all
+    // essential markers, and rename. All real content carries
+    // essentials as of M51 so this is the only way to keep the
+    // untracked-workup branch exercised by the test suite.
+    const chloeYaml = readFileSync(
+      join(process.cwd(), 'content/cases/case_paracetamol_od_chloe.yaml'),
+      'utf8',
     );
+    const stripped = chloeYaml
+      .replace(/^\s+essential: true\s*$/gm, '')
+      .replace(/^id: case_paracetamol_od_chloe/m, 'id: case_test_no_essentials');
+    const fakeCase = Case.parse(parseYaml(stripped));
     const ep: EpisodeT = Episode.parse({
       schema_version: 1,
       id: 'ep_workup_untracked_test',
@@ -147,14 +148,14 @@ describe('scoreCase — adult anaphylaxis', () => {
       curriculum_tags: ['MHC1'],
       difficulty_band: 'CT2',
       shift_duration_min: 20,
-      focus_cases: [chloe.id],
+      focus_cases: [fakeCase.id],
     });
-    const k = new SimKernel({ episode: ep, cases: new Map([[chloe.id, chloe]]) });
-    k.enterCase(chloe.id);
-    for (const ix of chloe.investigations) {
-      k.orderInvestigation(chloe.id, ix.id);
+    const k = new SimKernel({ episode: ep, cases: new Map([[fakeCase.id, fakeCase]]) });
+    k.enterCase(fakeCase.id);
+    for (const ix of fakeCase.investigations) {
+      k.orderInvestigation(fakeCase.id, ix.id);
     }
-    const r = scoreCase(k.getState().cases.get(chloe.id)!);
+    const r = scoreCase(k.getState().cases.get(fakeCase.id)!);
     expect(r.workup.tracked).toBe(false);
     expect(r.workup.penaltyPercent).toBe(0);
   });

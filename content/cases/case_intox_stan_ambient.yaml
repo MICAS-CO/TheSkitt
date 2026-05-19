@@ -210,6 +210,7 @@ investigations:
     name: 'Capillary blood glucose (BM)'
     category: bedside
     turnaround_min: 1
+    essential: true
     result_summary: |
       **2.4 mmol/L** — hypoglycaemia. (TREND-UK threshold for "severe"
       hypoglycaemia is <3.0 mmol/L; treat immediately.)
@@ -221,6 +222,7 @@ investigations:
     name: 'Venous blood gas + lactate + ethanol'
     category: gas
     turnaround_min: 5
+    essential: true
     result_summary: |
       pH 7.36 · lactate 2.0 · ethanol 215 mg/dL (significantly elevated)
       · K+ 3.5 · Na 138. No acidosis or AKI.
@@ -230,6 +232,7 @@ investigations:
     name: 'CT head'
     category: imaging
     turnaround_min: 35
+    essential: true
     result_summary: |
       No intracranial haemorrhage, no skull fracture. Periorbital soft
       tissue swelling correlates with the laceration. (Indication per

@@ -247,6 +247,7 @@ investigations:
     name: 'Wells score for PE'
     category: bedside
     turnaround_min: 1
+    essential: true
     result_summary: |
       **Wells = 9 (PE likely)**:
       • Clinical signs of DVT (right calf asymmetric tenderness/swelling): +3
@@ -285,6 +286,7 @@ investigations:
     name: 'D-dimer (NOT indicated here — high pretest probability)'
     category: blood
     turnaround_min: 30
+    essential: true
     result_summary: |
       D-dimer is NOT indicated when Wells is high. A positive D-dimer
       does not rule in; a "negative" D-dimer at high pretest
@@ -346,6 +348,7 @@ investigations:
     name: 'CT pulmonary angiogram (CTPA)'
     category: imaging
     turnaround_min: 25
+    essential: true
     result_summary: |
       **Bilateral saddle PE** with significant clot burden in both
       main pulmonary arteries extending into lobar branches. RV : LV

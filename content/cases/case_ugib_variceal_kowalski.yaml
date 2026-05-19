@@ -264,6 +264,7 @@ investigations:
     name: 'Glasgow-Blatchford Score'
     category: bedside
     turnaround_min: 2
+    essential: true
     result_summary: |
       **GBS = 16 (high risk)** — Urea 18.6 (≥10–<25: +3), Hb 78 g/L
       (=7.8 g/dL, male <10 g/dL: +6), systolic <90 (+3), pulse >100
@@ -287,6 +288,7 @@ investigations:
     name: 'Venous blood gas + lactate'
     category: gas
     turnaround_min: 5
+    essential: true
     result_summary: |
       **pH 7.28 · pCO2 4.0 · HCO3 14 · BE -10 · Lactate 5.6 · Hb 76 ·
       K 3.2 · Na 132 · Glucose 4.6.** Metabolic acidosis with raised
@@ -299,6 +301,7 @@ investigations:
     name: 'FBC, U&E, LFTs, coag, group + crossmatch 6 units, fibrinogen'
     category: blood
     turnaround_min: 30
+    essential: true
     result_summary: |
       **Hb 76 (was 92 three weeks ago) · Plt 84 · WCC 9.4 ·
       INR 1.9 · APTT 48 · Fibrinogen 1.2 (low) · Na 132 · K 3.2 ·

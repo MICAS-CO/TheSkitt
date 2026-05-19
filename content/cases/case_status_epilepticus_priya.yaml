@@ -264,6 +264,7 @@ investigations:
     name: 'Capillary blood glucose'
     category: bedside
     turnaround_min: 0
+    essential: true
     result_summary: |
       **BM 4.8 mmol/L** — not hypo. (Paramedics already excluded
       hypoglycaemia as the seizure trigger.)
@@ -288,6 +289,7 @@ investigations:
     name: 'Venous blood gas'
     category: gas
     turnaround_min: 5
+    essential: true
     result_summary: |
       **pH 7.18 · pCO2 6.8 kPa · HCO3 18 · Lactate 6.2 · K+ 3.4
       · Na 134 · Ca 2.18 · Mg 0.74 · Glucose 4.8.**
@@ -322,6 +324,7 @@ investigations:
     name: 'CT head (no contrast)'
     category: imaging
     turnaround_min: 30
+    essential: true
     result_summary: |
       **Subtle hyperdensity in the left middle cerebral fissure
       consistent with subarachnoid haemorrhage.** No mass effect. No

@@ -195,6 +195,7 @@ investigations:
     name: 'Paediatric vital signs + weight'
     category: bedside
     turnaround_min: 1
+    essential: true
     result_summary: |
       Weight 28 kg (paramedic measured). Obs as per examination —
       HR/RR above normal range for 8y; SpO2 corrected with O2; BP at
@@ -225,6 +226,7 @@ investigations:
     name: 'Mast cell tryptase — 3 samples (per Resus Council UK 2021)'
     category: blood
     turnaround_min: 60
+    essential: true
     result_summary: |
       Sample 1 (presentation) drawn before further adrenaline.
       Sample 2 at 1–2 h. Sample 3 at 24 h (baseline). Same protocol as

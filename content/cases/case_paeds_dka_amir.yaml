@@ -200,6 +200,7 @@ investigations:
     name: 'Venous blood gas + ketones'
     category: gas
     turnaround_min: 5
+    essential: true
     abnormal: true
     result_summary: |
       pH 7.04, pCO₂ 1.8, HCO₃ 6, BE −22, lactate 3.2, glucose 36,
@@ -211,6 +212,7 @@ investigations:
     name: 'FBC, U&E, CRP'
     category: blood
     turnaround_min: 30
+    essential: true
     abnormal: true
     result_summary: |
       Hb 134, WCC 16.2 (neutrophilia — common in DKA), plts 280.
@@ -222,6 +224,7 @@ investigations:
     name: 'Corrected sodium calculation'
     category: bedside
     turnaround_min: 0
+    essential: true
     abnormal: true
     result_summary: |
       Corrected Na = 134 + (0.4 × (36 − 5.5)) = 146 mmol/L.

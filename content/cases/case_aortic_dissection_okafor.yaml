@@ -273,6 +273,7 @@ investigations:
     name: '12-lead ECG (compare to prehospital strip)'
     category: ecg
     turnaround_min: 2
+    essential: true
     result_summary: |
       Sinus rhythm 96/min. **ST elevation 1–2 mm in II, III, aVF**;
       reciprocal depression in I and aVL. Subtle PR depression in
@@ -335,6 +336,7 @@ investigations:
     name: 'CT aorta with contrast (CTA) — gold standard'
     category: imaging
     turnaround_min: 25
+    essential: true
     result_summary: |
       **Type A aortic dissection.** Intimal flap from the aortic root
       to just distal to the left subclavian artery (Stanford A,
@@ -357,6 +359,7 @@ investigations:
     name: 'High-sensitivity troponin (hs-cTnI)'
     category: blood
     turnaround_min: 30
+    essential: true
     result_summary: |
       **hs-cTnI 184 ng/L (upper reference 14 ng/L for men).** Mildly
       elevated. Consistent with coronary-ostium involvement by the
@@ -383,6 +386,7 @@ investigations:
     name: 'ADD-RS — Aortic Dissection Detection Risk Score'
     category: bedside
     turnaround_min: 2
+    essential: true
     result_summary: |
       **High-risk features ticked**:
       • Predisposing condition: bicuspid aortic valve + family history

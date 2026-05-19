@@ -281,6 +281,7 @@ investigations:
     name: 'Serum paracetamol level (timed)'
     category: blood
     turnaround_min: 60
+    essential: true
     abnormal: true
     result_summary: |
       Paracetamol 84 mg/L at 4 h post-LAST ingestion (claimed 02:30).
@@ -307,6 +308,7 @@ investigations:
     name: 'LFTs (ALT, AST, ALP, bilirubin, albumin)'
     category: blood
     turnaround_min: 60
+    essential: true
     abnormal: false
     result_summary: |
       ALT 38 IU/L, AST 32, ALP 78, bilirubin 12 µmol/L, albumin 38 g/L.
@@ -318,6 +320,7 @@ investigations:
     name: 'Coagulation screen (PT/INR, APTT)'
     category: blood
     turnaround_min: 60
+    essential: true
     abnormal: false
     result_summary: |
       INR 1.1, APTT 28 s. Baseline. INR >2 by 24 h, or rising INR is
@@ -329,6 +332,7 @@ investigations:
     name: 'FBC + U&E'
     category: blood
     turnaround_min: 45
+    essential: true
     abnormal: false
     result_summary: |
       Hb 132, WCC 7.4, plts 245. Na 138, K 4.0, urea 4.2, creatinine

@@ -245,6 +245,7 @@ investigations:
     name: '12-lead ECG'
     category: ecg
     turnaround_min: 2
+    essential: true
     result_summary: |
       Sinus rhythm 88/min. **LV hypertrophy by voltage criteria**
       (Sokolow-Lyon: S in V1 + R in V5 = 38 mm), strain pattern
@@ -256,6 +257,7 @@ investigations:
     name: 'FBC, U&E, LFTs, glucose, HbA1c, troponin, urine ACR'
     category: blood
     turnaround_min: 45
+    essential: true
     result_summary: |
       Hb 142 · WCC 8.6 · Plt 240 · Na 138 · K 4.4 · Urea 9.8 ·
       **Creat 168 (eGFR 42, up from baseline 76 — AKI stage 2 per
@@ -274,6 +276,7 @@ investigations:
     name: 'Urine dipstick + microscopy'
     category: urine
     turnaround_min: 5
+    essential: true
     result_summary: |
       **Blood ++ · Protein +++ · Glucose + · Nitrites neg ·
       Leucocytes neg.** Microscopy: red-cell casts and dysmorphic

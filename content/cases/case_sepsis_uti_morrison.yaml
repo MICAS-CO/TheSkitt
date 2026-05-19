@@ -218,6 +218,7 @@ investigations:
     name: 'Venous blood gas + lactate'
     category: gas
     turnaround_min: 5
+    essential: true
     result_summary: |
       pH 7.32 · pCO2 4.0 kPa · HCO3 18 mmol/L · BE −6 · **Lactate
       3.2 mmol/L** · Hb 118 · K 4.4 · Na 136. Metabolic acidosis with
@@ -229,6 +230,7 @@ investigations:
     name: 'Blood cultures × 2 sets'
     category: culture
     turnaround_min: 90
+    essential: true
     result_summary: |
       Drawn from two peripheral sites BEFORE antibiotics where possible
       — do not delay antibiotics beyond an hour to chase them.
@@ -243,6 +245,7 @@ investigations:
     name: 'Urine dip + send for MC&S'
     category: urine
     turnaround_min: 5
+    essential: true
     result_summary: |
       Leucocytes +++, nitrites ++, protein +, blood +. MC&S sent.
       Compatible with UTI; in an elderly woman this alone is not
