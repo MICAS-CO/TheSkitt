@@ -197,6 +197,41 @@ examination:
         }
       - { name: 'capillary refill', value: '3 s' }
       - { name: 'peripheries', value: 'cool, dry' }
+    manoeuvres:
+      - id: hydration_status
+        label: 'Assess hydration — JVP, skin turgor, mucous membranes, eyeballs'
+        findings:
+          - {
+              name: 'JVP not visible at 30°',
+              value: 'underfilled — reduced central volume',
+              red_flag: true,
+              supports: ['Severe diabetic ketoacidosis — first presentation of type 1 diabetes mellitus'],
+            }
+          - {
+              name: 'tongue and buccal mucosa dry',
+              value: 'tongue furrowed, no saliva pooling under tongue',
+              red_flag: true,
+              supports: ['Severe diabetic ketoacidosis — first presentation of type 1 diabetes mellitus'],
+            }
+          - {
+              name: 'skin turgor reduced',
+              value: 'pinched fold on the back of the hand persists ~3 s',
+              supports: ['Severe diabetic ketoacidosis — first presentation of type 1 diabetes mellitus'],
+            }
+          - {
+              name: 'eyes appear sunken',
+              value: 'subtle but present — Joe says he noticed this morning',
+              supports: ['Severe diabetic ketoacidosis — first presentation of type 1 diabetes mellitus'],
+            }
+      - id: ketone_smell
+        label: 'Smell his breath at the bedside (pear-drops / acetone)'
+        findings:
+          - {
+              name: 'fruity acetone smell on breath',
+              value: 'classic ketone smell; sensitivity poor but specificity high if present',
+              red_flag: true,
+              supports: ['Severe diabetic ketoacidosis — first presentation of type 1 diabetes mellitus'],
+            }
   - system: disability
     findings:
       - { name: 'GCS', value: '13 (E3 V4 M6) — drowsy when not stimulated', red_flag: true }

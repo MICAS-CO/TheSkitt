@@ -310,6 +310,36 @@ examination:
           red_flag: true,
         }
       - { name: 'Peripheries', value: 'warm, well-perfused — cap refill <2 s' }
+    manoeuvres:
+      - id: jvp_angle
+        label: 'Measure JVP angle precisely (45° head-up, neck flexed slightly, tangential light)'
+        findings:
+          - {
+              name: 'JVP 9 cm above the sternal angle',
+              value: 'biphasic waveform visible; corresponds to RA pressure ~14 mmHg — markedly elevated',
+              red_flag: true,
+              supports: ['Acute decompensated heart failure — wet-and-warm cardiogenic pulmonary oedema, precipitated by held diuretic'],
+            }
+          - {
+              name: 'hepatojugular reflux positive',
+              value: 'firm pressure on the right upper quadrant produces sustained JVP elevation >10 seconds',
+              red_flag: true,
+              supports: ['Acute decompensated heart failure — wet-and-warm cardiogenic pulmonary oedema, precipitated by held diuretic'],
+            }
+      - id: dependent_oedema_assessment
+        label: 'Map dependent oedema — fingertip pressure up the calf, sacrum if recumbent'
+        findings:
+          - {
+              name: 'pitting oedema to the mid-shin bilaterally',
+              value: 'fingertip indentation persists >15 s; subtle gaiter-distribution; skin shiny in patches',
+              red_flag: true,
+              supports: ['Acute decompensated heart failure — wet-and-warm cardiogenic pulmonary oedema, precipitated by held diuretic'],
+            }
+          - {
+              name: 'sacral oedema',
+              value: 'detectable on log-roll — confirms volume overload rather than venous insufficiency alone',
+              red_flag: true,
+            }
 
   - system: disability
     findings:

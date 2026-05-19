@@ -224,6 +224,35 @@ examination:
       - { name: 'voice', value: 'audible inspiratory stridor; talking in short sentences' }
       - { name: 'lip and peri-oral swelling', present: true }
       - { name: 'tongue', value: 'mildly swollen; protrudes normally; no drooling' }
+    manoeuvres:
+      - id: paeds_airway_focused
+        label: "Paeds-airway focused — count to 10, tongue inspection, lap position with Mum"
+        findings:
+          - {
+              name: "stridor on the count of 5",
+              value: "inspiratory, worsens under effort — dynamic airway oedema, not fixed obstruction",
+              red_flag: true,
+              supports: ['Paediatric anaphylaxis — peanut (food-IgE)'],
+            }
+          - {
+              name: 'no drooling, no tripoding',
+              present: false,
+              pertinent_negative: true,
+              value: "argues against epiglottitis as the differential",
+            }
+          - {
+              name: 'comfortable in mum''s lap',
+              value: "no air-hunger posture; settles when mum holds him — important if you need to defer iv access briefly",
+            }
+      - id: pefr
+        label: 'Peak expiratory flow rate (if able to cooperate)'
+        findings:
+          - {
+              name: 'PEFR 120 L/min (predicted 220 L/min for height)',
+              value: '~55% predicted — moderate-severe asthma component on top of anaphylaxis',
+              red_flag: true,
+              supports: ['Paediatric anaphylaxis — peanut (food-IgE)', 'Acute severe asthma exacerbation'],
+            }
   - system: breathing
     findings:
       - { name: 'respiratory rate', value: '28/min (paeds 6–12y normal 18–24)' }

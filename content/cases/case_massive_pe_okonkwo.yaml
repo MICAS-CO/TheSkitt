@@ -249,6 +249,37 @@ examination:
           red_flag: true,
         }
       - { name: 'Capillary refill', value: '4 s peripherally; central <2 s' }
+    manoeuvres:
+      - id: wells_clinical_exam
+        label: 'Targeted DVT screen — calf circumference (both legs, 10 cm below tibial tuberosity)'
+        findings:
+          - {
+              name: 'right calf 4 cm larger than left at 10 cm below tibial tuberosity',
+              value: '38 cm vs 34 cm; warm; non-pitting; mild dorsiflexion discomfort',
+              red_flag: true,
+              supports: ['High-risk (massive) bilateral pulmonary embolism — post-operative + COCP risk factors'],
+            }
+          - {
+              name: 'no visible varicosities or chronic venous changes',
+              present: false,
+              pertinent_negative: true,
+              value: 'argues against chronic venous insufficiency as the source of the swelling',
+            }
+      - id: pre_syncope_test
+        label: 'Sit-to-stand (if she can) — checks haemodynamic reserve in suspected high-risk PE'
+        findings:
+          - {
+              name: 'pre-syncope at 15 seconds standing',
+              value: 'BP drops 86/54 → 70/40, she becomes dusky around the lips, you sit her straight back down',
+              red_flag: true,
+              supports: ['High-risk (massive) bilateral pulmonary embolism — post-operative + COCP risk factors'],
+            }
+          - {
+              name: 'no chest pain on exertion',
+              present: false,
+              pertinent_negative: true,
+              value: 'the dyspnoea is the dominant symptom — argues against an MI overlap',
+            }
 
   - system: disability
     findings:

@@ -205,6 +205,43 @@ examination:
       - { name: 'right face', value: 'lower-face droop, forehead spared (UMN pattern)' }
       - { name: 'gaze', value: 'conjugate deviation to the left (away from the weakness)' }
       - { name: 'NIHSS', value: '14 — moderate-severe stroke', red_flag: true }
+    manoeuvres:
+      - id: nihss_focused
+        label: 'NIHSS-focused screen — language, visual fields, sensory, neglect'
+        findings:
+          - {
+              name: 'expressive aphasia',
+              value: "non-fluent; correctly names 'pen', 'watch'; cannot construct a sentence; understands simple commands; reads single words; can't read a sentence",
+              red_flag: true,
+              supports: ['Acute ischaemic stroke — left MCA territory (LVO)'],
+            }
+          - {
+              name: 'right homonymous hemianopia',
+              value: 'misses fingers in the right visual fields bilaterally on confrontation testing',
+              red_flag: true,
+              supports: ['Acute ischaemic stroke — left MCA territory (LVO)'],
+            }
+          - {
+              name: 'right-sided sensory inattention',
+              value: 'detects light touch on the right side in isolation but misses it on simultaneous bilateral testing — neglect',
+              red_flag: true,
+              supports: ['Acute ischaemic stroke — left MCA territory (LVO)'],
+            }
+      - id: gait_if_safe
+        label: 'Test gait if safe — sit-to-stand at the edge of the trolley (assisted)'
+        findings:
+          - {
+              name: 'unable to bear weight on the right',
+              value: "right leg buckles immediately; truncal ataxia on the supported attempt",
+              red_flag: true,
+              supports: ['Acute ischaemic stroke — left MCA territory (LVO)'],
+            }
+          - {
+              name: 'no resting tremor',
+              present: false,
+              pertinent_negative: true,
+              value: 'argues against acute Parkinsonian crisis as a mimic',
+            }
   - system: neuro
     findings:
       - { name: 'plantar response right', value: 'upgoing (Babinski)' }
