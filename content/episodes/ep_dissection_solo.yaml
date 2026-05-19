@@ -1,0 +1,101 @@
+# 20-min single-case shift built around Mr Okafor's Type A aortic
+# dissection masquerading as inferior STEMI. The shift's defining
+# tension: the cath lab is pre-alerted, the cardiology SpR is on her
+# way down — but the diagnosis is dissection, not MI, and every
+# minute on the wrong pathway costs ~1–2% mortality.
+
+schema_version: 1
+id: ep_dissection_solo
+title: 'Aortic dissection — the anchor-breaker'
+
+learning_objectives:
+  - 'Recognise the SAQ-classic anchor-breaker: inferior STEMI ECG + raised troponin that turns out to be Type A AD involving the RCA ostium.'
+  - 'Apply ADD-RS (Aortic Dissection Detection Risk Score) at the bedside — pretest probability matters more than imaging alone.'
+  - 'Sequence BP/HR control correctly: IV labetalol BEFORE IV GTN (vasodilator-first causes reflex tachycardia → propagation).'
+  - 'Activate the surgical pathway for Type A within minutes — IRAD mortality is ~1–2% per untreated hour.'
+  - 'Avoid the lethal traps: heparin, ticagrelor, PCI activation, femoral access.'
+
+curriculum_tags: [CC7, CP1]
+difficulty_band: ST3
+shift_duration_min: 20
+
+focus_cases:
+  - case_aortic_dissection_okafor
+
+ambient_cases: []
+
+scheduled_events:
+  # T+2 — bedside ECG is already on the chart from paramedics; cardiology
+  # SpR phones from the cath lab "are we activating?"
+  - id: ev_okafor_cardiology_call
+    type: lab_callback
+    t_min: 2
+    case_id: case_aortic_dissection_okafor
+    investigation_id: ix_ecg
+    urgent_finding: "Cardiology SpR: 'STEMI call — we're ready in the lab. Confirm and we'll come and get him.'"
+
+  # T+5 — POCUS findings surface the flap, the cognitive pivot moment.
+  - id: ev_okafor_pocus_back
+    type: results_back
+    t_min: 5
+    case_id: case_aortic_dissection_okafor
+    investigation_id: ix_pocus
+
+  # T+6 — CXR back (mediastinal widening).
+  - id: ev_okafor_cxr_back
+    type: results_back
+    t_min: 6
+    case_id: case_aortic_dissection_okafor
+    investigation_id: ix_cxr
+
+  # T+11 — CTA back. Type A confirmed.
+  - id: ev_okafor_cta_back
+    type: results_back
+    t_min: 11
+    case_id: case_aortic_dissection_okafor
+    investigation_id: ix_cta_aorta
+
+  # T+12 — troponin back. The mildly raised value is the anchor trap.
+  - id: ev_okafor_trop_back
+    type: results_back
+    t_min: 12
+    case_id: case_aortic_dissection_okafor
+    investigation_id: ix_troponin
+
+  # T+15 — wife arrives in resus relatives' room.
+  - id: ev_okafor_wife
+    type: family_arrival
+    t_min: 15
+    case_id: case_aortic_dissection_okafor
+    npc: "Wife Ada — confirms family history of 'burst aorta' in his father."
+
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 16
+    severity: gentle
+
+arcs: []
+
+author_notes: |
+  Solo Tier-1 anchor-breaker shift. Pacing:
+
+  - T+0: paramedic handover with the STEMI ECG. Cath lab pre-
+    alerted. The player must hold the line on the differential.
+  - T+2: cardiology SpR pressuring for STEMI activation. Correct
+    move is to ask for a re-look at the history + bedside BP
+    differential before lab activation.
+  - T+5: POCUS reveals the flap. The pivot.
+  - T+6: CXR confirms mediastinal widening.
+  - T+11: CTA returns confirming Type A with RCA ostium involvement.
+  - T+12: troponin returns mildly raised — the anchor for the team
+    that hasn't pivoted yet.
+  - T+15: wife arrives. Time of onset documented; family briefed
+    before transfer to theatre.
+  - T+20: hard deadline — case_aortic_dissection_okafor's
+    inaction_by transition fires if labetalol + cardiothoracics
+    activation not done.
+
+  Pairs thematically with case_chest_pain_patel_ambient (STEMI in a
+  72-year-old who DOES have a STEMI) — same presenting symptom,
+  opposite diagnosis. Could be authored later as a 2-case
+  "chest-pain double-bill" shift.

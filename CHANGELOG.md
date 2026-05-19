@@ -4,6 +4,37 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Content: aortic dissection (Okafor) — the anchor-breaker
+
+- `content/cases/case_aortic_dissection_okafor.yaml` — 11th
+  authored case. Mr Okafor, 58M, sudden tearing interscapular pain,
+  paramedic ECG shows inferior ST elevation in II/III/aVF (cath lab
+  pre-alerted), troponin rises mildly. **Actually Type A AD with
+  RCA-ostium involvement.** The SAQ-classic anchor-breaker.
+- Bedside teaching arc: ADD-RS scoring (BP differential >20 mmHg,
+  pulse deficit, new AR murmur, focal neuro of right arm), POCUS
+  surfaces the intimal flap, CTA confirms Type A — ASCENDING aorta
+  with proximal RCA dissection extension.
+- Six `must_not_do` traps: escalate antiplatelet (aspirin was given
+  pre-arrival), IV heparin, PCI activation, vasodilator before
+  beta-blocker (reflex tachycardia → propagation), LP for the right-
+  arm neuro signs, femoral central line (iliac extension risk).
+- Authored against **RCEM Best Practice — Aortic Dissection 2023**,
+  **ESC Guidelines for Aortic Diseases 2024**, IRAD registry (Hagan
+  2000), Rogers 2011 ADD-RS, Nazerian 2018 ADvISED, and the Aortic
+  Dissection Charitable Trust's Think Aorta UK pathway. Mortality
+  figure (~1–2% per untreated hour) traces to IRAD via
+  TheCase.Report S2E5.
+- `content/episodes/ep_dissection_solo.yaml` — 20-min single-case
+  shift. T+2 cardiology SpR pressing for STEMI activation; T+5
+  POCUS flap; T+6 CXR; T+11 CTA confirmation; T+12 troponin (the
+  anchor); T+15 wife arrives; T+20 deterioration deadline.
+- Pairs thematically with `case_chest_pain_patel_ambient` (real
+  STEMI in a 72-y/o) — same presenting symptom, opposite diagnosis.
+- New "Aortic dissection — the anchor-breaker" entry on the shift
+  menu. App subtitle bumped to "10 shifts, 11 cases".
+- 11 cases / 10 episodes / 2 arcs validate; 150 tests pass.
+
 ### TheCase.Report integration — index + verification patches + topic backlog
 
 The user owns TheCase.Report (Irish EM podcast, IEMTA + IAEM-produced)

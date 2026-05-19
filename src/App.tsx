@@ -47,10 +47,14 @@ import headInjuryEpYaml from '../content/episodes/ep_head_injury_doac.yaml?raw';
 // DOAC double-bill — Williams + Brennan on the same shift
 import doacDoubleEpYaml from '../content/episodes/ep_doac_double.yaml?raw';
 
+// Aortic dissection — Type A masquerading as STEMI
+import okaforYaml from '../content/cases/case_aortic_dissection_okafor.yaml?raw';
+import dissectionEpYaml from '../content/episodes/ep_dissection_solo.yaml?raw';
+
 type View = 'menu' | 'shift' | 'hub';
 
 const SUBTITLES: Record<View, string> = {
-  menu: 'Episodic UK FRCEM study RPG · 9 shifts, 10 cases',
+  menu: 'Episodic UK FRCEM study RPG · 10 shifts, 11 cases',
   shift: 'Shift in progress',
   hub: 'ED hub (preview)',
 };
@@ -120,6 +124,12 @@ const DOAC_DOUBLE: () => ShiftPack = () => ({
   arcs: [],
 });
 
+const DISSECTION_SOLO: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(dissectionEpYaml)),
+  cases: [Case.parse(parseYaml(okaforYaml))],
+  arcs: [],
+});
+
 const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
   ep_anaphylaxis_solo: SOLO_SHIFT,
   ep_hendo_shift: HENDO_SHIFT,
@@ -130,6 +140,7 @@ const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
   ep_seizure_solo: SEIZURE_SOLO,
   ep_head_injury_doac: HEAD_INJURY_DOAC,
   ep_doac_double: DOAC_DOUBLE,
+  ep_dissection_solo: DISSECTION_SOLO,
 };
 
 export function App() {
@@ -213,6 +224,7 @@ export function App() {
             onStartSeizure={() => startShift(SEIZURE_SOLO())}
             onStartHeadInjury={() => startShift(HEAD_INJURY_DOAC())}
             onStartDoacDouble={() => startShift(DOAC_DOUBLE())}
+            onStartDissection={() => startShift(DISSECTION_SOLO())}
             onShowHub={() => setView('hub')}
             saved={saved}
             onResume={resumeSavedShift}
@@ -249,6 +261,7 @@ function MenuView({
   onStartSeizure,
   onStartHeadInjury,
   onStartDoacDouble,
+  onStartDissection,
   onShowHub,
   saved,
   onResume,
@@ -263,6 +276,7 @@ function MenuView({
   onStartSeizure: () => void;
   onStartHeadInjury: () => void;
   onStartDoacDouble: () => void;
+  onStartDissection: () => void;
   onShowHub: () => void;
   saved: SavedShift | null;
   onResume: () => void;
@@ -355,6 +369,14 @@ function MenuView({
               Reperfusion vs reversal in parallel.
             </span>
           </button>
+          <button className="menu__card menu__card--secondary" onClick={onStartDissection}>
+            <span className="menu__card-eyebrow">Shift · ST3 · 20 min · 1 case</span>
+            <span className="menu__card-title">Aortic dissection — the anchor-breaker</span>
+            <span className="menu__card-meta">
+              Type A AD masquerading as inferior STEMI. Cath lab pre-alerted, the call is yours.
+              ADD-RS + ESC 2024 + IRAD mortality clock.
+            </span>
+          </button>
           <button className="menu__card menu__card--secondary" onClick={onStartSolo}>
             <span className="menu__card-eyebrow">Shift · CT2 · 20 min · 1 case</span>
             <span className="menu__card-title">Anaphylaxis solo</span>
@@ -383,6 +405,7 @@ const SHIFT_TITLES: Record<string, string> = {
   ep_seizure_solo: 'First seizure — status pathway',
   ep_head_injury_doac: 'Head injury — DOAC reasoning',
   ep_doac_double: 'DOAC double-bill — clot and bleed',
+  ep_dissection_solo: 'Aortic dissection — the anchor-breaker',
 };
 
 function savedShiftTitle(episodeId: string): string {
