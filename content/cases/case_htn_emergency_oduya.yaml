@@ -116,6 +116,39 @@ history:
     npc_voice: "Mrs Oduya keeps her voice even. 'He said the side-effects… made him feel old.'"
     supports:
       - 'Hypertensive emergency with hypertensive encephalopathy + PRES + AKI + retinopathy'
+    branch_choices:
+      - id: compassionate
+        label: "Mrs Oduya — I'm not asking to catch him out. I need to know so I can pick the right drug now. What was it like at home?"
+        npc_voice: "She looks at the floor, then at him. He doesn't open his eyes. She talks to you."
+        rapport_delta: 2
+        response: |
+          "GP told him six weeks ago his pressure was too high to
+          drive his bus safely. (Pause.) That broke him a bit. He
+          said the tablets made him tired and dizzy. Three weeks
+          ago he stopped them. He's been signing his sick notes
+          himself. He told the depot he had a chest infection. He
+          told me he'd ring the GP and he didn't. (Beat.) Last
+          Thursday he was sat in the kitchen at 3 a.m. with his
+          head in his hands and he wouldn't let me touch him. I
+          should have driven him in then. I shouldn't have waited
+          for the headache to get this bad."
+      - id: clinical
+        label: "When did he stop, what was he on, any other meds?"
+        rapport_delta: 0
+        response: |
+          "Stopped amlodipine + losartan + indapamide three weeks
+          ago. Was on each for two years. Said they made him
+          tired. He's signed himself off work for a fortnight."
+      - id: judgemental
+        label: "He hasn't been taking his medication for three weeks?"
+        npc_voice: "She straightens. Her tone flattens. Her shoulders square."
+        rapport_delta: -2
+        response: |
+          "No, doctor. He hasn't. He stopped. (Pause.) Is that all
+          you need from me? (The detail about the 3 a.m. kitchen
+          and the self-signed sick notes is NOT volunteered. The
+          player loses the context for the psychiatric / occupational
+          dimension.)"
     response: |
       "GP told him 6 weeks ago his blood pressure was too high to
       drive a bus safely. He said the tablets made him tired and

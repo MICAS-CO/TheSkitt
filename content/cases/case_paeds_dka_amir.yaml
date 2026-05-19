@@ -104,6 +104,40 @@ history:
     supports:
       - 'Severe paediatric DKA — first presentation of type 1 diabetes mellitus'
     npc_voice: "Yasmin doesn't take her eyes off Amir while she answers."
+    branch_choices:
+      - id: compassionate
+        label: "You're the expert on him. Tell me everything — anything that's been off, even small things."
+        npc_voice: "She lets out a breath. She still doesn't look away from him. But she finds more to say."
+        rapport_delta: 2
+        response: |
+          "Three weeks. (Pause.) Getting up at night to drink — two,
+          three times. Wetting the bed twice — he hasn't done that
+          since he was four, he was so ashamed I didn't tell anyone.
+          The teacher said he's asked to go to the toilet maybe
+          ten times a day at school. (Breath.) His trousers are
+          loose. He didn't want his birthday cake on Saturday — he's
+          seven, he had no birthday cake on Saturday and I didn't
+          know what to do. He hasn't eaten properly for two days.
+          Sick three or four times since yesterday morning. He woke
+          up this morning and I couldn't get him out of bed. (Beat.)
+          I'm sorry I didn't bring him in sooner. I thought it was a
+          virus."
+      - id: clinical
+        label: "How long has this been going on? What changed?"
+        rapport_delta: 0
+        response: |
+          "Three weeks of polydipsia + polyuria. Weight loss. Two
+          days of vomiting. Couldn't rouse him this morning."
+      - id: judgemental
+        label: "Three weeks? Why didn't you bring him in sooner?"
+        npc_voice: "She finally looks at you. Just once. Then back at Amir."
+        rapport_delta: -2
+        response: |
+          "I thought it was a virus."
+          (The bedwetting episodes and the missed birthday cake are
+          NOT volunteered. The player has the bones of the prodrome
+          but loses the texture that helps stratify how unwell he
+          truly was.)
     response: |
       "Three weeks ago he started getting up two or three times a
       night to drink. The teacher said he's asked to go to the

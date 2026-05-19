@@ -120,6 +120,39 @@ history:
     supports:
       - 'Convulsive status epilepticus secondary to subarachnoid haemorrhage'
       - 'Encephalitis (HSV)'
+    npc_voice: "The flatmate is trying to be useful, trying to be precise — she keeps qualifying her own statements."
+    branch_choices:
+      - id: probing
+        label: "Three days — describe the headache for me, the worst moment, anything she said about it."
+        npc_voice: "She thinks. She closes her eyes to remember. She speaks slowly."
+        rapport_delta: 1
+        response: |
+          "Three days. (Pause.) Tuesday afternoon she came home from
+          work early — said she'd had a sudden hit at her desk, like
+          someone had thumped the back of her head with a brick.
+          She said that exact phrase: 'a brick'. She lay on the
+          sofa in the dark and I made her tea. She wouldn't go to
+          A&E. She said she was just tired. (Breath.) Wednesday and
+          today the headache stayed — worst at night. Light hurt
+          her. No fever I felt. Took paracetamol. (Pause.) I should
+          have made her come in on Tuesday, shouldn't I."
+      - id: clinical
+        label: "Fever, headache, neck stiffness, photophobia?"
+        rapport_delta: 0
+        response: |
+          "Three days of headache, worse at night, photophobic. No
+          fever palpated. No neck stiffness reported. Paracetamol
+          only."
+      - id: dismissive
+        label: "Just the migraine she mentioned, then?"
+        npc_voice: "The flatmate hesitates. Then she nods, slowly. She doesn't bring up the brick."
+        rapport_delta: -2
+        response: |
+          "Yeah. I guess. Probably the migraine."
+          (The thunderclap-onset detail — 'like someone hit the back
+          of her head with a brick' — is the SAH diagnostic clue the
+          player has now lost. They will need to triangulate via
+          CT + LP.)
     response: |
       "She's had three days of really bad headache. Not the migraine
       kind — she said it was different. Worst at night. She wasn't

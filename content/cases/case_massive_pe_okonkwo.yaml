@@ -116,6 +116,38 @@ history:
     supports:
       - 'High-risk (massive) bilateral pulmonary embolism — post-operative + COCP risk factors'
       - 'Post-operative haemorrhage (concealed)'
+    npc_voice: "She is short of breath after every two words. She still tries to answer in full sentences."
+    branch_choices:
+      - id: compassionate
+        label: "(slow down the room a moment) Talk to me about the last twelve days, in your own time — anything you noticed at all, even if it felt small."
+        npc_voice: "She closes her eyes for a count of three. When she opens them she is more present."
+        rapport_delta: 2
+        response: |
+          "Surgery — twelve days. Keyhole. Three port sites. Home
+          next day. (Breath.) Told to walk every couple of hours.
+          I tried. (Breath.) The first week — I was tired. I
+          stayed on the sofa, Netflix. (Breath.) Right calf — bit
+          achy by day five. I thought — shifted on the couch. (Pause.)
+          Last week — short of breath going up the stairs. I
+          thought — deconditioning. (Pause.) This morning — getting
+          dressed. Couldn't catch it. (Breath.) I should have rung
+          the surgical team. I didn't want to bother them."
+      - id: clinical
+        label: "Surgery date, mobilisation, leg symptoms?"
+        rapport_delta: 0
+        response: |
+          "Surgery 12 days ago. Keyhole. Home next day. Sat on sofa
+          most of week one. Right calf ache from day five. SOB
+          on stairs week two."
+      - id: reassuring_wrong
+        label: "Probably deconditioning + a muscle strain. Let's check things over to be safe."
+        npc_voice: "She nods. She stops talking about the calf. She stops mentioning the stairs."
+        rapport_delta: -2
+        response: |
+          "Right. Yeah. Probably. (Pause.) Yeah. Just a strain."
+          (The day-5 calf ache and the second-week dyspnoea-on-
+          stairs are NOT volunteered. The player anchored on
+          'strain' loses the post-op DVT progression.)
     response: |
       "Surgery 12 days ago — keyhole, three port sites. Discharged
       next day. They said walk every couple of hours. I tried but I
