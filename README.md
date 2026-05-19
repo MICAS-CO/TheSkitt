@@ -40,8 +40,15 @@ log and `RESUME.md` for current state at a glance.
 | 25    | Third arc: Overnight Safety-Net    | Chloe + Stan connected by shared MH-system-failure pattern (NICE NG225)                                |
 | 26    | New case: Amir paediatric DKA      | BSPED 2020 dose-band trap (10 mL/kg vs 20, 48-h deficit, insulin H+1) — pairs with Marcus              |
 | 27    | Settings + hub-board live vitals   | Audio default · sim speed · trap hints · reduce motion · per-card NEWS2 strip & deterioration chips    |
+| audit | Code · clinical · game-design      | Three parallel audits; three false alarms caught; ten actionable items rolled into M28-M33                |
+| 28    | Clinical citation hygiene          | BSPED 2021, NG253 source-block, King's encephalopathy wording, NG244 annotation on BTS/SIGN 158         |
+| 29    | Code hygiene                       | trapHints memo · sequenceErrors in episode debrief · topic_id + orphan validators · 3 new tests        |
+| 30    | Drug-chart management section      | Diegetic NHS-yellow chart, T+min stamps per action, STAT stamp, in-place out-of-sequence chips         |
+| 31    | ECG bank inline                    | Cases can link ix_ecg to bank entries; inline interpretation prompt + reveal at point of clinical use |
+| 32    | Perks-with-bite                    | Trap-aware forces trap hints on; Resus reflexes widens deterioration warn/critical thresholds by 1 min  |
+| 33    | Daily case rotation                | Day-of-year rotation picks 'Today's pick' shift, badged on the menu card                                |
 
-Numbers: **262 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
+Numbers: **266 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
 14 daily ECGs**. Lint clean, typecheck clean, validator green.
 
 ## Stack

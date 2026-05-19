@@ -30,6 +30,13 @@ visual integration from Claude Design + new content.
 | M25 | Third arc — Overnight Safety-Net connecting Chloe + Stan via NICE NG225 system-failure narrative |
 | M26 | New case + episode — Amir, severe paediatric DKA, BSPED 2020 dose-band trap (pairs with Marcus) |
 | M27 | Settings screen + hub board live mini-vitals & deterioration timers · trap-hints + reduce-motion toggles |
+| **Audit** | Three parallel audits (code · clinical · game-design). 3 false-alarm code findings caught and discarded; clinical audit found no patient-safety errors. |
+| M28 | Clinical citation hygiene: BSPED 2021, NG253, King's encephalopathy, NG244 annotation |
+| M29 | Code hygiene: trapHints memo, sequenceErrors in episode debrief, topic_id + orphan-case validators, save-restore + episode-debrief sequence tests |
+| M30 | Drug-chart styled management section + time-stamped actions (CaseRuntime.actionsAt) |
+| M31 | ECG bank inline interpretation on tagged case ECGs (Patel + Okonkwo) |
+| M32 | Perks-with-bite: Trap-aware forces trap hints on; Resus reflexes widens deterioration thresholds by 1 min |
+| M33 | Daily case rotation: 'Today's pick' highlighted on the menu |
 
 ## ⏳ WAITING ON DESIGN
 
@@ -40,7 +47,7 @@ template. No code changes needed beyond the registry entry.
 
 ## Numbers
 
-- **262 / 262** unit tests passing (Vitest)
+- **266 / 266** unit tests passing (Vitest)
 - **2 / 2** E2E tests passing (Playwright)
 - **17 fully-authored cases**, **17 episodes**, **3 arcs**, 44-topic
   high-yield map

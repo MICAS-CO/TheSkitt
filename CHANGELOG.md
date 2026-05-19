@@ -4,6 +4,79 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M33 — daily case rotation: 'Today's pick' highlighted on the menu
+
+- New helper \`pickShiftOfTheDay\` rotates by day-of-year mod shift
+  count (mirrors the daily ECG bank). The matching menu card gets
+  an amber 'TODAY'S PICK' badge.
+
+### M32 — perks with bite: Trap-aware + Resus reflexes modify gameplay
+
+- \`perk_trap_aware\` (5 cases) forces trap hints ON across all
+  encounters, even if the Settings toggle is off. The drug-chart
+  hint line surfaces which is driving it.
+- \`perk_resus_reflex\` (200 XP SLO 3) widens the deterioration
+  timer's warn / critical thresholds by +1 min in both the
+  encounter timer chip and the shift-board card chip — wider
+  runway before the chip pulses red.
+- New \`hasPerk(id)\` helper on \`progression.ts\` (synchronous,
+  safe in private-mode).
+
+### M31 — ECG bank inline interpretation on tagged case ECGs
+
+- \`Investigation.ecg_challenge_id?: string\` links a case's ECG
+  investigation to an entry in src/content/ecg-challenges.ts.
+- New \`<EcgInlineQuiz>\` component renders inside the resulted-ix
+  card with the monitor-green ASCII strip + first interpretation
+  question + multiple-choice options + reveal-with-rationale.
+- Patel (anterior STEMI ambient) → ecg_002_anterior_stemi;
+  Okonkwo (massive PE) → ecg_005_pe_pattern.
+- Validator cross-checks ecg_challenge_id against the live bank
+  by scraping \`id: 'ecg_…'\` declarations from the TS source.
+
+### M30 — drug-chart styled management section + time-stamped actions
+
+- Replaces the plain checklist with a diegetic NHS-yellow drug
+  chart: TIME · DRUG·DOSE·ROUTE · CATEGORY columns, rotated 'STAT'
+  stamp on the header when any must_do drug action exists, paper-
+  grain repeating gradient background.
+- Each ticked row stamps T+min in the TIME column.
+  \`CaseRuntime.actionsAt: Map<actionId, simMin>\` persists this
+  through serialise/restore.
+- Out-of-sequence rows tint red with inline '↯ out of sequence'
+  chip — surfaces M20 sequence errors at the point of action.
+
+### M29 — code-hygiene sweep
+
+- \`ManagementPhase\` localStorage read for trap-hints memoised so
+  it's read once per mount, not per render.
+- Episode debrief now surfaces \`c.score.sequenceErrors\` per case.
+- Validator additions: topic_id cross-check against topic-map.yaml;
+  npc_voice empty-string soft warning; orphan-case soft warning.
+- Tests: save-restore preserves \`sequenceErrors\` (+ pre-M20
+  snapshots restore safely with empty Set); episode-debrief rolls
+  up per-case sequenceErrors.
+- Three audit findings verified as false alarms (inverted-button
+  logic was actually correct; supports refs on findings + ix were
+  already validated; reduce-motion was already wired at boot in
+  main.tsx).
+
+### M28 — clinical citation hygiene
+
+- Five citation fixes from the clinical audit (no clinical content
+  changes; all doses/thresholds/algorithms verified accurate):
+  - Amir paeds DKA: \`BSPED 2020\` → \`BSPED 2021\` in 8 places
+    (header comment, ix_vbg, mx_paeds_saline_bolus, trap detail,
+    two pearls, one pitfall, sources block).
+  - Morrison sepsis: NG253 source-block title + URL fixed
+    (was pointing at the superseded NG51).
+  - Chloe paracetamol: tightened 'GCS ≥3' → 'grade III–IV hepatic
+    encephalopathy' to match the precise O'Grady 1989 King's
+    criterion (in 2 places).
+  - Beth + Sam anaphylaxis: annotated BTS/SIGN 158 citations to
+    reflect NICE NG244 Nov 2024 supersession of the chronic-
+    management sections (acute sections still authoritative).
+
 ### M27 — settings screen + hub board live mini-vitals & deterioration timers
 
 - New menu card 'Settings' → \`src/ui/settings/SettingsScreen.tsx\`
