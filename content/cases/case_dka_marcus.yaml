@@ -103,11 +103,37 @@ history:
   - id: hx_family_pmh
     source: family
     topic: 'Speak to Joe — any past medical history Marcus has forgotten?'
+    npc_voice: "Joe is hunched in the corner chair. He hasn't taken his coat off."
+    branch_choices:
+      - id: compassionate
+        label: "Joe — you got him here. He's alive because you didn't wait. Tell me what you've noticed."
+        npc_voice: "Joe's face crumples for a moment, then steadies."
+        rapport_delta: 2
+        response: |
+          "He's been losing weight all term and I thought it was just
+          finals stress. Drinks pints of squash. Up to the toilet five
+          times a night — I share a wall with him. (Pause.) His mum
+          has thyroid issues — autoimmune something. No diabetes
+          that anyone's ever mentioned. He was eating less, just
+          sleeping after lectures. I should have made him come in
+          two weeks ago. I keep thinking — what if I'd just made him."
+      - id: clinical
+        label: "Family PMH? Any diabetes, thyroid, autoimmune?"
+        rapport_delta: 0
+        response: |
+          "Mum has autoimmune thyroid. No diabetes in the family
+          that anyone knows of. He's been polyuric, polydipsic,
+          losing weight, two weeks at least."
+      - id: dismissive
+        label: "I'm taking history from Marcus directly. We'll come back to you."
+        npc_voice: "Joe nods. He doesn't speak again."
+        rapport_delta: -2
+        response: |
+          "Right. Yeah. I'll be here."
     response: |
-      "Nothing I know of. His mum has thyroid issues — autoimmune
-      something. No diabetes in the family that I know of. He's been
-      eating less, just sleeping after lectures. I should have made him
-      come in sooner."
+      Joe (housemate) reports a 2-week prodrome of polyuria,
+      polydipsia, weight loss and lethargy. Maternal family history
+      of autoimmune thyroid disease. No known family diabetes.
 
   - id: hx_drug_history
     source: patient

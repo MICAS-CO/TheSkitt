@@ -96,13 +96,36 @@ history:
     supports:
       - 'Acute ischaemic stroke — left MCA territory (LVO)'
       - "Seizure with Todd's palsy"
+    branch_choices:
+      - id: compassionate
+        label: "Carol — before anything else: you got him here within the hour. That matters. Now tell me exactly what you saw."
+        npc_voice: "She breathes out for the first time since she walked in."
+        rapport_delta: 2
+        response: |
+          "08:05. The kettle had just clicked off and I was looking at
+          the kitchen clock. He was drinking his tea. He went quiet,
+          his right arm dropped, then his mouth pulled down on the
+          same side. I asked if he was OK and he tried to say
+          something but it came out wrong. I got him in the car —
+          we live 8 minutes away. (Pause.) Is he going to come back
+          the same? I just need to know. I won't hold you to it,
+          doctor, I just — please. Just tell me what you're thinking."
+      - id: clinical
+        label: "Exact time of onset and the first three things you noticed?"
+        rapport_delta: 0
+        response: |
+          "08:05. Right arm dropped, face pulled down on the right,
+          speech came out wrong. Drove him in — 8 minutes from home."
+      - id: dismissive
+        label: "I need the time of onset first. Other questions later."
+        npc_voice: "Carol nods quickly. She doesn't sit."
+        rapport_delta: -1
+        response: |
+          "08:05. (Pause.) Sorry. I'll wait."
     response: |
-      "It was 08:05 — I know because the kettle had just clicked off
-      and I was looking at the kitchen clock. He'd been fine, drinking
-      his tea. He suddenly went quiet, his right arm dropped, then his
-      mouth pulled down on the same side. I asked if he was OK and he
-      tried to say something but it came out wrong. I got him into the
-      car immediately — we live 8 minutes away."
+      Carol reports witnessed onset at 08:05, right arm drop with
+      contralateral facial droop and expressive speech disturbance.
+      8-minute private-car drive into the department.
 
   - id: hx_anticoagulation
     source: family

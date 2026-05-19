@@ -114,11 +114,38 @@ history:
     source: patient
     topic: 'Any antiplatelets, NSAIDs, alcohol, or herbal medicines?'
     prereq_history_ids: [hx_anticoagulant]
+    supports: ['Mild traumatic brain injury with traumatic subdural haematoma on anticoagulation']
+    branch_choices:
+      - id: compassionate
+        label: "(gently) And the apixaban — I know that one's a fiddle. Honest answer: have you been getting it down twice a day?"
+        npc_voice: "She looks at her hands. Then she looks at her son, who is staring at the floor."
+        rapport_delta: 2
+        response: |
+          "Mostly. I — most mornings. The evening one I forget more
+          than I should. Especially Tuesdays and Thursdays when I do
+          the bingo. (Pause.) Sometimes Wednesday morning I'll take
+          both, you know, to catch up. Is that — should I not have
+          done that? Nobody told me not to. Paracetamol for my knees,
+          two in the morning. No aspirin, no ibuprofen. I don't drink.
+          The pharmacist said no St John's Wort."
+      - id: clinical
+        label: "Antiplatelets, NSAIDs, alcohol, herbals?"
+        rapport_delta: 0
+        response: |
+          "Paracetamol 2 tablets mornings for my knees. No aspirin,
+          no ibuprofen. I don't drink. No St John's Wort because of
+          the apixaban — the pharmacist told me."
+      - id: dismissive
+        label: "Compliance with apixaban — yes or no?"
+        npc_voice: "Her chin lifts. Her son shifts in his chair."
+        rapport_delta: -2
+        response: |
+          "Yes."
     response: |
-      "I take paracetamol for my knees, maybe 2 tablets in the
-      morning. No aspirin, no ibuprofen. I don't drink. The
-      community pharmacist said no St John's Wort because of the
-      apixaban."
+      Reports paracetamol 2 tablets in the morning for chronic knee
+      pain. No aspirin, no NSAIDs, no alcohol. Pharmacist-advised
+      avoidance of St John's Wort with apixaban. Adherence not
+      independently verified.
 
   - id: hx_pmh_falls
     source: gp_letter
