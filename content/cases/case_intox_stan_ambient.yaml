@@ -127,6 +127,20 @@ history:
       Sleepy. Don't take me to the ward, I just need to sleep it off."
       (Mumbling, dropping off mid-sentence.)
 
+  - id: hx_stan_maggies_birthday
+    source: patient
+    topic: '(later, sitting beside the trolley) Anything coming up this week, Stan?'
+    prereq_history_ids: [hx_stan_speech]
+    min_rapport: 2
+    npc_voice: "Stan goes very still. He doesn't answer for a long time. Then he speaks without looking up."
+    supports: ['Pure alcohol intoxication']
+    response: |
+      "Friday's her birthday. Maggie's. (Pause.) Sixty-two she'd
+      have been. I bought a card. It's on the side. I keep
+      thinking I'll write it. (Pause.) I'm not going to be on my
+      own Friday, am I, doc? I don't think I should be on my own
+      on Friday."
+
   - id: hx_fall_mechanism
     source: paramedic
     topic: 'Was the fall witnessed?'

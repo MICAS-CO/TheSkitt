@@ -1790,6 +1790,15 @@ a {
 .enc__rapport--bad strong {
   color: var(--danger);
 }
+.enc__card.is-silenced-rapport {
+  opacity: 0.45;
+  filter: grayscale(0.4);
+}
+.enc__banner--warn {
+  background: rgba(224, 168, 46, 0.1);
+  border-left-color: var(--warn);
+  color: #e8d8a8;
+}
 .enc__branch-picker {
   margin-top: 8px;
   padding: 10px 12px;

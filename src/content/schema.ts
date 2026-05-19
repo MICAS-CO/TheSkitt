@@ -218,6 +218,17 @@ export const HistoryItem = z.object({
     )
     .min(2)
     .optional(),
+  /**
+   * Minimum case rapport required to surface this history item (M38).
+   * The item is hidden — like an unmet prereq — until `cs.rapport`
+   * meets this floor. Use to author rewards for compassionate
+   * questioning: the patient discloses something only once they
+   * feel safe with you.
+   *
+   * Pair with prereq_history_ids to require the player to have
+   * earned BOTH the rapport AND the conversational opening.
+   */
+  min_rapport: z.number().int().min(-3).max(3).optional(),
   supports: z.array(z.string()).optional(),
 });
 

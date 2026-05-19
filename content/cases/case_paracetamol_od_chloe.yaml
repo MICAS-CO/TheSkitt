@@ -159,6 +159,19 @@ history:
       take them all but I couldn't do it in one go, I kept being
       sick. I'm not sorry I did it. I'm sorry Mira found me."
 
+  - id: hx_chloe_aftercare
+    source: patient
+    topic: '(quiet, after the intent disclosure) Is there anyone you want me to call?'
+    prereq_history_ids: [hx_chloe_intent]
+    min_rapport: 1
+    npc_voice: "She doesn't open her eyes. A long pause."
+    supports: ['Self-poisoning with suicidal intent (clinical risk)']
+    response: |
+      "Mira's outside. Don't call my mum yet. (Beat.) There's a
+      mentor — Sami, from the safeguarding team at work — they
+      know how to reach me. I'd rather they came than my mum.
+      Please. Not my mum."
+
   - id: hx_housemate
     source: family
     topic: 'Speak to Mira in the relatives’ room.'

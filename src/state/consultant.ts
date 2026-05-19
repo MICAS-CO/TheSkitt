@@ -30,6 +30,10 @@ export interface ShiftMemo {
   topTags: string[];
   /** Standout case for the consultant to point at — title only. */
   highlightCaseTitle: string | null;
+  /** Net rapport across attended branching cases (M38). null when no
+   *  branching cases were attended. The consultant comments on this
+   *  bucket when present. */
+  rapportBucket: 'warm' | 'neutral' | 'cold' | null;
   whenIso: string;
 }
 
@@ -63,6 +67,16 @@ export function memoFromEpisodeReport(report: EpisodeReport, now: Date = new Dat
     report.band === 'excellent' || report.band === 'good'
       ? sortedByScore[0]
       : sortedByScore[sortedByScore.length - 1];
+  // Rapport bucket (M38) — average across attended cases that had any
+  // branching authored (branchesAvailable > 0). Skip cases without
+  // branching so the bucket reflects relational moments, not noise.
+  const branchingCases = attended.filter((c) => c.score.branchesAvailable > 0);
+  let rapportBucket: ShiftMemo['rapportBucket'] = null;
+  if (branchingCases.length > 0) {
+    const avg =
+      branchingCases.reduce((s, c) => s + c.score.rapport, 0) / branchingCases.length;
+    rapportBucket = avg >= 1 ? 'warm' : avg <= -1 ? 'cold' : 'neutral';
+  }
   return {
     episodeId: report.episodeId,
     episodeTitle: report.episodeTitle,
@@ -72,6 +86,7 @@ export function memoFromEpisodeReport(report: EpisodeReport, now: Date = new Dat
     casesAttended: attended.length,
     topTags,
     highlightCaseTitle: highlight?.title ?? null,
+    rapportBucket,
     whenIso: now.toISOString(),
   };
 }
@@ -94,6 +109,13 @@ export function composeConsultantMessage(memo: ShiftMemo): ConsultantMessage {
 
   const focus = memo.highlightCaseTitle ? `: ${memo.highlightCaseTitle}` : '';
   const tagBlurb = memo.topTags.length > 0 ? ` Around ${memo.topTags.slice(0, 2).join(' / ')}.` : '';
+  // M38: rapport-bucket commentary added on top of the band line.
+  const rapportLine =
+    memo.rapportBucket === 'warm'
+      ? ' Whatever you were doing in the room — the listening — keep it.'
+      : memo.rapportBucket === 'cold'
+        ? ' Word from the nursing notes: the patients felt rushed. Worth a thought next round.'
+        : '';
 
   let body: string;
   switch (memo.band) {
@@ -103,17 +125,17 @@ export function composeConsultantMessage(memo: ShiftMemo): ConsultantMessage {
           memo.livesSaved > 0
             ? `You saved ${memo.livesSaved} clearly.`
             : 'Clean reasoning across the board.'
-        }${tagBlurb} Keep that exam discipline up.`;
+        }${tagBlurb} Keep that exam discipline up.${rapportLine}`;
       break;
     case 'good':
       body =
         `Solid shift${focus}. The bones were right;` +
-        ` one or two cases want sharpening if you replay them.${tagBlurb}`;
+        ` one or two cases want sharpening if you replay them.${tagBlurb}${rapportLine}`;
       break;
     case 'borderline':
       body =
         `That was a bumpy one${focus}. Worth a re-run when you've got 20 minutes —` +
-        ` the sequencing on a couple of cases tripped you up.${tagBlurb}`;
+        ` the sequencing on a couple of cases tripped you up.${tagBlurb}${rapportLine}`;
       break;
     case 'unsafe':
       body =
@@ -121,7 +143,7 @@ export function composeConsultantMessage(memo: ShiftMemo): ConsultantMessage {
           memo.livesLost > 0
             ? `${memo.livesLost} patient${memo.livesLost === 1 ? '' : 's'} arrested or worse — `
             : 'There were safety calls that landed badly — '
-        }let's walk through what we'd do differently next time.${tagBlurb}`;
+        }let's walk through what we'd do differently next time.${tagBlurb}${rapportLine}`;
       break;
   }
 

@@ -470,6 +470,12 @@ function visibleHistoryItems(cs: CaseRuntime, ks: KernelState) {
   return cs.data.history.filter((h) => {
     // Arc-gated items hide until the arc reveals (or push-reveal via `reveals`).
     if (arcGated.has(h.id) && !cs.unlockedHistoryIds.has(h.id)) return false;
+    // Rapport-gated items hide until the player has earned the floor (M38).
+    // Asked-already items stay visible even if rapport later drops — once
+    // disclosed, you can't un-hear something.
+    if (h.min_rapport !== undefined && cs.rapport < h.min_rapport && !cs.asked.has(h.id)) {
+      return false;
+    }
     // Prereq-gated items hide until every prereq has been asked, OR until
     // explicitly unlocked by another item's `reveals`/an arc effect.
     const prereqs = h.prereq_history_ids ?? [];
@@ -480,16 +486,19 @@ function visibleHistoryItems(cs: CaseRuntime, ks: KernelState) {
 }
 
 /**
- * The patient cannot answer questions when actively deteriorating or
- * arrested. Family and other indirect sources stay available; first-person
- * patient history is silenced until the player stabilises them.
+ * The patient cannot answer questions when actively deteriorating /
+ * arrested OR when rapport has collapsed (M38: rapport ≤ −2 — they
+ * 'pull away' and stop engaging). Family and other indirect sources
+ * stay available either way.
  */
 function isHistorySilenced(
   cs: CaseRuntime,
   source: 'patient' | 'family' | 'paramedic' | 'gp_letter' | 'triage_note' | 'nurse' | 'records',
-): boolean {
-  if (cs.state !== 'deteriorating' && cs.state !== 'arrested') return false;
-  return source === 'patient';
+): 'physiology' | 'rapport' | null {
+  if (source !== 'patient') return null;
+  if (cs.state === 'deteriorating' || cs.state === 'arrested') return 'physiology';
+  if (cs.rapport <= -2) return 'rapport';
+  return null;
 }
 
 // ─── Section bodies ─────────────────────────────────────────────────────────
@@ -527,11 +536,17 @@ function HistoryPhase({
   }).length;
 
   const patientSilenced = cs.state === 'deteriorating' || cs.state === 'arrested';
+  const rapportCollapsed = cs.rapport <= -2;
 
   // Rapport surfaces only once the encounter actually has at least one
   // branching dialogue moment authored on it (M34).
   const hasAnyBranching = cs.data.history.some((h) => h.branch_choices);
   const rapport = rapportLabel(cs.rapport);
+  // M38: count how many items the player has *unlocked* by reaching the
+  // rapport floor — surfaces in the hint line so the reward feels earned.
+  const rapportUnlockedHidden = cs.data.history.filter(
+    (h) => h.min_rapport !== undefined && cs.rapport < h.min_rapport && !cs.asked.has(h.id),
+  ).length;
 
   return (
     <section className="enc__phase">
@@ -554,6 +569,13 @@ function HistoryPhase({
           sources remain available.
         </div>
       )}
+      {!patientSilenced && rapportCollapsed && (
+        <div className="enc__banner enc__banner--warn" role="status">
+          <strong>{firstName(cs.data.title)} has pulled away.</strong> First-person history is
+          closed for now — they&rsquo;ll answer family or paramedic questions, but not yours
+          directly. The way you asked got there.
+        </div>
+      )}
       <p className="enc__hint">
         Ask a topic to start. Some answers will open follow-up questions.
         {hasAnyBranching && (
@@ -574,6 +596,15 @@ function HistoryPhase({
             <em>{hiddenByArc} more would open if an arc reveals.</em>
           </>
         )}
+        {rapportUnlockedHidden > 0 && (
+          <>
+            {' '}
+            <em>
+              {rapportUnlockedHidden} more would open if {firstName(cs.data.title).toLowerCase()}{' '}
+              trusted you more.
+            </em>
+          </>
+        )}
       </p>
       <ul className="enc__cards">
         {items.map((h) => {
@@ -583,19 +614,28 @@ function HistoryPhase({
             (cs.unlockedHistoryIds.has(h.id) ||
               ((h.prereq_history_ids?.length ?? 0) > 0 &&
                 (h.prereq_history_ids ?? []).every((p) => cs.asked.has(p))));
-          const silenced = !isAsked && isHistorySilenced(cs, h.source);
+          const silencedReason = !isAsked ? isHistorySilenced(cs, h.source) : null;
+          const silenced = silencedReason !== null;
+          const silenceTitle =
+            silencedReason === 'rapport'
+              ? `${firstName(cs.data.title)} has pulled away — they won't answer you directly right now.`
+              : silencedReason === 'physiology'
+                ? 'Patient cannot answer right now — they need stabilisation.'
+                : undefined;
           return (
             <li
               key={h.id}
               className={`enc__card ${isAsked ? 'is-revealed' : ''} ${
                 isNewlyUnlocked ? 'is-unlocked' : ''
-              } ${silenced ? 'is-silenced' : ''}`}
+              } ${silenced ? 'is-silenced' : ''} ${
+                silencedReason === 'rapport' ? 'is-silenced-rapport' : ''
+              }`}
             >
               <button
                 className="enc__card-head"
                 onClick={() => onAsk(h.id)}
                 disabled={isAsked || silenced}
-                title={silenced ? 'Patient cannot answer right now.' : undefined}
+                title={silenceTitle}
               >
                 <span className="enc__chip">{h.source.replace('_', ' ')}</span>
                 <span>{h.topic}</span>
