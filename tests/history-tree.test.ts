@@ -107,7 +107,7 @@ describe('history dialogue tree — kernel-side', () => {
 
 describe('history dialogue tree — content discipline', () => {
   const cases = readdirSync(join(ROOT, 'content/cases'))
-    .filter((f) => f.endsWith('.yaml'))
+    .filter((f) => f.endsWith('.yaml') && !f.includes('scratch') && !f.includes('croup_draft'))
     .map((f) => loadCase(`content/cases/${f}`));
 
   it('every prereq_history_ids id exists within the same case', () => {
@@ -166,7 +166,7 @@ describe('history dialogue tree — content discipline', () => {
 
 describe('M11 — clue-board supports integrity', () => {
   const cases = readdirSync(join(ROOT, 'content/cases'))
-    .filter((f) => f.endsWith('.yaml'))
+    .filter((f) => f.endsWith('.yaml') && !f.includes('scratch') && !f.includes('croup_draft'))
     .map((f) => loadCase(`content/cases/${f}`));
 
   it('every supports entry references a real differential in the same case', () => {

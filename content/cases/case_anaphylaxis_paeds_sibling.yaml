@@ -56,6 +56,7 @@ demographics:
 
 triage_category: 2
 initial_state: deteriorating
+resus_protocol: apls_paeds
 
 vitals:
   baseline:
@@ -283,6 +284,7 @@ working_diagnosis: 'Paediatric anaphylaxis to peanut'
 management:
   - id: mx_a_to_e_paeds
     category: monitoring
+    resus_letter: A
     name: 'Paediatric ABCDE + continuous monitoring + paeds early warning score (PEWS)'
     detail: |
       Move to paeds resus; continuous SpO2, ECG, BP every 3 min, RR every
@@ -299,6 +301,7 @@ management:
 
   - id: mx_oxygen_paeds
     category: drug
+    resus_letter: B
     name: 'High-flow O2 via paediatric non-rebreather (target SpO2 ≥94%)'
     detail: '15 L/min via paeds non-rebreather initially; titrate down to keep SpO2 ≥94%.'
     must_do: true
@@ -311,6 +314,7 @@ management:
 
   - id: mx_adrenaline_paeds_im
     category: drug
+    resus_letter: C
     name: 'IM adrenaline — paediatric dose (8 y → 300 mcg)'
     detail: |
       Anterolateral mid-thigh. Sam already had one dose from his
@@ -332,6 +336,7 @@ management:
 
   - id: mx_position_paeds
     category: procedure
+    resus_letter: C
     name: 'Lay supine; if pregnant adolescent → left lateral tilt'
     detail: |
       For a hypotensive paeds anaphylaxis patient, lay supine with legs
@@ -344,6 +349,7 @@ management:
 
   - id: mx_iv_access_paeds
     category: procedure
+    resus_letter: C
     name: 'IV access (or IO if struggling) — take bloods + tryptase sample 1'
     detail: |
       Two attempts max at IV in a stable-ish patient before going IO.
@@ -352,6 +358,7 @@ management:
 
   - id: mx_iv_fluids_paeds
     category: fluid
+    resus_letter: C
     name: 'IV crystalloid 10 mL/kg bolus, reassess (paeds dose, NOT adult 20)'
     detail: |
       280 mL of 0.9% saline or Hartmann''s over 5–10 min for Sam at
@@ -371,6 +378,7 @@ management:
 
   - id: mx_nebulised_salbutamol_paeds
     category: drug
+    resus_letter: B
     name: 'Nebulised salbutamol 5 mg (≥5 yr) for persistent wheeze'
     detail: |
       Adjunct only — does NOT replace IM adrenaline. Salbutamol back-to-

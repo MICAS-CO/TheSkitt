@@ -287,6 +287,8 @@ const DrugDose = z.object({
   paeds_dose: z.string().optional().describe('e.g. "10 micrograms/kg"'),
 });
 
+export const ResusLetter = z.enum(['A', 'B', 'C', 'D', 'E']);
+
 export const ManagementAction = z.object({
   id: z.string(),
   category: ManagementCategory,
@@ -295,6 +297,8 @@ export const ManagementAction = z.object({
   drug: DrugDose.optional(),
   must_do: z.boolean().default(false).describe('If true, omitting penalises the debrief.'),
   must_not_do: z.boolean().default(false).describe('If true, doing it is an examiner trap.'),
+  /** ABCDE bucket for the resus action wheel (M13). Optional. */
+  resus_letter: ResusLetter.optional(),
   sources: z.array(Citation).optional(),
 });
 
@@ -363,6 +367,11 @@ export const Case = z.object({
    *  shows derived defaults based on state and age. Strongly recommended
    *  for SLO-3 / resus cases. */
   vitals: Vitals.optional(),
+  /** When set, the encounter offers a "Resus Mode" ABCDE action wheel
+   *  alongside the standard sections. SLO-3 / resus cases only. */
+  resus_protocol: z
+    .enum(['als_adult', 'apls_paeds', 'atls', 'choking_adult', 'choking_child'])
+    .optional(),
   /** Where in the ED the patient sits — drives hub-view layout. */
   bay: z
     .enum(['resus', 'majors', 'minors', 'paeds', 'relatives', 'ambulatory', 'triage'])

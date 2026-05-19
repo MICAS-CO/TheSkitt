@@ -67,6 +67,7 @@ demographics:
 triage_category: 1
 initial_state: deteriorating
 bay: resus
+resus_protocol: als_adult
 
 vitals:
   baseline:
@@ -447,6 +448,7 @@ working_diagnosis: |
 management:
   - id: mx_a_to_e_monitoring
     category: monitoring
+    resus_letter: A
     name: 'ABCDE; large-bore IV ×2; arterial line; full monitoring; anaesthetics on standby'
     detail: |
       RSI in massive PE is fraught — induction-related drop in
@@ -457,6 +459,7 @@ management:
 
   - id: mx_high_flow_o2
     category: drug
+    resus_letter: B
     name: 'High-flow O2; target SpO2 ≥94%'
     detail: |
       15 L non-rebreather initially; HFNO if available. Hypoxaemia
@@ -471,6 +474,7 @@ management:
 
   - id: mx_cautious_fluid
     category: fluid
+    resus_letter: C
     name: 'Cautious IV crystalloid 250-500 mL bolus only — avoid over-resus'
     detail: |
       Counterintuitive: aggressive fluids worsen RV distension and
@@ -483,6 +487,7 @@ management:
 
   - id: mx_norepinephrine
     category: drug
+    resus_letter: C
     name: 'IV noradrenaline infusion — first-line vasopressor'
     detail: |
       Maintains coronary perfusion pressure and right-ventricular
@@ -502,6 +507,7 @@ management:
 
   - id: mx_systemic_thrombolysis
     category: drug
+    resus_letter: C
     name: 'IV alteplase 100 mg over 2 h (systemic thrombolysis)'
     detail: |
       The headline intervention in high-risk (massive) PE without

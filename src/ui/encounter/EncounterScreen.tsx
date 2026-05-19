@@ -4,6 +4,7 @@ import type { CitationT } from '../../content/schema';
 import type { CaseRuntime, KernelState, LogEntry } from '../../sim/kernel';
 import { ClockBar } from '../shift/ClockBar';
 import { PatientPanel } from './PatientPanel';
+import { ResusMode } from './ResusMode';
 
 /**
  * Sections of the encounter. Replaces the old linear "phase pipeline":
@@ -64,6 +65,7 @@ export function EncounterScreen({
   const ks = kernel?.getState();
   const isRunning = ks?.isRunning ?? false;
   const isShiftOver = ks?.isShiftOver ?? false;
+  const [resusActive, setResusActive] = useState(false);
 
   // Auto-jump to debrief when the shift ends
   useEffect(() => {
@@ -92,6 +94,10 @@ export function EncounterScreen({
   }
 
   const canCloseCase = cs.workingDx !== null && cs.disposition !== null;
+  const resusEligible =
+    !!cs.data.resus_protocol ||
+    cs.state === 'arrested' ||
+    cs.state === 'deteriorating';
 
   return (
     <div className="enc">
@@ -118,43 +124,61 @@ export function EncounterScreen({
         <PatientPanel cs={cs} />
       </div>
 
-      <SectionTabs
-        section={section}
-        onChange={onSectionChange}
-        cs={cs}
-        ks={ks}
-        canViewDebrief={canCloseCase || isShiftOver}
-      />
+      {resusEligible && (
+        <div className="enc__resus-row">
+          <button
+            type="button"
+            className={`enc__resus-toggle ${resusActive ? 'is-active' : ''}`}
+            onClick={() => setResusActive((v) => !v)}
+            aria-pressed={resusActive}
+          >
+            {resusActive ? '← back to standard encounter' : '⚠ enter resus mode'}
+          </button>
+        </div>
+      )}
+
+      {!resusActive && (
+        <SectionTabs
+          section={section}
+          onChange={onSectionChange}
+          cs={cs}
+          ks={ks}
+          canViewDebrief={canCloseCase || isShiftOver}
+        />
+      )}
 
       <div className="enc__split">
         <main className="enc__body">
-          {section === 'history' && (
+          {resusActive ? (
+            <ResusMode cs={cs} onAction={(id) => kernel.toggleAction(caseId, id)} />
+          ) : null}
+          {!resusActive && section === 'history' && (
             <HistoryPhase cs={cs} onAsk={(id) => kernel.recordAsk(caseId, id)} />
           )}
-          {section === 'examination' && (
+          {!resusActive && section === 'examination' && (
             <ExaminationPhase cs={cs} onExamine={(s) => kernel.recordExamine(caseId, s)} />
           )}
-          {section === 'investigations' && (
+          {!resusActive && section === 'investigations' && (
             <InvestigationsPhase
               cs={cs}
               clockMin={ks.clockMin}
               onOrder={(id) => kernel.orderInvestigation(caseId, id)}
             />
           )}
-          {section === 'differential' && (
+          {!resusActive && section === 'differential' && (
             <DifferentialPhase
               cs={cs}
               onLockIn={(dx) => kernel.setWorkingDx(caseId, dx)}
               onClear={() => kernel.clearWorkingDx(caseId)}
             />
           )}
-          {section === 'management' && (
+          {!resusActive && section === 'management' && (
             <ManagementPhase cs={cs} onToggle={(id) => kernel.toggleAction(caseId, id)} />
           )}
-          {section === 'disposition' && (
+          {!resusActive && section === 'disposition' && (
             <DispositionPhase cs={cs} onChoose={(label) => kernel.setDisposition(caseId, label)} />
           )}
-          {section === 'debrief' && <DebriefPhase cs={cs} />}
+          {!resusActive && section === 'debrief' && <DebriefPhase cs={cs} />}
         </main>
 
         <ShiftLog log={ks.log} caseId={caseId} />

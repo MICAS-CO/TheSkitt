@@ -42,6 +42,7 @@ demographics:
 triage_category: 2
 initial_state: deteriorating
 bay: resus
+resus_protocol: als_adult
 
 vitals:
   baseline:
@@ -273,6 +274,7 @@ working_diagnosis: 'Anaphylaxis to peanut'
 management:
   - id: mx_a_to_e
     category: monitoring
+    resus_letter: A
     name: 'ABCDE assessment; place on monitor; high-flow oxygen via non-rebreather'
     detail: |
       Continuous SpO2, ECG, NIBP every 3 min. 15 L/min via non-rebreather
@@ -294,6 +296,7 @@ management:
 
   - id: mx_adrenaline_im
     category: drug
+    resus_letter: C
     name: 'IM adrenaline 500 mcg'
     detail: |
       Anterolateral mid-thigh. Repeat every 5 minutes if no improvement.
@@ -312,6 +315,7 @@ management:
 
   - id: mx_position_supine
     category: procedure
+    resus_letter: C
     name: 'Lay supine with legs elevated (Trendelenburg)'
     detail: |
       Hypotensive patient. Sitting up risks empty-ventricle cardiac arrest
@@ -323,12 +327,14 @@ management:
 
   - id: mx_iv_access
     category: procedure
+    resus_letter: C
     name: 'Two large-bore IV cannulae; take bloods'
     detail: 'FBC, U&E, CRP, lactate, VBG, mast cell tryptase (sample 1).'
     must_do: true
 
   - id: mx_iv_fluids
     category: fluid
+    resus_letter: C
     name: 'IV crystalloid 500–1000 mL bolus (rapid)'
     detail: |
       0.9% saline or Hartmann's; reassess BP after each bolus; up to
@@ -339,6 +345,7 @@ management:
 
   - id: mx_nebulised_salbutamol
     category: drug
+    resus_letter: B
     name: 'Nebulised salbutamol 5 mg (repeat 15–30 minutely or continuous)'
     detail: |
       Adjunct for persistent wheeze after adrenaline; does not replace

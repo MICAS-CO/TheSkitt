@@ -68,6 +68,7 @@ demographics:
 triage_category: 1
 initial_state: deteriorating
 bay: resus
+resus_protocol: als_adult
 
 vitals:
   baseline:
@@ -458,6 +459,7 @@ working_diagnosis: |
 management:
   - id: mx_a_to_e_monitoring
     category: monitoring
+    resus_letter: A
     name: 'ABCDE; large-bore IV ×2 above the diaphragm; full monitoring; arterial line in the right arm'
     detail: |
       Avoid lines through the femoral if iliac dissection extension
@@ -470,6 +472,7 @@ management:
 
   - id: mx_iv_labetalol
     category: drug
+    resus_letter: C
     name: 'IV labetalol bolus + infusion — target HR <60, systolic <120 mmHg'
     detail: |
       Combined alpha/beta blockade lowers shear stress (dP/dt) on the
@@ -491,6 +494,7 @@ management:
 
   - id: mx_gtn_after_beta
     category: drug
+    resus_letter: C
     name: 'IV GTN AFTER beta-blockade (never before)'
     detail: |
       Vasodilator before beta-blocker → reflex tachycardia → ↑dP/dt
@@ -506,6 +510,7 @@ management:
 
   - id: mx_analgesia
     category: drug
+    resus_letter: D
     name: 'IV morphine titrated (1–2 mg, repeat after 5 min) + antiemetic'
     detail: |
       Adequate analgesia lowers sympathetic drive, which lowers dP/dt
@@ -544,6 +549,7 @@ management:
 
   - id: mx_crossmatch_blood
     category: procedure
+    resus_letter: C
     name: 'Crossmatch 4–6 units; activate cell salvage; notify haematology'
     detail: 'Bentall + arch repair often need 6–10 units. Notify the blood bank early.'
     must_do: true
