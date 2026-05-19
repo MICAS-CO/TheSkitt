@@ -167,6 +167,18 @@ export interface ScoreReport {
    *  pivotal moments". */
   branchesPicked: number;
   branchesAvailable: number;
+  /** Workup parsimony (M36). \`tracked\` is true only when the case
+   *  has at least one investigation flagged \`essential: true\` — older
+   *  cases without essential markers stay out of the metric and pay
+   *  no penalty. \`extraIxOrdered\` is the count of non-essential ix
+   *  the player ordered. */
+  workup: {
+    tracked: boolean;
+    essentialIxTotal: number;
+    essentialIxOrdered: number;
+    extraIxOrdered: number;
+    penaltyPercent: number;
+  };
   dispositionCorrect: boolean;
   workingDxCorrect: boolean;
   percent: number;
@@ -218,6 +230,20 @@ export function scoreCase(cs: CaseRuntime): ScoreReport {
   const topDx = cs.data.differential.find((d) => d.likelihood === 'top');
   const workingDxCorrect = !!topDx && cs.workingDx === topDx.diagnosis;
 
+  // Workup parsimony (M36). Only tracked when the case actually
+  // declares essentials; older cases pay nothing.
+  const essentialIx = cs.data.investigations.filter((i) => i.essential);
+  const orderedIxIds = new Set(cs.ordered.keys());
+  const essentialIxOrdered = essentialIx.filter((i) => orderedIxIds.has(i.id)).length;
+  const extraIxOrdered = [...orderedIxIds].filter(
+    (id) => !essentialIx.some((i) => i.id === id),
+  ).length;
+  const workupTracked = essentialIx.length > 0;
+  // -2% per extra ix beyond a 2-ix free allowance, capped at -10%.
+  const workupPenalty = workupTracked
+    ? Math.min(10, Math.max(0, (extraIxOrdered - 2) * 2))
+    : 0;
+
   const safetyPenalty = mustNotDoChosen * 20;
   const sequencePenalty = sequenceErrors * 10;
   const score =
@@ -225,7 +251,8 @@ export function scoreCase(cs: CaseRuntime): ScoreReport {
     (workingDxCorrect ? 15 : 0) +
     (dispositionCorrect ? 15 : 0) -
     safetyPenalty -
-    sequencePenalty;
+    sequencePenalty -
+    workupPenalty;
   const percent = Math.max(0, Math.min(100, Math.round(score)));
 
   let band: ScoreReport['band'];
@@ -246,6 +273,13 @@ export function scoreCase(cs: CaseRuntime): ScoreReport {
     rapport: cs.rapport,
     branchesPicked,
     branchesAvailable,
+    workup: {
+      tracked: workupTracked,
+      essentialIxTotal: essentialIx.length,
+      essentialIxOrdered,
+      extraIxOrdered,
+      penaltyPercent: workupPenalty,
+    },
     dispositionCorrect,
     workingDxCorrect,
     percent,

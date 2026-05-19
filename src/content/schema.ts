@@ -279,6 +279,15 @@ export const Investigation = z.object({
   /** Differentials this result clinically supports — see HistoryItem.supports. */
   supports: z.array(z.string()).optional(),
   /**
+   * Marks this investigation as part of the case's essential workup
+   * (M36). When ANY ix in a case carries essential: true, the debrief
+   * tallies essential-ordered vs extra-ordered and applies a soft
+   * percent penalty (-2% per extra beyond a 2-investigation free
+   * allowance, capped at -10%). Cases with no essential markers are
+   * excluded from the workup metric entirely — backwards-compatible.
+   */
+  essential: z.boolean().default(false),
+  /**
    * Optional link to a daily ECG bank entry (M31). When set, the
    * resulted ix surfaces an inline 'interpret the rhythm strip' prompt
    * before the paragraph result. Used to pair the case's clinical

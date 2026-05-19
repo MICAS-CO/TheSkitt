@@ -170,6 +170,7 @@ investigations:
     name: 'Capillary glucose + capillary ketones'
     category: bedside
     turnaround_min: 2
+    essential: true
     result_summary: |
       **Glucose 38.4 mmol/L · Capillary ketones 5.6 mmol/L.** Both
       exceed the JBDS-IP 2023 thresholds for severe DKA (glucose
@@ -182,6 +183,7 @@ investigations:
     name: 'Venous blood gas'
     category: gas
     turnaround_min: 5
+    essential: true
     result_summary: |
       **pH 7.04 · HCO3 7 mmol/L · pCO2 1.9 kPa · BE -25 ·
       K+ 4.8 mmol/L · Na 134 mmol/L · Lactate 1.8 · Glucose 38.4.**
@@ -199,6 +201,7 @@ investigations:
     name: 'FBC, U&E, CRP, blood ketones (formal), HbA1c, blood cultures'
     category: blood
     turnaround_min: 45
+    essential: true
     result_summary: |
       WCC 14.2 (stress demargination) · Plt 290 · Hb 142 ·
       Na 134 · K 4.8 · Urea 11.4 · Creat 124 (AKI) · CRP 18 ·

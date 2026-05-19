@@ -208,6 +208,7 @@ investigations:
     name: 'Mast cell tryptase — 3 samples'
     category: blood
     turnaround_min: 60
+    essential: true
     result_summary: |
       Sample 1 (presentation): pending. Send sample 2 at 1–2h and sample 3
       at 24h (baseline). A rise then fall of ≥20% above baseline confirms

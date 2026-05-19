@@ -147,6 +147,7 @@ investigations:
     name: '12-lead ECG'
     category: ecg
     turnaround_min: 2
+    essential: true
     ecg_challenge_id: ecg_002_anterior_stemi
     result_summary: |
       Sinus tachycardia 102/min. **ST elevation V2–V4 (2 mm), reciprocal
@@ -159,6 +160,7 @@ investigations:
     name: 'High-sensitivity troponin T'
     category: blood
     turnaround_min: 60
+    essential: true
     result_summary: |
       Initial hs-Tn T 184 ng/L (URL <14). Markedly raised. Repeat
       at 1 h showed delta of +210 ng/L — consistent with type 1 MI.

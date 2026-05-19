@@ -221,6 +221,24 @@ function CasesPanel({ cases, title }: { cases: PerCaseReport[]; title: string })
                   {c.score.rapport !== 0 ? ` · rapport ${c.score.rapport > 0 ? '+' : ''}${c.score.rapport}` : ''}
                 </li>
               )}
+              {c.score.workup.tracked && (
+                <li
+                  className={
+                    c.score.workup.penaltyPercent > 0 ? 'ep-debrief__warn' : undefined
+                  }
+                >
+                  Workup: <strong>{c.score.workup.essentialIxOrdered}</strong>/
+                  {c.score.workup.essentialIxTotal} essential
+                  {c.score.workup.extraIxOrdered > 0 && (
+                    <>
+                      {' · '}
+                      <strong>{c.score.workup.extraIxOrdered}</strong> extra
+                      {c.score.workup.penaltyPercent > 0 &&
+                        ` (−${c.score.workup.penaltyPercent}%)`}
+                    </>
+                  )}
+                </li>
+              )}
               {!c.attended && (
                 <li className="ep-debrief__warn">
                   <strong>Never attended</strong>

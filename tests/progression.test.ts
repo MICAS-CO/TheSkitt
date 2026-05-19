@@ -52,6 +52,13 @@ function fakeScore(overrides: Partial<ScoreReport> = {}): ScoreReport {
     rapport: 0,
     branchesPicked: 0,
     branchesAvailable: 0,
+    workup: {
+      tracked: false,
+      essentialIxTotal: 0,
+      essentialIxOrdered: 0,
+      extraIxOrdered: 0,
+      penaltyPercent: 0,
+    },
     dispositionCorrect: true,
     workingDxCorrect: true,
     percent: 100,

@@ -97,4 +97,65 @@ describe('scoreCase — adult anaphylaxis', () => {
     expect(r.workingDxCorrect).toBe(false);
     expect(r.dispositionCorrect).toBe(false);
   });
+
+  it('workup metric is tracked when any ix has essential: true (M36)', () => {
+    // Beth's anaphylaxis case has ix_tryptase marked essential (M36).
+    const { kernel, caseData } = freshRuntime();
+    kernel.enterCase(caseData.id);
+    kernel.orderInvestigation(caseData.id, 'ix_tryptase');
+    const cs = kernel.getState().cases.get(caseData.id)!;
+    const r = scoreCase(cs);
+    expect(r.workup.tracked).toBe(true);
+    expect(r.workup.essentialIxTotal).toBeGreaterThanOrEqual(1);
+    expect(r.workup.essentialIxOrdered).toBeGreaterThanOrEqual(1);
+    expect(r.workup.extraIxOrdered).toBe(0);
+    expect(r.workup.penaltyPercent).toBe(0);
+  });
+
+  it('ordering many extra ix triggers the workup penalty (M36)', () => {
+    const { kernel, caseData } = freshRuntime();
+    kernel.enterCase(caseData.id);
+    // Order ALL Beth's ix — tryptase is essential, the other 5 are extras.
+    for (const ix of caseData.investigations) {
+      kernel.orderInvestigation(caseData.id, ix.id);
+    }
+    const cs = kernel.getState().cases.get(caseData.id)!;
+    const r = scoreCase(cs);
+    expect(r.workup.extraIxOrdered).toBeGreaterThan(2);
+    // -2% per extra beyond a 2-ix free allowance, capped at -10%.
+    const expected = Math.min(10, Math.max(0, (r.workup.extraIxOrdered - 2) * 2));
+    expect(r.workup.penaltyPercent).toBe(expected);
+  });
+
+  it('cases without any essential markers are untracked (M36)', () => {
+    // Use Sarah ectopic — not yet backfilled with essentials. Should
+    // be excluded from the metric and pay zero penalty regardless of
+    // how many ix the player orders.
+    const sarah = Case.parse(
+      parseYaml(
+        readFileSync(
+          join(process.cwd(), 'content/cases/case_ectopic_minors_sarah.yaml'),
+          'utf8',
+        ),
+      ),
+    );
+    const ep: EpisodeT = Episode.parse({
+      schema_version: 1,
+      id: 'ep_workup_untracked_test',
+      title: 'Untracked workup',
+      learning_objectives: ['x'],
+      curriculum_tags: ['ObC1'],
+      difficulty_band: 'CT2',
+      shift_duration_min: 20,
+      focus_cases: [sarah.id],
+    });
+    const k = new SimKernel({ episode: ep, cases: new Map([[sarah.id, sarah]]) });
+    k.enterCase(sarah.id);
+    for (const ix of sarah.investigations) {
+      k.orderInvestigation(sarah.id, ix.id);
+    }
+    const r = scoreCase(k.getState().cases.get(sarah.id)!);
+    expect(r.workup.tracked).toBe(false);
+    expect(r.workup.penaltyPercent).toBe(0);
+  });
 });
