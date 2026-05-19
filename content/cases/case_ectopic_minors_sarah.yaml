@@ -472,6 +472,7 @@ management:
       • Other MTX criteria: unruptured ectopic, adnexal mass <35 mm,
         no fetal cardiac activity, willing/able to attend follow-up.
     must_not_do: true
+    gated_by_history: [hx_pregnancy]
     sources:
       - {
           type: nice,
@@ -507,6 +508,7 @@ management:
       platelet function in a patient who may be bleeding. Use
       paracetamol + opioid.
     must_not_do: true
+    gated_by_history: [hx_pregnancy]
 
 disposition_options:
   - label: 'Admit gynae for emergency laparoscopy (probable salpingectomy)'

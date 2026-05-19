@@ -441,6 +441,7 @@ management:
       permits giving antibiotics before cultures if drawing them would
       delay administration.
     must_not_do: true
+    gated_by_history: [hx_paramedics]
 
   - id: mx_no_trimethoprim
     category: drug

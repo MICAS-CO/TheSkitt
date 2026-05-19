@@ -552,6 +552,7 @@ management:
       NICE-recommended for ICH since TA1029 terminated Jan 2025
       (ANNEXa-I NEJM 2024).
     must_not_do: true
+    gated_by_history: [hx_anticoagulant]
     sources:
       - {
           type: textbook,
@@ -567,6 +568,7 @@ management:
       Anti-platelet bridging in stopped-DOAC AF is not supported
       by guidance and is a known examiner trap.
     must_not_do: true
+    gated_by_history: [hx_anticoagulant]
     sources:
       - {
           type: textbook,

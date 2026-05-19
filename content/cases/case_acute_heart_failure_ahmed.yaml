@@ -634,6 +634,7 @@ management:
       HIGH BP, not low. Confirm the BP reading on both arms before
       reaching for fluid.
     must_not_do: true
+    gated_by_history: [hx_paramedic]
     sources:
       - { type: esc, ref: 'ESC 2021 — fluid in wet-and-warm AHF is contraindicated' }
 
@@ -672,6 +673,7 @@ management:
       cardiogenic shock. Continue his oral bisoprolol if BP allows;
       do not bolus.
     must_not_do: true
+    gated_by_history: [hx_paramedic]
     sources:
       - {
           type: esc,

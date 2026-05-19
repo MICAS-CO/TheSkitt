@@ -444,6 +444,7 @@ management:
       breathing, or circulation and may be considered AFTER stabilisation
       for symptomatic urticaria only.
     must_not_do: true
+    gated_by_history: [hx_onset]
     sources:
       - {
           type: resus_council_uk,

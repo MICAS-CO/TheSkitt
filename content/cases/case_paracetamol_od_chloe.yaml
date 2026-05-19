@@ -521,6 +521,7 @@ management:
     category: monitoring
     name: 'Wait for the 4-hour paracetamol level before starting NAC'
     must_not_do: true
+    gated_by_history: [hx_chloe_ingestion]
     detail: |
       ❌ TRAP. In staggered overdose the nomogram does not apply and
       the level cannot tell you whether to treat. Starting NAC late

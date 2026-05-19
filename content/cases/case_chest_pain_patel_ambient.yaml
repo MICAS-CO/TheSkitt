@@ -322,6 +322,7 @@ management:
       120 min of diagnosis. Thrombolysis is a back-up for remote sites
       where PCI cannot be delivered in time.
     must_not_do: true
+    gated_by_history: [hx_pain]
 
   - id: mx_no_discharge_reflux
     category: disposition
