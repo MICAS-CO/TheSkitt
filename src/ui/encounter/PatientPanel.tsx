@@ -12,9 +12,15 @@ import { Monitor, VitalsStripFrame, type VitalReading } from '../../style/frames
  * interventions are taken.
  */
 export function PatientPanel({ cs }: { cs: CaseRuntime }) {
-  const v = deriveVitals(cs.state, cs.data.vitals);
+  const target = deriveVitals(cs.state, cs.data.vitals);
+  // M41: interpolate displayed vitals toward the kernel target over a
+  // wall-clock window so the player sees the patient deteriorate /
+  // recover in real time rather than jump-cutting between baseline and
+  // critical. The kernel itself stays speed-agnostic; this is pure UI.
+  const v = useInterpolatedVitals(target);
   const score = news2(v);
   const newsBand = score.total >= 7 ? 'red' : score.total >= 5 ? 'amber' : 'green';
+  const trends = useVitalsTrends(target, v);
   const [audioOn, setAudioOn] = useState<boolean>(() => loadAudioEnabled());
   const audioRef = useRef<MonitorAudio | null>(null);
 
@@ -46,17 +52,27 @@ export function PatientPanel({ cs }: { cs: CaseRuntime }) {
   }
 
   const readings: VitalReading[] = [
-    { label: 'HR', value: fmtHr(v.hr), unit: 'bpm', tone: paramTone(score.hr) },
-    { label: 'RR', value: fmtNum(v.rr), unit: '/min', tone: paramTone(score.rr) },
+    {
+      label: 'HR',
+      value: fmtHr(v.hr) + trendArrow(trends.hr),
+      unit: 'bpm',
+      tone: paramTone(score.hr),
+    },
+    {
+      label: 'RR',
+      value: fmtNum(v.rr) + trendArrow(trends.rr),
+      unit: '/min',
+      tone: paramTone(score.rr),
+    },
     {
       label: 'SpO₂',
-      value: fmtPct(v.spo2),
+      value: fmtPct(v.spo2) + trendArrow(trends.spo2),
       unit: v.on_o2 ? 'O2' : 'RA',
       tone: paramTone(score.spo2 + score.o2),
     },
     {
       label: 'BP',
-      value: fmtBp(v.bp_sys, v.bp_dia),
+      value: fmtBp(v.bp_sys, v.bp_dia) + trendArrow(trends.bp_sys),
       unit: 'mmHg',
       tone: paramTone(score.bp_sys),
     },
@@ -107,6 +123,109 @@ export function PatientPanel({ cs }: { cs: CaseRuntime }) {
 }
 
 /** Map a NEWS2 sub-score (0–3) to the design's NEWS2 traffic-light hex. */
+/**
+ * Vital-sign interpolation hook (M41). Lerps a render-state vitals
+ * object toward the kernel-derived target. The rates below are tuned
+ * so a step from baseline to deteriorating takes ~6-10s of wall-clock
+ * — fast enough to feel like a deterioration in real time, slow
+ * enough that the player notices the change.
+ */
+type VitalsT = ReturnType<typeof deriveVitals>;
+const PER_SEC: Record<string, number> = {
+  hr: 8, // bpm/sec
+  rr: 3, // breaths/sec
+  spo2: 4, // %/sec
+  bp_sys: 8, // mmHg/sec
+  bp_dia: 6,
+  gcs: 1,
+  temp_c: 0.3,
+  bm: 0.5,
+};
+
+function useInterpolatedVitals(target: VitalsT): VitalsT {
+  const [display, setDisplay] = useState<VitalsT>(target);
+  const lastTickRef = useRef<number>(performance.now());
+  const rafRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    function step() {
+      const now = performance.now();
+      const dt = Math.min(0.2, (now - lastTickRef.current) / 1000);
+      lastTickRef.current = now;
+      setDisplay((prev) => {
+        const next: VitalsT = { ...prev };
+        let changed = false;
+        for (const key of Object.keys(PER_SEC) as (keyof VitalsT)[]) {
+          const t = target[key] as number | undefined;
+          const c = prev[key] as number | undefined;
+          if (t === undefined) {
+            if (c !== undefined) {
+              (next[key] as number | undefined) = undefined;
+              changed = true;
+            }
+            continue;
+          }
+          if (c === undefined) {
+            (next[key] as number) = t;
+            changed = true;
+            continue;
+          }
+          const delta = t - c;
+          if (Math.abs(delta) < 0.05) {
+            if (c !== t) {
+              (next[key] as number) = t;
+              changed = true;
+            }
+            continue;
+          }
+          const max = PER_SEC[key as string]! * dt;
+          const step = Math.sign(delta) * Math.min(Math.abs(delta), max);
+          (next[key] as number) = c + step;
+          changed = true;
+        }
+        // Booleans / non-numeric — adopt target directly.
+        if (prev.on_o2 !== target.on_o2) {
+          next.on_o2 = target.on_o2;
+          changed = true;
+        }
+        return changed ? next : prev;
+      });
+      rafRef.current = requestAnimationFrame(step);
+    }
+    rafRef.current = requestAnimationFrame(step);
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
+  }, [target]);
+
+  return display;
+}
+
+/** Returns a direction sign per vital while it's mid-interpolation. */
+function useVitalsTrends(
+  target: VitalsT,
+  display: VitalsT,
+): Record<string, 1 | -1 | 0> {
+  const trends: Record<string, 1 | -1 | 0> = {};
+  for (const key of ['hr', 'rr', 'spo2', 'bp_sys'] as const) {
+    const t = target[key];
+    const d = display[key];
+    if (t === undefined || d === undefined) {
+      trends[key] = 0;
+      continue;
+    }
+    const diff = t - d;
+    trends[key] = Math.abs(diff) < 1 ? 0 : diff > 0 ? 1 : -1;
+  }
+  return trends;
+}
+
+function trendArrow(dir: 1 | -1 | 0): string {
+  // Inline triangles in the value string so the strip frame can render
+  // them inside the value cell without a layout change. ▲ ▼ ─.
+  return dir === 1 ? ' ▲' : dir === -1 ? ' ▼' : '';
+}
+
 function paramTone(s: number): string {
   if (s >= 3) return '#C8362A';
   if (s >= 2) return '#E0A82E';
