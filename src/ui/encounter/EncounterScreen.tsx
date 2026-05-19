@@ -905,37 +905,68 @@ function ManagementPhase({ cs, onToggle }: { cs: CaseRuntime; onToggle: (id: str
   // is changed in the menu; the encounter remounts when the player exits
   // back to the menu and re-enters, which is enough to pick up changes.
   const trapHints = useMemo(() => trapHintsEnabled(), []);
+  const hasStat = cs.data.management.some((m) => m.must_do && m.drug);
   return (
-    <section className="enc__phase">
-      <h2>Management — tick what you do</h2>
+    <section className="enc__phase enc__phase--drugchart">
+      <header className="drugchart__head">
+        <div className="drugchart__head-meta">PRESCRIPTION &amp; ACTION CHART</div>
+        <div className="drugchart__head-title">{cs.data.chief_complaint}</div>
+        {hasStat && <span className="drugchart__stat-stamp">STAT</span>}
+      </header>
       <p className="enc__hint">
-        Some options are distractors. Actions count immediately — the patient&rsquo;s state may
-        change.
+        Tick what you give. The time column stamps each action with the sim-min you ticked it.
+        Some options are distractors.
         {trapHints && <em> Trap hints are on (Settings).</em>}
       </p>
-      <ul className="enc__cards">
+      <div className="drugchart__cols">
+        <span className="drugchart__col-h drugchart__col-h--time">TIME</span>
+        <span className="drugchart__col-h drugchart__col-h--name">DRUG · DOSE · ROUTE</span>
+        <span className="drugchart__col-h drugchart__col-h--cat">CATEGORY</span>
+      </div>
+      <ul className="drugchart__rows">
         {cs.data.management.map((m) => {
           const isPicked = cs.actions.has(m.id);
+          const atMin = cs.actionsAt.get(m.id);
+          const sequenceError = cs.sequenceErrors.has(m.id);
           return (
-            <li key={m.id} className={`enc__card ${isPicked ? 'is-picked' : ''}`}>
-              <label className="enc__card-head enc__card-head--check">
-                <input type="checkbox" checked={isPicked} onChange={() => onToggle(m.id)} />
-                <span className="enc__chip">{m.category}</span>
-                <span>{m.name}</span>
-                {trapHints && m.must_not_do && !isPicked && (
-                  <span className="enc__chip" title="examiner trap — flagged by your trap-hints setting">
-                    <IconTrap size={12} fill="#E0A82E" />
-                    <span style={{ marginLeft: 4 }}>trap</span>
-                  </span>
-                )}
+            <li
+              key={m.id}
+              className={`drugchart__row ${isPicked ? 'is-given' : ''} ${
+                sequenceError ? 'is-sequence-error' : ''
+              }`}
+            >
+              <label className="drugchart__row-head">
+                <span className="drugchart__row-time">
+                  {atMin !== undefined ? `T+${atMin}m` : '—'}
+                </span>
+                <span className="drugchart__row-name">
+                  <input type="checkbox" checked={isPicked} onChange={() => onToggle(m.id)} />
+                  <span>{m.name}</span>
+                  {m.must_do && isPicked && <span className="drugchart__row-stat">STAT</span>}
+                  {trapHints && m.must_not_do && !isPicked && (
+                    <span
+                      className="drugchart__row-trap"
+                      title="examiner trap — flagged by your trap-hints setting"
+                    >
+                      <IconTrap size={12} fill="#E0A82E" />
+                      trap
+                    </span>
+                  )}
+                  {sequenceError && (
+                    <span className="drugchart__row-seq" title="taken out of authored sequence">
+                      ↯ out of sequence
+                    </span>
+                  )}
+                </span>
+                <span className="drugchart__row-cat">{m.category}</span>
               </label>
-              {m.detail && <p className="enc__card-body enc__card-body--dim">{m.detail}</p>}
               {m.drug && (
-                <p className="enc__card-body">
-                  <strong>Dose:</strong> {m.drug.amount} {m.drug.route} {m.drug.frequency}
+                <p className="drugchart__row-dose">
+                  {m.drug.amount} · {m.drug.route} · {m.drug.frequency}
                   {m.drug.paeds_dose ? ` · paeds: ${m.drug.paeds_dose}` : ''}
                 </p>
               )}
+              {m.detail && <p className="drugchart__row-detail">{m.detail}</p>}
             </li>
           );
         })}

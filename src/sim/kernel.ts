@@ -40,6 +40,10 @@ export interface CaseRuntime {
   unlockedFindingIds: Set<string>;
   /** Management ids taken out of their authored sequence (M20). */
   sequenceErrors: Set<string>;
+  /** Sim-minute at which each currently-ticked action was given.
+   *  Untoggling removes the entry (M30). Drives the drug-chart
+   *  TIME column. */
+  actionsAt: Map<string, number>;
 }
 
 export type LogLevel = 'info' | 'warn' | 'danger';
@@ -101,6 +105,7 @@ export interface SerializedCaseRuntime {
   unlockedHistoryIds: string[];
   unlockedFindingIds: string[];
   sequenceErrors?: string[];
+  actionsAt?: [string, number][];
 }
 
 export interface SerializedKernelSnapshot {
@@ -139,6 +144,7 @@ export class SimKernel {
         unlockedHistoryIds: new Set(),
         unlockedFindingIds: new Set(),
         sequenceErrors: new Set(),
+        actionsAt: new Map(),
       });
     }
     this.state = {
@@ -182,6 +188,7 @@ export class SimKernel {
         unlockedHistoryIds: [...cs.unlockedHistoryIds],
         unlockedFindingIds: [...cs.unlockedFindingIds],
         sequenceErrors: [...cs.sequenceErrors],
+        actionsAt: [...cs.actionsAt.entries()],
       })),
       revealedArcIds: [...this.state.revealedArcIds],
       firedEventIds: [...this.state.firedEventIds],
@@ -215,6 +222,7 @@ export class SimKernel {
       cs.unlockedHistoryIds = new Set(sc.unlockedHistoryIds);
       cs.unlockedFindingIds = new Set(sc.unlockedFindingIds);
       cs.sequenceErrors = new Set(sc.sequenceErrors ?? []);
+      cs.actionsAt = new Map(sc.actionsAt ?? []);
     }
     this.state.revealedArcIds = new Set(snap.revealedArcIds);
     this.state.firedEventIds = new Set(snap.firedEventIds);
@@ -310,8 +318,10 @@ export class SimKernel {
     if (!cs) return;
     if (cs.actions.has(actionId)) {
       cs.actions.delete(actionId);
+      cs.actionsAt.delete(actionId);
     } else {
       cs.actions.add(actionId);
+      cs.actionsAt.set(actionId, this.state.clockMin);
       this.log('info', `Action: ${actionLabel(cs, actionId)}.`, caseId);
       // Sequence check: any unmet prereq → mark as out-of-order (M20).
       const action = cs.data.management.find((m) => m.id === actionId);

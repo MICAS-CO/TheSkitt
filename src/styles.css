@@ -1491,6 +1491,193 @@ a {
   margin-left: 4px;
 }
 
+/* Drug-chart styled management section (M30) — diegetic NHS-yellow paper. */
+.enc__phase--drugchart {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 32px,
+      rgba(156, 141, 92, 0.18) 32px,
+      rgba(156, 141, 92, 0.18) 33px
+    ),
+    linear-gradient(180deg, #fbf7e8 0%, #f4e9a6 100%);
+  border: 1px solid #c4ba6a;
+  border-left: 4px solid #9c8d5c;
+  border-radius: 4px;
+  padding: 0;
+  color: #2b2a25;
+  font-family: var(--font-mono);
+  overflow: hidden;
+}
+.enc__phase--drugchart h2,
+.enc__phase--drugchart .enc__hint {
+  display: none;
+}
+.drugchart__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(180deg, #e0d49a 0%, #d6c87a 100%);
+  border-bottom: 1px solid #9c8d5c;
+  position: relative;
+}
+.drugchart__head-meta {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: #5a4a20;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.drugchart__head-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #2b2a25;
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.drugchart__stat-stamp {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: #7a1e16;
+  border: 1.5px solid #7a1e16;
+  padding: 3px 9px;
+  border-radius: 2px;
+  letter-spacing: 0.18em;
+  transform: rotate(-6deg);
+  opacity: 0.7;
+}
+.drugchart__cols {
+  display: grid;
+  grid-template-columns: 84px 1fr 110px;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(156, 141, 92, 0.1);
+  border-bottom: 1px solid #c4ba6a;
+}
+.drugchart__col-h {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #7a6d3a;
+  font-weight: 700;
+}
+.drugchart__col-h--cat {
+  text-align: right;
+}
+.drugchart__rows {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.drugchart__row {
+  border-bottom: 1px solid rgba(156, 141, 92, 0.35);
+  padding: 8px 16px;
+  transition: background-color 0.2s ease-in-out;
+}
+.drugchart__row:last-child {
+  border-bottom: none;
+}
+.drugchart__row.is-given {
+  background: rgba(91, 191, 143, 0.12);
+}
+.drugchart__row.is-sequence-error {
+  background: rgba(232, 80, 69, 0.1);
+}
+.drugchart__row-head {
+  display: grid;
+  grid-template-columns: 84px 1fr 110px;
+  gap: 8px;
+  align-items: center;
+  cursor: pointer;
+}
+.drugchart__row-time {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #5a4a20;
+  font-weight: 700;
+}
+.drugchart__row.is-given .drugchart__row-time {
+  color: #2b2a25;
+}
+.drugchart__row-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.drugchart__row-name input[type='checkbox'] {
+  accent-color: #5bbf8f;
+  width: 16px;
+  height: 16px;
+}
+.drugchart__row-cat {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #7a6d3a;
+  text-align: right;
+  font-weight: 600;
+}
+.drugchart__row-stat {
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  background: #7a1e16;
+  padding: 2px 6px;
+  border-radius: 2px;
+  letter-spacing: 0.12em;
+}
+.drugchart__row-trap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  background: rgba(224, 168, 46, 0.2);
+  color: #5a4a20;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid #c4ba6a;
+}
+.drugchart__row-seq {
+  font-size: 10px;
+  color: #7a1e16;
+  font-weight: 700;
+  background: rgba(232, 80, 69, 0.15);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.drugchart__row-dose {
+  margin: 4px 0 0 92px;
+  font-size: 11px;
+  color: #2b2a25;
+  font-family: var(--font-mono);
+}
+.drugchart__row-detail {
+  margin: 4px 0 0 92px;
+  font-size: 11px;
+  color: #5a4a20;
+  font-style: italic;
+  line-height: 1.4;
+}
+@media (max-width: 600px) {
+  .drugchart__cols,
+  .drugchart__row-head {
+    grid-template-columns: 60px 1fr 60px;
+    font-size: 11px;
+  }
+  .drugchart__row-name {
+    font-size: 12px;
+  }
+  .drugchart__row-dose,
+  .drugchart__row-detail {
+    margin-left: 68px;
+  }
+}
+
 /* Resus mode (M13) */
 .enc__resus-row {
   display: flex;
