@@ -4,6 +4,46 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Content: variceal UGIB (Kowalski) — Sepsis Six of the liver
+
+- `content/cases/case_ugib_variceal_kowalski.yaml` — 12th authored
+  case. Mr Kowalski, 54M, Child-Pugh C alcoholic cirrhotic, brought
+  in with massive haematemesis after running out of propranolol.
+  Grade 2 hepatic encephalopathy on arrival. The substrate makes a
+  straightforward "haemorrhagic shock" presentation feel different:
+  restrictive transfusion is the counterintuitive call.
+- The teaching arc: ABCDE with SALAD-ready airway (DuCanto), GBS
+  16 / Rockall ≥3, empirical terlipressin + ceftriaxone within the
+  first hour, restrictive Hb 7–8 transfusion (Villanueva NEJM 2013),
+  urgent OGD within 12 h.
+- Six `must_not_do` traps that map to current evidence:
+  1. Liberal transfusion to Hb 10 — worsens portal pressure
+     (Villanueva NEJM 2013).
+  2. **Routine TXA** in UGIB — HALT-IT (Lancet 2020) closed the door:
+     no mortality benefit, increased VTE.
+  3. Skipping ceftriaxone until OGD confirms variceal — one of the
+     strongest evidence bases in hepatology (Cochrane 2010).
+  4. Vitamin K for cirrhotic INR — synthetic failure, not vit-K
+     deficiency.
+  5. Pre-OGD high-dose PPI — not supported by NICE CG141.
+  6. Routine "diagnostic" NG aspiration — not supported by NICE.
+- Authored against **NICE CG141** (Acute upper GI bleeding in
+  over-16s, 2016 update), **BSG/UK guidelines on variceal
+  haemorrhage** (Tripathi 2015), **Villanueva NEJM 2013**
+  (restrictive transfusion), **HALT-IT** (Roberts Lancet 2020 — no
+  TXA), and **Chavez-Tapia Cochrane 2010** (ceftriaxone reduces
+  all-cause mortality). Also Pabrinex + CIWA-Ar withdrawal planning
+  per NICE CG100.
+- `content/episodes/ep_ugib_solo.yaml` — 20-min single-case shift.
+  T+2 GBS; T+4 VBG; T+8 housemate confirms variceal history; T+10
+  rebleed beat (NEWS2 escalates to 9); T+12 bloods; T+15 endoscopy
+  SpR call; T+18 deterioration deadline.
+- New "Variceal UGIB — Sepsis Six of the liver" entry on the shift
+  menu. App subtitle: 11 shifts, 12 cases.
+- Inspiration: TheCase.Report S1E3. Player-facing citations remain
+  NICE / BSG / NEJM / Lancet / Cochrane.
+- 12 cases / 11 episodes / 2 arcs validate; 153 tests pass.
+
 ### Content: aortic dissection (Okafor) — the anchor-breaker
 
 - `content/cases/case_aortic_dissection_okafor.yaml` — 11th

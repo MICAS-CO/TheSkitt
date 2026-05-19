@@ -51,10 +51,14 @@ import doacDoubleEpYaml from '../content/episodes/ep_doac_double.yaml?raw';
 import okaforYaml from '../content/cases/case_aortic_dissection_okafor.yaml?raw';
 import dissectionEpYaml from '../content/episodes/ep_dissection_solo.yaml?raw';
 
+// Variceal UGIB in a Child-Pugh C cirrhotic
+import kowalskiYaml from '../content/cases/case_ugib_variceal_kowalski.yaml?raw';
+import ugibEpYaml from '../content/episodes/ep_ugib_solo.yaml?raw';
+
 type View = 'menu' | 'shift' | 'hub';
 
 const SUBTITLES: Record<View, string> = {
-  menu: 'Episodic UK FRCEM study RPG · 10 shifts, 11 cases',
+  menu: 'Episodic UK FRCEM study RPG · 11 shifts, 12 cases',
   shift: 'Shift in progress',
   hub: 'ED hub (preview)',
 };
@@ -130,6 +134,12 @@ const DISSECTION_SOLO: () => ShiftPack = () => ({
   arcs: [],
 });
 
+const UGIB_SOLO: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(ugibEpYaml)),
+  cases: [Case.parse(parseYaml(kowalskiYaml))],
+  arcs: [],
+});
+
 const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
   ep_anaphylaxis_solo: SOLO_SHIFT,
   ep_hendo_shift: HENDO_SHIFT,
@@ -141,6 +151,7 @@ const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
   ep_head_injury_doac: HEAD_INJURY_DOAC,
   ep_doac_double: DOAC_DOUBLE,
   ep_dissection_solo: DISSECTION_SOLO,
+  ep_ugib_solo: UGIB_SOLO,
 };
 
 export function App() {
@@ -225,6 +236,7 @@ export function App() {
             onStartHeadInjury={() => startShift(HEAD_INJURY_DOAC())}
             onStartDoacDouble={() => startShift(DOAC_DOUBLE())}
             onStartDissection={() => startShift(DISSECTION_SOLO())}
+            onStartUgib={() => startShift(UGIB_SOLO())}
             onShowHub={() => setView('hub')}
             saved={saved}
             onResume={resumeSavedShift}
@@ -262,6 +274,7 @@ function MenuView({
   onStartHeadInjury,
   onStartDoacDouble,
   onStartDissection,
+  onStartUgib,
   onShowHub,
   saved,
   onResume,
@@ -277,6 +290,7 @@ function MenuView({
   onStartHeadInjury: () => void;
   onStartDoacDouble: () => void;
   onStartDissection: () => void;
+  onStartUgib: () => void;
   onShowHub: () => void;
   saved: SavedShift | null;
   onResume: () => void;
@@ -377,6 +391,14 @@ function MenuView({
               ADD-RS + ESC 2024 + IRAD mortality clock.
             </span>
           </button>
+          <button className="menu__card menu__card--secondary" onClick={onStartUgib}>
+            <span className="menu__card-eyebrow">Shift · ST3 · 20 min · 1 case</span>
+            <span className="menu__card-title">Variceal UGIB — Sepsis Six of the liver</span>
+            <span className="menu__card-meta">
+              Massive haematemesis in a Child-Pugh C cirrhotic. NICE CG141 + BSG 2015 + HALT-IT.
+              Restrictive Hb 7–8, terlipressin + ceftriaxone bundle.
+            </span>
+          </button>
           <button className="menu__card menu__card--secondary" onClick={onStartSolo}>
             <span className="menu__card-eyebrow">Shift · CT2 · 20 min · 1 case</span>
             <span className="menu__card-title">Anaphylaxis solo</span>
@@ -406,6 +428,7 @@ const SHIFT_TITLES: Record<string, string> = {
   ep_head_injury_doac: 'Head injury — DOAC reasoning',
   ep_doac_double: 'DOAC double-bill — clot and bleed',
   ep_dissection_solo: 'Aortic dissection — the anchor-breaker',
+  ep_ugib_solo: 'Variceal UGIB — Sepsis Six of the liver',
 };
 
 function savedShiftTitle(episodeId: string): string {
