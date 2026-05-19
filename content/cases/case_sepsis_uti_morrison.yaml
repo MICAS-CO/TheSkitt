@@ -506,21 +506,25 @@ disposition_options:
       treatment is consistent with her care plan; no invasive
       ventilation per her wishes.
     appropriate: true
+    epilogue: "Her son arrives at 04:00 — he had been driving from Birmingham. She is on noradrenaline. He says 'Mum' once and she opens her eyes."
   - label: 'Refer ITU for invasive ventilation if she deteriorates further'
     criteria: |
       Inappropriate — advance care plan explicitly excludes invasive
       ventilation. Discuss with family; do not intubate as a default.
     appropriate: false
+    epilogue: "She arrests at 06:00. Her ceiling-of-care document was unclear and the resus call gets called off mid-cycle."
   - label: 'Admit AMU under medics for IV antibiotics'
     criteria: |
       Only after lactate normalises and BP stable off fluids. Otherwise
       HDU is the right step.
     appropriate: false
+    epilogue: "The HDU registrar escalates her at 05:14. They are not happy with the original triage decision."
   - label: 'Discharge back to nursing home with oral antibiotics'
     criteria: |
       Inappropriate — she meets septic shock criteria. IV abx +
       admission mandatory.
     appropriate: false
+    epilogue: "Re-admitted at 08:00 from the home with worsening shock. The home manager calls the ED consultant directly."
 
 state_machine:
   states: [deteriorating, stable, arrested, admitted, deceased]

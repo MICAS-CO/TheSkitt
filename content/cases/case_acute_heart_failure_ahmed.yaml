@@ -711,12 +711,14 @@ disposition_options:
       level-2 monitoring at minimum. Cardiology own the discharge
       pathway; ITU on standby in case of NIPPV failure.
     appropriate: true
+    epilogue: "Aisha follows the trolley to the lift. She doesn't put her hand down until the door closes. Cardiology meets you on level 4 — they already know."
   - label: 'Admit cardiology ward on oral diuretic only; stop CPAP at discharge from ED'
     criteria: |
       Inadequate — he is on NIPPV + IV vasodilator + IV diuretic.
       A standard cardiology ward without level-2 monitoring will
       not catch deterioration in the first 12-24 h.
     appropriate: false
+    epilogue: "Off CPAP at the ward door, his sats drift back to 84%. The CCU registrar is paged at 04:12. Aisha asks the staff nurse why the mask was taken off."
   - label: 'Discharge with restarted oral diuretic + GP follow-up'
     criteria: |
       Unsafe — actively decompensated wet-and-warm AHF on NIPPV
@@ -724,6 +726,7 @@ disposition_options:
       discharge is the threshold, plus stable on oral therapy for
       24 h.
     appropriate: false
+    epilogue: "He is back through the door at 09:40 the next morning. The night staff have written 'returned with worsening dyspnoea' in red biro on the front of his notes."
 
 # ─── State machine ──────────────────────────────────────────────────────
 state_machine:

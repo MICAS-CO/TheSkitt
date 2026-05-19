@@ -1554,7 +1554,14 @@ function DispositionPhase({
                   </span>
                 )}
               </button>
-              {hasPicked && <p className="enc__card-body">{d.criteria}</p>}
+              {hasPicked && (
+                <>
+                  <p className="enc__card-body">{d.criteria}</p>
+                  {d.epilogue && (
+                    <p className="enc__disposition-epilogue">{d.epilogue}</p>
+                  )}
+                </>
+              )}
             </li>
           );
         })}

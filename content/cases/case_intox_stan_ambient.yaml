@@ -391,12 +391,15 @@ disposition_options:
   - label: 'Admit to acute medical unit with hourly BMs and observation'
     criteria: 'Appropriate — BM correction needs follow-on monitoring; head injury workup may dictate admission.'
     appropriate: true
+    epilogue: "Stan eats toast at 06:00. Maggie's birthday is in 32 hours. The liaison psych team see him at 09:30."
   - label: 'Discharge to safer-sleeping team once CT is clear and BM stable'
     criteria: 'Possible if all reassuring after observation; coordinate with safer-sleeping outreach.'
     appropriate: true
+    epilogue: "The safer-sleeping team take him from the front entrance at 11:42. He has the card for Maggie in his coat pocket."
   - label: 'Discharge home now, advise to come back if worse'
     criteria: 'Inappropriate — confused, intoxicated, head injured, no fixed address.'
     appropriate: false
+    epilogue: "Stan is found on the same pavement at 04:18. The forehead lac has reopened. The publican of the Crown calls for an ambulance again."
 
 state_machine:
   states: [stable, deteriorating, arrested, admitted, discharged]

@@ -480,6 +480,15 @@ export const Case = z.object({
         label: z.string(),
         criteria: z.string(),
         appropriate: z.boolean(),
+        /**
+         * One-line narrative coda (M56). When the player picks this
+         * disposition, the UI surfaces the epilogue beneath the
+         * criteria block so each case ends with a paragraph rather
+         * than a checkbox. Authors should write this from the
+         * patient's / family's point of view at the next narrative
+         * beat after disposition — not a clinical outcome statement.
+         */
+        epilogue: z.string().optional(),
       }),
     )
     .nonempty(),

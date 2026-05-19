@@ -726,17 +726,20 @@ disposition_options:
       (Transjugular Intrahepatic Portosystemic Shunt) is the rescue
       pathway for refractory bleeding or early rebleed.
     appropriate: true
+    epilogue: "The OGD bands four columns at 04:30. He needs a re-look in 24 hours. His housemate is in the relatives' room."
   - label: 'Admit gastroenterology ward post-OGD'
     criteria: |
       Inadequate — Child-Pugh C cirrhotic with shock + encephalopathy
       + airway concern needs ICU-level monitoring at least 24 h.
     appropriate: false
+    epilogue: "He rebleeds at 06:00. The ICU bed that was held has been given to a new admission."
   - label: 'Discharge after OGD haemostasis with outpatient hepatology follow-up'
     criteria: |
       Unsafe — Child-Pugh C, ongoing encephalopathy, alcohol
       withdrawal due in hours, post-bleed nutrition needs all mandate
       inpatient care.
     appropriate: false
+    epilogue: "Found dead at home at 09:00 the next morning."
 
 # ─── State machine ──────────────────────────────────────────────────────
 state_machine:

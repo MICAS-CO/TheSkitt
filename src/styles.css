@@ -1685,6 +1685,18 @@ a {
   margin: 0 0 6px 0;
 }
 
+/* Disposition epilogue (M56) — one-line narrative coda after the player picks. */
+.enc__disposition-epilogue {
+  margin: 8px 0 0 0;
+  padding: 8px 12px;
+  border-left: 3px solid var(--accent);
+  background: rgba(91, 191, 143, 0.05);
+  font-size: 12px;
+  font-style: italic;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
 /* NPC sprite in history cards (M43) — diegetic 'I went and spoke to them'. */
 .enc__card-head--with-npc {
   display: grid;

@@ -510,21 +510,25 @@ disposition_options:
       contraindicated) → thrombectomy is the right reperfusion
       pathway. Refer in parallel with the stroke consultant.
     appropriate: true
+    epilogue: "He is on the table at 09:32. The clot comes out at 09:51. Carol is in the family room at the receiving centre by 10:15."
   - label: 'Give alteplase here, then transfer'
     criteria: |
       Inappropriate — on apixaban within 48 h. Alteplase
       contraindicated unless antidote given.
     appropriate: false
+    epilogue: "He bleeds at 09:48 — the apixaban anti-Xa was 78 ng/mL. The MDT review is the next morning's grand round case."
   - label: 'Admit AMU under stroke team for observation'
     criteria: |
       Inappropriate — this is reperfusion territory. AMU is the
       wrong disposition.
     appropriate: false
+    epilogue: "He is dense left-MCA by 11:00. The thrombectomy window has closed."
   - label: 'Discharge with outpatient TIA clinic referral'
     criteria: |
       Not even close. Persistent focal deficit + CT change = stroke,
       not TIA.
     appropriate: false
+    epilogue: "Re-presents at 13:00 with completed left MCA. NIHSS 22."
 
 state_machine:
   states: [deteriorating, stable, arrested, admitted, deceased]

@@ -532,6 +532,7 @@ disposition_options:
       Severe reaction + asthma history + 1 IM adrenaline dose +
       potential biphasic risk. Standard paeds anaphylaxis disposition.
     appropriate: true
+    epilogue: "Mum is allowed to sleep in the chair. She does not sleep."
   - label: 'Discharge home with allergy clinic referral and 2× EpiPen Jr (150 mcg)'
     criteria: |
       Inappropriate on two grounds: (1) observation period is
@@ -541,16 +542,19 @@ disposition_options:
       30 kg → 25 kg in 2024). EpiPen Jr is now reserved for
       7.5–25 kg.
     appropriate: false
+    epilogue: "Back through paeds resus at 02:14 with biphasic reaction. The system flags your initial discharge decision on the front sheet."
   - label: 'Refer to PICU pre-emptively for invasive ventilation'
     criteria: |
       Premature — Sam is responding to IM adrenaline. PICU only if
       airway compromise develops or refractory shock.
     appropriate: false
+    epilogue: "The PICU consultant talks you through the over-escalation politely. 'He didn't need this. We will move him at 06:00.'"
   - label: "Admit AMU under adult medics (sister's under there)"
     criteria: |
       Wrong specialty — he''s a paeds patient. Paeds ward is the
       correct disposition.
     appropriate: false
+    epilogue: "The AMU consultant declines the referral within 10 minutes. 'He's eight. Paeds ward, please.' The mum is now in two waiting rooms at once."
 
 state_machine:
   states: [stable, deteriorating, arrested, admitted, discharged]

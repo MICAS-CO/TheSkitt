@@ -559,17 +559,20 @@ disposition_options:
       monitoring with arterial line for at least 24 h. Specialist
       MDT for AKI and PRES.
     appropriate: true
+    epilogue: "His BP is 156/96 by 18:00. The headache is gone by 19:00. Neurology confirms posterior reversible encephalopathy syndrome at 22:00."
   - label: 'Admit medical ward on oral antihypertensives once IV bolus given'
     criteria: |
       Inadequate — he is on IV labetalol infusion. Standard medical
       ward does not have arterial line + hourly UO capacity.
     appropriate: false
+    epilogue: "BP rebounds to 234/138 within an hour of the oral switch. He has a focal seizure on the ward at 19:32."
   - label: 'Discharge after IV bolus once BP <180/110, restart oral meds'
     criteria: |
       Unsafe — PRES + AKI + grade IV retinopathy + cardiomegaly
       mandate inpatient observation. The end-organ damage stack
       is the gating criterion, not the BP number.
     appropriate: false
+    epilogue: "He re-presents at 02:14 with a left-sided weakness. CT shows an intracerebral haemorrhage."
 
 # ─── State machine ──────────────────────────────────────────────────────
 state_machine:

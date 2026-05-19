@@ -601,11 +601,13 @@ disposition_options:
       NAC, hourly glucose, 12/24-h LFT trend, psychosocial assessment,
       then plan based on hepatology + psych recommendations.
     appropriate: true
+    epilogue: "Sami from her safeguarding team arrives at 09:30. Her mum is not called yet. Chloe sleeps with the NAC running."
   - label: 'Admit MAU for observation only — discharge once asymptomatic'
     criteria: |
       Misses the psychosocial assessment requirement and the
       requirement to trend LFTs + INR at 12 / 24 h to detect ALF.
     appropriate: false
+    epilogue: "Hepatology decline review without active management. At 14:00 her INR is 2.4."
   - label: 'Discharge once medically stable with GP follow-up'
     criteria: |
       ❌ Inappropriate — staggered OD with active suicidal intent
@@ -613,6 +615,7 @@ disposition_options:
       psychosocial assessment before discharge. Hepatic injury may
       declare itself 24–72 h post-ingestion.
     appropriate: false
+    epilogue: "She is back through the door at 21:00 with jaundice. Her ALT is 4,200."
   - label: "Transfer to King's College Hospital liver unit now"
     criteria: |
       Premature without King's criteria met (pH <7.30 OR INR >6.5 +
@@ -620,6 +623,7 @@ disposition_options:
       transfer is reserved for those who meet criteria, usually after
       12–24 h of NAC.
     appropriate: false
+    epilogue: "King's hepatology accepts the referral as advisory only. 'Get the NAC running first, then call us back at 12 hours.' The ambulance is stood down."
 
 state_machine:
   states: [stable, deteriorating, arrested, admitted, discharged]

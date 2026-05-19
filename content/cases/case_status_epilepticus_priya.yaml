@@ -642,17 +642,20 @@ disposition_options:
       neuro-imaging (CTA), tertiary neurosurgical input, obstetric
       MDT. ED is not the right home.
     appropriate: true
+    epilogue: "Imaging shows the subarachnoid at 22:08. Neurosurgery accept her by 22:30. Her flatmate calls Priya's mum from the relatives' room."
   - label: 'Admit AMU on a phenytoin loading dose'
     criteria: |
       Inadequate — refractory status warrants ICU / anaesthetic
       input not AMU. Phenytoin also less preferred in pregnancy.
     appropriate: false
+    epilogue: "She seizes again at 23:00. The phenytoin level was 8 mg/L. The AMU registrar pages anaesthetics."
   - label: 'Discharge to neurology outpatient if seizures stop'
     criteria: |
       Unsafe — SAH on CT + pregnancy + first seizure of life all
       mandate inpatient admission to a unit that can manage the
       neurosurgical and obstetric dimensions.
     appropriate: false
+    epilogue: "She does not wake up from the post-ictal phase. By 03:00 she is back in resus."
 
 # ─── State machine ──────────────────────────────────────────────────────
 state_machine:

@@ -677,11 +677,13 @@ disposition_options:
       surgical repair. The ED stabilisation window is minutes, not
       hours — every hour of delay is ~1–2% extra mortality.
     appropriate: true
+    epilogue: "He is on bypass by 14:08. The chest pain ended on induction."
   - label: 'Admit CCU on a labetalol infusion; cardiothoracics review in the morning'
     criteria: |
       Inadequate — Type A AD does not wait until morning. CCU is the
       pathway for medical management of Type B AD, not Type A.
     appropriate: false
+    epilogue: "He arrests on the unit at 18:24. Type A dissection cannot wait for the morning."
   - label: 'Primary PCI activation per inferior STEMI pathway'
     criteria: |
       Lethal — anticoagulating and cannulating a dissected aorta
@@ -689,6 +691,7 @@ disposition_options:
       consequence of coronary-ostium involvement; the primary
       diagnosis is the dissection.
     appropriate: false
+    epilogue: "The cath lab calls back five minutes in. 'This isn't ACS. You need cardiothoracics, not us.'"
 
 # ─── State machine ──────────────────────────────────────────────────────
 state_machine:

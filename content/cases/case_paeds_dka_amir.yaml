@@ -435,20 +435,24 @@ disposition_options:
       hourly neuro obs for 24 h. Diabetes specialist nurse before
       transfer.
     appropriate: true
+    epilogue: "Amir's parents arrive at 16:18. The paeds diabetes nurse meets them in the family room first."
   - label: 'Paediatric ward admission with hourly obs'
     criteria: |
       Reasonable for moderate DKA (pH 7.1-7.2) but severe DKA +
       GCS <15 warrants HDU/PICU.
     appropriate: false
+    epilogue: "The ward escalates him to PICU at 19:00. The handover documents your initial decision."
   - label: 'Adult ICU admission'
     criteria: |
       ❌ Not appropriate for an 8 y/o.
     appropriate: false
+    epilogue: "Adult ICU declines politely. PICU at the regional centre accept him by 17:00."
   - label: 'Discharge once glucose <14 on infusion'
     criteria: |
       ❌ Premature. Resolution: pH >7.30, HCO3 >18, ketones <0.6,
       eating + drinking + SC insulin transition.
     appropriate: false
+    epilogue: "He arrests at home at 22:00 with cerebral oedema."
 
 state_machine:
   states: [stable, deteriorating, arrested, admitted, discharged]

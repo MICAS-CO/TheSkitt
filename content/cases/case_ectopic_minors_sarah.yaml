@@ -516,20 +516,24 @@ disposition_options:
       Haemodynamically borderline + free fluid + likely rupture →
       surgical. Most appropriate.
     appropriate: true
+    epilogue: "Theatre 4 is opened at 20:08. The salpingectomy is at 20:42. Beth is two bays over completing post-anaphylaxis discharge planning."
   - label: 'Admit EPAU for medical management with methotrexate'
     criteria: |
       Methotrexate criteria NOT met (βhCG too high, likely ruptured).
       Inappropriate.
     appropriate: false
+    epilogue: "The EPAU consultant calls at 20:14. 'She's haemodynamically unstable. This is surgical, not medical.'"
   - label: 'Refer EPAU for outpatient follow-up tomorrow'
     criteria: |
       Symptomatic + postural BP drop + interval Hb fall → cannot
       manage as outpatient.
     appropriate: false
+    epilogue: "Sarah collapses in the toilets at 19:48 — five minutes after the decision is documented."
   - label: 'Discharge home with PR antiemetic and gynae letter'
     criteria: |
       Inappropriate — would be a sentinel-event-grade discharge.
     appropriate: false
+    epilogue: "Three minutes into the toilets she calls for help. Beth's partner Tom hears her from the relatives' room."
 
 state_machine:
   states: [unseen, triaged, stable, deteriorating, arrested, admitted]

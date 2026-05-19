@@ -388,12 +388,15 @@ disposition_options:
   - label: 'Transfer to PCI cath lab for primary PCI'
     criteria: 'Onset <12 h, ECG diagnostic, no contraindication — definitive treatment.'
     appropriate: true
+    epilogue: "Mrs Patel goes to the cath lab at 19:47. Priya waits in the family room with a cup of tea she doesn't drink."
   - label: 'Admit CCU after thrombolysis if PCI cannot be delivered within 120 min'
     criteria: 'Back-up route in geographically remote sites only.'
     appropriate: false
+    epilogue: "Door-to-balloon would have been 78 minutes from here. The decision is reviewable next week at M&M."
   - label: 'Discharge with cardiology outpatient referral'
     criteria: 'Inappropriate — STEMI is an emergency.'
     appropriate: false
+    epilogue: "Cardiology bleep returns the call: 'You sent home an anterior STEMI. We're admitting her from the discharge area now.'"
 
 state_machine:
   states: [triaged, stable, deteriorating, arrested, admitted]

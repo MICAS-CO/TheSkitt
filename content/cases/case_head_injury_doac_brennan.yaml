@@ -610,12 +610,14 @@ disposition_options:
       falls. Inpatient is the only safe disposition. Reversal
       decision in parallel with neurosurg view.
     appropriate: true
+    epilogue: "Andexanet alfa runs over 30 minutes. Liam is at her bedside. He sits where she can see his face when she wakes up."
   - label: 'Discharge with head injury leaflet and "see GP if worsens"'
     criteria: |
       Unsafe — anticoagulant + abnormal CT + recurrent faller +
       lives alone. Even a normal CT would mandate admission per
       NICE NG232 in this cohort.
     appropriate: false
+    epilogue: "She is found unresponsive at home at 21:30 by Liam. By 22:00 her GCS is 5."
   - label: 'Admit AMU on bed rest only (no reversal decision today)'
     criteria: |
       Partial — admission is correct, but the haematology /
@@ -623,6 +625,7 @@ disposition_options:
       while the bed is found, not deferred to the post-take ward
       round.
     appropriate: false
+    epilogue: "At 17:40 the bleed expands by 4 mm on a re-scan. The neurosurg conversation now is harder, because it's late."
 
 # ─── State machine ──────────────────────────────────────────────────────
 state_machine:

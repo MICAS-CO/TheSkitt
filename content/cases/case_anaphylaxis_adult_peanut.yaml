@@ -499,6 +499,7 @@ disposition_options:
       (one prehospital, one in resus) and had severe airway/breathing/
       circulation involvement. Admit.
     appropriate: true
+    epilogue: "Tom watches the porter wheel her to the lift. Sam's case has just come through triage in the next bay."
   - label: 'Discharge after 2 h with EpiPens, action plan, allergy referral'
     criteria: |
       Per RCUK 2021 Table 5, the 2-h fast-track IS appropriate for
@@ -508,17 +509,20 @@ disposition_options:
       severe reaction with 2 IM doses + asthma history. Risk-
       stratified ≥6–12 h observation.
     appropriate: false
+    epilogue: "She is back at 23:40 with biphasic angioedema. Tom rings 999 from the car park."
   - label: 'Refer to allergy clinic and discharge immediately'
     criteria: |
       Inappropriate — risk-stratified observation period is mandated by
       Resus Council UK 2021 before discharge.
     appropriate: false
+    epilogue: "Same outcome on the same night — except now you don't get to know about it."
   - label: 'Admit to ICU for IV adrenaline infusion'
     criteria: |
       Appropriate ONLY if refractory (persistent symptoms after 2 IM
       doses). Beth responded to the second IM dose — ICU not required,
       ward-level observation is correct.
     appropriate: false
+    epilogue: "The ITU registrar declines politely. '15 minutes ago you were defending your IM doses. What changed?'"
 
 state_machine:
   states: [stable, deteriorating, arrested, admitted, discharged]

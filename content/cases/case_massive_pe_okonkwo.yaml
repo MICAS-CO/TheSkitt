@@ -655,18 +655,21 @@ disposition_options:
       and the inevitable hypoxaemia. Cardiology for echo follow-up;
       haematology for thrombophilia plan.
     appropriate: true
+    epilogue: "The thrombolysis runs over two hours. His BP comes up. ITU take him at 16:48; his sister arrives at 17:00."
   - label: 'Admit CCU on a UFH infusion (no thrombolysis given)'
     criteria: |
       Suboptimal — high-risk PE without contraindication should
       have systemic thrombolysis. Withholding it in this presentation
       misses the indication.
     appropriate: false
+    epilogue: "He arrests on the unit at 17:32 with PEA. The reversal-of-shock window has closed."
   - label: 'Discharge on apixaban with outpatient haematology follow-up'
     criteria: |
       Unsafe — high-risk PE with shock is not an outpatient
       diagnosis. The BTS 2018 outpatient pathway is for sPESI-0
       low-risk patients; shock excludes it.
     appropriate: false
+    epilogue: "He re-presents at 22:00 with cardiac arrest in the ambulance bay."
 
 # ─── State machine ──────────────────────────────────────────────────────
 state_machine:

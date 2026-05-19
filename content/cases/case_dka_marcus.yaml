@@ -493,21 +493,25 @@ disposition_options:
       Meets JBDS-IP 2023 severity criteria (HR >100 + anion gap >16).
       Cerebral oedema watch + hourly bloods + cardiac monitoring.
     appropriate: true
+    epilogue: "Marcus's mum arrives at 04:48 in scrubs. She has driven from the Princess Royal. She sits on the chair, does not unlock her phone."
   - label: 'Admit AMU for IV fluids and FRII'
     criteria: |
       Acceptable only if MILD/moderate DKA — Marcus is severe and
       needs HDU.
     appropriate: false
+    epilogue: "The AMU registrar reviews him at 07:00 and escalates him to HDU. She makes the conversation about your initial decision short and polite."
   - label: 'Discharge with GP follow-up for diabetes diagnosis'
     criteria: |
       Not even close. DKA is a medical emergency.
     appropriate: false
+    epilogue: "Marcus arrests at home at 11:20 the same morning. Joe finds him on the bathroom floor."
   - label: 'Admit ITU for invasive ventilation'
     criteria: |
       Premature unless airway compromise or peri-arrest. HDU is
       the right step for severe DKA without airway/circulation
       collapse.
     appropriate: false
+    epilogue: "The ITU consultant declines. 'He's not for tube. He's for fluid and insulin and a diabetes nurse.'"
 
 state_machine:
   states: [deteriorating, stable, arrested, admitted, deceased]
