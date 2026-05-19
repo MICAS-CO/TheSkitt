@@ -4,6 +4,29 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Content: DOAC double-bill — 2-case thematic shift
+
+- `content/episodes/ep_doac_double.yaml` — 20-min 2-case shift
+  pairing existing cases (no new clinical content): Williams
+  (ischaemic LVO on apixaban) + Brennan (SDH on apixaban). Both
+  patients on the same DOAC, opposite ends of the emergency
+  spectrum.
+- Pedagogical arc lives in the contrast: reperfusion vs reversal,
+  preserve-anticoag vs hold-anticoag, alteplase contraindicated
+  within 48 h of last apixaban dose vs andexanet alfa for
+  uncontrolled bleeding.
+- Schedule is back-loaded to force prioritisation: Williams CT at
+  T+8 is the thrombolysis-decision moment; Brennan CT at T+13 is
+  the SDH pivot; anti-Xa lab callback at T+14 surfaces the actual
+  apixaban level (INR/APTT don't measure DOAC effect).
+- Both patients have a relative pushing for the wrong answer
+  (Carol wanting clot-buster, Brennan's son wanting safety-net
+  discharge) — narrative pressure from different angles.
+- New "DOAC double-bill — clot and bleed" entry on the shift menu.
+  Difficulty band ST3 (parallel time-critical pathways).
+- No new case YAML; this leverages the existing Williams + Brennan
+  content. 10 cases / 9 episodes / 2 arcs validate. 144 tests pass.
+
 ### UX: stop revealing answers in differential + disposition pickers
 
 The differential and disposition pickers were displaying the

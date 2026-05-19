@@ -44,6 +44,9 @@ import seizureEpYaml from '../content/episodes/ep_seizure_solo.yaml?raw';
 import brennanYaml from '../content/cases/case_head_injury_doac_brennan.yaml?raw';
 import headInjuryEpYaml from '../content/episodes/ep_head_injury_doac.yaml?raw';
 
+// DOAC double-bill — Williams + Brennan on the same shift
+import doacDoubleEpYaml from '../content/episodes/ep_doac_double.yaml?raw';
+
 type View = 'menu' | 'shift' | 'hub';
 
 interface ShiftPack {
@@ -105,6 +108,12 @@ const HEAD_INJURY_DOAC: () => ShiftPack = () => ({
   arcs: [],
 });
 
+const DOAC_DOUBLE: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(doacDoubleEpYaml)),
+  cases: [Case.parse(parseYaml(williamsYaml)), Case.parse(parseYaml(brennanYaml))],
+  arcs: [],
+});
+
 const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
   ep_anaphylaxis_solo: SOLO_SHIFT,
   ep_hendo_shift: HENDO_SHIFT,
@@ -114,6 +123,7 @@ const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
   ep_stroke_solo: STROKE_SOLO,
   ep_seizure_solo: SEIZURE_SOLO,
   ep_head_injury_doac: HEAD_INJURY_DOAC,
+  ep_doac_double: DOAC_DOUBLE,
 };
 
 export function App() {
@@ -202,6 +212,7 @@ export function App() {
             onStartStroke={() => startShift(STROKE_SOLO())}
             onStartSeizure={() => startShift(SEIZURE_SOLO())}
             onStartHeadInjury={() => startShift(HEAD_INJURY_DOAC())}
+            onStartDoacDouble={() => startShift(DOAC_DOUBLE())}
             onShowHub={() => setView('hub')}
             saved={saved}
             onResume={resumeSavedShift}
@@ -237,6 +248,7 @@ function MenuView({
   onStartStroke,
   onStartSeizure,
   onStartHeadInjury,
+  onStartDoacDouble,
   onShowHub,
   saved,
   onResume,
@@ -250,6 +262,7 @@ function MenuView({
   onStartStroke: () => void;
   onStartSeizure: () => void;
   onStartHeadInjury: () => void;
+  onStartDoacDouble: () => void;
   onShowHub: () => void;
   saved: SavedShift | null;
   onResume: () => void;
@@ -332,6 +345,14 @@ function MenuView({
             <span className="menu__card-meta">
               Anticoagulated faller, GCS 15 on arrival. NICE NG232 + Canadian C-spine + NICE TA697
               andexanet.
+            </span>
+          </button>
+          <button className="menu__card menu__card--secondary" onClick={onStartDoacDouble}>
+            <span className="menu__card-eyebrow">Shift · ST3 · 20 min · 2 cases</span>
+            <span className="menu__card-title">DOAC double-bill — clot and bleed</span>
+            <span className="menu__card-meta">
+              Williams (ischaemic LVO on apixaban) + Brennan (SDH on apixaban) on the same shift.
+              Reperfusion vs reversal in parallel.
             </span>
           </button>
           <button className="menu__card menu__card--secondary" onClick={onStartSolo}>
