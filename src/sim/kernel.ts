@@ -57,6 +57,11 @@ export interface CaseRuntime {
   /** Consultant interrupt ids that have already fired for this case
    *  (M39). Prevents re-fire of the same beat within an encounter. */
   consultantInterruptsFired: Set<string>;
+  /** Manoeuvres the player has performed during examination (M40),
+   *  keyed as "system::manoeuvreId". Unlocks the manoeuvre's
+   *  per-finding payload separately from the system's base findings.
+   */
+  performedManoeuvres: Set<string>;
 }
 
 /**
@@ -142,6 +147,7 @@ export interface SerializedCaseRuntime {
   actionsAt?: [string, number][];
   branchChoices?: [string, string][];
   rapport?: number;
+  performedManoeuvres?: string[];
 }
 
 export interface SerializedKernelSnapshot {
@@ -184,6 +190,7 @@ export class SimKernel {
         branchChoices: new Map(),
         rapport: 0,
         consultantInterruptsFired: new Set(),
+        performedManoeuvres: new Set(),
       });
     }
     this.state = {
@@ -231,6 +238,7 @@ export class SimKernel {
         actionsAt: [...cs.actionsAt.entries()],
         branchChoices: [...cs.branchChoices.entries()],
         rapport: cs.rapport,
+        performedManoeuvres: [...cs.performedManoeuvres],
       })),
       revealedArcIds: [...this.state.revealedArcIds],
       firedEventIds: [...this.state.firedEventIds],
@@ -267,6 +275,7 @@ export class SimKernel {
       cs.actionsAt = new Map(sc.actionsAt ?? []);
       cs.branchChoices = new Map(sc.branchChoices ?? []);
       cs.rapport = sc.rapport ?? 0;
+      cs.performedManoeuvres = new Set(sc.performedManoeuvres ?? []);
     }
     this.state.revealedArcIds = new Set(snap.revealedArcIds);
     this.state.firedEventIds = new Set(snap.firedEventIds);
@@ -487,6 +496,21 @@ export class SimKernel {
     if (choice.rapport_delta) {
       cs.rapport = Math.max(-3, Math.min(3, cs.rapport + choice.rapport_delta));
     }
+    this.notify();
+  }
+
+  /**
+   * Record that the player performed a named examination manoeuvre
+   * within a system (M40). Idempotent — the same manoeuvre can be
+   * 'performed' multiple times without changing state. Reveals the
+   * manoeuvre's findings on the encounter UI.
+   */
+  recordManoeuvre(caseId: string, system: string, manoeuvreId: string): void {
+    const cs = this.state.cases.get(caseId);
+    if (!cs) return;
+    const key = `${system}::${manoeuvreId}`;
+    if (cs.performedManoeuvres.has(key)) return;
+    cs.performedManoeuvres.add(key);
     this.notify();
   }
 

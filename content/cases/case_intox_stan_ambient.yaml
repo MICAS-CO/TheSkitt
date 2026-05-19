@@ -192,6 +192,18 @@ examination:
       - { name: 'forehead laceration', value: '~2 cm, left eyebrow, mild oozing' }
       - { name: 'left periorbital bruising', present: true }
       - { name: 'temperature', value: '36.4°C' }
+    manoeuvres:
+      - id: log_roll
+        label: 'Log-roll (with assistance, c-spine controlled)'
+        findings:
+          - {
+              name: 'occipital scalp laceration with boggy haematoma',
+              value: '~4 cm, posterior parietal, palpable bone movement under it',
+              red_flag: true,
+              supports: ['Acute intracranial haemorrhage from witnessed fall'],
+            }
+          - { name: 'no thoraco-lumbar step or tenderness', present: false, pertinent_negative: true }
+          - { name: 'soiling of incontinence pad', present: true }
 
 investigations:
   - id: ix_bm

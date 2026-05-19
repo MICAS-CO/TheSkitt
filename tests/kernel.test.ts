@@ -218,6 +218,41 @@ describe('SimKernel — branching dialogue (M34)', () => {
     expect(cs.rapport).toBe(2);
   });
 
+  it('recordManoeuvre is idempotent + survives serialise/restore (M40)', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const { parse } = await import('yaml');
+    const { Case, Episode } = await import('../src/content/schema');
+    const stan = Case.parse(
+      parse(readFileSync(join(process.cwd(), 'content/cases/case_intox_stan_ambient.yaml'), 'utf8')),
+    );
+    const ep = Episode.parse({
+      schema_version: 1,
+      id: 'ep_stan_manoeuvre_test',
+      title: 'Stan manoeuvre test',
+      learning_objectives: ['x'],
+      curriculum_tags: ['MHC1'],
+      difficulty_band: 'CT2',
+      shift_duration_min: 20,
+      focus_cases: [stan.id],
+    });
+    const k = new SimKernel({ episode: ep, cases: new Map([[stan.id, stan]]) });
+    k.enterCase(stan.id);
+    k.recordExamine(stan.id, 'exposure');
+    k.recordManoeuvre(stan.id, 'exposure', 'log_roll');
+    const cs1 = k.getState().cases.get(stan.id)!;
+    expect(cs1.performedManoeuvres.has('exposure::log_roll')).toBe(true);
+    // Idempotent
+    k.recordManoeuvre(stan.id, 'exposure', 'log_roll');
+    expect(cs1.performedManoeuvres.size).toBe(1);
+
+    const snap = k.serialize();
+    const k2 = new SimKernel({ episode: ep, cases: new Map([[stan.id, stan]]), restore: snap });
+    expect(k2.getState().cases.get(stan.id)!.performedManoeuvres.has('exposure::log_roll')).toBe(
+      true,
+    );
+  });
+
   it('emits a trap_caught interrupt when must_not_do is ticked (M39)', async () => {
     const { readFileSync } = await import('node:fs');
     const { join } = await import('node:path');

@@ -261,9 +261,31 @@ export const ExamFinding = z.object({
   supports: z.array(z.string()).optional(),
 });
 
+/**
+ * Discoverable examination manoeuvre (M40). When set, examining the
+ * parent system reveals the base \`findings\` list; the manoeuvres
+ * sit BELOW that list as additional clicks ('Log-roll', 'Pronator
+ * drift', 'Cranial nerves IX–X', etc). Clicking a manoeuvre reveals
+ * its findings as if they had been examined that way — the
+ * difference between just-eyeballing the system and actually
+ * performing the specific clinical technique.
+ *
+ * Authors should put red-flag-or-must-not-miss findings behind the
+ * manoeuvre that would discover them — eg a contralateral pronator
+ * drift behind 'Pronator drift', a posterior scalp laceration behind
+ * 'Log-roll', etc. The point is to simulate the technique, not the
+ * display.
+ */
+export const ExamManoeuvre = z.object({
+  id: z.string(),
+  label: z.string(),
+  findings: z.array(ExamFinding),
+});
+
 export const ExamSystemFindings = z.object({
   system: ExamSystem,
   findings: z.array(ExamFinding),
+  manoeuvres: z.array(ExamManoeuvre).optional(),
 });
 
 // ─── Investigations ─────────────────────────────────────────────────────────

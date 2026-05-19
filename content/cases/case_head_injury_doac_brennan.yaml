@@ -208,6 +208,31 @@ examination:
           present: true,
         }
       - { name: 'Capillary glucose (BM)', value: '6.8 mmol/L', present: true }
+    manoeuvres:
+      - id: pronator_drift
+        label: 'Test pronator drift (eyes closed, arms outstretched, 30s)'
+        findings:
+          - {
+              name: 'subtle right pronator drift at 25 s',
+              value: 'right arm pronates and drops ~3 cm; reproducible on re-test',
+              red_flag: true,
+              supports: ['Mild traumatic brain injury with traumatic subdural haematoma on anticoagulation'],
+            }
+          - {
+              name: 'Romberg',
+              value: 'positive — slight backward sway with eyes closed',
+              present: true,
+            }
+      - id: cn_screen
+        label: 'Cranial nerves II–XII (full screen)'
+        findings:
+          - {
+              name: 'subtle right-sided facial droop on smile (CN VII)',
+              value: 'asymmetry mild; obscures without smile test',
+              red_flag: true,
+              supports: ['Mild traumatic brain injury with traumatic subdural haematoma on anticoagulation'],
+            }
+          - { name: 'extraocular movements full', present: true, pertinent_negative: true }
 
   - system: msk
     findings:
