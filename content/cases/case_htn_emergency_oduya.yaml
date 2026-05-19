@@ -68,6 +68,31 @@ triage_category: 1
 initial_state: deteriorating
 bay: majors
 
+vitals:
+  baseline:
+    hr: 78
+    rr: 14
+    spo2: 98
+    bp_sys: 162
+    bp_dia: 94
+    gcs: 15
+    temp_c: 36.6
+  deteriorating:
+    hr: 96
+    rr: 18
+    spo2: 98
+    bp_sys: 226
+    bp_dia: 138
+    gcs: 14
+    temp_c: 36.6
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
 # ─── History ──────────────────────────────────────────────────────────────
 history:
   - id: hx_headache_details

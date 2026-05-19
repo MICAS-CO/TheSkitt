@@ -61,6 +61,33 @@ demographics:
 triage_category: 1
 initial_state: deteriorating
 
+vitals:
+  baseline:
+    hr: 70
+    rr: 14
+    spo2: 98
+    bp_sys: 130
+    bp_dia: 78
+    gcs: 15
+    temp_c: 36.6
+    bm: 9.4
+  deteriorating:
+    hr: 92
+    rr: 18
+    spo2: 97
+    bp_sys: 172
+    bp_dia: 96
+    gcs: 14
+    temp_c: 36.6
+    bm: 9.4
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
 history:
   - id: hx_carol
     source: family

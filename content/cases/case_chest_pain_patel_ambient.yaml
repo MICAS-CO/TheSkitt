@@ -45,6 +45,31 @@ triage_category: 3
 initial_state: triaged
 bay: triage
 
+vitals:
+  baseline:
+    hr: 78
+    rr: 14
+    spo2: 98
+    bp_sys: 132
+    bp_dia: 82
+    gcs: 15
+    temp_c: 36.6
+  deteriorating:
+    hr: 108
+    rr: 22
+    spo2: 93
+    bp_sys: 92
+    bp_dia: 58
+    gcs: 15
+    temp_c: 36.6
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
 history:
   - id: hx_pain
     source: patient

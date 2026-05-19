@@ -58,6 +58,33 @@ triage_category: 2
 initial_state: deteriorating
 bay: resus
 
+vitals:
+  baseline:
+    hr: 78
+    rr: 16
+    spo2: 96
+    bp_sys: 124
+    bp_dia: 72
+    gcs: 15
+    temp_c: 36.6
+  deteriorating:
+    hr: 112
+    rr: 24
+    spo2: 95
+    on_o2: true
+    bp_sys: 98
+    bp_dia: 62
+    gcs: 13
+    temp_c: 38.4
+    bm: 6.4
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
 history:
   - id: hx_paramedics
     source: paramedic

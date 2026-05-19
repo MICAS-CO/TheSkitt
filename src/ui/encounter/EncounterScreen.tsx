@@ -3,6 +3,7 @@ import { useSim, scoreCase, type ScoreReport, type SimSpeedKey } from '../../sta
 import type { CitationT } from '../../content/schema';
 import type { CaseRuntime, KernelState, LogEntry } from '../../sim/kernel';
 import { ClockBar } from '../shift/ClockBar';
+import { PatientPanel } from './PatientPanel';
 
 /**
  * Sections of the encounter. Replaces the old linear "phase pipeline":
@@ -112,7 +113,10 @@ export function EncounterScreen({
         onSpeedChange={onSpeedChange}
       />
 
-      <VignetteCard cs={cs} />
+      <div className="enc__top">
+        <VignetteCard cs={cs} />
+        <PatientPanel cs={cs} />
+      </div>
 
       <SectionTabs
         section={section}

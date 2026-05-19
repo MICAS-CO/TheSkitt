@@ -298,6 +298,29 @@ export const ManagementAction = z.object({
   sources: z.array(Citation).optional(),
 });
 
+// ─── Vitals (M12) ───────────────────────────────────────────────────────────
+
+export const VitalsValues = z.object({
+  hr: z.number().int().nonnegative().optional(),
+  rr: z.number().int().nonnegative().optional(),
+  /** SpO2 % (room air unless `on_o2` true). */
+  spo2: z.number().int().min(0).max(100).optional(),
+  /** Patient is receiving supplemental oxygen — adds 2 to NEWS2. */
+  on_o2: z.boolean().optional(),
+  bp_sys: z.number().int().nonnegative().optional(),
+  bp_dia: z.number().int().nonnegative().optional(),
+  gcs: z.number().int().min(3).max(15).optional(),
+  temp_c: z.number().optional(),
+  /** Capillary blood glucose, mmol/L. */
+  bm: z.number().optional(),
+});
+
+export const Vitals = z.object({
+  baseline: VitalsValues,
+  deteriorating: VitalsValues.optional(),
+  arrested: VitalsValues.optional(),
+});
+
 // ─── Demographics ───────────────────────────────────────────────────────────
 
 export const Demographics = z.object({
@@ -336,6 +359,10 @@ export const Case = z.object({
   demographics: Demographics,
   triage_category: TriageCategory,
   initial_state: CaseState,
+  /** Optional baseline + per-state vital signs. If omitted, the encounter
+   *  shows derived defaults based on state and age. Strongly recommended
+   *  for SLO-3 / resus cases. */
+  vitals: Vitals.optional(),
   /** Where in the ED the patient sits — drives hub-view layout. */
   bay: z
     .enum(['resus', 'majors', 'minors', 'paeds', 'relatives', 'ambulatory', 'triage'])
@@ -538,6 +565,8 @@ export const Episode = z.object({
 
 export type CaseT = z.infer<typeof Case>;
 export type EpisodeT = z.infer<typeof Episode>;
+export type VitalsValuesT = z.infer<typeof VitalsValues>;
+export type VitalsT = z.infer<typeof Vitals>;
 export type ArcT = z.infer<typeof Arc>;
 export type ScheduledEventT = z.infer<typeof ScheduledEvent>;
 export type CitationT = z.infer<typeof Citation>;

@@ -69,6 +69,32 @@ triage_category: 1
 initial_state: deteriorating
 bay: resus
 
+vitals:
+  baseline:
+    hr: 80
+    rr: 14
+    spo2: 98
+    bp_sys: 158
+    bp_dia: 96
+    gcs: 15
+    temp_c: 36.8
+  deteriorating:
+    hr: 96
+    rr: 22
+    spo2: 94
+    on_o2: true
+    bp_sys: 178
+    bp_dia: 108
+    gcs: 15
+    temp_c: 36.6
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
 # ─── History ──────────────────────────────────────────────────────────────
 history:
   - id: hx_pain_quality

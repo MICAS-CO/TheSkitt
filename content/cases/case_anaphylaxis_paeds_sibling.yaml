@@ -57,6 +57,32 @@ demographics:
 triage_category: 2
 initial_state: deteriorating
 
+vitals:
+  baseline:
+    hr: 90
+    rr: 22
+    spo2: 99
+    bp_sys: 100
+    bp_dia: 60
+    gcs: 15
+    temp_c: 36.8
+  deteriorating:
+    hr: 142
+    rr: 28
+    spo2: 96
+    on_o2: true
+    bp_sys: 92
+    bp_dia: 56
+    gcs: 15
+    temp_c: 37.0
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
 history:
   - id: hx_paramedics
     source: paramedic

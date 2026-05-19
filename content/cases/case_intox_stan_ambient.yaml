@@ -45,6 +45,33 @@ triage_category: 3
 initial_state: stable
 bay: minors
 
+vitals:
+  baseline:
+    hr: 88
+    rr: 14
+    spo2: 97
+    bp_sys: 130
+    bp_dia: 80
+    gcs: 15
+    temp_c: 36.6
+    bm: 4.8
+  deteriorating:
+    hr: 102
+    rr: 12
+    spo2: 92
+    bp_sys: 110
+    bp_dia: 68
+    gcs: 11
+    temp_c: 36.4
+    bm: 2.4
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
 history:
   - id: hx_paramedics
     source: paramedic
