@@ -1685,6 +1685,103 @@ a {
   margin: 0 0 6px 0;
 }
 
+/* Case Practice library (M63). */
+.practice {
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.practice__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  gap: 16px;
+}
+.practice__head h2 {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+}
+.practice__head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.practice__exit {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.practice__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.practice__card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+.practice__chip {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: var(--panel-2);
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.practice__patient {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text);
+}
+.practice__diagnosis {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.practice__shared {
+  margin: 0;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--muted);
+  opacity: 0.8;
+}
+.practice__start {
+  margin-top: auto;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-start;
+}
+.practice__start:hover {
+  filter: brightness(1.1);
+}
+
 /* Disposition epilogue (M56) — one-line narrative coda after the player picks. */
 .enc__disposition-epilogue {
   margin: 8px 0 0 0;

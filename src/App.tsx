@@ -14,6 +14,7 @@ import { EcgChallengeScreen } from './ui/ecg/EcgChallengeScreen';
 import { SkillTreeScreen } from './ui/progression/SkillTreeScreen';
 import { SettingsScreen } from './ui/settings/SettingsScreen';
 import { AssetLibraryScreen, isStyleGuideRequested } from './ui/styleguide/AssetLibraryScreen';
+import { CasePracticeScreen } from './ui/practice/CasePracticeScreen';
 
 // Solo shift (Milestone 4)
 import bethYaml from '../content/cases/case_anaphylaxis_adult_peanut.yaml?raw';
@@ -88,7 +89,7 @@ import safetyNetEpYaml from '../content/episodes/ep_overnight_safety_net.yaml?ra
 import amirYaml from '../content/cases/case_paeds_dka_amir.yaml?raw';
 import paedsDkaEpYaml from '../content/episodes/ep_paeds_dka_solo.yaml?raw';
 
-type View = 'menu' | 'shift' | 'hub' | 'ecg' | 'skilltree' | 'settings' | 'styleguide';
+type View = 'menu' | 'shift' | 'hub' | 'ecg' | 'skilltree' | 'settings' | 'styleguide' | 'practice';
 
 const SUBTITLES: Record<View, string> = {
   menu: 'Episodic UK FRCEM study RPG · 17 shifts, 17 cases, 3 arcs',
@@ -98,6 +99,7 @@ const SUBTITLES: Record<View, string> = {
   skilltree: 'Skill tree — progression across shifts',
   settings: 'Settings — preferences and local data',
   styleguide: 'Visual Style Guide — internal asset library',
+  practice: 'Practice library — drill any patient',
 };
 
 interface ShiftPack {
@@ -442,6 +444,7 @@ export function App() {
             }}
             onShowHub={() => setView('hub')}
             onShowEcg={() => setView('ecg')}
+            onShowPractice={() => setView('practice')}
             onShowSkillTree={() => setView('skilltree')}
             onShowSettings={() => setView('settings')}
             saved={saved}
@@ -455,6 +458,15 @@ export function App() {
         {view === 'skilltree' && <SkillTreeScreen onExit={() => setView('menu')} />}
         {view === 'settings' && <SettingsScreen onExit={() => setView('menu')} />}
         {view === 'styleguide' && <AssetLibraryScreen onExit={() => setView('menu')} />}
+        {view === 'practice' && (
+          <CasePracticeScreen
+            onPick={(episodeId) => {
+              const def = SHIFT_DEFS.find((s) => s.id === episodeId);
+              if (def) startShift(def.factory());
+            }}
+            onExit={() => setView('menu')}
+          />
+        )}
       </main>
 
       <footer className="app__footer">
@@ -478,6 +490,7 @@ function MenuView({
   onStart,
   onShowHub,
   onShowEcg,
+  onShowPractice,
   onShowSkillTree,
   onShowSettings,
   saved,
@@ -488,6 +501,7 @@ function MenuView({
   onStart: (id: string) => void;
   onShowHub: () => void;
   onShowEcg: () => void;
+  onShowPractice: () => void;
   onShowSkillTree: () => void;
   onShowSettings: () => void;
   saved: SavedShift | null;
@@ -561,6 +575,13 @@ function MenuView({
             <span className="menu__card-title">ECG challenge</span>
             <span className="menu__card-meta">
               14-day rotation — one ECG-interpretation set per day, with cited sources.
+            </span>
+          </button>
+          <button className="menu__card menu__card--secondary" onClick={onShowPractice}>
+            <span className="menu__card-eyebrow">Practice</span>
+            <span className="menu__card-title">Case library</span>
+            <span className="menu__card-meta">
+              Drill any of the 17 patients on their most-focused shift — perfect for re-running a case you lost.
             </span>
           </button>
           <button className="menu__card menu__card--secondary" onClick={onShowSkillTree}>
