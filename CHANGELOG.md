@@ -4,6 +4,56 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M37 — co-worker NPC: Dr Aoife McGrath comments on your last shift
+
+- New \`src/state/consultant.ts\`: persists a \`ShiftMemo\`
+  (band / lives / attended / top tags / highlight case) on debrief
+  mount and renders a 3-line consultant message on the menu next
+  session.
+- Identity-stable voice; tone shifts by band
+  (excellent → unsafe). Greeting reflects recency
+  ('just now' / 'earlier' / 'last shift').
+- Pure localStorage; safe in private mode.
+
+### M36 — investigation workup parsimony
+
+- \`Investigation.essential: boolean\` declares which ix make up the
+  case's expected workup. Score tracks essentialIxOrdered vs
+  extraIxOrdered; −2% per extra beyond a 2-ix free allowance, capped
+  at −10%. Untracked on cases with no essentials (backwards compat).
+- Backfill: Beth (tryptase), Marcus (cap glucose+ketones, VBG, bloods),
+  Patel (ECG, troponin).
+- Episode debrief shows 'Workup: 1/1 essential · 4 extra (−4%)' per
+  tracked case.
+
+### M35 — gate must_not_do behind clinical reasoning
+
+- \`Management.gated_by_history?: string[]\` — action only renders
+  once one of the listed history ids has been asked. Simulates the
+  cognitive trap rather than displaying it.
+- Backfill: Amir's three paeds-DKA traps (adult-bolus, concurrent
+  insulin, insulin bolus) gated on hx_paramedics. Okafor's
+  dual-antiplatelet trap gated on hx_paramedic.
+- Hint line surfaces 'N more options will appear once you ask the
+  right history'.
+- Validator cross-checks every gated_by_history id resolves.
+
+### M34 — branching dialogue choices + rapport
+
+- \`HistoryItem.branch_choices: Array<{ id, label, response,
+  npc_voice?, rapport_delta? (-3..+3) }>\` — pivotal history items
+  become real choices that shape rapport.
+- Kernel: \`CaseRuntime.branchChoices\` + \`rapport\` (clamped ±3);
+  \`pickBranchChoice()\` method idempotent on repeat picks.
+- UI: rapport pill in the history header ('warming up / engaging /
+  guarded / pulling away'); inline \`<BranchPicker>\` with
+  'How do you ask?' prompt + chosen-tag display.
+- ScoreReport extended with rapport + branchesPicked /
+  branchesAvailable; debrief surfaces 'Pivotal moments engaged: 2/3'.
+- Content backfill: Chloe \`hx_chloe_intent\` (compassionate +2 /
+  clinical 0 / dismissive -2); Stan \`hx_stan_speech\` (same shape,
+  Maggie / history / dismissal).
+
 ### M33 — daily case rotation: 'Today's pick' highlighted on the menu
 
 - New helper \`pickShiftOfTheDay\` rotates by day-of-year mod shift

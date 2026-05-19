@@ -37,6 +37,10 @@ visual integration from Claude Design + new content.
 | M31 | ECG bank inline interpretation on tagged case ECGs (Patel + Okonkwo) |
 | M32 | Perks-with-bite: Trap-aware forces trap hints on; Resus reflexes widens deterioration thresholds by 1 min |
 | M33 | Daily case rotation: 'Today's pick' highlighted on the menu |
+| M34 | Branching dialogue choices + rapport (Chloe + Stan) |
+| M35 | must_not_do gated behind clinical reasoning (Amir + Okafor) |
+| M36 | Investigation workup parsimony — essential ix + extras penalty (Beth + Marcus + Patel) |
+| M37 | Co-worker NPC — Dr Aoife McGrath comments on the last shift on the menu |
 
 ## ⏳ WAITING ON DESIGN
 
@@ -47,7 +51,7 @@ template. No code changes needed beyond the registry entry.
 
 ## Numbers
 
-- **266 / 266** unit tests passing (Vitest)
+- **276 / 276** unit tests passing (Vitest)
 - **2 / 2** E2E tests passing (Playwright)
 - **17 fully-authored cases**, **17 episodes**, **3 arcs**, 44-topic
   high-yield map

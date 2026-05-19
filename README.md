@@ -47,8 +47,12 @@ log and `RESUME.md` for current state at a glance.
 | 31    | ECG bank inline                    | Cases can link ix_ecg to bank entries; inline interpretation prompt + reveal at point of clinical use |
 | 32    | Perks-with-bite                    | Trap-aware forces trap hints on; Resus reflexes widens deterioration warn/critical thresholds by 1 min  |
 | 33    | Daily case rotation                | Day-of-year rotation picks 'Today's pick' shift, badged on the menu card                                |
+| 34    | Branching dialogue + rapport       | HistoryItem.branch_choices → compassionate/clinical/dismissive picks → rapport ±3; Chloe + Stan        |
+| 35    | must_not_do gating                 | Management.gated_by_history hides traps until you've heard the cue; Amir DKA + Okafor dissection       |
+| 36    | Workup parsimony                   | Investigation.essential + −2%/extra beyond 2 (cap −10%); Beth + Marcus + Patel backfilled               |
+| 37    | Co-worker NPC                      | Dr Aoife McGrath leaves a 3-line memo on the menu after each shift; tone shifts by band                |
 
-Numbers: **266 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
+Numbers: **276 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
 14 daily ECGs**. Lint clean, typecheck clean, validator green.
 
 ## Stack
