@@ -35,6 +35,18 @@ export function emptyProgression(): Progression {
   };
 }
 
+/**
+ * Quick check whether the player has unlocked a given perk. Reads
+ * localStorage; safe in private-mode (returns false).
+ */
+export function hasPerk(id: string): boolean {
+  try {
+    return loadProgression().unlockedPerks.includes(id);
+  } catch {
+    return false;
+  }
+}
+
 export function loadProgression(): Progression {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -170,7 +182,8 @@ export const PERKS: Perk[] = [
   {
     id: 'perk_resus_reflex',
     title: 'Resus reflexes',
-    description: 'Bank 200 XP in SLO 3 (Resuscitation). Marks the SLO badge gold.',
+    description:
+      'Bank 200 XP in SLO 3 (Resuscitation). In play: deterioration timers add a +1 min grace warning before going critical, giving you a wider tone shift.',
     check: (p) => (p.perSloXp[3] ?? 0) >= 200,
   },
   {
@@ -182,7 +195,8 @@ export const PERKS: Perk[] = [
   {
     id: 'perk_trap_aware',
     title: 'Trap-aware',
-    description: 'Complete 5 different cases.',
+    description:
+      'Complete 5 different cases. In play: trap hints are forced on across all encounters — must_not_do actions flag themselves on the management chart even if you disabled trap hints in Settings.',
     check: (p) => p.caseIdsCompleted.length >= 5,
   },
   {

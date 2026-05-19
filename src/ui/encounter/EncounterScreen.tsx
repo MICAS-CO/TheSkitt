@@ -8,6 +8,7 @@ import { ResusMode } from './ResusMode';
 import { IconCitation, IconCountdown, IconNewInfo, IconRedFlag, IconTrap } from '../../style/icons';
 import { ResultsEnvelope } from '../../style/frames';
 import { ECG_BANK } from '../../content/ecg-challenges';
+import { hasPerk } from '../../state/progression';
 
 function trapHintsEnabled(): boolean {
   try {
@@ -402,7 +403,17 @@ function DeteriorationTimers({ caseId, ks }: { caseId: string; ks: KernelState }
       {upcoming.map((e) => {
         if (e.type !== 'deterioration_if_not_x_by_t') return null;
         const remaining = Math.max(0, e.t_min - ks.clockMin);
-        const tone = remaining <= 2 ? 'critical' : remaining <= 5 ? 'warn' : 'info';
+        // perk_resus_reflex widens the warn/critical bands by 1 min,
+        // giving the player a wider runway before the chip pulses red.
+        const reflex = hasPerk('perk_resus_reflex');
+        const warnThreshold = reflex ? 6 : 5;
+        const criticalThreshold = reflex ? 3 : 2;
+        const tone =
+          remaining <= criticalThreshold
+            ? 'critical'
+            : remaining <= warnThreshold
+              ? 'warn'
+              : 'info';
         const missing = e.required_action_ids
           .filter((a) => !cs.actions.has(a))
           .map((a) => cs.data.management.find((m) => m.id === a)?.name ?? a);
@@ -996,10 +1007,17 @@ function DifferentialPhase({
 }
 
 function ManagementPhase({ cs, onToggle }: { cs: CaseRuntime; onToggle: (id: string) => void }) {
-  // Read the setting once per mount rather than per render. The setting
-  // is changed in the menu; the encounter remounts when the player exits
-  // back to the menu and re-enters, which is enough to pick up changes.
-  const trapHints = useMemo(() => trapHintsEnabled(), []);
+  // Read settings + perks once per mount. The perk_trap_aware unlock
+  // forces trap hints on even if the Settings toggle is off — M32
+  // perks-with-bite.
+  const trapHints = useMemo(
+    () => trapHintsEnabled() || hasPerk('perk_trap_aware'),
+    [],
+  );
+  const trapHintsForced = useMemo(
+    () => !trapHintsEnabled() && hasPerk('perk_trap_aware'),
+    [],
+  );
   const hasStat = cs.data.management.some((m) => m.must_do && m.drug);
   return (
     <section className="enc__phase enc__phase--drugchart">
@@ -1011,7 +1029,12 @@ function ManagementPhase({ cs, onToggle }: { cs: CaseRuntime; onToggle: (id: str
       <p className="enc__hint">
         Tick what you give. The time column stamps each action with the sim-min you ticked it.
         Some options are distractors.
-        {trapHints && <em> Trap hints are on (Settings).</em>}
+        {trapHints && (
+          <em>
+            {' '}
+            Trap hints are on {trapHintsForced ? '(via the Trap-aware perk)' : '(Settings)'}.
+          </em>
+        )}
       </p>
       <div className="drugchart__cols">
         <span className="drugchart__col-h drugchart__col-h--time">TIME</span>

@@ -3,6 +3,7 @@ import { ClockBar } from './ClockBar';
 import type { CaseRuntime, KernelState, LogEntry } from '../../sim/kernel';
 import { deriveVitals, news2 } from '../../sim/vitals';
 import { IconCountdown, IconRedFlag } from '../../style/icons';
+import { hasPerk } from '../../state/progression';
 
 interface Props {
   onEnterCase: (caseId: string) => void;
@@ -179,12 +180,13 @@ function CaseCard({
   const deteriorationRemaining = upcomingDeterioration
     ? Math.max(0, upcomingDeterioration.t_min - clockMin)
     : null;
+  const reflex = hasPerk('perk_resus_reflex');
   const detTone =
     deteriorationRemaining === null
       ? null
-      : deteriorationRemaining <= 2
+      : deteriorationRemaining <= (reflex ? 3 : 2)
         ? 'critical'
-        : deteriorationRemaining <= 5
+        : deteriorationRemaining <= (reflex ? 6 : 5)
           ? 'warn'
           : 'info';
 

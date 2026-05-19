@@ -119,4 +119,13 @@ describe('M16 — XP and progression', () => {
       expect(perk.description.length).toBeGreaterThan(0);
     }
   });
+
+  it('perk descriptions document gameplay-modifying perks explicitly (M32)', () => {
+    // M32 wired two perks to actually modify gameplay; the description
+    // must surface that to the player on the skill-tree screen.
+    const trapAware = PERKS.find((p) => p.id === 'perk_trap_aware')!;
+    const resusReflex = PERKS.find((p) => p.id === 'perk_resus_reflex')!;
+    expect(trapAware.description).toMatch(/In play/i);
+    expect(resusReflex.description).toMatch(/In play/i);
+  });
 });
