@@ -128,13 +128,13 @@ describe('scoreCase — adult anaphylaxis', () => {
   });
 
   it('cases without any essential markers are untracked (M36)', () => {
-    // Use Sarah ectopic — not yet backfilled with essentials. Should
-    // be excluded from the metric and pay zero penalty regardless of
-    // how many ix the player orders.
-    const sarah = Case.parse(
+    // Use Chloe paracetamol — not yet backfilled with essential markers
+    // as of M42. Should be excluded from the metric and pay zero penalty
+    // regardless of how many ix the player orders.
+    const chloe = Case.parse(
       parseYaml(
         readFileSync(
-          join(process.cwd(), 'content/cases/case_ectopic_minors_sarah.yaml'),
+          join(process.cwd(), 'content/cases/case_paracetamol_od_chloe.yaml'),
           'utf8',
         ),
       ),
@@ -144,17 +144,17 @@ describe('scoreCase — adult anaphylaxis', () => {
       id: 'ep_workup_untracked_test',
       title: 'Untracked workup',
       learning_objectives: ['x'],
-      curriculum_tags: ['ObC1'],
+      curriculum_tags: ['MHC1'],
       difficulty_band: 'CT2',
       shift_duration_min: 20,
-      focus_cases: [sarah.id],
+      focus_cases: [chloe.id],
     });
-    const k = new SimKernel({ episode: ep, cases: new Map([[sarah.id, sarah]]) });
-    k.enterCase(sarah.id);
-    for (const ix of sarah.investigations) {
-      k.orderInvestigation(sarah.id, ix.id);
+    const k = new SimKernel({ episode: ep, cases: new Map([[chloe.id, chloe]]) });
+    k.enterCase(chloe.id);
+    for (const ix of chloe.investigations) {
+      k.orderInvestigation(chloe.id, ix.id);
     }
-    const r = scoreCase(k.getState().cases.get(sarah.id)!);
+    const r = scoreCase(k.getState().cases.get(chloe.id)!);
     expect(r.workup.tracked).toBe(false);
     expect(r.workup.penaltyPercent).toBe(0);
   });

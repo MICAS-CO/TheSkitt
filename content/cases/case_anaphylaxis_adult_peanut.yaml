@@ -109,20 +109,47 @@ history:
     source: family
     topic: "Speak to the partner (Tom) in the relatives' room."
     npc_voice: "Tom shifts his weight, glancing back toward the relatives' room."
+    branch_choices:
+      - id: compassionate
+        label: "Take a breath, Tom. She's stable. Tell me what you know — start with anything that worried you on the way in."
+        npc_voice: "Tom's shoulders drop. He sits."
+        rapport_delta: 1
+        response: |
+          "Thank you. Thanks. (Breath.) She's been getting hayfever
+          worse — three summers running. Carries antihistamine tablets
+          in her bag. Two years ago at a Thai place she came up in a
+          rash and I always wondered. We don't have an EpiPen. I asked
+          her to see the GP and she kept putting it off.
+
+          Her friend Sarah came in the ambulance — the bride-to-be.
+          She was quiet, said her belly was crampy. Has she been seen?
+          And — Beth's mum's got her brother Sam at home, he's eight.
+          He had her satay sauce off her plate at the restaurant
+          before she noticed. Mum just texted Sam's lip's gone a bit
+          swollen. Should I call them?"
+      - id: clinical
+        label: "Quickly: past allergies, regular medications, EpiPen?"
+        rapport_delta: 0
+        response: |
+          "Hayfever bad recently. Antihistamine tablets. No EpiPen.
+          Restaurant two years ago — rash. Her friend Sarah's in
+          triage with belly pain — bride-to-be. Brother Sam, age
+          eight, ate the satay sauce, lip swollen now at home.
+          Mum's there with him."
+      - id: dismissive
+        label: "I'll be back to you in a minute, Tom. Got to focus on Beth right now."
+        npc_voice: "Tom nods, but he doesn't sit. He stays standing."
+        rapport_delta: -1
+        response: |
+          "Right. Yeah. Of course. (Pause.) Her mum texted me about
+          her brother Sam. He's eight. He ate her sauce. His lip's
+          swollen. I'll wait, doctor."
     response: |
-      "She's been getting hayfever worse the last few summers. Carries
-      antihistamine tablets in her bag. There was that Thai place two
-      years ago — I always wondered. We don't have an EpiPen.
-
-      Oh — her friend Sarah came in the ambulance with her. The
-      bride-to-be. She was a bit quiet, said her belly was crampy.
-      Has she been seen? I think she went to triage when we got here.
-
-      …and — sorry, this is probably nothing — Beth's mum's got her
-      little brother Sam at home, he's eight. He helped himself to the
-      satay peanut sauce off her plate at the restaurant before she
-      noticed. Her mum just texted that Sam's lip's gone a bit swollen
-      after dinner. Should I call them?"
+      Tom describes worsening hayfever, a similar reaction two years
+      ago at a Thai restaurant, antihistamines but no EpiPen. He also
+      mentions her friend Sarah (the bride-to-be) is in triage with
+      crampy abdominal pain, and her eight-year-old brother Sam ate
+      satay sauce off her plate and now has a swollen lip.
 
   - id: hx_eaten_today
     source: patient

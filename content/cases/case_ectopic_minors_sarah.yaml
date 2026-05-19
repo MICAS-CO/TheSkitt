@@ -112,11 +112,36 @@ history:
     supports:
       - 'Right tubal ectopic pregnancy with probable rupture'
       - 'Threatened miscarriage with corpus luteum cyst'
+    branch_choices:
+      - id: compassionate
+        label: "(quietly, leaning in) Whatever you tell me about the pregnancy stays between us and the team caring for you. Take your time."
+        npc_voice: "Sarah's eyes fill. She blinks them clear and looks at you properly for the first time."
+        rapport_delta: 2
+        response: |
+          "Thank you. (Pause.) Last period seven weeks ago tomorrow. We
+          were trying. Tested positive last Wednesday — home kit, two
+          lines. The hen-do was Beth's idea — she'd planned it for a
+          year. I didn't tell anyone. Not even Beth. I'm — was — going
+          to tell her tonight, before the wedding. I'm scared, doctor.
+          I keep thinking I've already lost it."
+      - id: clinical
+        label: "LMP, scans, any antenatal contact yet?"
+        rapport_delta: 0
+        response: |
+          "LMP seven weeks ago tomorrow. Test positive last Wednesday,
+          home kit. No scans yet. GP booked the 12-week. No antenatal
+          appointments."
+      - id: dismissive
+        label: "I need a quick history. Have you been booked into antenatal services yet?"
+        npc_voice: "Sarah looks down at her hands."
+        rapport_delta: -1
+        response: |
+          "No. I haven't. Sorry. I should have, I know. (Pause.) Last
+          period seven weeks ago tomorrow."
     response: |
-      "My last period was — let me think — seven weeks ago tomorrow. We
-      were trying. Tested positive last Wednesday with a home kit. GP
-      booked me a 12-week scan but I haven't had any imaging yet. No
-      antenatal appointments."
+      Last menstrual period seven weeks ago. Home pregnancy test
+      positive Wednesday. No scans yet; 12-week booking with GP.
+      No antenatal appointments.
 
   - id: hx_risk_factors
     source: patient
@@ -223,6 +248,7 @@ investigations:
     name: 'Serum βhCG (quantitative)'
     category: blood
     turnaround_min: 30
+    essential: true
     result_summary: |
       4280 IU/L. Empty uterus on TVUSS with serum βhCG >1500 IU/L
       raises ectopic strongly (RCOG GTG 21, 2016) — though current
@@ -239,6 +265,7 @@ investigations:
     name: 'FBC, U&E, CRP, group + cross-match (2 units)'
     category: blood
     turnaround_min: 30
+    essential: true
     result_summary: |
       Hb 102 g/L (down from 134 at GP last year — significant interval
       drop) · WCC 11.4 · Plt 268 · Na 137 K 4.2 Urea 4.8 Creat 68
@@ -258,6 +285,7 @@ investigations:
     name: 'Transvaginal ultrasound (TVUSS) — urgent EPAU/gynae'
     category: imaging
     turnaround_min: 40
+    essential: true
     result_summary: |
       Empty uterus, no intrauterine gestational sac. Right adnexal
       complex mass containing a yolk sac, no fetal pole/cardiac

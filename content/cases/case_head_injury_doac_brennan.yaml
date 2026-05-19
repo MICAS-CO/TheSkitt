@@ -263,6 +263,7 @@ investigations:
     name: 'CT head (non-contrast) — within 8 h per NICE NG232'
     category: imaging
     turnaround_min: 30
+    essential: true
     result_summary: |
       **Small acute right frontal subdural haematoma** — 5 mm thick,
       no midline shift, no mass effect. Coup-contrecoup pattern with
@@ -319,6 +320,7 @@ investigations:
     name: 'Apixaban-calibrated anti-Xa activity'
     category: blood
     turnaround_min: 45
+    essential: true
     result_summary: |
       **Apixaban-calibrated anti-Xa 184 ng/mL** (therapeutic peak
       range ~100–200 ng/mL — within expected window 6.5 h post-dose).

@@ -126,12 +126,41 @@ history:
     npc_voice: "His wife reaches into her bag for the medication list. Her hands are unsteady."
     supports:
       - 'Acute decompensated heart failure — wet-and-warm cardiogenic pulmonary oedema, precipitated by held diuretic'
+    branch_choices:
+      - id: compassionate
+        label: "I can see this has been a hard few weeks. Tell me what you've noticed."
+        npc_voice: "She lowers the list. Looks at her husband, then at you."
+        rapport_delta: 2
+        response: |
+          "The pre-op nurse said to stop his water tablets 10 days
+          before surgery — for his potassium to be 'normal' on the
+          day. I asked twice if that was right. They said yes. He's
+          been drinking the same amount. The ankles got worse and
+          worse and I kept saying we should ring someone. He didn't
+          want to. He said he'd be fine until the operation.
+          Last week he could do four flights of stairs. Tonight he
+          couldn't say a sentence."
+      - id: clinical
+        label: "Medication list please. Any recent changes?"
+        rapport_delta: 0
+        response: |
+          "Pre-op nurse stopped his diuretics 10 days before surgery.
+          Bisoprolol, ramipril, spironolactone continued. No new
+          drugs. Same fluid intake. Ankles worse, breathlessness
+          worse."
+      - id: dismissive
+        label: "Was he taking everything as prescribed?"
+        npc_voice: "Her jaw tightens. She straightens."
+        rapport_delta: -1
+        response: |
+          "He takes his tablets. Every day. The hospital told us to
+          stop the water tablets. So he stopped the water tablets.
+          He does what he's told, doctor."
     response: |
-      "The pre-op nurse said to stop his water tablets 10 days
-      before surgery so his potassium would be 'normal' on the day.
-      He's been drinking the same amount and the ankles have been
-      worse and worse. He gets out of breath walking up stairs
-      now — last week he could do four flights without stopping."
+      Wife reports the pre-op nurse stopped his diuretics 10 days
+      ago to normalise potassium for surgery. Fluid intake unchanged.
+      Worsening peripheral oedema and exertional dyspnoea over the
+      last week.
 
   - id: hx_chest_pain
     source: patient

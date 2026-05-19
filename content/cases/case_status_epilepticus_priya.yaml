@@ -527,6 +527,7 @@ management:
       benzo at this point causes apnoea / hypotension and delays
       the move to a definitive 2nd-line agent.
     must_not_do: true
+    gated_by_history: [hx_paramedic]
     sources:
       - { type: nice, id: 'NG217', ref: 'NICE NG217 — max 2 benzo doses' }
 

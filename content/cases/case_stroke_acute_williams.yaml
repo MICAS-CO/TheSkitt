@@ -196,6 +196,7 @@ investigations:
     name: 'Capillary blood glucose (BM)'
     category: bedside
     turnaround_min: 1
+    essential: true
     result_summary: |
       9.4 mmol/L — excludes hypoglycaemia as a stroke mimic. NICE NG128
       mandates a BM in every suspected stroke before thrombolysis.
@@ -206,6 +207,7 @@ investigations:
     name: 'Urgent non-contrast CT head'
     category: imaging
     turnaround_min: 8
+    essential: true
     result_summary: |
       No acute haemorrhage. Subtle loss of grey-white differentiation
       in the left MCA territory (hyperdense MCA sign on the left).
@@ -229,6 +231,7 @@ investigations:
     name: 'FBC, U&E, glucose, coag (urgent INR + APTT + anti-Xa if available)'
     category: blood
     turnaround_min: 30
+    essential: true
     result_summary: |
       Hb 138 · Plt 240 · INR 1.1 (on apixaban — note INR is not
       reliable for DOAC effect; anti-Xa level requested but takes
@@ -433,6 +436,7 @@ management:
       ESO 2021) OR specific antidote considered. Bleeding risk is
       high. Thrombectomy is the safer pathway in this patient.
     must_not_do: true
+    gated_by_history: [hx_anticoagulation]
     sources:
       - { type: nice, id: 'NG128', ref: 'NICE NG128 — DOAC + alteplase contraindication' }
 
