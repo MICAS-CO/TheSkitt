@@ -1,5 +1,14 @@
+import { useEffect, useMemo, useState } from 'react';
 import { useSim, scoreEpisode, type EpisodeReport, type PerCaseReport } from '../../state/sim';
 import type { CitationT } from '../../content/schema';
+import {
+  applyCaseAward,
+  computeCaseXp,
+  loadProgression,
+  saveProgression,
+  type Progression,
+  type PerCaseXp,
+} from '../../state/progression';
 
 interface Props {
   onExit: () => void;
@@ -9,9 +18,42 @@ interface Props {
 export function EpisodeDebriefScreen({ onExit, onReplay }: Props) {
   useSim((s) => s.tick);
   const kernel = useSim((s) => s.kernel);
-  if (!kernel) return null;
+  const [awarded, setAwarded] = useState<{ awards: PerCaseXp[]; before: Progression; after: Progression } | null>(
+    null,
+  );
 
-  const report = scoreEpisode(kernel.getState());
+  const report = useMemo(() => (kernel ? scoreEpisode(kernel.getState()) : null), [kernel]);
+
+  // Award XP once per shift end. Safe-by-construction: we de-dup case IDs
+  // against the existing progression snapshot, so the only new XP comes
+  // from cases not previously completed OR retries of previously
+  // completed cases (which earn a smaller award since they don't get the
+  // first-completion bonus).
+  useEffect(() => {
+    if (!kernel || !report || awarded) return;
+    const ks = kernel.getState();
+    const before = loadProgression();
+    let progression = before;
+    const awards: PerCaseXp[] = [];
+    for (const c of [...report.cases, ...report.ambientCases]) {
+      if (!c.attended) continue;
+      const rt = ks.cases.get(c.caseId);
+      if (!rt) continue;
+      const award = computeCaseXp(
+        { caseId: c.caseId, data: rt.data },
+        c.score,
+        before.caseIdsCompleted.includes(c.caseId),
+      );
+      awards.push(award);
+      progression = applyCaseAward(progression, award);
+    }
+    if (awards.length > 0) {
+      saveProgression(progression);
+    }
+    setAwarded({ awards, before, after: progression });
+  }, [kernel, report, awarded]);
+
+  if (!kernel || !report) return null;
 
   return (
     <div className="enc">
@@ -36,6 +78,7 @@ export function EpisodeDebriefScreen({ onExit, onReplay }: Props) {
 
       <main className="ep-debrief">
         <Overall report={report} />
+        {awarded && awarded.awards.length > 0 && <XpPanel awarded={awarded} />}
         <CasesPanel cases={report.cases} title="Focus cases" />
         {report.ambientCases.length > 0 && (
           <CasesPanel cases={report.ambientCases} title="Ambient board" />
@@ -88,6 +131,46 @@ function Overall({ report }: { report: EpisodeReport }) {
           </li>
         )}
       </ul>
+    </section>
+  );
+}
+
+function XpPanel({
+  awarded,
+}: {
+  awarded: { awards: PerCaseXp[]; before: Progression; after: Progression };
+}) {
+  const earned = awarded.after.totalXp - awarded.before.totalXp;
+  const newPerks = awarded.after.unlockedPerks.filter((id) => !awarded.before.unlockedPerks.includes(id));
+  return (
+    <section className="ep-debrief__section ep-debrief__xp">
+      <h3>
+        XP earned this shift · <strong>+{earned}</strong>{' '}
+        <span className="ep-debrief__xp-total">(total {awarded.after.totalXp})</span>
+      </h3>
+      <ul className="ep-debrief__xp-list">
+        {awarded.awards.map((a) => (
+          <li key={a.caseId}>
+            <div className="ep-debrief__xp-row">
+              <span>{a.caseTitle}</span>
+              <strong>+{a.xp} XP</strong>
+            </div>
+            <ul className="ep-debrief__xp-breakdown">
+              {a.breakdown.map((b, i) => (
+                <li key={i} className={b.xp < 0 ? 'is-negative' : ''}>
+                  {b.label}: {b.xp > 0 ? '+' : ''}
+                  {b.xp}
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
+      {newPerks.length > 0 && (
+        <div className="ep-debrief__perks-new">
+          <strong>Unlocked perks:</strong> {newPerks.join(', ')}
+        </div>
+      )}
     </section>
   );
 }

@@ -1723,6 +1723,192 @@ a {
   padding: 16px;
 }
 
+/* Skill tree (M16) */
+.skilltree {
+  width: 100%;
+  max-width: 880px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px;
+  margin: 0 auto;
+}
+.skilltree__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+.skilltree__eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.skilltree__title {
+  margin: 4px 0;
+  font-size: 22px;
+}
+.skilltree__total {
+  font-weight: 400;
+  color: var(--accent);
+}
+.skilltree__hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.skilltree__sloblock,
+.skilltree__perks,
+.skilltree__cases {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+.skilltree__sloblock h3,
+.skilltree__perks h3,
+.skilltree__cases h3 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.skilltree__slo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.skilltree__slo-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.skilltree__slo-xp {
+  color: var(--muted);
+}
+.skilltree__slo-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.skilltree__slo-bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--info), var(--accent));
+  border-radius: 3px;
+}
+.skilltree__perk-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+.skilltree__perk {
+  padding: 10px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--border-2);
+  background: var(--panel-2);
+}
+.skilltree__perk.is-unlocked {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, rgba(122, 219, 122, 0.1), var(--panel-2));
+}
+.skilltree__perk.is-locked {
+  opacity: 0.55;
+}
+.skilltree__perk-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.skilltree__perk-status {
+  font-size: 11px;
+  color: var(--muted);
+}
+.skilltree__perk.is-unlocked .skilltree__perk-status {
+  color: var(--accent);
+}
+.skilltree__perk p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.skilltree__cases ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.skilltree__cases li {
+  padding: 3px 8px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: ui-monospace, monospace;
+  color: var(--muted);
+}
+.skilltree__foot {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* XP panel in the episode debrief */
+.ep-debrief__xp h3 strong {
+  color: var(--accent);
+}
+.ep-debrief__xp-total {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 12px;
+  margin-left: 6px;
+}
+.ep-debrief__xp-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ep-debrief__xp-row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 500;
+}
+.ep-debrief__xp-row strong {
+  color: var(--accent);
+}
+.ep-debrief__xp-breakdown {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  list-style: square;
+  color: var(--muted);
+  font-size: 12px;
+}
+.ep-debrief__xp-breakdown li.is-negative {
+  color: var(--danger);
+}
+.ep-debrief__perks-new {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: linear-gradient(180deg, rgba(122, 219, 122, 0.18), transparent 80%);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
 .enc__body {
   flex: 1;
 }

@@ -6,6 +6,7 @@ import { useSim, loadShift, clearSavedShift, type SavedShift } from './state/sim
 import { Arc, Case, Episode, type ArcT, type CaseT, type EpisodeT } from './content/schema';
 import { SimKernel } from './sim/kernel';
 import { EcgChallengeScreen } from './ui/ecg/EcgChallengeScreen';
+import { SkillTreeScreen } from './ui/progression/SkillTreeScreen';
 
 // Solo shift (Milestone 4)
 import bethYaml from '../content/cases/case_anaphylaxis_adult_peanut.yaml?raw';
@@ -68,13 +69,14 @@ import ahfEpYaml from '../content/episodes/ep_ahf_solo.yaml?raw';
 import oduyaYaml from '../content/cases/case_htn_emergency_oduya.yaml?raw';
 import htnEpYaml from '../content/episodes/ep_htn_emergency_solo.yaml?raw';
 
-type View = 'menu' | 'shift' | 'hub' | 'ecg';
+type View = 'menu' | 'shift' | 'hub' | 'ecg' | 'skilltree';
 
 const SUBTITLES: Record<View, string> = {
   menu: 'Episodic UK FRCEM study RPG · 14 shifts, 15 cases',
   shift: 'Shift in progress',
   hub: 'ED hub (preview)',
   ecg: 'Daily ECG challenge',
+  skilltree: 'Skill tree — progression across shifts',
 };
 
 interface ShiftPack {
@@ -366,6 +368,7 @@ export function App() {
             }}
             onShowHub={() => setView('hub')}
             onShowEcg={() => setView('ecg')}
+            onShowSkillTree={() => setView('skilltree')}
             saved={saved}
             onResume={resumeSavedShift}
             onClearSave={clearAndForget}
@@ -374,6 +377,7 @@ export function App() {
         {view === 'shift' && <ShiftView onExit={exitShift} onReplay={replayShift} />}
         {view === 'hub' && <PhaserGame />}
         {view === 'ecg' && <EcgChallengeScreen onExit={() => setView('menu')} />}
+        {view === 'skilltree' && <SkillTreeScreen onExit={() => setView('menu')} />}
       </main>
 
       <footer className="app__footer">
@@ -397,6 +401,7 @@ function MenuView({
   onStart,
   onShowHub,
   onShowEcg,
+  onShowSkillTree,
   saved,
   onResume,
   onClearSave,
@@ -405,6 +410,7 @@ function MenuView({
   onStart: (id: string) => void;
   onShowHub: () => void;
   onShowEcg: () => void;
+  onShowSkillTree: () => void;
   saved: SavedShift | null;
   onResume: () => void;
   onClearSave: () => void;
@@ -453,6 +459,11 @@ function MenuView({
             <span className="menu__card-eyebrow">Daily</span>
             <span className="menu__card-title">ECG challenge</span>
             <span className="menu__card-meta">One rotating ECG-interpretation set per day.</span>
+          </button>
+          <button className="menu__card menu__card--secondary" onClick={onShowSkillTree}>
+            <span className="menu__card-eyebrow">Progression</span>
+            <span className="menu__card-title">Skill tree</span>
+            <span className="menu__card-meta">XP, SLO mastery and unlocked perks across shifts.</span>
           </button>
         </div>
       </div>
