@@ -7,6 +7,7 @@ import { Arc, Case, Episode, type ArcT, type CaseT, type EpisodeT } from './cont
 import { SimKernel } from './sim/kernel';
 import { EcgChallengeScreen } from './ui/ecg/EcgChallengeScreen';
 import { SkillTreeScreen } from './ui/progression/SkillTreeScreen';
+import { SettingsScreen } from './ui/settings/SettingsScreen';
 
 // Solo shift (Milestone 4)
 import bethYaml from '../content/cases/case_anaphylaxis_adult_peanut.yaml?raw';
@@ -81,7 +82,7 @@ import safetyNetEpYaml from '../content/episodes/ep_overnight_safety_net.yaml?ra
 import amirYaml from '../content/cases/case_paeds_dka_amir.yaml?raw';
 import paedsDkaEpYaml from '../content/episodes/ep_paeds_dka_solo.yaml?raw';
 
-type View = 'menu' | 'shift' | 'hub' | 'ecg' | 'skilltree';
+type View = 'menu' | 'shift' | 'hub' | 'ecg' | 'skilltree' | 'settings';
 
 const SUBTITLES: Record<View, string> = {
   menu: 'Episodic UK FRCEM study RPG · 17 shifts, 17 cases, 3 arcs',
@@ -89,6 +90,7 @@ const SUBTITLES: Record<View, string> = {
   hub: 'ED hub (preview)',
   ecg: 'Daily ECG challenge',
   skilltree: 'Skill tree — progression across shifts',
+  settings: 'Settings — preferences and local data',
 };
 
 interface ShiftPack {
@@ -420,6 +422,7 @@ export function App() {
             onShowHub={() => setView('hub')}
             onShowEcg={() => setView('ecg')}
             onShowSkillTree={() => setView('skilltree')}
+            onShowSettings={() => setView('settings')}
             saved={saved}
             onResume={resumeSavedShift}
             onClearSave={clearAndForget}
@@ -429,6 +432,7 @@ export function App() {
         {view === 'hub' && <PhaserGame />}
         {view === 'ecg' && <EcgChallengeScreen onExit={() => setView('menu')} />}
         {view === 'skilltree' && <SkillTreeScreen onExit={() => setView('menu')} />}
+        {view === 'settings' && <SettingsScreen onExit={() => setView('menu')} />}
       </main>
 
       <footer className="app__footer">
@@ -453,6 +457,7 @@ function MenuView({
   onShowHub,
   onShowEcg,
   onShowSkillTree,
+  onShowSettings,
   saved,
   onResume,
   onClearSave,
@@ -462,6 +467,7 @@ function MenuView({
   onShowHub: () => void;
   onShowEcg: () => void;
   onShowSkillTree: () => void;
+  onShowSettings: () => void;
   saved: SavedShift | null;
   onResume: () => void;
   onClearSave: () => void;
@@ -517,6 +523,13 @@ function MenuView({
             <span className="menu__card-eyebrow">Progression</span>
             <span className="menu__card-title">Skill tree</span>
             <span className="menu__card-meta">XP, SLO mastery and unlocked perks across shifts.</span>
+          </button>
+          <button className="menu__card menu__card--secondary" onClick={onShowSettings}>
+            <span className="menu__card-eyebrow">Preferences</span>
+            <span className="menu__card-title">Settings</span>
+            <span className="menu__card-meta">
+              Audio default, sim speed, motion preference, trap hints, local data.
+            </span>
           </button>
         </div>
       </div>

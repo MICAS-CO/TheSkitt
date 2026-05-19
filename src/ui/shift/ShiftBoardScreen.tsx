@@ -1,6 +1,8 @@
 import { useSim, type SimSpeedKey } from '../../state/sim';
 import { ClockBar } from './ClockBar';
-import type { CaseRuntime, LogEntry } from '../../sim/kernel';
+import type { CaseRuntime, KernelState, LogEntry } from '../../sim/kernel';
+import { deriveVitals, news2 } from '../../sim/vitals';
+import { IconCountdown, IconRedFlag } from '../../style/icons';
 
 interface Props {
   onEnterCase: (caseId: string) => void;
@@ -84,6 +86,7 @@ export function ShiftBoardScreen({
                       <CaseCard
                         key={c.caseId}
                         cs={c}
+                        ks={ks}
                         clockMin={ks.clockMin}
                         onEnter={onEnterCase}
                       />
@@ -102,6 +105,7 @@ export function ShiftBoardScreen({
                       <CaseCard
                         key={c.caseId}
                         cs={c}
+                        ks={ks}
                         clockMin={ks.clockMin}
                         onEnter={onEnterCase}
                         ambient
@@ -144,11 +148,13 @@ export function ShiftBoardScreen({
 
 function CaseCard({
   cs,
+  ks,
   clockMin,
   onEnter,
   ambient = false,
 }: {
   cs: CaseRuntime;
+  ks: KernelState;
   clockMin: number;
   onEnter: (id: string) => void;
   ambient?: boolean;
@@ -156,6 +162,32 @@ function CaseCard({
   const minsSinceEntered = cs.enteredAt !== null ? clockMin - cs.enteredAt : null;
   const pendingIx = [...cs.ordered].filter(([id]) => !cs.resulted.has(id)).length;
   const resultedIx = cs.resulted.size;
+
+  // Live mini-vitals readout — gives the player a triage-by-acuity feel
+  // without having to enter the encounter.
+  const vitals = deriveVitals(cs.state, cs.data.vitals);
+  const score = news2(vitals);
+  const newsBand = score.total >= 7 ? 'red' : score.total >= 5 ? 'amber' : 'green';
+
+  // Live deterioration timer: any unfired deterioration_if_not_x_by_t
+  // for this case with at least one required action still missing.
+  const upcomingDeterioration = ks.unfiredEvents.find((e) => {
+    if (e.type !== 'deterioration_if_not_x_by_t') return false;
+    if (e.case_id !== cs.caseId) return false;
+    return !e.required_action_ids.every((a) => cs.actions.has(a));
+  });
+  const deteriorationRemaining = upcomingDeterioration
+    ? Math.max(0, upcomingDeterioration.t_min - clockMin)
+    : null;
+  const detTone =
+    deteriorationRemaining === null
+      ? null
+      : deteriorationRemaining <= 2
+        ? 'critical'
+        : deteriorationRemaining <= 5
+          ? 'warn'
+          : 'info';
+
   return (
     <li className={`board__card board__card--${cs.state} ${ambient ? 'board__card--ambient' : ''}`}>
       <button className="board__card-btn" onClick={() => onEnter(cs.caseId)}>
@@ -170,9 +202,28 @@ function CaseCard({
           {cs.data.demographics.age_value} {cs.data.demographics.age_unit} ·{' '}
           {cs.data.demographics.sex} · triage {cs.data.triage_category} · {cs.data.chief_complaint}
         </div>
+
+        <BoardMiniVitals
+          v={vitals}
+          newsTotal={score.total}
+          newsBand={newsBand}
+          arrested={cs.state === 'arrested' || cs.state === 'deceased'}
+        />
+
+        {detTone && deteriorationRemaining !== null && (
+          <div className={`board__card-det board__card-det--${detTone}`}>
+            <IconCountdown size={12} title="Deterioration imminent" />
+            <span>
+              <strong>{deteriorationRemaining} min</strong> to critical interventions
+            </span>
+          </div>
+        )}
+
         <div className="board__card-stats">
           {cs.enteredAt === null ? (
-            <span className="board__card-stat board__card-stat--warn">awaiting clinician</span>
+            <span className="board__card-stat board__card-stat--warn">
+              <IconRedFlag size={10} fill="#E0A82E" /> awaiting clinician
+            </span>
           ) : (
             <span className="board__card-stat">attending {minsSinceEntered}m</span>
           )}
@@ -186,6 +237,47 @@ function CaseCard({
         </div>
       </button>
     </li>
+  );
+}
+
+function BoardMiniVitals({
+  v,
+  newsTotal,
+  newsBand,
+  arrested,
+}: {
+  v: ReturnType<typeof deriveVitals>;
+  newsTotal: number;
+  newsBand: 'green' | 'amber' | 'red';
+  arrested: boolean;
+}) {
+  return (
+    <div className={`board__vitals board__vitals--${newsBand}`} aria-label="Current vitals">
+      <span className="board__vitals-tile">
+        <span className="board__vitals-label">HR</span>
+        <span className="board__vitals-value">{arrested ? '—' : (v.hr ?? '—')}</span>
+      </span>
+      <span className="board__vitals-tile">
+        <span className="board__vitals-label">BP</span>
+        <span className="board__vitals-value">
+          {arrested ? '—' : `${v.bp_sys ?? '—'}/${v.bp_dia ?? '—'}`}
+        </span>
+      </span>
+      <span className="board__vitals-tile">
+        <span className="board__vitals-label">SpO₂</span>
+        <span className="board__vitals-value">
+          {arrested ? '—' : v.spo2 !== undefined ? `${v.spo2}%` : '—'}
+        </span>
+      </span>
+      <span className="board__vitals-tile">
+        <span className="board__vitals-label">GCS</span>
+        <span className="board__vitals-value">{v.gcs ?? '—'}</span>
+      </span>
+      <span className="board__vitals-tile board__vitals-tile--news">
+        <span className="board__vitals-label">NEWS2</span>
+        <span className="board__vitals-value">{newsTotal}</span>
+      </span>
+    </div>
   );
 }
 

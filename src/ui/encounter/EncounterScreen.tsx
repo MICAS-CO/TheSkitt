@@ -5,8 +5,16 @@ import type { CaseRuntime, KernelState, LogEntry } from '../../sim/kernel';
 import { ClockBar } from '../shift/ClockBar';
 import { PatientPanel } from './PatientPanel';
 import { ResusMode } from './ResusMode';
-import { IconCitation, IconCountdown, IconNewInfo, IconRedFlag } from '../../style/icons';
+import { IconCitation, IconCountdown, IconNewInfo, IconRedFlag, IconTrap } from '../../style/icons';
 import { ResultsEnvelope } from '../../style/frames';
+
+function trapHintsEnabled(): boolean {
+  try {
+    return window.localStorage.getItem('theSkitt.trapHints.v1') === '1';
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Sections of the encounter. Replaces the old linear "phase pipeline":
@@ -893,12 +901,14 @@ function DifferentialPhase({
 }
 
 function ManagementPhase({ cs, onToggle }: { cs: CaseRuntime; onToggle: (id: string) => void }) {
+  const trapHints = trapHintsEnabled();
   return (
     <section className="enc__phase">
       <h2>Management — tick what you do</h2>
       <p className="enc__hint">
         Some options are distractors. Actions count immediately — the patient&rsquo;s state may
         change.
+        {trapHints && <em> Trap hints are on (Settings).</em>}
       </p>
       <ul className="enc__cards">
         {cs.data.management.map((m) => {
@@ -909,6 +919,12 @@ function ManagementPhase({ cs, onToggle }: { cs: CaseRuntime; onToggle: (id: str
                 <input type="checkbox" checked={isPicked} onChange={() => onToggle(m.id)} />
                 <span className="enc__chip">{m.category}</span>
                 <span>{m.name}</span>
+                {trapHints && m.must_not_do && !isPicked && (
+                  <span className="enc__chip" title="examiner trap — flagged by your trap-hints setting">
+                    <IconTrap size={12} fill="#E0A82E" />
+                    <span style={{ marginLeft: 4 }}>trap</span>
+                  </span>
+                )}
               </label>
               {m.detail && <p className="enc__card-body enc__card-body--dim">{m.detail}</p>}
               {m.drug && (
