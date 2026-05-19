@@ -195,7 +195,7 @@ topics:
           id: 'NG158',
           ref: 'Venous thromboembolic diseases: diagnosis, management and thrombophilia testing',
         }
-      - { type: bts, ref: 'BTS Guideline for the initial outpatient management of PE 2018' }
+      - { type: bts_sign, ref: 'BTS Guideline for the initial outpatient management of PE 2018' }
     arc_hooks: ['post-op patient or pregnancy-related PE (links to O&G arc)']
 
   - id: pre_eclampsia_eclampsia

@@ -4,6 +4,47 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Content: massive PE (Okonkwo) — shock + thrombolysis decision
+
+- `content/cases/case_massive_pe_okonkwo.yaml` — 13th authored
+  case. Ms Okonkwo, 39F, day-12 post-laparoscopic hysterectomy on
+  the COCP (restarted by a locum GP who didn't have the operation
+  note), syncope in the supermarket carpark, arrives in resus with
+  BP 86/54, SpO2 92% on NRB, S1Q3T3 ECG, McConnell's sign + DVT on
+  POCUS. Family history of "burst aorta" and DVT.
+- Wells = 8 (no D-dimer needed), sPESI = 2, raised trop + BNP =
+  **high-risk (massive) PE** per ESC 2019 — 30-day mortality 25–50%
+  without reperfusion.
+- The teaching arc: pretest probability → bedside echo + DVT scan
+  pivot at T+5 (rule-IN without leaving resus), cautious fluid +
+  noradrenaline first, systemic alteplase 100 mg over 2 h, UFH
+  alongside, capacity-respecting consent conversation.
+- Five `must_not_do` traps:
+  1. D-dimer "to rule out" at Wells 8 (wrong end of Bayes).
+  2. Aggressive 2 L crystalloid bolus in obstructive shock.
+  3. RSI without a pre-induction vasopressor (intubation-arrest).
+  4. LMWH instead of UFH when thrombolysis is on the table.
+  5. Restart COCP post-discharge (permanent contraindication after
+     hormone-provoked VTE).
+- Authored against **NICE NG158** (VTE 2020), **ESC 2019 PE
+  Guidelines** (Konstantinides), **ADJUST-PE** (Righini JAMA 2014),
+  **PERC rule** (Kline JTH 2008), **McConnell's sign** (Am J
+  Cardiol 1996), **BTS 2018** outpatient PE pathway, **RCOG GT
+  37b** post-gynae thromboprophylaxis.
+- `content/episodes/ep_pe_solo.yaml` — 20-min single-case shift.
+  T+2 Wells, T+5 POCUS pivot, T+8 trop+BNP, T+10 family arrive for
+  consent conversation, T+13 CTPA, T+15 PERT lead call + hard
+  deterioration deadline.
+- Pairs thematically with `case_aortic_dissection_okafor` —
+  chest-pain + shock + raised troponin, opposite therapies. Future
+  "chest pain + shock differential" double-bill candidate.
+- New "Massive PE — shock and the thrombolysis decision" entry on
+  the shift menu. App subtitle: 12 shifts, 13 cases.
+- Inspiration: TheCase.Report S3E1. Player-facing citations are
+  NICE NG158 + ESC 2019 + ADJUST-PE + PERC + McConnell + BTS 2018
+  + RCOG GT 37b.
+- 13 cases / 12 episodes / 2 arcs; 156 tests pass.
+
 ### Content: variceal UGIB (Kowalski) — Sepsis Six of the liver
 
 - `content/cases/case_ugib_variceal_kowalski.yaml` — 12th authored

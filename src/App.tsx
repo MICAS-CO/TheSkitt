@@ -55,10 +55,14 @@ import dissectionEpYaml from '../content/episodes/ep_dissection_solo.yaml?raw';
 import kowalskiYaml from '../content/cases/case_ugib_variceal_kowalski.yaml?raw';
 import ugibEpYaml from '../content/episodes/ep_ugib_solo.yaml?raw';
 
+// Massive PE — post-op + COCP + family thrombophilia stack
+import okonkwoYaml from '../content/cases/case_massive_pe_okonkwo.yaml?raw';
+import peEpYaml from '../content/episodes/ep_pe_solo.yaml?raw';
+
 type View = 'menu' | 'shift' | 'hub';
 
 const SUBTITLES: Record<View, string> = {
-  menu: 'Episodic UK FRCEM study RPG · 11 shifts, 12 cases',
+  menu: 'Episodic UK FRCEM study RPG · 12 shifts, 13 cases',
   shift: 'Shift in progress',
   hub: 'ED hub (preview)',
 };
@@ -140,6 +144,12 @@ const UGIB_SOLO: () => ShiftPack = () => ({
   arcs: [],
 });
 
+const PE_SOLO: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(peEpYaml)),
+  cases: [Case.parse(parseYaml(okonkwoYaml))],
+  arcs: [],
+});
+
 const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
   ep_anaphylaxis_solo: SOLO_SHIFT,
   ep_hendo_shift: HENDO_SHIFT,
@@ -152,6 +162,7 @@ const KNOWN_SHIFTS: Record<string, () => ShiftPack> = {
   ep_doac_double: DOAC_DOUBLE,
   ep_dissection_solo: DISSECTION_SOLO,
   ep_ugib_solo: UGIB_SOLO,
+  ep_pe_solo: PE_SOLO,
 };
 
 export function App() {
@@ -237,6 +248,7 @@ export function App() {
             onStartDoacDouble={() => startShift(DOAC_DOUBLE())}
             onStartDissection={() => startShift(DISSECTION_SOLO())}
             onStartUgib={() => startShift(UGIB_SOLO())}
+            onStartPe={() => startShift(PE_SOLO())}
             onShowHub={() => setView('hub')}
             saved={saved}
             onResume={resumeSavedShift}
@@ -275,6 +287,7 @@ function MenuView({
   onStartDoacDouble,
   onStartDissection,
   onStartUgib,
+  onStartPe,
   onShowHub,
   saved,
   onResume,
@@ -291,6 +304,7 @@ function MenuView({
   onStartDoacDouble: () => void;
   onStartDissection: () => void;
   onStartUgib: () => void;
+  onStartPe: () => void;
   onShowHub: () => void;
   saved: SavedShift | null;
   onResume: () => void;
@@ -399,6 +413,16 @@ function MenuView({
               Restrictive Hb 7–8, terlipressin + ceftriaxone bundle.
             </span>
           </button>
+          <button className="menu__card menu__card--secondary" onClick={onStartPe}>
+            <span className="menu__card-eyebrow">Shift · ST3 · 20 min · 1 case</span>
+            <span className="menu__card-title">
+              Massive PE — shock and the thrombolysis decision
+            </span>
+            <span className="menu__card-meta">
+              Post-op + COCP shock-state PE with RV strain. NICE NG158 + ESC 2019. The bedside-echo
+              + DVT scan pivot lets you start reperfusion without leaving resus.
+            </span>
+          </button>
           <button className="menu__card menu__card--secondary" onClick={onStartSolo}>
             <span className="menu__card-eyebrow">Shift · CT2 · 20 min · 1 case</span>
             <span className="menu__card-title">Anaphylaxis solo</span>
@@ -429,6 +453,7 @@ const SHIFT_TITLES: Record<string, string> = {
   ep_doac_double: 'DOAC double-bill — clot and bleed',
   ep_dissection_solo: 'Aortic dissection — the anchor-breaker',
   ep_ugib_solo: 'Variceal UGIB — Sepsis Six of the liver',
+  ep_pe_solo: 'Massive PE — shock and the thrombolysis decision',
 };
 
 function savedShiftTitle(episodeId: string): string {
