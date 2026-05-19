@@ -73,10 +73,14 @@ import htnEpYaml from '../content/episodes/ep_htn_emergency_solo.yaml?raw';
 import chloeYaml from '../content/cases/case_paracetamol_od_chloe.yaml?raw';
 import paracetamolEpYaml from '../content/episodes/ep_paracetamol_solo.yaml?raw';
 
+// Overnight safety-net — Chloe + Stan with the missed-MH-follow-up arc
+import safetyNetArcYaml from '../content/arcs/arc_overnight_safety_net.yaml?raw';
+import safetyNetEpYaml from '../content/episodes/ep_overnight_safety_net.yaml?raw';
+
 type View = 'menu' | 'shift' | 'hub' | 'ecg' | 'skilltree';
 
 const SUBTITLES: Record<View, string> = {
-  menu: 'Episodic UK FRCEM study RPG · 15 shifts, 16 cases',
+  menu: 'Episodic UK FRCEM study RPG · 16 shifts, 16 cases, 3 arcs',
   shift: 'Shift in progress',
   hub: 'ED hub (preview)',
   ecg: 'Daily ECG challenge',
@@ -182,6 +186,12 @@ const PARACETAMOL_SOLO: () => ShiftPack = () => ({
   episode: Episode.parse(parseYaml(paracetamolEpYaml)),
   cases: [Case.parse(parseYaml(chloeYaml))],
   arcs: [],
+});
+
+const OVERNIGHT_SAFETY_NET: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(safetyNetEpYaml)),
+  cases: [Case.parse(parseYaml(chloeYaml)), Case.parse(parseYaml(stanYaml))],
+  arcs: [Arc.parse(parseYaml(safetyNetArcYaml))],
 });
 
 interface ShiftDef {
@@ -292,6 +302,13 @@ const SHIFT_DEFS: ShiftDef[] = [
     eyebrow: 'Shift · ST3 · 20 min · 1 case',
     meta: '19 y/o student, ~16 g paracetamol spread over 5 hours. The staggered-vs-acute trap (nomogram doesn’t apply; NAC regardless of level) + the NICE NG225 parallel safeguarding pathway.',
     factory: PARACETAMOL_SOLO,
+  },
+  {
+    id: 'ep_overnight_safety_net',
+    title: 'Overnight — the safety net',
+    eyebrow: 'Shift · ST3 · 25 min · 2 cases · 1 arc',
+    meta: 'Chloe (staggered paracetamol) + Stan (intoxicated witnessed fall). The arc surfaces the shared system-failure: each had prior ED visits with no MH follow-up. NICE NG225 thinking applied across two presentations.',
+    factory: OVERNIGHT_SAFETY_NET,
   },
   {
     id: 'ep_anaphylaxis_solo',

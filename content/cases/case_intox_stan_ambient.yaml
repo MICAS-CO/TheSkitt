@@ -114,6 +114,19 @@ history:
       Could've been a syncope, could've been the drink. We weren't
       there for the fall itself."
 
+  # ─── Hidden (arc-unlocked) — overnight safety-net arc only ─────────────
+  - id: hx_stan_prior_mh
+    source: records
+    topic: 'Deeper records pull — historical mental health flags.'
+    npc_voice: "The clerk's note: 'flagged for liaison psych in 2024, no engagement after first visit.'"
+    response: |
+      "Wife died 2023. Three ED attendances in the six months following:
+      'low mood + intoxication' (Mar 2024), 'falls + alcohol' (Jul 2024),
+      'self-neglect, lives alone' (Oct 2024). Each discharged with
+      'signposted to community alcohol team' — no liaison-psych
+      contact documented. Two missed GP follow-up letters. He has not
+      been seen by mental health services formally."
+
 examination:
   - system: general
     findings:

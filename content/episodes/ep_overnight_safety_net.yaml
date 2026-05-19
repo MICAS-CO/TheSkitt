@@ -1,0 +1,96 @@
+# Overnight 2-case shift: Chloe (paracetamol OD) + Stan (intox fall).
+# The arc 'arc_overnight_safety_net' connects them — asking Chloe's
+# records-trail surfaces Stan's parallel pattern of unconnected ED
+# attendances. The teaching point is NICE NG225 § 1.3 thinking
+# applied systemically.
+
+schema_version: 1
+id: ep_overnight_safety_net
+title: 'Overnight — the safety net'
+
+learning_objectives:
+  - 'Recognise staggered paracetamol overdose pattern: NAC regardless of level, parallel safeguarding pathway (NICE NG225).'
+  - "Avoid the 'just-the-drink' trap in a fallen intoxicated patient — check the BM (Stan: 2.4 mmol/L) and apply NICE NG232 head injury CT criteria when GCS <13."
+  - 'Triangulate mental-health context across a shift: prior ED visits without follow-up are a pattern, not an isolated incident, and NICE NG225 makes the psychosocial assessment mandatory for both presentations.'
+  - 'Run the medical and safeguarding pathways in parallel — both Chloe and Stan need liaison-psych input before medical discharge.'
+
+curriculum_tags: [PhP2, PhC1, MHP1]
+difficulty_band: ST3
+shift_duration_min: 25
+
+focus_cases:
+  - case_paracetamol_od_chloe
+  - case_intox_stan_ambient
+
+ambient_cases: []
+
+scheduled_events:
+  # ─── Chloe ────────────────────────────────────────────────────────────
+  - id: ev_chloe_paracetamol_level
+    type: results_back
+    t_min: 4
+    case_id: case_paracetamol_od_chloe
+    investigation_id: ix_paracetamol_level
+
+  - id: ev_chloe_vbg
+    type: results_back
+    t_min: 5
+    case_id: case_paracetamol_od_chloe
+    investigation_id: ix_vbg
+
+  - id: ev_chloe_lfts
+    type: results_back
+    t_min: 6
+    case_id: case_paracetamol_od_chloe
+    investigation_id: ix_lfts
+
+  - id: ev_chloe_nac_not_started
+    type: deterioration_if_not_x_by_t
+    t_min: 12
+    case_id: case_paracetamol_od_chloe
+    required_action_ids: [mx_iv_nac]
+    new_state: deteriorating
+
+  # ─── Stan ─────────────────────────────────────────────────────────────
+  - id: ev_stan_bm
+    type: results_back
+    t_min: 3
+    case_id: case_intox_stan_ambient
+    investigation_id: ix_bm
+
+  - id: ev_stan_ct
+    type: results_back
+    t_min: 15
+    case_id: case_intox_stan_ambient
+    investigation_id: ix_ct_head
+
+  # ─── Arc reveal fallback (also fires on Chloe records ask) ─────────────
+  - id: ev_arc_reveal_clock
+    type: arc_reveal
+    t_min: 14
+    arc_id: arc_overnight_safety_net
+    reveal_id: reveal_clock_t14
+
+  # ─── System pressure ──────────────────────────────────────────────────
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 18
+    severity: firm
+
+arcs:
+  - arc_overnight_safety_net
+
+author_notes: |
+  Two-case 25-minute shift — paracetamol OD + intox fall, both
+  overnight, both safeguarding-flavoured.
+
+  The arc is the thematic spine: the patient-safety system that
+  failed to escalate Chloe's last visit also failed Stan's three
+  visits over the previous year. Player learns to notice the pattern
+  rather than the individual presentation.
+
+  Chloe's case carries the trap density (staggered OD, parallel
+  safeguarding); Stan's is the parallel-pressure ambient (BM check,
+  NICE NG232 CT head). Both can be done well; doing one badly
+  doesn't catastrophise the other but the bed manager pressure at
+  T+18 forces a disposition decision before the shift ends.
