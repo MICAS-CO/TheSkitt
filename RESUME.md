@@ -1,12 +1,22 @@
 # Resume — current state
 
-Last activity: 2026-05-18 ~22:30 UTC. All 8 build-prompt milestones plus
-substantial post-milestone work shipped on `claude/add-necessary-files-4THUA`.
-The branch is now **34 commits ahead of main**. Recent work: full
-clinical-accuracy audit, two new Tier-1 cases (status epilepticus +
-head injury with DOAC reasoning), a11y pass, red-flag finding
-rendering, and a UX fix that stopped the differential / disposition
-pickers from leaking the answer key.
+Last activity: 2026-05-19 ~06:15 UTC. All 8 build-prompt milestones plus
+substantial post-milestone content + refactor + audit work shipped on
+`claude/add-necessary-files-4THUA`. The branch is now **46 commits** in
+total. Latest work since last RESUME refresh:
+
+- TheCase.Report (TCR) podcast integration — full episode index +
+  verification patches + 11 new topic-map entries.
+- 4 new Tier-1 cases authored: aortic dissection (Okafor),
+  variceal UGIB (Kowalski), massive PE (Okonkwo), acute heart
+  failure (Ahmed).
+- Audit pass on the 3 newest cases caught 10+ clinical accuracy
+  issues — fixed in commit `3cabc9c`.
+- Simplify-pass code refactor — net −189 lines, shared `ClockBar`
+  component, `pickCardClass()` helper, `--danger-strong` CSS
+  variable, `checkRevealRef()` validator helper.
+- Data-driven `SHIFT_DEFS` array — MenuView dropped from 16 props
+  to 6; adding a new shift is now a single array entry.
 
 ---
 
@@ -25,83 +35,60 @@ pickers from leaking the answer key.
 | 7   | Content CLI (new-case + new-episode)    | `a7cc0fa`             |
 | 8   | Ambient board pressure (stretch)        | `875b4cd`             |
 
-### Post-milestone work
-
-- `2a6f321` Code-split Phaser; CI workflow; mobile + a11y pass.
-- `b462621` Playwright E2E smoke; CI runs it.
-- `dac02be` Save/resume to localStorage.
-- `f26b38e` Sim-speed selector, spacebar pause, ARIA-live shift log.
-- `0ac1cd3` Sepsis case (Mrs Morrison) + sepsis-solo shift (M7 CLI round-trip).
-- `0583e85` Better next-button labels + Escape returns to board.
-- `9fb728d` **Hub → encounter wire-up** — clickable Phaser department view.
-- `08b4924` DKA case (Marcus) + overnight metabolic 2-case shift.
-- `b542697` Paeds anaphylaxis (Sam) + family-anaphylaxis 2-case shift.
-- `57ac4cc` Replay button on debrief + topic-map citation cleanup.
-- `0d0e437` Acute stroke case (Williams) + stroke-solo shift.
-- `8f00a95` Narrative-ground the arc reveal + hub E2E smoke.
-- `b51945c` Docs: refresh RESUME with 25-commit current state.
-- `2684fca` **Audit: clinical accuracy + narrative coherence pass** —
-  Beth ipratropium frequency, Marcus DKA pH threshold, Morrison AKI
-  staging, Williams door-to-CT citation, Stan Pabrinex pearl, Sam
-  oxygen route + paeds neb dose, Patel ticagrelor + AVOID citations.
-  Beth's hx_partner now actually mentions Sam (fixes a dead arc
-  reveal). Stub `case_minor_laceration_ambient.yaml` removed.
-- `6e28902` **Status epilepticus solo with SAH twist** — 9th case +
-  7th episode + new menu card. NICE NG217 (2022 update), RCEM Best
-  Practice 2024, MHRA Valproate PPP, RCOG GTG 10A.
-- `c7899e7` **Head injury — DOAC reasoning** — 10th case + 8th
-  episode. NICE NG232 + NICE TA697 (andexanet alfa) + BSH 2024 DOAC
-  reversal + Canadian C-spine Rule. Pairs thematically with Williams
-  (stroke on apixaban) — together they cover the
-  ischaemic-vs-haemorrhagic ends of the DOAC-on-board spectrum.
-- `ee7032d` **A11y pass** — prefers-reduced-motion media query,
-  ARIA progressbar on all three clock bars, encounter PhaseProgress
-  gets aria-current="step", darkened arrested/deceased chip
-  background for WCAG-AA contrast.
-- `cf0ddc6` **Surface red_flag exam findings** — `ExamFinding.red_flag`
-  schema field was unused by the UI. Now wired to render a "⚠ red
-  flag" chip + left-border accent. Backfilled across Beth, Williams,
-  Morrison, Marcus. All 10 cases now demonstrate the feature.
-- `93a972b` **UX: stop revealing answers in pickers** — differential
-  hid likelihood chip until pick; disposition hid criteria text
-  until pick. Genuine assessment restored. Correct/wrong borders
-  reveal feedback after pick.
-- _(pending commit)_ Menu copy refresh: resume banner uses the
-  episode title (not raw id); subtitle updated; menu copy points at
-  the showcase shifts.
-
 ### Numbers
 
-- **124 / 124** unit tests passing (Vitest).
-- **2 / 2** E2E tests passing (Playwright; menu → board → encounter, board ↔ hub toggle).
-- Initial JS bundle: 636 KB (gzip 188 KB). Phaser lazy-loaded
-  (~1.5 MB chunk, only downloads when ED hub opens).
-- Content: **10 cases (all authored)**, **8 episodes**, **2 arcs**,
-  27-topic high-yield map.
-- All authored clinical content cites UK guidelines inline.
+- **159 / 159** unit tests passing (Vitest).
+- **2 / 2** E2E tests passing (Playwright; menu → board → encounter,
+  board ↔ hub toggle).
+- **14 fully-authored cases**, **13 episodes**, **2 arcs**, 44-topic
+  high-yield map (11 added from TCR).
+- All clinical content cites UK guidelines (NICE, RCEM, Resus Council
+  UK, BTS-SIGN, RCOG, ESC, JBDS, BSG, Cochrane) plus published RCTs
+  (3CPO, HALT-IT, Villanueva NEJM, ADJUST-PE, etc.) inline.
+- Initial JS bundle: ~650 KB (gzip ~195 KB). Phaser lazy-loaded
+  (~1.5 MB chunk, only on the ED hub).
 
-### Shifts on the menu
+### Cases on the menu (13 shifts)
 
-1. **The hen-do** (ST3, 20 min, 2 focus + 2 ambient + 1 arc).
-   Anaphylaxis (Beth) + ectopic (Sarah) + frequent flyer
-   (Stan, hypoglycaemia + head injury) + chest pain (Mrs Patel, STEMI).
-2. **Family anaphylaxis — adult + paeds** (ST3, 20 min, 2 cases + 1 arc).
-   Beth + her 8y/o brother Sam. Two dose bands of the Resus Council
-   UK 2021 algorithm on one clock.
-3. **Stroke onset — thrombolysis window** (CT2, 20 min, 1 case).
-   Witnessed L MCA stroke on apixaban. NICE NG128 plus DOAC
-   contraindication plus thrombectomy referral.
-4. **First seizure — status pathway** (ST3, 20 min, 1 case).
-   28y/o in refractory status, pregnant, with a CT-SAH twist. NICE
-   NG217 (2022) plus MHRA Valproate PPP plus RCOG GTG 10A.
-5. **Head injury — DOAC reasoning** (CT2, 20 min, 1 case). 78y/o
-   faller on apixaban, GCS 15 on arrival. NICE NG232 + NICE TA697 +
-   Canadian C-spine Rule. The well-looking-but-bleeding trap.
-6. **Overnight: sepsis solo** (CT2, 20 min, 1 case). Sepsis Six, NICE NG51.
-7. **Overnight: metabolic resus** (ST3, 20 min, 2 cases). New-onset DKA
-   plus urosepsis on the same shift. JBDS-IP plus NICE NG51.
-8. **Anaphylaxis solo** (CT2, 20 min, 1 case). The milestone-4 build.
-9. **ED hub layout** (preview).
+1. **The hen-do** (ST3, 4 cases + 1 arc) — Beth + Sarah + Stan +
+   Patel. Anaphylaxis + ectopic + frequent flyer + STEMI on one clock.
+2. **Family anaphylaxis — adult + paeds** (ST3, 2 cases + 1 arc) —
+   Beth + Sam, parallel dose bands.
+3. **Overnight: metabolic resus** (ST3, 2 cases) — DKA + urosepsis.
+4. **Overnight: sepsis solo** (CT2) — Morrison urosepsis + delirium.
+5. **Stroke onset — thrombolysis window** (CT2) — Williams LMCA on
+   apixaban.
+6. **First seizure — status pathway** (ST3) — Priya status, pregnant,
+   CT-SAH twist.
+7. **Head injury — DOAC reasoning** (CT2) — Brennan fall on apixaban.
+8. **DOAC double-bill — clot and bleed** (ST3, 2 cases) — Williams +
+   Brennan together (reperfusion vs reversal).
+9. **Aortic dissection — the anchor-breaker** (ST3) — Okafor Type A
+   masquerading as inferior STEMI.
+10. **Variceal UGIB — Sepsis Six of the liver** (ST3) — Kowalski
+    Child-Pugh C cirrhotic, terlipressin + ceftriaxone bundle.
+11. **Massive PE — shock and the thrombolysis decision** (ST3) —
+    Okonkwo post-op + COCP, bedside echo pivot.
+12. **Acute heart failure — pre-op diuretic-hold decomp** (ST3) —
+    Ahmed wet-and-warm pulmonary oedema, CPAP-first.
+13. **Anaphylaxis solo** (CT2) — milestone-4 build, Beth.
+
+Plus the ED hub layout preview (Phaser placeholder).
+
+### TheCase.Report integration
+
+- Full episode index (~64 episodes S1–S6) captured in
+  `content/sources/tcr-podcast.md` with deep-read clinical pearls
+  from 10 strategic episodes.
+- 11 new topic-map entries surfaced by TCR are scaffoldable via
+  `pnpm new-case --topic <id>`: upper_gi_bleed, acute_heart_failure,
+  hypertensive_emergency, tca_overdose, perimortem_caesarean,
+  posterior_circulation_stroke, delirium_geriatric,
+  chest_trauma_blunt, liver_cirrhosis_decompensated, nof_geriatric,
+  hypothermia_drowning.
+- Verification patches applied: Williams gains a posterior-stroke /
+  HINTS pearl, Morrison gains a 4AT delirium screen + hypoactive
+  pearl, Patel gains AD mortality / 20%-normal-CXR pearls.
 
 ### Play it (morning checklist)
 
@@ -119,67 +106,72 @@ npm run dev    # → http://localhost:5173
 - 0.5× / 1× / 2× / 4× speed selector (persists)
 - Escape returns to shift board
 - Auto-save persists every action to localStorage
-- "Resume" banner on menu if you reload mid-shift
-- "↥ department view" toggle on board → Phaser hub with clickable patient cards
+- "Resume" banner on menu now shows the **episode title** (not
+  the raw id)
+- "↥ department view" toggle on board → Phaser hub with clickable
+  patient cards
 - "↻ play this shift again" button on the episode debrief
+- Disposition / differential pickers no longer leak the answer —
+  rationale is revealed only after the player commits a choice
 
 ---
 
 ## Open user items
 
-1. **Q-001 PDFs** — removed from HEAD; the blobs remain in git history.
-   A full purge needs `git filter-repo` + coordinated force-push; gated
-   behind explicit confirmation.
-2. **Q-003 RCEMLearning credentials** — `mohm4216` is in chat history.
-   Please rotate.
-3. **License** — no `LICENSE` file. Probably `proprietary, all rights
-reserved` given that the topic-map cites commercial textbooks.
+1. **Q-001 PDFs** — removed from HEAD; the blobs remain in git
+   history. A full purge needs `git filter-repo` + coordinated
+   force-push; gated behind explicit confirmation.
+2. **Q-003 RCEMLearning credentials** — `mohm4216` is in chat
+   history. Please rotate.
+3. **License** — no `LICENSE` file. Probably `proprietary, all
+rights reserved` given that the topic-map cites commercial
+   textbooks.
 
 ---
 
 ## Where to pick up (in rough priority order)
 
-1. **More cases** — the topic-map has 17 unused Tier-1/2/3 topics. The
-   new-case CLI generates a schema-valid skeleton from any of them in
-   one command (`pnpm new-case --topic <id>`). Natural next picks
-   (post-head-injury): major trauma, asthma exacerbation, paeds DKA,
-   aortic dissection, paracetamol overdose.
-2. **Branching narrative trees** — currently dialogue is flat (topic →
-   response). Building a real branching tree per the build prompt's
-   "history" model would lift the narrative quality.
-3. **LLM-driven flavour dialogue** (build prompt explicitly defers
-   to "after the scripted experience is solid" — we are now there).
-   Boundaries: never on critical clinical path; mood/voice only.
-4. **Accessibility audit** beyond first pass (full keyboard
-   reachability, contrast for every state chip, screen-reader tour
-   of the encounter flow).
-5. **Multiplayer / leaderboards / save profiles** — the kernel is
-   already deterministic enough for replay/sharing.
-6. **Art pipeline polish** — the Phaser hub still uses colored
-   rectangles. Real pixel-art bays + patient sprites are deferred per
-   the build prompt's "MVP, placeholder sprites" rule.
+1. **More cases** — the topic-map now has ~30 unused entries. Strong
+   Tier-1/2 SAQ candidates remaining: **hypertensive emergency**
+   (labetalol, 10-20% in 1 h), **TCA overdose** (sodium bicarb at
+   QRS >100 ms), **perimortem caesarean** (4-min rule + lateral
+   tilt), **posterior circulation stroke** (HINTS), **chest trauma**
+   (DOAC + flail), **decompensated liver cirrhosis**, **fractured
+   NoF**, **hypothermia/drowning**.
+2. **Branching narrative trees** — dialogue is still flat (topic →
+   response). Build prompt's "history" model could lift narrative
+   quality further.
+3. **LLM-driven flavour dialogue** — build-prompt explicitly defers
+   until the scripted experience is solid; we are now there.
+4. **Wider accessibility audit** — keyboard reachability of every
+   interactive element, screen-reader tour of the encounter flow.
+5. **Phaser hub art** — still colored rectangles. Real pixel-art
+   bays + patient sprites are deferred per "MVP placeholder" rule.
+6. **Multiplayer / leaderboards / save profiles** — kernel is
+   deterministic enough for replay/sharing.
 
 ---
 
 ## Architectural reminders
 
-- Kernel is pure deterministic TS. React only subscribes via the `tick`
-  counter and reads imperative state. The kernel never reads wall
-  time — all time flows through `kernel.advance(deltaMin)`.
-- Whole-minute advance only (D-013). Sub-minute mechanics would need a
-  `tickSeconds` API, not a relaxation.
+- Kernel is pure deterministic TS. React only subscribes via the
+  `tick` counter and reads imperative state. Kernel never reads
+  wall time — all time flows through `kernel.advance(deltaMin)`.
+- Whole-minute advance only (D-013). Sub-minute mechanics would
+  need a `tickSeconds` API, not a relaxation.
 - Save/resume snapshots versioned at `v: 1`; episode identity is
-  checked on restore. If the schema evolves, bump `v` and write a
-  migration.
-- Per-case phase memory lives in `ShiftView`'s `phases` map, not in
-  the kernel — phase is UI navigation, not simulation state.
+  checked on restore.
+- Per-case phase memory lives in `ShiftView`'s `phases` map, not
+  in the kernel — phase is UI navigation, not simulation state.
 - Bay assignments are an optional Case-schema field; used by the
-  hub-view to place patient cards. New cases without a bay won't
-  appear on the hub but the board still shows them.
-- KNOWN_SHIFTS registry in `src/App.tsx` is the single source of
-  truth for which episode ids are restorable / replayable. Adding
-  a new shift means: author case YAML → author episode YAML → add
-  one line to the registry → wire a menu card.
+  hub-view to place patient cards.
+- **`SHIFT_DEFS` in `src/App.tsx`** is the single source of truth
+  for shifts on the menu — adding a new shift is now one entry in
+  this array (no separate import-factory-callback-button-prop
+  cascade).
+- Shared `ClockBar` (in `src/ui/shift/ClockBar.tsx`) is used by
+  EncounterScreen, ShiftBoardScreen, and ShiftHubScreen — ARIA
+  progressbar attributes live here.
 
 ## First three commands on resume
 
@@ -189,6 +181,14 @@ git checkout claude/add-necessary-files-4THUA
 npm ci
 ```
 
-Then `npm run dev`, pick a shift, and start playing. **The hen-do**,
-**Stroke onset**, and **First seizure** are the showcase shifts;
-**Family anaphylaxis** is the paeds + adult parallel-dose-bands lesson.
+Then `npm run dev`, pick a shift, and start playing.
+
+**Showcase shifts**: The hen-do (4 cases on one clock with the
+shared-incident arc), First seizure (the SAH twist + MHRA Valproate
+PPP), Aortic dissection (the anchor-breaker), Massive PE (the
+bedside-echo + thrombolysis decision).
+
+**Lesson shifts**: Family anaphylaxis (paeds + adult parallel
+dose bands), DOAC double-bill (reperfusion vs reversal on the same
+drug), Acute heart failure (the no-fluid no-morphine wet-and-warm
+bundle).
