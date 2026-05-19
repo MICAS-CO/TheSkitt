@@ -69,8 +69,12 @@ log and `RESUME.md` for current state at a glance.
 | 51    | Essentials on every case           | 6/17 → 17/17 — workup parsimony now runs on every shift                                                  |
 | 52    | Ten more gated traps               | Brennan aspirin / DOAC reversal · Patel lysis · Ahmed BB+fluid · Morrison abx · Chloe level · Sarah · Beth |
 | 53    | Three pivotal branches             | Stan paramedic (dismissive *drops* the witnessed fall + BM) · Chloe Mira · Patel daughter                  |
+| 54    | Five rapport-gated disclosures     | Marcus mum · Brennan alone · Patel confides · Priya flatmate · Sam mum · coverage 2/17 → 7/17             |
+| 55    | One branch / flat case             | Sam non-tonal trilemma · Morrison · Kowalski · Okafor · coverage 8/17 → 12/17                             |
+| 56    | Case epilogue on every disposition | 59 narrative codas · schema add · UI wired · 'cup of tea she doesn't drink' becomes canonical             |
+| 57    | Branches on the final flat 4       | Oduya · Okonkwo · Amir · Priya flatmate · coverage 12/17 → 16/17                                          |
 
-Numbers: **296 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
+Numbers: **297 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
 16 daily ECGs · 8 NPC sprites · 12 encounter props · 11 world tiles**.
 Lint clean, typecheck clean, validator green.
 

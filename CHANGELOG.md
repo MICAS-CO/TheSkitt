@@ -4,6 +4,46 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M57 — branches on the last four flat cases (Oduya / Okonkwo / Amir / Priya)
+
+- Branch_choices: 12/17 → 16/17. Only Priya's patient-source remains
+  unbranched, by physiology (she is intubated).
+- Three of the four dismissive branches drop diagnostic detail
+  (Okonkwo's calf ache + dyspnoea-on-stairs; Amir's bedwetting +
+  missed birthday cake; Priya's thunderclap-onset phrase 'like a
+  brick').
+
+### M56 — one-line case epilogue on every disposition option
+
+- DispositionOption.epilogue: z.string().optional() — narrative
+  coda from the patient's / family's POV at the next beat after
+  disposition.
+- 59 epilogues authored across 17 cases. Pattern: correct
+  disposition gets a quietly hopeful or competent beat; the wrong
+  disposition gets a delayed-consequence beat; the just-wrong-enough
+  disposition gets a re-escalation beat.
+- UI renders the epilogue in a left-accent italic block beneath
+  the criteria.
+
+### M55 — one branch per remaining flat case (audit #2; 8/17 → 12/17)
+
+- Sam: non-tonal trilemma (now_full / brief_then_treat /
+  defer_to_nurse) — the audit's recommendation #3.
+- Morrison: dignity vs delirium-screen vs ignore. Dismissive
+  branch loses the flank-pain → UTI source pivot.
+- Kowalski: alcohol disclosure. Judgemental branch drops the
+  withdrawal-attempt + variceal-banding details.
+- Okafor: dissection-vs-self-deception. Reassuring-wrong branch
+  drops migration of pain + right-arm paraesthesia.
+
+### M54 — five rapport-gated disclosures (audit #1; 2/17 → 7/17)
+
+- Marcus, Brennan, Patel, Priya's flatmate, Sam's mum — each
+  authored from a different protected information angle:
+  diagnosis-disclosure, falls-and-the-nursing-home, carer-burden,
+  cross-cultural pregnancy confidentiality, cross-case maternal
+  guilt.
+
 ### M53 — three more pivotal branch_choices (Stan / Chloe / Patel)
 
 - Stan hx_paramedics: dismissive branch literally drops the

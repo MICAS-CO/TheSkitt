@@ -59,6 +59,10 @@ visual integration from Claude Design + new content.
 | M51 | Essential workup markers on every remaining case — coverage 6/17 → 17/17 |
 | M52 | Ten more gated_by_history traps — Brennan / Patel / Ahmed / Morrison / Chloe / Sarah / Beth |
 | M53 | Three more pivotal branch_choices — Stan paramedic / Chloe Mira / Patel daughter |
+| M54 | Five rapport-gated disclosures — Marcus / Brennan / Patel / Priya flatmate / Sam mum |
+| M55 | One branch per flat case — Sam (non-tonal) / Morrison / Kowalski / Okafor |
+| M56 | One-line case epilogue on every disposition option (59 lines / 17 cases) |
+| M57 | Branches on the last four flat cases — Oduya / Okonkwo / Amir / Priya |
 
 ## ⏳ WAITING ON DESIGN
 
@@ -69,7 +73,7 @@ template. No code changes needed beyond the registry entry.
 
 ## Numbers
 
-- **296 / 296** unit tests passing (Vitest)
+- **297 / 297** unit tests passing (Vitest)
 - **2 / 2** E2E tests passing (Playwright)
 - **17 fully-authored cases**, **17 episodes**, **3 arcs**, 44-topic
   high-yield map
