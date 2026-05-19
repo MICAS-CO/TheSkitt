@@ -1,11 +1,15 @@
 import { useEffect, useMemo } from 'react';
 import { useSim, scoreCase, type ScoreReport, type SimSpeedKey } from '../../state/sim';
 import type { CitationT } from '../../content/schema';
-import type { CaseRuntime, LogEntry } from '../../sim/kernel';
+import type { CaseRuntime, KernelState, LogEntry } from '../../sim/kernel';
 import { ClockBar } from '../shift/ClockBar';
 
-export type Phase =
-  | 'vignette'
+/**
+ * Sections of the encounter. Replaces the old linear "phase pipeline":
+ * the player picks any section at any time. Vignette is no longer a
+ * section — it's a persistent card above the section tabs.
+ */
+export type Section =
   | 'history'
   | 'examination'
   | 'investigations'
@@ -14,8 +18,7 @@ export type Phase =
   | 'disposition'
   | 'debrief';
 
-const PHASE_ORDER: Phase[] = [
-  'vignette',
+const SECTION_ORDER: Section[] = [
   'history',
   'examination',
   'investigations',
@@ -25,8 +28,7 @@ const PHASE_ORDER: Phase[] = [
   'debrief',
 ];
 
-const PHASE_LABELS: Record<Phase, string> = {
-  vignette: 'Arrival',
+const SECTION_LABELS: Record<Section, string> = {
   history: 'History',
   examination: 'Examination',
   investigations: 'Investigations',
@@ -38,8 +40,8 @@ const PHASE_LABELS: Record<Phase, string> = {
 
 interface Props {
   caseId: string;
-  phase: Phase;
-  onPhaseChange: (p: Phase) => void;
+  section: Section;
+  onSectionChange: (s: Section) => void;
   onBackToBoard: () => void;
   onExit: () => void;
   speedKey: SimSpeedKey;
@@ -48,8 +50,8 @@ interface Props {
 
 export function EncounterScreen({
   caseId,
-  phase,
-  onPhaseChange,
+  section,
+  onSectionChange,
   onBackToBoard,
   onExit,
   speedKey,
@@ -64,8 +66,8 @@ export function EncounterScreen({
 
   // Auto-jump to debrief when the shift ends
   useEffect(() => {
-    if (isShiftOver && phase !== 'debrief') onPhaseChange('debrief');
-  }, [isShiftOver, phase, onPhaseChange]);
+    if (isShiftOver && section !== 'debrief') onSectionChange('debrief');
+  }, [isShiftOver, section, onSectionChange]);
 
   // Escape returns to the board (unless editing a form control).
   useEffect(() => {
@@ -88,18 +90,7 @@ export function EncounterScreen({
     );
   }
 
-  const idx = PHASE_ORDER.indexOf(phase);
-  const isFirst = phase === 'vignette';
-  const isDebrief = phase === 'debrief';
-  const cannotAdvance =
-    (phase === 'differential' && !cs.workingDx) || (phase === 'disposition' && !cs.disposition);
-
-  function next() {
-    if (idx < PHASE_ORDER.length - 1) onPhaseChange(PHASE_ORDER[idx + 1]!);
-  }
-  function prev() {
-    if (idx > 0) onPhaseChange(PHASE_ORDER[idx - 1]!);
-  }
+  const canCloseCase = cs.workingDx !== null && cs.disposition !== null;
 
   return (
     <div className="enc">
@@ -121,48 +112,54 @@ export function EncounterScreen({
         onSpeedChange={onSpeedChange}
       />
 
-      <PhaseProgress phase={phase} />
+      <VignetteCard cs={cs} />
+
+      <SectionTabs
+        section={section}
+        onChange={onSectionChange}
+        cs={cs}
+        ks={ks}
+        canViewDebrief={canCloseCase || isShiftOver}
+      />
 
       <div className="enc__split">
         <main className="enc__body">
-          {phase === 'vignette' && <VignettePhase cs={cs} />}
-          {phase === 'history' && (
+          {section === 'history' && (
             <HistoryPhase cs={cs} onAsk={(id) => kernel.recordAsk(caseId, id)} />
           )}
-          {phase === 'examination' && (
+          {section === 'examination' && (
             <ExaminationPhase cs={cs} onExamine={(s) => kernel.recordExamine(caseId, s)} />
           )}
-          {phase === 'investigations' && (
+          {section === 'investigations' && (
             <InvestigationsPhase
               cs={cs}
               clockMin={ks.clockMin}
               onOrder={(id) => kernel.orderInvestigation(caseId, id)}
             />
           )}
-          {phase === 'differential' && (
+          {section === 'differential' && (
             <DifferentialPhase cs={cs} onChoose={(dx) => kernel.setWorkingDx(caseId, dx)} />
           )}
-          {phase === 'management' && (
+          {section === 'management' && (
             <ManagementPhase cs={cs} onToggle={(id) => kernel.toggleAction(caseId, id)} />
           )}
-          {phase === 'disposition' && (
+          {section === 'disposition' && (
             <DispositionPhase cs={cs} onChoose={(label) => kernel.setDisposition(caseId, label)} />
           )}
-          {phase === 'debrief' && <DebriefPhase cs={cs} />}
+          {section === 'debrief' && <DebriefPhase cs={cs} />}
         </main>
 
         <ShiftLog log={ks.log} caseId={caseId} />
       </div>
 
       <footer className="enc__foot">
-        <button onClick={prev} disabled={isFirst}>
-          ← back
-        </button>
-        {!isDebrief ? (
-          <button className="enc__primary" onClick={next} disabled={cannotAdvance}>
-            {phase === 'disposition' ? 'See debrief' : `next: ${nextPhaseLabel(phase)} →`}
+        <button onClick={onBackToBoard}>← back to shift board</button>
+        {section !== 'debrief' && canCloseCase && (
+          <button className="enc__primary" onClick={() => onSectionChange('debrief')}>
+            close case · see debrief →
           </button>
-        ) : (
+        )}
+        {section === 'debrief' && (
           <button className="enc__primary" onClick={onBackToBoard}>
             ← back to shift board
           </button>
@@ -172,7 +169,7 @@ export function EncounterScreen({
   );
 }
 
-// ─── Header / clock / progress / log ─────────────────────────────────────────
+// ─── Header / vignette / section tabs / log ──────────────────────────────────
 
 function EncounterHeader({
   cs,
@@ -207,29 +204,135 @@ function EncounterHeader({
   );
 }
 
-function PhaseProgress({ phase }: { phase: Phase }) {
-  const idx = PHASE_ORDER.indexOf(phase);
+function VignetteCard({ cs }: { cs: CaseRuntime }) {
+  const c = cs.data;
   return (
-    <ol
-      className="enc__progress"
-      aria-label={`Encounter phase ${idx + 1} of ${PHASE_ORDER.length}`}
-    >
-      {PHASE_ORDER.map((p, i) => {
-        const status = i === idx ? 'active' : i < idx ? 'done' : 'pending';
+    <section className="enc__vignette-card" aria-label="Arrival">
+      <h2 className="enc__vignette-title">Arrival</h2>
+      <pre className="enc__vignette">{c.vignette}</pre>
+      <details className="enc__details">
+        <summary>Pre-existing PMH and meds (handover sheet)</summary>
+        <ul>
+          {c.demographics.pmh.map((p) => (
+            <li key={p}>{p}</li>
+          ))}
+        </ul>
+        <p>
+          <strong>Meds:</strong> {c.demographics.medications.join(', ') || 'none'}
+        </p>
+        <p>
+          <strong>Allergies:</strong> {c.demographics.allergies.join(', ') || 'NKDA'}
+        </p>
+        {c.demographics.social && (
+          <p>
+            <strong>Social:</strong> {c.demographics.social}
+          </p>
+        )}
+      </details>
+    </section>
+  );
+}
+
+interface SectionBadge {
+  /** Badge text, e.g. "3" or "results". Empty means no badge. */
+  text: string;
+  /** Visual tone of the badge. */
+  tone: 'idle' | 'pending' | 'new' | 'attention' | 'done';
+}
+
+function computeBadge(section: Section, cs: CaseRuntime, ks: KernelState): SectionBadge {
+  switch (section) {
+    case 'history': {
+      const total = visibleHistoryItems(cs, ks).length;
+      const asked = visibleHistoryItems(cs, ks).filter((h) => cs.asked.has(h.id)).length;
+      const newlyUnlocked = visibleHistoryItems(cs, ks).some(
+        (h) => cs.unlockedHistoryIds.has(h.id) && !cs.asked.has(h.id),
+      );
+      if (newlyUnlocked) return { text: 'new', tone: 'new' };
+      if (asked === total) return { text: '', tone: 'done' };
+      return { text: `${total - asked}`, tone: 'idle' };
+    }
+    case 'examination': {
+      const total = cs.data.examination.length;
+      const done = cs.data.examination.filter((e) => cs.examined.has(e.system)).length;
+      if (done === total) return { text: '', tone: 'done' };
+      return { text: `${total - done}`, tone: 'idle' };
+    }
+    case 'investigations': {
+      const pending = [...cs.ordered.entries()].filter(([id]) => !cs.resulted.has(id));
+      if (cs.resulted.size > 0 && !ks.isShiftOver) {
+        return { text: 'results', tone: 'new' };
+      }
+      if (pending.length > 0) {
+        return { text: `${pending.length} pending`, tone: 'pending' };
+      }
+      return { text: '', tone: 'idle' };
+    }
+    case 'differential': {
+      if (cs.workingDx === null) return { text: 'pick', tone: 'attention' };
+      return { text: '✓', tone: 'done' };
+    }
+    case 'management': {
+      const mustDoTotal = cs.data.management.filter((m) => m.must_do).length;
+      const mustDoDone = cs.data.management.filter(
+        (m) => m.must_do && cs.actions.has(m.id),
+      ).length;
+      if (mustDoTotal === 0) return { text: '', tone: 'idle' };
+      if (mustDoDone === mustDoTotal) return { text: '✓', tone: 'done' };
+      // Don't reveal which are missing — just that some core actions are open.
+      return { text: 'core actions open', tone: 'attention' };
+    }
+    case 'disposition': {
+      if (cs.disposition === null) return { text: 'decide', tone: 'attention' };
+      return { text: '✓', tone: 'done' };
+    }
+    case 'debrief': {
+      return { text: '', tone: 'idle' };
+    }
+  }
+}
+
+function SectionTabs({
+  section,
+  onChange,
+  cs,
+  ks,
+  canViewDebrief,
+}: {
+  section: Section;
+  onChange: (s: Section) => void;
+  cs: CaseRuntime;
+  ks: KernelState;
+  canViewDebrief: boolean;
+}) {
+  return (
+    <nav className="enc__tabs" role="tablist" aria-label="Encounter sections">
+      {SECTION_ORDER.map((s) => {
+        const badge = computeBadge(s, cs, ks);
+        const isActive = s === section;
+        const isDebrief = s === 'debrief';
+        const disabled = isDebrief && !canViewDebrief;
         return (
-          <li
-            key={p}
-            className={`is-${status}`}
-            aria-current={status === 'active' ? 'step' : undefined}
+          <button
+            key={s}
+            role="tab"
+            aria-selected={isActive}
+            aria-disabled={disabled || undefined}
+            disabled={disabled}
+            className={`enc__tab is-${badge.tone} ${isActive ? 'is-active' : ''}`}
+            onClick={() => !disabled && onChange(s)}
+            title={
+              disabled
+                ? 'Pick a working diagnosis and disposition first.'
+                : SECTION_LABELS[s]
+            }
           >
-            <span className="enc__progress-num" aria-hidden="true">
-              {i + 1}
-            </span>
-            <span className="enc__progress-label">{PHASE_LABELS[p]}</span>
-          </li>
+            <span className="enc__tab-label">{SECTION_LABELS[s]}</span>
+            {badge.text && <span className="enc__tab-badge">{badge.text}</span>}
+          </button>
         );
       })}
-    </ol>
+    </nav>
   );
 }
 
@@ -259,45 +362,20 @@ function ShiftLog({ log, caseId }: { log: LogEntry[]; caseId: string }) {
   );
 }
 
-// ─── Phases ─────────────────────────────────────────────────────────────────
+// ─── Helpers used by both badges and the history section ─────────────────────
 
-function VignettePhase({ cs }: { cs: CaseRuntime }) {
-  const c = cs.data;
-  return (
-    <section className="enc__phase">
-      <h2>Arrival</h2>
-      <pre className="enc__vignette">{c.vignette}</pre>
-      <details className="enc__details">
-        <summary>Pre-existing PMH and meds (handover sheet)</summary>
-        <ul>
-          {c.demographics.pmh.map((p) => (
-            <li key={p}>{p}</li>
-          ))}
-        </ul>
-        <p>
-          <strong>Meds:</strong> {c.demographics.medications.join(', ') || 'none'}
-        </p>
-        <p>
-          <strong>Allergies:</strong> {c.demographics.allergies.join(', ') || 'NKDA'}
-        </p>
-        {c.demographics.social && (
-          <p>
-            <strong>Social:</strong> {c.demographics.social}
-          </p>
-        )}
-      </details>
-    </section>
-  );
+function visibleHistoryItems(cs: CaseRuntime, ks: KernelState) {
+  const gated = gatedHistoryIds(cs.caseId, ks);
+  return cs.data.history.filter((h) => !gated.has(h.id) || cs.unlockedHistoryIds.has(h.id));
 }
+
+// ─── Section bodies ─────────────────────────────────────────────────────────
 
 function HistoryPhase({ cs, onAsk }: { cs: CaseRuntime; onAsk: (id: string) => void }) {
   const kernel = useSim((s) => s.kernel)!;
   const ks = kernel.getState();
+  const items = useMemo(() => visibleHistoryItems(cs, ks), [cs, ks]);
   const gatedIds = useMemo(() => gatedHistoryIds(cs.caseId, ks), [cs.caseId, ks]);
-
-  const items = cs.data.history.filter(
-    (h) => !gatedIds.has(h.id) || cs.unlockedHistoryIds.has(h.id),
-  );
   const stillLocked = cs.data.history.filter(
     (h) => gatedIds.has(h.id) && !cs.unlockedHistoryIds.has(h.id),
   ).length;
@@ -640,12 +718,6 @@ function DebriefPhase({ cs }: { cs: CaseRuntime }) {
   );
 }
 
-function nextPhaseLabel(phase: Phase): string {
-  const i = PHASE_ORDER.indexOf(phase);
-  const next = PHASE_ORDER[i + 1];
-  return next ? PHASE_LABELS[next].toLowerCase() : '';
-}
-
 function pickCardClass({
   isPicked,
   hasPicked,
@@ -704,10 +776,7 @@ function CitationLine({ c }: { c: CitationT }) {
  * Compute the set of history ids on `caseId` that are gated by an unrevealed
  * arc's unlocks_history_id effect.
  */
-function gatedHistoryIds(
-  caseId: string,
-  ks: ReturnType<NonNullable<ReturnType<typeof useSim.getState>['kernel']>['getState']>,
-): Set<string> {
+function gatedHistoryIds(caseId: string, ks: KernelState): Set<string> {
   const gated = new Set<string>();
   for (const arc of ks.arcs.values()) {
     if (ks.revealedArcIds.has(arc.id)) continue;

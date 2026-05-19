@@ -280,19 +280,6 @@ a {
     align-items: stretch;
     gap: 8px;
   }
-  .enc__progress {
-    gap: 4px;
-  }
-  .enc__progress li {
-    padding: 3px 8px;
-    font-size: 10px;
-  }
-  .enc__progress-label {
-    display: none;
-  }
-  .enc__progress li.is-active .enc__progress-label {
-    display: inline;
-  }
   .enc__card-head {
     padding: 14px;
     min-height: 48px;
@@ -833,46 +820,122 @@ a {
   padding-left: 10px;
 }
 
-.enc__progress {
+/* Section tabs — free-nav replacement for the old linear phase pipeline. */
+.enc__tabs {
   display: flex;
-  gap: 6px;
-  list-style: none;
+  gap: 4px;
   padding: 0;
   margin: 0;
   flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
 }
-.enc__progress li {
-  display: flex;
+.enc__tab {
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
+  gap: 8px;
+  padding: 8px 14px;
   border: 1px solid var(--border);
-  border-radius: 999px;
-  font-size: 11px;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  background: transparent;
+  font-size: 12px;
   color: var(--muted);
-  opacity: 0.65;
+  cursor: pointer;
+  min-height: 36px;
+  position: relative;
+  top: 1px;
 }
-.enc__progress li.is-active {
-  border-color: var(--accent);
+.enc__tab:hover:not(:disabled) {
   color: var(--text);
-  opacity: 1;
+  background: var(--panel);
 }
-.enc__progress li.is-done {
-  opacity: 0.45;
+.enc__tab.is-active {
+  background: var(--panel);
+  color: var(--text);
+  border-color: var(--border-2);
+  border-bottom: 1px solid var(--panel);
 }
-.enc__progress-num {
+.enc__tab:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.enc__tab-label {
+  white-space: nowrap;
+}
+.enc__tab-badge {
   display: inline-block;
-  width: 16px;
-  height: 16px;
-  line-height: 16px;
-  text-align: center;
-  background: var(--border);
-  border-radius: 50%;
+  padding: 1px 7px;
+  border-radius: 999px;
   font-size: 10px;
+  letter-spacing: 0.02em;
+  background: var(--border-2);
+  color: var(--text);
+  min-width: 18px;
+  text-align: center;
 }
-.enc__progress li.is-active .enc__progress-num {
+.enc__tab.is-pending .enc__tab-badge {
+  background: var(--warn);
+  color: #000;
+}
+.enc__tab.is-new .enc__tab-badge {
+  background: var(--info);
+  color: #000;
+  animation: enc-tab-pulse 1.4s ease-in-out infinite;
+}
+.enc__tab.is-attention .enc__tab-badge {
+  background: var(--danger);
+  color: #fff;
+}
+.enc__tab.is-done .enc__tab-badge {
   background: var(--accent);
   color: #000;
+}
+@keyframes enc-tab-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.85;
+  }
+}
+@media (max-width: 600px) {
+  .enc__tab {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
+/* Persistent arrival card above the section tabs. */
+.enc__vignette-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--info);
+  border-radius: 6px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.enc__vignette-title {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.enc__vignette-card .enc__vignette {
+  margin: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+  line-height: 1.55;
+}
+.enc__vignette-card .enc__details {
+  background: var(--panel-2);
 }
 
 .enc__body {

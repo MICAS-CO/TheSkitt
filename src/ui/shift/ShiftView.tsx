@@ -10,7 +10,7 @@ import {
 import { ShiftBoardScreen } from './ShiftBoardScreen';
 import { ShiftHubScreen } from './ShiftHubScreen';
 import { EpisodeDebriefScreen } from './EpisodeDebriefScreen';
-import { EncounterScreen, type Phase } from '../encounter/EncounterScreen';
+import { EncounterScreen, type Section } from '../encounter/EncounterScreen';
 
 interface Props {
   onExit: () => void;
@@ -23,7 +23,7 @@ export function ShiftView({ onExit, onReplay }: Props) {
   useSim((s) => s.tick);
   const kernel = useSim((s) => s.kernel);
   const [focusedCaseId, setFocusedCaseId] = useState<string | null>(null);
-  const [phases, setPhases] = useState<Record<string, Phase>>({});
+  const [sections, setSections] = useState<Record<string, Section>>({});
   const [mode, setMode] = useState<ShiftViewMode>('board');
   const [speedKey, setSpeedKey] = useState<SimSpeedKey>(() => loadSavedSpeed());
 
@@ -79,8 +79,8 @@ export function ShiftView({ onExit, onReplay }: Props) {
     setMode('encounter');
   }
 
-  function setPhaseFor(id: string, phase: Phase) {
-    setPhases((p) => ({ ...p, [id]: phase }));
+  function setSectionFor(id: string, section: Section) {
+    setSections((p) => ({ ...p, [id]: section }));
   }
 
   function backToBoard() {
@@ -102,8 +102,8 @@ export function ShiftView({ onExit, onReplay }: Props) {
     return (
       <EncounterScreen
         caseId={focusedCaseId}
-        phase={phases[focusedCaseId] ?? 'vignette'}
-        onPhaseChange={(p) => setPhaseFor(focusedCaseId, p)}
+        section={sections[focusedCaseId] ?? 'history'}
+        onSectionChange={(s) => setSectionFor(focusedCaseId, s)}
         onBackToBoard={backToBoard}
         onExit={onExit}
         speedKey={speedKey}
