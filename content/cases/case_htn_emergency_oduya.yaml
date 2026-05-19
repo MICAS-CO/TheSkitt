@@ -1,0 +1,609 @@
+# Hypertensive emergency with hypertensive encephalopathy. Mr Oduya
+# is 52, presents with a severe headache, confusion, blurred vision
+# and a BP of 226/132. Bilateral papilloedema, AKI, mild LV
+# hypertrophy on POCUS. The teaching arc is the "urgency vs
+# emergency" definition (end-organ damage = emergency) and the
+# disciplined 10-20%-in-first-hour BP reduction with IV labetalol —
+# NOT aggressive correction (over-rapid drop causes watershed
+# infarcts / acute kidney injury).
+#
+# Sources: NICE NG136 (Hypertension in adults), RCEM Learning —
+# Hypertensive Emergency, ESC/ESH Hypertension 2023 (Mancia et al.),
+# Oxford Handbook of EM 5e Ch 4. TheCase.Report S1E13 (Hypertensive
+# Emergency) for the SAQ-pattern framing.
+
+schema_version: 1
+id: case_htn_emergency_oduya
+title: 'Hypertensive emergency — hypertensive encephalopathy'
+chief_complaint: 'Severe headache, confusion, BP 226/132'
+topic_id: hypertensive_emergency
+
+vignette: |
+  Majors. 16:42.
+
+  Mr Joseph Oduya, 52 y/o, walks into triage with his wife who is
+  doing most of the talking. Two days of a worsening occipital
+  headache, "the worst I've ever had", with new blurred vision and
+  some confusion this afternoon. He ran out of his amlodipine and
+  ramipril three weeks ago and "didn't think it mattered, I felt
+  fine."
+
+  Triage nurse: "BP 226/132 right arm, 222/128 left. HR 88 sinus.
+  Sats 98% on air. Temp 36.7. He's a bit slow and keeps asking me
+  the time. Wife says he's normally sharper than this."
+
+  As he sits down he says "the room's a bit fuzzy at the edges"
+  and steadies himself on the chair. No focal weakness, no slurred
+  speech, no chest pain, no shortness of breath.
+
+curriculum_tags: [CC3]
+slos: [1, 3]
+difficulty_band: CT2
+paeds: false
+
+demographics:
+  age_value: 52
+  age_unit: years
+  sex: male
+  weight_kg: 96
+  pmh:
+    - 'Hypertension diagnosed 5 years ago — last clinic BP 158/96'
+    - 'Type 2 diabetes (HbA1c 64 mmol/mol last year)'
+    - 'Smoker (15 pack-year)'
+    - 'BMI 32'
+  medications:
+    - 'Amlodipine 10 mg OD (ran out 3 weeks ago, not restarted)'
+    - 'Ramipril 10 mg OD (ran out 3 weeks ago)'
+    - 'Metformin 1 g BD'
+    - 'Atorvastatin 20 mg ON'
+  allergies: ['NKDA']
+  social: |
+    Lives with wife and two adult sons. Bus driver — currently on
+    sick leave because his GP told him 6 weeks ago "your BP is too
+    high for you to drive safely until we get it down". Stopped
+    taking the tablets after that conversation because "they made
+    him tired".
+
+triage_category: 2
+initial_state: stable
+bay: majors
+
+# ─── History ──────────────────────────────────────────────────────────────
+history:
+  - id: hx_headache_details
+    source: patient
+    topic: 'Describe the headache — onset, character, severity, red flags?'
+    response: |
+      (Slow, deliberate.) "Started two days ago, dull and pulsing
+      at the back of my head. Worse if I bend forward or strain.
+      Last night I was sick — once, then I felt better. This
+      morning it was less. This afternoon the headache came back
+      and the world went a bit fuzzy. No double vision. No light
+      hurting. No weakness anywhere."
+
+  - id: hx_meds_compliance
+    source: family
+    topic: 'Wife — what happened with the BP tablets?'
+    response: |
+      "GP told him 6 weeks ago his blood pressure was too high to
+      drive a bus safely. He said the tablets made him tired and
+      he stopped them about three weeks ago. He's been signing
+      himself off work but not going back to the doctor. I told
+      him to make an appointment."
+
+  - id: hx_neurology_screen
+    source: patient
+    topic: 'Any weakness, numbness, slurred speech, fits, dizziness?'
+    response: |
+      "No weakness. No numbness. My speech feels OK — wife, do I
+      sound right? No fits. The dizziness is the headache making
+      everything spin a bit when I turn my head."
+
+  - id: hx_chest_renal
+    source: patient
+    topic: 'Any chest pain, shortness of breath, leg swelling, change in urine?'
+    response: |
+      "No chest pain. Bit short of breath walking from the car,
+      but I always am — I'm not fit. My ankles have been swelling
+      the last week. My wee has been frothier than usual, the
+      last few days."
+
+  - id: hx_secondary_screen
+    source: patient
+    topic: 'Screen for secondary hypertension causes — drugs, supplements, family, sleep, snoring?'
+    response: |
+      "I don't take drugs. No cocaine, no amphetamines. I drink
+      maybe four pints on a Friday. No herbal supplements. No
+      family history of high BP that I know of. I do snore — my
+      wife says I stop breathing at night. I've been meaning to
+      get tested for sleep apnoea."
+
+  - id: hx_gp_letter
+    source: gp_letter
+    topic: 'Recent GP letters / urgent referral?'
+    response: |
+      "Last GP visit 6 weeks ago: BP 184/108 in clinic, ambulatory
+      mean 178/106. Advised to stop driving until controlled, told
+      not to attend work as a bus driver until clearance.
+      Amlodipine + ramipril restarted (had been on lower dose), no
+      urgent referral made. No follow-up booked. Diabetes well
+      controlled on metformin alone. eGFR 6 weeks ago: 76."
+
+# ─── Examination ──────────────────────────────────────────────────────────
+examination:
+  - system: general
+    findings:
+      - {
+          name: 'Appearance',
+          value: 'overweight, sweating mildly, sitting slowly upright in the chair',
+          present: true,
+        }
+      - {
+          name: 'Confusion',
+          value: 'AMT 7/10 — disoriented to time but not place or person',
+          present: true,
+          red_flag: true,
+        }
+
+  - system: airway
+    findings:
+      - { name: 'Airway', value: 'patent, talking in full sentences', present: true }
+
+  - system: breathing
+    findings:
+      - { name: 'Respiratory rate', value: '16/min' }
+      - { name: 'SpO2', value: '98% on air' }
+      - { name: 'Chest', value: 'clear bilaterally' }
+
+  - system: circulation
+    findings:
+      - {
+          name: 'Blood pressure (right arm)',
+          value: '226/132 mmHg (repeated, manual, two readings agree)',
+          red_flag: true,
+        }
+      - { name: 'Blood pressure (left arm)', value: '222/128 mmHg (no significant differential)' }
+      - { name: 'Heart rate', value: '88/min, sinus regular' }
+      - { name: 'Heart sounds', value: 'normal S1+S2, no murmur, S4 audible (LV hypertrophy)' }
+      - { name: 'Capillary refill', value: '<2 s' }
+
+  - system: disability
+    findings:
+      - { name: 'GCS', value: '14 (E4 V4 M6) — confused but obeying' }
+      - { name: 'Pupils', value: '3 mm equal, reactive' }
+      - { name: 'Glucose', value: '8.4 mmol/L' }
+      - {
+          name: 'Cranial nerves',
+          value: 'no focal deficit; visual fields not reliably testable due to inattention',
+        }
+      - { name: 'Limb power', value: '5/5 symmetric; reflexes normal' }
+      - {
+          name: 'Cerebellar signs',
+          value: 'finger-nose without dysmetria; gait wide-based but no clear ataxia',
+        }
+
+  - system: ophthal
+    findings:
+      - {
+          name: 'Visual acuity',
+          value: 'blurred at distance; uncorrected ~6/18 each eye (his usual is 6/9)',
+          red_flag: true,
+        }
+      - {
+          name: 'Direct ophthalmoscopy',
+          value: 'BILATERAL papilloedema with flame-shaped haemorrhages and cotton-wool spots — Keith-Wagener-Barker grade IV (malignant hypertension)',
+          present: true,
+          red_flag: true,
+        }
+
+  - system: exposure
+    findings:
+      - { name: 'Peripheral oedema', value: 'pitting to mid-shin bilaterally' }
+      - {
+          name: 'No focal abdominal mass',
+          value: 'no palpable AAA, no renal bruit',
+          present: false,
+        }
+
+# ─── Investigations ───────────────────────────────────────────────────────
+investigations:
+  - id: ix_ecg
+    name: '12-lead ECG'
+    category: ecg
+    turnaround_min: 2
+    result_summary: |
+      Sinus rhythm 88/min. **LV hypertrophy by voltage criteria**
+      (Sokolow-Lyon: S in V1 + R in V5 = 38 mm), strain pattern
+      (ST depression and TWI laterally — V5, V6, I, aVL). No
+      acute ST elevation, no Q waves.
+    abnormal: true
+
+  - id: ix_bloods
+    name: 'FBC, U&E, LFTs, glucose, HbA1c, troponin, urine ACR'
+    category: blood
+    turnaround_min: 45
+    result_summary: |
+      Hb 142 · WCC 8.6 · Plt 240 · Na 138 · K 4.4 · Urea 9.8 ·
+      **Creat 168 (eGFR 42, up from baseline 76 — AKI stage 2 per
+      KDIGO 2.0× baseline)** · LFTs normal · Glucose 8.4 · HbA1c
+      72 mmol/mol (rising) · hs-cTnI 12 ng/L (normal — no acute
+      MI). **Urine ACR 96 mg/mmol** (severely raised — diabetic
+      nephropathy + acute hypertensive renal injury).
+    abnormal: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'KDIGO 2012 Clinical Practice Guideline for AKI — staging by creatinine ratio',
+        }
+
+  - id: ix_urine_dip
+    name: 'Urine dipstick + microscopy'
+    category: urine
+    turnaround_min: 5
+    result_summary: |
+      **Blood ++ · Protein +++ · Glucose + · Nitrites neg ·
+      Leucocytes neg.** Microscopy: red-cell casts and dysmorphic
+      RBCs — consistent with hypertensive glomerular injury / the
+      "malignant hypertension" pattern with vascular damage.
+    abnormal: true
+
+  - id: ix_ct_head
+    name: 'CT head — exclude haemorrhage / structural cause for confusion'
+    category: imaging
+    turnaround_min: 25
+    result_summary: |
+      **No acute haemorrhage. No mass lesion. No midline shift.
+      Bilateral parieto-occipital subcortical hypodensities —
+      PRES (posterior reversible encephalopathy syndrome)
+      pattern.** Findings are reversible with BP control. No
+      indication for further imaging acutely; MRI on the inpatient
+      pathway can confirm vasogenic oedema if needed.
+    abnormal: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'Fugate JE, Rabinstein AA. Posterior reversible encephalopathy syndrome. Lancet Neurology 2015.',
+        }
+
+  - id: ix_pocus
+    name: 'Bedside POCUS — cardiac + IVC + abdominal aorta'
+    category: bedside
+    turnaround_min: 5
+    result_summary: |
+      **LV concentric hypertrophy** (septal thickness 14 mm,
+      preserved EF). No regional wall-motion abnormality. IVC
+      normal calibre with respirophasic variation (not volume-
+      overloaded). Abdominal aorta normal calibre (no AAA).
+    abnormal: true
+
+  - id: ix_cxr
+    name: 'Chest X-ray'
+    category: imaging
+    turnaround_min: 10
+    result_summary: |
+      **Cardiomegaly** (CT ratio 0.58). No pulmonary oedema, no
+      widened mediastinum, no pleural effusion. Clear lung fields.
+      Aortic knob calcified but no dissection signs.
+
+# ─── Differential ─────────────────────────────────────────────────────────
+differential:
+  - diagnosis: 'Hypertensive emergency with hypertensive encephalopathy + PRES + AKI + retinopathy'
+    likelihood: top
+    discriminator: |
+      Sustained BP >220/130 + confusion + bilateral papilloedema +
+      AKI from baseline + PRES on CT + urinary RBC casts. The
+      end-organ damage stack puts him firmly in the "emergency"
+      column, not "urgency". Treatment: controlled BP reduction
+      (NOT aggressive) with IV labetalol.
+
+  - diagnosis: 'Subarachnoid haemorrhage'
+    likelihood: must_not_miss
+    discriminator: |
+      Severe occipital headache with vomiting could fit — but CT
+      head shows NO acute haemorrhage (CT within 6 h has ~98%
+      sensitivity), confusion is gradual not thunderclap-pattern,
+      and the BP-and-end-organ-damage picture explains the
+      symptoms.
+
+  - diagnosis: 'Ischaemic stroke / hypertensive crisis precipitating stroke'
+    likelihood: must_not_miss
+    discriminator: |
+      Confusion + visual change could be posterior circulation —
+      but no focal weakness, no cranial-nerve deficit, NIHSS ~0,
+      FAST negative. CT shows PRES pattern not arterial-territory
+      infarct.
+
+  - diagnosis: 'Aortic dissection with malperfusion'
+    likelihood: must_not_miss
+    discriminator: |
+      Severe headache + sustained hypertension + dissection-prone
+      demographics. BUT no tearing chest/back pain, no BP
+      differential between arms, CXR no widened mediastinum,
+      POCUS no flap. Less likely.
+
+  - diagnosis: 'Phaeochromocytoma / endocrine secondary HTN'
+    likelihood: worth_considering
+    discriminator: |
+      Sustained severe HTN in a 52y/o with new severe presentation
+      raises secondary causes. Most often these are out-patient
+      work-ups; today the priority is to control the BP and
+      reverse end-organ damage. Secondary-cause work-up
+      (metanephrines, renal artery imaging, aldosterone:renin,
+      cortisol) is for the inpatient stay.
+
+# ─── Management ──────────────────────────────────────────────────────────
+working_diagnosis: |
+  Hypertensive emergency with hypertensive encephalopathy + PRES +
+  acute kidney injury + grade IV retinopathy, precipitated by
+  non-compliance with antihypertensives. Plan: controlled BP
+  reduction (10–25% in the first hour, NOT below MAP 100-110 in
+  the first 24 h) with IV labetalol; HDU/CCU admission; restart
+  oral agents once stable; secondary-cause work-up as inpatient.
+
+management:
+  - id: mx_a_to_e_monitoring
+    category: monitoring
+    name: 'ABCDE; cardiac monitor; arterial line for beat-to-beat BP'
+    detail: |
+      Cuff readings are unreliable in this BP range — arterial line
+      gives beat-to-beat and lets you titrate the infusion safely.
+      Senior + medical reg call early.
+    must_do: true
+
+  - id: mx_iv_labetalol_infusion
+    category: drug
+    name: 'IV labetalol — 10–20 mg bolus then 0.5–2 mg/min infusion'
+    detail: |
+      First-line in hypertensive emergency. Combined alpha + beta
+      blockade gives controlled BP reduction without reflex
+      tachycardia. Bolus 10–20 mg over 1–2 min, repeat every 10
+      min up to total ~300 mg, then infusion 0.5–2 mg/min titrated
+      to MAP.
+
+      **Target: reduce BP by 10–25% over the first hour. Do NOT
+      drop below MAP 100–110 in the first 24 h** — over-rapid
+      correction causes watershed infarcts and AKI deterioration.
+      Goal at 24 h: 160/100 or so, then onward to normal over
+      days-to-weeks.
+    must_do: true
+    drug:
+      amount: '10–20 mg IV bolus (repeat every 10 min, max ~300 mg); 0.5–2 mg/min infusion'
+      route: IV
+      frequency: 'titrate to MAP; target 10–25% reduction in 1 h, do NOT exceed'
+    sources:
+      - { type: rcem, ref: 'RCEM Learning — Hypertensive Emergency (labetalol first-line)' }
+      - {
+          type: nice,
+          id: 'NG136',
+          ref: 'NICE NG136 — Hypertension in adults: severe / accelerated hypertension pathway',
+        }
+      - {
+          type: textbook,
+          ref: 'Mancia G et al. 2023 ESH Guidelines for the management of arterial hypertension. J Hypertens 2023.',
+        }
+
+  - id: mx_iv_gtn_or_nicardipine_alt
+    category: drug
+    name: 'IV GTN (or nicardipine) as alternative — for myocardial / aortic involvement'
+    detail: |
+      Acceptable alternative when labetalol is contraindicated
+      (asthma, severe heart block) or when MI / aortic dissection
+      is the dominant end-organ injury. IV GTN 10–200 mcg/min;
+      nicardipine 5–15 mg/h (where available in UK practice;
+      pharmacy-stocked in many centres for this indication).
+    drug:
+      amount: 'GTN 10–200 mcg/min IV or nicardipine 5–15 mg/h IV'
+      route: IV
+      frequency: 'titrate to MAP'
+    sources:
+      - { type: textbook, ref: 'ESH 2023 — second-line agents in hypertensive emergency' }
+
+  - id: mx_fluid_neutral
+    category: fluid
+    name: 'Fluid balance: neutral — avoid both bolus and diuretic without indication'
+    detail: |
+      He has mild peripheral oedema but is not in pulmonary
+      oedema. His AKI is hypertensive-vascular, not pre-renal —
+      large-volume fluid will worsen pressure, while diuretics
+      may compound renal injury. Target: euvolaemia with hourly
+      urine output monitoring.
+    must_do: true
+
+  - id: mx_urine_output_catheter
+    category: monitoring
+    name: 'Urinary catheter for hourly UO monitoring'
+    detail: |
+      Helps titrate the BP reduction (UO ~0.5 mL/kg/h is reassuring;
+      drop in UO during BP reduction signals over-rapid correction
+      causing renal hypoperfusion).
+    must_do: true
+
+  - id: mx_admit_hdu_medical
+    category: disposition
+    name: 'Admit HDU / coronary care unit — medical post-take + nephrology + neurology'
+    detail: |
+      Hypertensive emergency with end-organ damage needs level-2
+      monitoring for at least 24 h. Medical team for overall care,
+      nephrology for the AKI workup + future ACR follow-up,
+      neurology for the PRES picture.
+    must_do: true
+
+  - id: mx_secondary_cause_workup
+    category: communication
+    name: "Initiate (don't complete) secondary-cause workup; refer specialist HTN clinic"
+    detail: |
+      Plasma metanephrines, aldosterone:renin ratio, renal artery
+      Doppler, OSA screen (he snores + apnoeic spells per wife) —
+      flag these for the inpatient team but DO NOT delay BP control
+      to chase them.
+    must_do: true
+
+  - id: mx_restart_oral_meds_plan
+    category: communication
+    name: 'Plan reintroduction of oral antihypertensives + GP follow-up'
+    detail: |
+      Once BP controlled on IV agent, the team will restart oral
+      meds (amlodipine + ramipril + add a third agent — likely
+      indapamide or doxazosin). Document the compliance
+      conversation with the wife present; arrange GP follow-up
+      within 1 week.
+    must_do: true
+
+  # ─── Examiner traps ──────────────────────────────────────────────────
+  - id: mx_no_aggressive_drop
+    category: drug
+    name: 'IV labetalol with target BP <140/90 within 1 hour'
+    detail: |
+      ❌ Aggressive BP reduction in hypertensive emergency causes
+      watershed cerebral infarcts and AKI worsening. The
+      autoregulation curve has shifted; reducing too fast drops
+      perfusion below the new autoregulatory floor. Target
+      10–25% reduction in the first hour, MAP 100–110 floor in
+      the first 24 h.
+    must_not_do: true
+    sources:
+      - {
+          type: rcem,
+          ref: 'RCEM Learning — over-rapid BP correction in hypertensive emergency causes ischaemic complications',
+        }
+      - { type: textbook, ref: 'ESH 2023 — controlled BP reduction protocol' }
+
+  - id: mx_no_sl_nifedipine
+    category: drug
+    name: 'Sublingual nifedipine 10 mg "to bring the BP down quickly"'
+    detail: |
+      ❌ Sublingual nifedipine causes unpredictable, precipitous
+      BP drops — banned in this context for over two decades.
+      Associated with strokes, MI, and death. Do not use.
+    must_not_do: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'Grossman E et al. Should a moratorium be placed on sublingual nifedipine capsules given for hypertensive emergencies? JAMA 1996.',
+        }
+
+  - id: mx_no_furosemide_routine
+    category: drug
+    name: 'IV furosemide 40 mg "for the oedema and to dump the BP"'
+    detail: |
+      ❌ He is not in pulmonary oedema; the peripheral oedema is
+      chronic. Furosemide here compounds AKI and pre-renal injury
+      without benefit. Reserve diuretic for confirmed pulmonary
+      oedema or volume overload — not as a BP-lowering tool in
+      this emergency.
+    must_not_do: true
+
+  - id: mx_no_oral_drug_only
+    category: drug
+    name: 'Restart oral amlodipine and discharge with GP follow-up'
+    detail: |
+      ❌ Hypertensive emergency with PRES + AKI + grade IV
+      retinopathy requires inpatient IV therapy + level-2
+      monitoring. Discharging on oral agents misses the
+      end-organ damage trajectory and risks immediate stroke.
+    must_not_do: true
+
+  - id: mx_no_amlodipine_iv_attempt
+    category: drug
+    name: 'Try IV amlodipine "as he is on oral amlodipine"'
+    detail: |
+      ❌ There is no IV formulation of amlodipine. Sublingual
+      "crushed amlodipine" is not validated and would have the
+      same risk profile as SL nifedipine. Use a licensed IV agent
+      (labetalol first-line; GTN or nicardipine alternatives).
+    must_not_do: true
+
+# ─── Disposition ─────────────────────────────────────────────────────────
+disposition_options:
+  - label: 'Admit HDU / CCU level-2 on IV labetalol infusion; medical + nephrology + neurology MDT'
+    criteria: |
+      Hypertensive emergency with end-organ damage = level-2
+      monitoring with arterial line for at least 24 h. Specialist
+      MDT for AKI and PRES.
+    appropriate: true
+  - label: 'Admit medical ward on oral antihypertensives once IV bolus given'
+    criteria: |
+      Inadequate — he is on IV labetalol infusion. Standard medical
+      ward does not have arterial line + hourly UO capacity.
+    appropriate: false
+  - label: 'Discharge after IV bolus once BP <180/110, restart oral meds'
+    criteria: |
+      Unsafe — PRES + AKI + grade IV retinopathy + cardiomegaly
+      mandate inpatient observation. The end-organ damage stack
+      is the gating criterion, not the BP number.
+    appropriate: false
+
+# ─── State machine ──────────────────────────────────────────────────────
+state_machine:
+  states: [stable, deteriorating, arrested, admitted]
+  transitions:
+    - from: stable
+      to: deteriorating
+      trigger:
+        on: inaction_by
+        min: 20
+        required_actions: [mx_iv_labetalol_infusion, mx_a_to_e_monitoring]
+        note: 'Without controlled BP reduction by T+20 the encephalopathy progresses; risk of hypertensive ICH rises sharply.'
+    - from: stable
+      to: admitted
+      trigger:
+        on: action
+        action_id: mx_admit_hdu_medical
+        note: 'HDU bed found; medical + nephrology + neurology accept; ED ownership ends.'
+
+# ─── Pearls + pitfalls ──────────────────────────────────────────────────
+pearls:
+  - 'Hypertensive urgency vs emergency: urgency = elevated BP, NO end-organ damage; emergency = elevated BP + end-organ damage (encephalopathy, ICH, MI, aortic dissection, AHF, AKI, eclampsia).'
+  - 'BP reduction target: **10–25% in the first hour; MAP floor 100–110 in the first 24 h**. Aggressive correction causes watershed infarcts.'
+  - 'IV labetalol is first-line in the UK (RCEM Learning / NICE NG136). Bolus 10–20 mg, infusion 0.5–2 mg/min, titrate to MAP.'
+  - 'Avoid amlodipine (slow onset = dose stacking → precipitous drop later) and sublingual nifedipine (banned for hypertensive emergencies for decades).'
+  - 'PRES (posterior reversible encephalopathy syndrome) is the radiological correlate of hypertensive encephalopathy: bilateral parieto-occipital subcortical vasogenic oedema; reversible with BP control.'
+  - 'KDIGO AKI staging by creatinine ratio: Stage 1 = 1.5–1.9× baseline; Stage 2 = 2.0–2.9×; Stage 3 = ≥3.0× or RRT-requirement.'
+  - 'Secondary HTN screen (phaeo, renal artery stenosis, primary aldosteronism, OSA) is an INPATIENT workup — do not delay BP control to chase the cause.'
+
+pitfalls:
+  - 'Aggressive BP reduction to <140/90 in the first hour.'
+  - 'Sublingual nifedipine "to bring the BP down".'
+  - 'IV furosemide for "the oedema" without pulmonary oedema indication.'
+  - 'Discharging on oral agents after IV bolus.'
+  - 'Failing to look for end-organ damage (fundoscopy, urinalysis, troponin, U&E, CT head).'
+  - 'Missing the compliance / drug-supply / mental-health back-story to chronic uncontrolled HTN.'
+
+sources:
+  - {
+      type: nice,
+      id: 'NG136',
+      ref: 'NICE NG136 — Hypertension in adults: diagnosis and management (covers severe / accelerated hypertension)',
+    }
+  - { type: rcem, ref: 'RCEM Learning — Hypertensive Emergency' }
+  - {
+      type: textbook,
+      ref: 'Mancia G et al. 2023 ESH Guidelines for the management of arterial hypertension. J Hypertens 2023.',
+    }
+  - {
+      type: textbook,
+      ref: 'Fugate JE, Rabinstein AA. Posterior reversible encephalopathy syndrome (PRES) — review. Lancet Neurology 2015.',
+    }
+  - { type: textbook, ref: 'KDIGO 2012 Clinical Practice Guideline for Acute Kidney Injury.' }
+  - {
+      type: textbook,
+      ref: 'Grossman E et al. Sublingual nifedipine in hypertensive emergencies — moratorium recommendation. JAMA 1996.',
+    }
+  - {
+      type: textbook,
+      ref: 'Oxford Handbook of Emergency Medicine 5e — Ch 4 Cardiovascular emergencies',
+    }
+
+author_notes: |
+  Designed as the SAQ-classic hypertensive emergency that emphasises
+  the **controlled** BP reduction over the aggressive one. Trainees
+  reflex to "get the BP down" and miss that the autoregulatory
+  curve has shifted — over-rapid correction is the audit-bait.
+
+  Five must_not_do traps surface the most-tempting wrong moves:
+  aggressive target, SL nifedipine, furosemide, oral discharge,
+  trying to give IV amlodipine.
+
+  Inspiration: TheCase.Report S1E13 (Hypertensive Emergency +
+  Wellbeing). Player-facing citations remain NICE NG136 + RCEM
+  Learning + ESH 2023 + KDIGO 2012 + the Fugate PRES review.

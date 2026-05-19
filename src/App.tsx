@@ -63,10 +63,14 @@ import peEpYaml from '../content/episodes/ep_pe_solo.yaml?raw';
 import ahmedYaml from '../content/cases/case_acute_heart_failure_ahmed.yaml?raw';
 import ahfEpYaml from '../content/episodes/ep_ahf_solo.yaml?raw';
 
+// Hypertensive emergency — encephalopathy + PRES + AKI
+import oduyaYaml from '../content/cases/case_htn_emergency_oduya.yaml?raw';
+import htnEpYaml from '../content/episodes/ep_htn_emergency_solo.yaml?raw';
+
 type View = 'menu' | 'shift' | 'hub';
 
 const SUBTITLES: Record<View, string> = {
-  menu: 'Episodic UK FRCEM study RPG · 13 shifts, 14 cases',
+  menu: 'Episodic UK FRCEM study RPG · 14 shifts, 15 cases',
   shift: 'Shift in progress',
   hub: 'ED hub (preview)',
 };
@@ -157,6 +161,12 @@ const PE_SOLO: () => ShiftPack = () => ({
 const AHF_SOLO: () => ShiftPack = () => ({
   episode: Episode.parse(parseYaml(ahfEpYaml)),
   cases: [Case.parse(parseYaml(ahmedYaml))],
+  arcs: [],
+});
+
+const HTN_EMERGENCY_SOLO: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(htnEpYaml)),
+  cases: [Case.parse(parseYaml(oduyaYaml))],
   arcs: [],
 });
 
@@ -254,6 +264,13 @@ const SHIFT_DEFS: ShiftDef[] = [
     eyebrow: 'Shift · ST3 · 20 min · 1 case',
     meta: 'Wet-and-warm cardiogenic pulmonary oedema in a 78y/o off-diuretic for elective surgery. NICE NG106 + ESC 2021 + 3CPO. CPAP + GTN + furosemide bundle; no fluid, no morphine.',
     factory: AHF_SOLO,
+  },
+  {
+    id: 'ep_htn_emergency_solo',
+    title: 'Hypertensive emergency — controlled BP reduction',
+    eyebrow: 'Shift · CT2 · 20 min · 1 case',
+    meta: 'BP 226/132 with encephalopathy + PRES + AKI Stage 2 + grade IV retinopathy. NICE NG136 + RCEM + ESH 2023. 10-25% reduction in 1 h — discipline over speed.',
+    factory: HTN_EMERGENCY_SOLO,
   },
   {
     id: 'ep_anaphylaxis_solo',

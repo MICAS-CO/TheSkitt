@@ -4,6 +4,46 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Content: hypertensive emergency (Oduya) — discipline over speed
+
+- `content/cases/case_htn_emergency_oduya.yaml` — 15th authored
+  case. Mr Oduya, 52M bus driver who stopped his amlodipine +
+  ramipril 3 weeks ago when his GP told him not to drive until BP
+  controlled. Now in majors with BP 226/132, AMT 7/10 confusion,
+  blurred vision, **bilateral papilloedema with flame-shaped
+  haemorrhages (Keith-Wagener-Barker grade IV)**, AKI Stage 2
+  (Cr 168 vs baseline 76 = 2.2× — KDIGO), urinary RBC casts, and
+  PRES pattern on CT.
+- The shift's teaching pivot is **discipline over speed**: BP
+  reduction 10-25% in the first hour, MAP floor 100-110 in the
+  first 24 h. Trainees reflex to "get it below 140/90" and miss
+  the autoregulation-curve teaching point.
+- Five `must_not_do` traps:
+  1. Aggressive BP reduction (target <140/90 in 1 h) — watershed
+     infarcts, worsened AKI.
+  2. **Sublingual nifedipine** — Grossman JAMA 1996 documented the
+     deaths and the moratorium; this trap remains tempting decades
+     later.
+  3. IV furosemide "for the oedema" — compounds AKI without
+     pulmonary-oedema indication.
+  4. Oral antihypertensive + discharge with GP follow-up.
+  5. IV amlodipine attempt (no such formulation exists; SL
+     crushed-tablet is the same risk profile as SL nifedipine).
+- Authored against **NICE NG136** (Hypertension in adults), **RCEM
+  Learning — Hypertensive Emergency**, **ESH 2023** (Mancia
+  J Hypertens), **KDIGO 2012** AKI staging, **Fugate Lancet
+  Neurology 2015** (PRES review), Grossman JAMA 1996 (nifedipine
+  moratorium).
+- `content/episodes/ep_htn_emergency_solo.yaml` — 20-min single-
+  case shift. T+3 wife arrives with compliance story; T+5 ECG (LVH
+  + strain); T+7 urine dip (RBC casts); T+11 bloods (AKI Stage 2);
+  T+14 CT head (PRES); T+17 medical-reg HDU bed callback; T+20
+  deterioration deadline.
+- Inspiration: TheCase.Report S1E13.
+- New "Hypertensive emergency — controlled BP reduction" entry on
+  the menu via `SHIFT_DEFS`. App subtitle: 14 shifts, 15 cases.
+- 15 cases / 14 episodes / 2 arcs; 162 tests pass.
+
 ### Content: acute heart failure (Ahmed) — wet-and-warm pulmonary oedema
 
 - `content/cases/case_acute_heart_failure_ahmed.yaml` — 14th
