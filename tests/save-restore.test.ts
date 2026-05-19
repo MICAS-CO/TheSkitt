@@ -139,4 +139,32 @@ describe('SimKernel — save / restore', () => {
     const k2 = new SimKernel({ episode, cases, arcs, restore: stripped });
     expect(k2.getState().cases.get(beth.id)!.sequenceErrors.size).toBe(0);
   });
+
+  it('migrateSnapshot accepts a version-less raw object (pre-M59)', async () => {
+    const { migrateSnapshot, SNAPSHOT_VERSION } = await import('../src/sim/kernel');
+    const { episode, cases, arcs, beth } = mkKernel();
+    const k = new SimKernel({ episode, cases, arcs });
+    k.enterCase(beth.id);
+    k.toggleAction(beth.id, 'mx_adrenaline_im');
+    const snap = k.serialize() as unknown as Record<string, unknown>;
+    // Strip the v field to simulate a pre-M59 payload.
+    const versionless = { ...snap };
+    delete versionless.v;
+    const migrated = migrateSnapshot(versionless);
+    expect(migrated.v).toBe(SNAPSHOT_VERSION);
+    // And it must restore cleanly.
+    const k2 = new SimKernel({ episode, cases, arcs, restore: versionless });
+    expect(k2.getState().cases.get(beth.id)!.actions.has('mx_adrenaline_im')).toBe(true);
+  });
+
+  it('migrateSnapshot rejects a future version with a useful error', async () => {
+    const { migrateSnapshot } = await import('../src/sim/kernel');
+    expect(() => migrateSnapshot({ v: 99 })).toThrow(/newer than the kernel/i);
+  });
+
+  it('migrateSnapshot rejects non-object inputs', async () => {
+    const { migrateSnapshot } = await import('../src/sim/kernel');
+    expect(() => migrateSnapshot(null)).toThrow(/not a valid object/);
+    expect(() => migrateSnapshot('string')).toThrow(/not a valid object/);
+  });
 });

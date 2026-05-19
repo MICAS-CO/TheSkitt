@@ -125,7 +125,10 @@ export interface SimKernelOpts {
   cases: Map<string, CaseT>;
   arcs?: Map<string, ArcT>;
   /** Restore the kernel from a previously-saved snapshot. */
-  restore?: SerializedKernelSnapshot;
+  /** Optional snapshot to restore from. Accepts \`unknown\` (raw
+   *  localStorage / file payload) — \`migrateSnapshot\` brings it to
+   *  the current version. */
+  restore?: SerializedKernelSnapshot | unknown;
 }
 
 /** Plain-object snapshot of mutable kernel state, safe to JSON.stringify. */
@@ -150,8 +153,14 @@ export interface SerializedCaseRuntime {
   performedManoeuvres?: string[];
 }
 
+/** Current snapshot format version (M59). Bump on any non-additive
+ *  change to the serialised shape (renames, removals, semantic
+ *  changes). Additive changes (new optional fields read with `?? default`)
+ *  do NOT require a bump. */
+export const SNAPSHOT_VERSION = 1 as const;
+
 export interface SerializedKernelSnapshot {
-  v: 1;
+  v: typeof SNAPSHOT_VERSION;
   clockMin: number;
   isRunning: boolean;
   isShiftOver: boolean;
@@ -161,6 +170,37 @@ export interface SerializedKernelSnapshot {
   firedEventIds: string[];
   unfiredEventIds: string[];
   log: LogEntry[];
+}
+
+/**
+ * Bring an unknown snapshot to the current SNAPSHOT_VERSION (M59).
+ *
+ * The shape today is straightforwardly v:1; this function exists so
+ * that the moment a future change demands a v:2 schema (a rename, a
+ * removal, a semantic change), the migration step is already in the
+ * pipeline rather than retrofitted under pressure.
+ *
+ * Additive changes — new optional CaseRuntime fields read with
+ * \`?? defaults\` on restore — still don't need a version bump.
+ */
+export function migrateSnapshot(raw: unknown): SerializedKernelSnapshot {
+  if (typeof raw !== 'object' || raw === null) {
+    throw new Error('Snapshot is not a valid object.');
+  }
+  const snap = raw as { v?: unknown } & Record<string, unknown>;
+  // Pre-M59 snapshots lacked the v field — treat as v:1 since the shape
+  // was identical (the field existed in the type but wasn't enforced).
+  const version = typeof snap.v === 'number' ? snap.v : 1;
+  switch (version) {
+    case 1:
+      // Currently the same shape; future v:2 → v:1 rewrite would live here.
+      return { ...(snap as object), v: 1 } as SerializedKernelSnapshot;
+    default:
+      throw new Error(
+        `Snapshot version ${version} is newer than the kernel's SNAPSHOT_VERSION ${SNAPSHOT_VERSION}. ` +
+          'Please update the app.',
+      );
+  }
 }
 
 export class SimKernel {
@@ -208,14 +248,14 @@ export class SimKernel {
       pendingInterrupt: null,
     };
     if (opts.restore) {
-      this.applySnapshot(opts.restore);
+      this.applySnapshot(migrateSnapshot(opts.restore));
     }
   }
 
   /** Returns a JSON-safe snapshot of mutable state for persistence. */
   serialize(): SerializedKernelSnapshot {
     return {
-      v: 1,
+      v: SNAPSHOT_VERSION,
       clockMin: this.state.clockMin,
       isRunning: this.state.isRunning,
       isShiftOver: this.state.isShiftOver,
