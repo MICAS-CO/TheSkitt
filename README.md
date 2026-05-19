@@ -10,21 +10,35 @@ candidates (Intermediate SAQ → Final SAQ/SBA).
 
 ## Status
 
-All eight build-prompt milestones landed on `claude/add-necessary-files-4THUA`:
+All eight build-prompt milestones + 15 redesign milestones landed on
+`claude/add-necessary-files-4THUA`. See `CHANGELOG.md` for the full
+log and `RESUME.md` for current state at a glance.
 
-| #   | Milestone               | What it ships                                                                       |
-| --- | ----------------------- | ----------------------------------------------------------------------------------- |
-| 1   | Scaffold                | Vite + TS + React 19 + Phaser 3, ESLint flat, Prettier, Vitest, "Hello, ED" scene   |
-| 2   | Schemas + validator     | Zod schemas for Case/Episode/Arc/ScheduledEvent/Citation + `validate-content` CLI   |
-| 3   | First playable case     | Adult anaphylaxis end-to-end (Resus Council UK 2021 + NICE CG134)                   |
-| 4   | Simulation kernel       | Pure deterministic kernel + shift clock + scheduled events + state machines         |
-| 5   | Second case + arc       | Ectopic pregnancy in minors (NICE NG126 + RCOG GTG 21) + hen-do shared-incident arc |
-| 6   | Episode debrief         | Banded overall score, lives saved/lost, examiner notes, source aggregation          |
-| 7   | Content CLI             | `new-case` + `new-episode` generate skeleton YAMLs from `topic-map.yaml`            |
-| 8   | Ambient board (stretch) | Two ambient cases (Stan, Mrs Patel) — four time-critical events on one clock        |
+| #     | Milestone                          | What it ships                                                                                          |
+| ----- | ---------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| 1     | Scaffold                           | Vite + TS + React 19 + Phaser 3, ESLint flat, Prettier, Vitest, "Hello, ED" scene                      |
+| 2     | Schemas + validator                | Zod schemas for Case/Episode/Arc/ScheduledEvent/Citation + `validate-content` CLI                      |
+| 3     | First playable case                | Adult anaphylaxis end-to-end (Resus Council UK 2021 + NICE CG134)                                      |
+| 4     | Simulation kernel                  | Pure deterministic kernel + shift clock + scheduled events + state machines                            |
+| 5     | Second case + arc                  | Ectopic pregnancy in minors (NICE NG126 + RCOG GTG 21) + hen-do shared-incident arc                    |
+| 6     | Episode debrief                    | Banded overall score, lives saved/lost, examiner notes, source aggregation                             |
+| 7     | Content CLI                        | `new-case` + `new-episode` generate skeleton YAMLs from `topic-map.yaml`                               |
+| 8     | Ambient board (stretch)            | Two ambient cases (Stan, Mrs Patel) — four time-critical events on one clock                           |
+| 9     | Free section nav                   | Killed the linear phase pipeline; section tabs with live kernel-derived badges                         |
+| 10    | Dialogue-tree history              | Prereqs, NPC voice flourishes, patient-comfort gating                                                  |
+| 11    | Differential builder               | Clue board + per-dx support tally + lock-in working diagnosis                                          |
+| 12    | Patient panel                      | Live vitals strip + state-driven portrait + RCP NEWS2                                                  |
+| 13    | Resus mode                         | ABCDE action wheel for SLO-3 cases (Beth, Sam, Okonkwo, Okafor, Priya)                                 |
+| 14    | Live deterioration timers          | Countdown chips + ward-trap counter in the debrief                                                     |
+| 15    | Monitor audio + Daily ECG          | Web-Audio beep + 11-rotation ECG challenge                                                             |
+| 16    | Cross-shift progression            | XP, RCEM SLO mastery, perks (localStorage)                                                             |
+| 17    | Phaser-resident encounter          | Controllable avatar with arrow / WASD movement + proximity interact                                    |
+| 18–22 | **Claude Design integration**      | Locked palette, fonts, Beth's 5-state pixel sprites, 8 status icons, diegetic frames, palette in Phaser |
+| 20    | Sequence-aware penalty             | `prereq_action_ids` on management actions; 10-pt deduction per out-of-order action                     |
+| 23    | New case: Chloe paracetamol OD     | Staggered-vs-acute trap + NICE NG225 safeguarding parallel                                             |
 
-Plus: Playwright E2E smoke, GitHub Actions CI, code-split Phaser
-(~1.5 MB lazy-loaded), `:focus-visible` a11y, 600-px mobile breakpoint.
+Numbers: **257 unit tests · 2 E2E · 16 cases · 15 episodes · 2 arcs ·
+11 daily ECGs**. Lint clean, typecheck clean, validator green.
 
 ## Stack
 
@@ -64,41 +78,57 @@ npm run new-episode --id ep_new_shift --title "New shift" --focus case_a,case_b
 
 ```
 src/
-  App.tsx                       Menu router (menu | shift | hub)
+  App.tsx                       Menu router (menu | shift | hub | ecg | skilltree)
   main.tsx                      React entry
-  styles.css                    Global + encounter + board + debrief styles
+  styles.css                    Global + encounter + board + debrief + sprite + frame styles
   ui/
     PhaserGame.tsx              Mounts Phaser via dynamic import
     encounter/
-      EncounterScreen.tsx       Per-case 8-phase UI (vignette → debrief)
+      EncounterScreen.tsx       Free-nav section UI (history | exam | ix | diff | mx | dispo | debrief)
+      PatientPanel.tsx          Persistent portrait + vitals strip + monitor audio
+      ResusMode.tsx             ABCDE action wheel (M13)
     shift/
-      ShiftView.tsx             Routes between board / encounter / debrief
+      ShiftView.tsx             Routes between board / hub / encounter / debrief
       ShiftBoardScreen.tsx      Focus + ambient case cards, clock controls, live shift log
-      EpisodeDebriefScreen.tsx  Whole-shift debrief with examiner notes
+      ShiftHubScreen.tsx        Phaser department view with the walkable avatar
+      EpisodeDebriefScreen.tsx  Whole-shift debrief + XP awarding
+    ecg/
+      EcgChallengeScreen.tsx    Daily ECG (3-step wizard)
+    progression/
+      SkillTreeScreen.tsx       XP, SLO mastery, perks
+  style/
+    palette.ts                  Locked colour ramps (mirrors Claude Design v1)
+    sprites.ts                  Pixel-art sprite engine + Beth state set
+    icons.tsx                   8 16×16 pixel-art status icons
+    frames.tsx                  Clipboard, Monitor, VitalsStripFrame, DrugChart, ResultsEnvelope
   game/
     boot.ts                     Phaser entry — dynamically imported
-    layout.ts                   Pure data: ED zones, palette, canvas dims (testable)
+    layout.ts                   Pure data: ED zones, palette (mirrors style/palette), canvas dims
     scenes/
-      EDScene.ts                Top-down placeholder department layout
+      EDScene.ts                Top-down department + avatar + proximity interact (M17)
   sim/
     kernel.ts                   Pure deterministic simulation kernel (no React)
+    vitals.ts                   RCP NEWS2 + deriveVitals(state, authored)
+    audio.ts                    Web-Audio monitor beep
   state/
     sim.ts                      Zustand wrapper + useRealTimeClock + scoreCase/Episode
+    progression.ts              Cross-shift XP + perks (localStorage)
   content/
-    schema.ts                   Zod schemas
+    schema.ts                   Zod schemas (case · episode · arc · vitals · sequence)
     loader.ts                   Node-side YAML walker (CLI validator)
     validator.ts                Schema + cross-ref validation
+    ecg-challenges.ts           Daily ECG bank (11 challenges)
 
 content/
-  cases/                        Authored case YAMLs
-  episodes/                     Authored episode YAMLs
-  arcs/                         Authored arc YAMLs
+  cases/                        16 authored case YAMLs
+  episodes/                     15 authored episode YAMLs
+  arcs/                         2 authored arc YAMLs
   sources/                      Source summaries (RCEM curriculum etc.)
   topic-map.yaml                High-yield topic map (RCEM 2021 calibration)
 
 scripts/                        validate-content / new-case / new-episode CLIs
-tests/                          Vitest specs
-e2e/                            Playwright spec
+tests/                          Vitest specs (22 files, 257 tests)
+e2e/                            Playwright spec (2 tests)
 .github/workflows/ci.yml        CI: typecheck → lint → format → validate → test → build → e2e
 ```
 

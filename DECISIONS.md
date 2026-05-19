@@ -4,6 +4,75 @@ Architectural notes and explicit trade-offs. Newest first.
 
 ---
 
+## D-024 · Sequence errors persist across un-toggle
+
+**Date:** 2026-05-19
+
+When a player ticks a management action with unmet `prereq_action_ids`,
+the kernel adds it to `cs.sequenceErrors`. Un-ticking the action does
+NOT clear that record. The −10 scoring penalty reflects the decision
+the player made, not the final state of the management checkbox grid.
+
+Trade-off: prevents 'check, see warning, uncheck' as a no-penalty
+discovery mode. Players must commit to the decision; the lesson is
+that the moment-of-action is what matters, not the final ticked list.
+
+## D-023 · Pixel sprites prefer the registered factory, fall back to CSS
+
+**Date:** 2026-05-19
+
+`PatientPortrait` looks up `PATIENT_SPRITES[caseId]` and, when a
+state factory is registered, renders the SVG sprite at scale ×6.
+Cases without an authored sprite (currently 14 of 16) keep the CSS
+silhouette portrait — no game-feel regression while design catches up.
+
+Adding a new patient: drop a state-factory map into `PATIENT_SPRITES`
+with the same shape Beth uses. No code changes anywhere else.
+
+## D-022 · Diegetic frames render as SVG with preserveAspectRatio="none"
+
+**Date:** 2026-05-19
+
+Claude Design's frames are authored at fixed widths (e.g. 360×240 for
+the monitor). To let them flex into the panel layout (~320 px wide on
+desktop, full width on mobile), the ported components emit
+`width="100%" height="100%" preserveAspectRatio="none"`. The frames
+deform slightly outside their intended ratio, but the bezel / clip /
+sticker decorations stay readable.
+
+Alternative considered: locking each frame to a fixed pixel size in
+its container. Rejected — would force scroll on mobile or eat
+encounter space on small viewports.
+
+## D-021 · Locked palette lives in `src/style/palette.ts`
+
+**Date:** 2026-05-19
+
+Claude Design Visual Style Guide Phase 1 ships hex contracts for 5
+ramps + 5 skin ramps + 6 state tints. We mirror them in TypeScript so
+both React DOM (`styles.css` variables) and the Phaser overworld
+(`src/game/layout.ts` PALETTE) draw from the same source.
+
+When the design v2 lands, palette.ts is the only place that needs
+updating — CSS variables and Phaser numeric hex values follow.
+
+## D-020 · Free-nav section tabs replace the forced phase pipeline
+
+**Date:** 2026-05-19
+
+The M9 redesign changed encounter UX from "phase 1 → phase 2 → ..."
+to a tab strip where the player picks the section. Section state per
+case is preserved in `ShiftView`'s `sections: Record<caseId, Section>`
+map (renamed from `phases`).
+
+Trade-off: removed `vignette` from the Section enum and made it a
+persistent top card. Saved-shift snapshots only persist kernel state
+(not per-case section), so this rename did not break save/resume.
+
+The 'Debrief' tab is locked until disposition + working diagnosis are
+both set OR the shift ends — preserves the closure beat without
+forcing linear progression on the other six sections.
+
 ## D-018 · Phaser is dynamically imported
 
 **Date:** 2026-05-18

@@ -4,6 +4,161 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M23 — new case: Chloe, staggered paracetamol overdose
+
+- `case_paracetamol_od_chloe` (ST3, ~450 lines): 19 y/o student,
+  16 g paracetamol staggered over 5 hours. Trains the
+  staggered-vs-acute trap (NAC regardless of level) + NICE NG225
+  parallel safeguarding pathway.
+- `ep_paracetamol_solo` (15th menu shift) with 7 scheduled events
+  including the trap moment at T+4 (paracetamol level returns) and
+  the H+12 deterioration clause.
+- Menu subtitle: 14 → 15 shifts, 15 → 16 cases.
+- Reachability test caught a dead-end `deteriorating` state on first
+  author; transitions added: → admitted (NAC started) and → arrested
+  (no NAC + no hepatology by H+18).
+
+### M22 — ECG bank +4 challenges + IconCitation on sources
+
+- New ECGs: atrial flutter 2:1, inferior STEMI with RV infarct,
+  pre-excited AF (WPW), Brugada phenocopy. Bank now 11; rotation
+  cycles every ~11 days.
+- `IconCitation` glyph leads every source-list item in the case
+  debrief.
+
+### M21 — Phaser palette unified with locked design tokens
+
+- `src/game/layout.ts` PALETTE now mirrors `src/style/palette.ts`.
+  Phaser overworld matches the React encounter teal-night aesthetic.
+- `IconMustDo` on resus tile must-do hints; `IconNewInfo` on history
+  new-unlock chips.
+
+### M20 — sequence-aware penalty for resus
+
+- `ManagementAction.prereq_action_ids?: string[]` — taking an action
+  before its prereqs is recorded as a sequence error.
+- Kernel logs `'danger'` entry, populates `cs.sequenceErrors`,
+  surfaces a `'Sequence error: <action> before <names>'` reason.
+- `ScoreReport.sequenceErrors` exposes the count; scoring deducts
+  10 per error.
+- Debrief: new amber-tinted row tone for `sequence_error` status;
+  '↯ out of sequence' label.
+- Backfill: Okafor `mx_gtn_after_beta` requires `mx_iv_labetalol`
+  (GTN-before-beta-block trap); Priya `mx_levetiracetam_iv` requires
+  `mx_lorazepam_2` (escalate-before-second-benzo trap).
+- Validator enforces self-reference-free, valid-id-only refs.
+
+### M19 — diegetic UI frames
+
+- `src/style/frames.tsx` ports Clipboard, Monitor, VitalsStripFrame,
+  DrugChart, ResultsEnvelope from Claude Design `frames.jsx`.
+- Patient portrait now lives inside a `Monitor` bezel; the plain CSS
+  vitals strip is replaced by `VitalsStripFrame` (thermal-paper feel,
+  NEWS2-traffic-light values).
+- Investigations section: `ResultsEnvelope` hero slides in with a
+  slight tilt when ≥1 result back, summarising the four most recent.
+
+### M18 — Claude Design Visual Style Guide Phase 1 integration
+
+- `src/style/palette.ts` — 5 ramps × 5 stops + 5 inclusive skin
+  ramps + 6 state tints, all hex-locked.
+- Typography: Space Grotesk (display), Manrope (body), JetBrains Mono
+  (data/clock/vitals), Caveat (handwritten margin scribbles).
+- `src/style/sprites.ts` — paint-by-string pixel-sprite engine.
+  Beth Cartwright authored across 5 states (stable / triaged /
+  deteriorating / arrested / post-resus).
+- `src/style/icons.tsx` — 8 pixel-art status icons (RedFlag, MustDo,
+  Trap, Countdown, TrendUp/Down, NewInfo, Citation).
+- `PatientPortrait` prefers an authored sprite when one exists,
+  synchronising frame loop to current RR. Falls back to the CSS
+  silhouette for cases without authored art.
+
+### M17 — Phaser-resident encounter
+
+- `EDScene` adds a controllable avatar (22×28 px teal-scrubs sprite).
+- Arrow / WASD movement; diagonal normalised; bounded to floor rect.
+- Proximity logic: any patient card within 90 px highlighted with
+  4 px white outline. Press E / Space to enter.
+- Click-to-enter preserved for mouse/touch.
+
+### M16 — cross-shift progression
+
+- `src/state/progression.ts` — pure XP awarding + perk evaluation.
+- 7 perks across milestones (First admission · Trap-aware · Acting
+  senior · Acting EPIC · Stable+complex SLO 1 · Resus reflexes SLO 3
+  · Four-figure clinician).
+- New menu card 'Skill tree' → standalone screen with per-SLO
+  progress bars + locked/unlocked perk gallery + cases-completed list.
+- Episode debrief now awards XP inline; new perks highlighted.
+
+### M15 — monitor audio + daily ECG challenge
+
+- `src/sim/audio.ts` — Web-Audio synthesised QRS-tick keyed to HR.
+  NEWS2 ≥ 7 OR arrested overlays an alarm tone. Opt-in,
+  localStorage-persisted.
+- 7 hand-authored ECG challenges rotating by day-of-year; standalone
+  menu card.
+
+### M14 — live deterioration timers + ward-trap counter
+
+- `DeteriorationTimers` component surfaces every unfired
+  `deterioration_if_not_x_by_t` for the current case as a countdown
+  chip with the named required-but-missing actions.
+- Tone shifts: info (>5m) · warn (≤5m) · critical (≤2m, pulsing).
+- Debrief: 'Ward traps: avoided N/M · caught: <names>' summary chip.
+
+### M13 — resus mode (ABCDE action wheel)
+
+- `Case.resus_protocol` enum (`als_adult`, `apls_paeds`, `atls`,
+  `choking_adult`, `choking_child`).
+- `ManagementAction.resus_letter` (A/B/C/D/E) groups actions into
+  the wheel.
+- Beth, Sam, Okonkwo, Okafor, Priya tagged + bucketed.
+
+### M12 — patient panel: live vitals strip + state-driven portrait
+
+- `Vitals.baseline / deteriorating / arrested` schema.
+- `src/sim/vitals.ts` — `deriveVitals(state, authored)` +
+  `news2(v)` per RCP NEWS2 chart.
+- New `<PatientPanel>` component renders the portrait + NEWS2 tile
+  + colour-coded vitals strip.
+- Every case backfilled with realistic baseline + deteriorating
+  vitals (NEWS2-escalation enforced by content discipline test).
+
+### M11 — differential builder: clue board + lock-in
+
+- `HistoryItem.supports / ExamFinding.supports / Investigation.supports`
+  (optional, references differential diagnosis labels).
+- `DifferentialPhase` rewritten as a two-section reasoning surface:
+  clue board (auto-populated) + differential cards with live
+  `+N linked` support tally.
+- Lock-in flow replaces click-to-pick: explicit commit reveals
+  likelihood + supports tags. Un-lock returns to thinking mode.
+- All 15 cases backfilled with `supports` on 2–5 history items each.
+
+### M10 — dialogue-tree history
+
+- `HistoryItem.prereq_history_ids` (pull-driven gating) +
+  `reveals` (push-driven unlock, now wired to
+  `cs.unlockedHistoryIds`).
+- `HistoryItem.npc_voice` (italic stage direction above the response).
+- Patient-comfort gate: when state ∈ {deteriorating, arrested},
+  first-person 'patient' history items are silenced; banner explains.
+- All 15 cases backfilled with 1–3 prereq chains and a npc_voice
+  flourish.
+
+### M9 — kill the forced phase pipeline
+
+- `Phase` → `Section` (drops 'vignette' as a section; it becomes a
+  persistent top card).
+- `PhaseProgress` (numbered steps) → `SectionTabs` (tablist) with
+  live kernel-derived badges: history unasked count, examination
+  remaining, investigations 'results' / 'N pending', differential
+  'pick' / '✓', management 'core actions open' / '✓', disposition
+  'decide' / '✓'.
+- Debrief tab locked until disposition + working dx picked OR shift
+  ends.
+
 ### Audit: guideline-currency + clinical-accuracy sweep across all 15 cases
 
 Driven by 5 parallel subagent audits, each verifying internal
