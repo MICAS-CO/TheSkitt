@@ -124,6 +124,8 @@ export function EncounterScreen({
         <PatientPanel cs={cs} />
       </div>
 
+      <DeteriorationTimers caseId={caseId} ks={ks} />
+
       {resusEligible && (
         <div className="enc__resus-row">
           <button
@@ -365,6 +367,45 @@ function SectionTabs({
         );
       })}
     </nav>
+  );
+}
+
+/**
+ * Live deterioration clauses (M14) — surfaces any unfired
+ * `deterioration_if_not_x_by_t` events for the current case as a countdown
+ * chip with the named required actions, so the player sees the trap
+ * coming before the kernel fires it.
+ */
+function DeteriorationTimers({ caseId, ks }: { caseId: string; ks: KernelState }) {
+  const cs = ks.cases.get(caseId);
+  if (!cs) return null;
+  const upcoming = ks.unfiredEvents.filter((e) => {
+    if (e.type !== 'deterioration_if_not_x_by_t') return false;
+    if (e.case_id !== caseId) return false;
+    const allDone = e.required_action_ids.every((a) => cs.actions.has(a));
+    return !allDone;
+  });
+  if (upcoming.length === 0) return null;
+  return (
+    <div className="enc__det-row" role="status" aria-label="Deterioration timers">
+      {upcoming.map((e) => {
+        if (e.type !== 'deterioration_if_not_x_by_t') return null;
+        const remaining = Math.max(0, e.t_min - ks.clockMin);
+        const tone = remaining <= 2 ? 'critical' : remaining <= 5 ? 'warn' : 'info';
+        const missing = e.required_action_ids
+          .filter((a) => !cs.actions.has(a))
+          .map((a) => cs.data.management.find((m) => m.id === a)?.name ?? a);
+        return (
+          <div key={e.id} className={`enc__det enc__det--${tone}`}>
+            <span className="enc__det-chip">⚠ T+{e.t_min}</span>
+            <span className="enc__det-text">
+              <strong>{remaining} min</strong> to complete:{' '}
+              <em>{missing.join(', ')}</em>
+            </span>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -889,6 +930,9 @@ function DispositionPhase({
 function DebriefPhase({ cs }: { cs: CaseRuntime }) {
   const score = useMemo<ScoreReport>(() => scoreCase(cs), [cs]);
   const c = cs.data;
+  const trapsTotal = c.management.filter((m) => m.must_not_do).length;
+  const trapsAvoided = trapsTotal - score.mustNotDoChosen;
+  const trapsPicked = c.management.filter((m) => m.must_not_do && cs.actions.has(m.id));
 
   return (
     <section className="enc__phase">
@@ -909,9 +953,15 @@ function DebriefPhase({ cs }: { cs: CaseRuntime }) {
           <li>
             Final patient state: <strong>{cs.state}</strong>
           </li>
-          {score.mustNotDoChosen > 0 && (
-            <li className="enc__score-warn">
-              <strong>Patient safety:</strong> picked {score.mustNotDoChosen} trap action(s).
+          {trapsTotal > 0 && (
+            <li className={score.mustNotDoChosen > 0 ? 'enc__score-warn' : 'enc__score-good'}>
+              <strong>Ward traps:</strong> avoided {trapsAvoided}/{trapsTotal}
+              {trapsPicked.length > 0 && (
+                <>
+                  {' '}
+                  · <em>caught: {trapsPicked.map((t) => t.name).join(', ')}</em>
+                </>
+              )}
             </li>
           )}
         </ul>

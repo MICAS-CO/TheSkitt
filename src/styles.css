@@ -1481,6 +1481,80 @@ a {
   color: #fff;
 }
 
+/* Deterioration timers (M14) */
+.enc__det-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.enc__det {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-2);
+  background: var(--panel);
+  font-size: 13px;
+}
+.enc__det-chip {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: var(--border-2);
+  color: var(--text);
+  white-space: nowrap;
+}
+.enc__det-text {
+  flex: 1;
+  line-height: 1.4;
+}
+.enc__det-text em {
+  color: var(--muted);
+  font-style: normal;
+}
+.enc__det--info {
+  border-left: 3px solid var(--info);
+}
+.enc__det--info .enc__det-chip {
+  background: var(--info);
+  color: #000;
+}
+.enc__det--warn {
+  border-left: 3px solid var(--warn);
+  background: linear-gradient(180deg, rgba(225, 162, 71, 0.1), transparent);
+}
+.enc__det--warn .enc__det-chip {
+  background: var(--warn);
+  color: #000;
+}
+.enc__det--critical {
+  border-left: 3px solid var(--danger);
+  background: linear-gradient(180deg, rgba(217, 107, 92, 0.16), transparent);
+  animation: enc-det-pulse 1.5s ease-in-out infinite;
+}
+.enc__det--critical .enc__det-chip {
+  background: var(--danger-strong);
+  color: #fff;
+}
+@keyframes enc-det-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(217, 107, 92, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(217, 107, 92, 0);
+  }
+}
+
+.enc__score-good {
+  color: var(--accent);
+}
+.enc__score-good strong {
+  color: var(--accent);
+}
+
 .enc__body {
   flex: 1;
 }
