@@ -488,6 +488,147 @@ export const ECG_BANK: EcgChallenge[] = [
     sources: ['ESC 2022 Ventricular Arrhythmias / SCD guidelines', 'brugadadrugs.org'],
   },
   {
+    id: 'ecg_012_lbbb_sgarbossa',
+    title: 'Chest pain with new LBBB — STEMI equivalent or not?',
+    context:
+      '72 y/o man, central chest pain 2 h, sweaty. PMH ischaemic heart disease, prior CABG. HR 88, BP 138/82, SpO2 96%.',
+    strip:
+      '12-lead summary:\n  Sinus rhythm 88/min\n  LBBB pattern: wide QRS 140 ms, broad notched R in I/aVL/V5/V6\n  V1–V3: concordant ST elevation 1.5 mm\n  V6: discordant ST depression 3 mm\n  No prior ECG available\n  (Sgarbossa criteria evaluable)',
+    steps: [
+      {
+        prompt: 'How do you read this in the context of chest pain?',
+        options: [
+          'Old LBBB — admit for troponin trend, no PCI activation',
+          'LBBB with positive Sgarbossa criteria — STEMI equivalent, activate primary PCI',
+          'Pericarditis',
+          'Hyperkalaemia',
+        ],
+        correctIndex: 1,
+        rationale:
+          'Sgarbossa criteria for STEMI in LBBB: (1) concordant ST↑ ≥1 mm in any lead (5 points), (2) concordant ST↓ ≥1 mm in V1-V3 (3 points), (3) discordant ST↑ ≥5 mm or discordant ST↓ > 1 mm with modified-Smith ratio ST/S < −0.25. Score ≥3 = specific for STEMI. Concordant V1-V3 ST↑ here is criterion 1.',
+      },
+      {
+        prompt: 'Best next step?',
+        options: [
+          'Activate primary PCI pathway as for STEMI',
+          'Wait for the first troponin result before deciding',
+          'Repeat ECG in 30 min',
+          'Discharge with outpatient cardiology if pain settles',
+        ],
+        correctIndex: 0,
+        rationale:
+          'New / presumed-new LBBB + clinical ACS + positive Sgarbossa = primary PCI. Waiting for troponin loses minutes of myocardium.',
+      },
+      {
+        prompt: 'Which feature would NOT make this a STEMI equivalent?',
+        options: [
+          'Concordant ST elevation in V5',
+          'Modified Sgarbossa ST/S ratio of −0.30 in V2',
+          'Discordant ST elevation of 2 mm in V3',
+          'Concordant ST depression 1 mm in V2',
+        ],
+        correctIndex: 2,
+        rationale:
+          'Discordant ST↑ <5 mm and ratio <0.25 absolute is not specific (modified Smith-Sgarbossa needs ratio ≤ −0.25). The other three meet criteria.',
+      },
+    ],
+    sources: ['Smith et al, Modified Sgarbossa criteria 2012', 'ESC 2023 STEMI guidelines'],
+  },
+  {
+    id: 'ecg_013_hypothermia',
+    title: 'Found-collapsed in the park — slow ECG with bumps',
+    context:
+      '74 y/o homeless man, found unresponsive on a park bench overnight. Tympanic temp 28.4°C. HR 38, BP 88/56, RR 8, GCS 8.',
+    strip:
+      '12-lead summary:\n  Sinus bradycardia 38/min\n  Wide QRS 130 ms\n  Prominent J wave (Osborn wave) at end of QRS in V3–V6\n  Prolonged QT 540 ms\n  Baseline tremor (shivering artefact)',
+    steps: [
+      {
+        prompt: 'Which finding is most specific for the underlying problem?',
+        options: [
+          'Sinus bradycardia',
+          'Prolonged QT',
+          'Osborn J wave',
+          'Wide QRS',
+        ],
+        correctIndex: 2,
+        rationale:
+          'Osborn (J) waves — convex positive deflection at the J point — are highly specific for hypothermia (also seen in hypercalcaemia, brain injury). Appear at core temp <32°C; size correlates with severity.',
+      },
+      {
+        prompt: 'First management priority?',
+        options: [
+          'IV adrenaline + atropine for bradycardia',
+          'Active rewarming (warm fluids, Bair Hugger, warmed humidified O2) + handle gently',
+          'Synchronised DC cardioversion for the wide QRS',
+          'Transcutaneous pacing now',
+        ],
+        correctIndex: 1,
+        rationale:
+          'Severe hypothermia: gentle handling (any rough movement can precipitate VF), passive + active external rewarming, warm IV fluids. Drugs and DC shocks are less effective until core temp >30°C — Resus Council UK ALS hypothermia algorithm.',
+      },
+      {
+        prompt: 'If patient arrests, modified ALS algorithm: how do CPR / drugs change?',
+        options: [
+          'Standard ALS — no modification needed',
+          'Withhold drugs until core >30°C; double the shock interval for >30°C; 3 shocks then no further until >30°C',
+          'Give all drugs at twice the usual dose',
+          'Skip CPR and proceed directly to ECMO',
+        ],
+        correctIndex: 1,
+        rationale:
+          'Resus Council UK hypothermia: <30°C — withhold all drugs and limit shocks to 3; 30-35°C — double drug intervals; >35°C — standard. ECMO / cardiopulmonary bypass is the definitive rewarming method if available. "Not dead until warm and dead."',
+      },
+    ],
+    sources: ['Resus Council UK 2021 — ALS Hypothermia algorithm', 'ERC 2021 Special Circumstances'],
+  },
+  {
+    id: 'ecg_014_wpw_sinus_delta',
+    title: 'Pre-game ECG before a marathon — short PR and a slur',
+    context:
+      '28 y/o marathon runner, asymptomatic, GP referral after routine ECG showed an abnormality. HR 64, BP 118/72.',
+    strip:
+      '12-lead summary:\n  Sinus rhythm 64/min\n  Short PR 100 ms\n  Slurred upstroke of QRS (delta wave) in I/aVL/V4–V6\n  Wide QRS 116 ms with delta-wave attribution\n  No ST/T changes\n  (Type A WPW pattern with left-sided pathway)',
+    steps: [
+      {
+        prompt: 'What does this ECG show?',
+        options: [
+          'Left bundle branch block',
+          'Wolff-Parkinson-White pattern (Type A)',
+          'Atrial fibrillation',
+          'Brugada pattern',
+        ],
+        correctIndex: 1,
+        rationale:
+          'Short PR (<120 ms) + delta wave (slurred QRS upstroke) + wide QRS = pre-excitation via an accessory pathway. Type A: positive delta in V1 (left-sided pathway). Type B: negative delta in V1 (right-sided).',
+      },
+      {
+        prompt: 'Asymptomatic — what is the appropriate ED pathway?',
+        options: [
+          'Discharge with reassurance — WPW pattern is benign',
+          'Discharge with outpatient cardiology referral (electrophysiology assessment ± ablation per current ESC guidance)',
+          'Admit for telemetry and IV beta-blocker',
+          'Start aspirin and admit for echocardiogram',
+        ],
+        correctIndex: 1,
+        rationale:
+          'Asymptomatic WPW pattern still warrants outpatient cardiology referral (ESC 2019). Risk stratification (EP study) identifies high-risk pathway features. Ablation is offered if the pathway is high-risk or for symptomatic patients.',
+      },
+      {
+        prompt: 'Patient asks "what should I avoid if I ever feel palpitations?" — what do you tell them?',
+        options: [
+          'Avoid caffeine and stress',
+          'Avoid known triggers (caffeine, alcohol binges) AND tell any treating doctor to AVOID adenosine/verapamil/diltiazem/digoxin/beta-blocker if AF is suspected',
+          'Take aspirin daily',
+          'Avoid all exercise',
+        ],
+        correctIndex: 1,
+        rationale:
+          'Critical teaching point: in pre-excited AF, AV-node blockers can precipitate VF. The patient should know to flag the WPW diagnosis at any future presentation with palpitations. Carry a card / wear a medical-alert bracelet.',
+      },
+    ],
+    sources: ['ESC 2019 Supraventricular Tachycardia guidelines', 'Resus Council UK ALS appendix'],
+  },
+  {
     id: 'ecg_007_hyperacute_t_lad',
     title: 'Chest pain with normal-looking ECG',
     context:

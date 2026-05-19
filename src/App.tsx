@@ -475,7 +475,9 @@ function MenuView({
           <button className="menu__card menu__card--secondary" onClick={onShowEcg}>
             <span className="menu__card-eyebrow">Daily</span>
             <span className="menu__card-title">ECG challenge</span>
-            <span className="menu__card-meta">One rotating ECG-interpretation set per day.</span>
+            <span className="menu__card-meta">
+              14-day rotation — one ECG-interpretation set per day, with cited sources.
+            </span>
           </button>
           <button className="menu__card menu__card--secondary" onClick={onShowSkillTree}>
             <span className="menu__card-eyebrow">Progression</span>
