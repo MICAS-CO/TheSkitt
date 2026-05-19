@@ -4,6 +4,20 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M26 — new case + episode: Amir, severe paediatric DKA (BSPED 2020)
+
+- `case_paeds_dka_amir` (~430 lines, ST3, paeds, EnC2 + GC3,
+  `resus_protocol: apls_paeds`). Severe DKA (pH 7.04, ketones 5.6,
+  gluc 36, GCS 13). Trap density: 4 must_not_do (20 mL/kg bolus,
+  concurrent insulin, insulin bolus, IV bicarbonate).
+- Sequence-aware: `mx_paeds_insulin_1h_after` carries
+  `prereq_action_ids: [mx_paeds_saline_bolus]` — starting insulin
+  before fluids triggers M20 sequence-error penalty.
+- `ep_paeds_dka_solo` (25-min ST3) with 7 scheduled events
+  including T+6 saline-bolus deterioration safety-net.
+- Pairs deliberately with Marcus (adult DKA) to teach BSPED-vs-
+  JBDS-IP dose-band discipline. Menu: '17 shifts, 17 cases, 3 arcs'.
+
 ### M25 — third arc: Overnight Safety-Net (Chloe + Stan)
 
 - `arc_overnight_safety_net.yaml` (shared_incident) connects Chloe

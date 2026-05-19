@@ -38,8 +38,9 @@ log and `RESUME.md` for current state at a glance.
 | 23    | New case: Chloe paracetamol OD     | Staggered-vs-acute trap + NICE NG225 safeguarding parallel                                             |
 | 24    | ECG bank +3 (14 total)             | Sgarbossa-positive LBBB, severe hypothermia, asymptomatic WPW — 14-day rotation                       |
 | 25    | Third arc: Overnight Safety-Net    | Chloe + Stan connected by shared MH-system-failure pattern (NICE NG225)                                |
+| 26    | New case: Amir paediatric DKA      | BSPED 2020 dose-band trap (10 mL/kg vs 20, 48-h deficit, insulin H+1) — pairs with Marcus              |
 
-Numbers: **257 unit tests · 2 E2E · 16 cases · 16 episodes · 3 arcs ·
+Numbers: **262 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
 14 daily ECGs**. Lint clean, typecheck clean, validator green.
 
 ## Stack

@@ -28,6 +28,7 @@ visual integration from Claude Design + new content.
 | M23 | New case + episode — Chloe, staggered paracetamol OD with safeguarding parallel |
 | M24 | ECG bank +3 (14 total, 2-week rotation) |
 | M25 | Third arc — Overnight Safety-Net connecting Chloe + Stan via NICE NG225 system-failure narrative |
+| M26 | New case + episode — Amir, severe paediatric DKA, BSPED 2020 dose-band trap (pairs with Marcus) |
 
 ## ⏳ WAITING ON DESIGN
 
@@ -38,9 +39,9 @@ template. No code changes needed beyond the registry entry.
 
 ## Numbers
 
-- **257 / 257** unit tests passing (Vitest)
+- **262 / 262** unit tests passing (Vitest)
 - **2 / 2** E2E tests passing (Playwright)
-- **16 fully-authored cases**, **16 episodes**, **3 arcs**, 44-topic
+- **17 fully-authored cases**, **17 episodes**, **3 arcs**, 44-topic
   high-yield map
 - **14 daily ECG challenges** rotating by day-of-year (2-week cycle)
 - All clinical content cites current UK guidelines as of May 2026
@@ -49,7 +50,7 @@ template. No code changes needed beyond the registry entry.
   Sep 2022, Baveno VII 2022 pre-emptive TIPS, MHRA 2024 EpiPen 25 kg
   threshold, MHRA Sep 2012 paracetamol IV NAC, TA1029 Jan 2025 ICH)
 
-## Cases on the menu (16 shifts)
+## Cases on the menu (17 shifts)
 
 1. **The hen-do** (ST3, 4 cases + 1 arc) — Beth + Sarah + Stan + Patel
 2. **Family anaphylaxis — adult + paeds** (ST3, 2 cases + 1 arc) — Beth + Sam
@@ -66,7 +67,8 @@ template. No code changes needed beyond the registry entry.
 13. **Hypertensive emergency — controlled BP reduction** (CT2) — Oduya
 14. **Paracetamol overdose — staggered, safeguarding parallel** (ST3) — Chloe
 15. **Overnight — the safety net** (ST3, 2 cases + 1 arc) — Chloe + Stan
-16. **Anaphylaxis solo** (CT2) — Beth (milestone-4 build)
+16. **Paediatric DKA — BSPED-vs-JBDS dose bands** (ST3, paeds) — Amir
+17. **Anaphylaxis solo** (CT2) — Beth (milestone-4 build)
 
 Plus: **ED hub layout** (Phaser overworld with avatar + proximity
 interact); **Daily ECG challenge** (11-rotation bank);
