@@ -6,6 +6,7 @@ import { ClockBar } from '../shift/ClockBar';
 import { PatientPanel } from './PatientPanel';
 import { ResusMode } from './ResusMode';
 import { IconCountdown, IconRedFlag } from '../../style/icons';
+import { ResultsEnvelope } from '../../style/frames';
 
 /**
  * Sections of the encounter. Replaces the old linear "phase pipeline":
@@ -611,12 +612,42 @@ function InvestigationsPhase({
   clockMin: number;
   onOrder: (id: string) => void;
 }) {
+  const resultedNow = cs.data.investigations.filter((ix) => cs.resulted.has(ix.id));
+  const showEnvelope = resultedNow.length > 0;
   return (
     <section className="enc__phase">
       <h2>Investigations</h2>
       <p className="enc__hint">
         Results come back after the turnaround. The clock keeps running — order what you need early.
       </p>
+
+      {showEnvelope && (
+        <div className="enc__results-hero">
+          <ResultsEnvelope
+            width={520}
+            height={220}
+            ward={`ED · ${cs.data.bay?.toUpperCase() ?? 'BAY'}`}
+            from="LAB · PATHOLOGY"
+            re={cs.data.title}
+            style={{ width: '100%', maxWidth: 560 }}
+          >
+            <div className="enc__results-list">
+              {resultedNow.slice(0, 4).map((ix) => (
+                <div key={ix.id} className="enc__results-row">
+                  <strong>{ix.name}{ix.abnormal ? ' ⚠' : ''}:</strong>{' '}
+                  {summariseResult(ix.result_summary)}
+                </div>
+              ))}
+              {resultedNow.length > 4 && (
+                <div className="enc__results-row enc__results-row--more">
+                  + {resultedNow.length - 4} more — see list below
+                </div>
+              )}
+            </div>
+          </ResultsEnvelope>
+        </div>
+      )}
+
       <ul className="enc__cards">
         {cs.data.investigations.map((ix) => {
           const orderedAt = cs.ordered.get(ix.id);
@@ -651,6 +682,17 @@ function InvestigationsPhase({
       </ul>
     </section>
   );
+}
+
+function summariseResult(text: string): string {
+  // First non-empty line, trimmed and clipped — enough to surface the
+  // headline finding in the envelope hero without overflowing.
+  const firstLine = text
+    .split('\n')
+    .map((l) => l.trim())
+    .find((l) => l.length > 0);
+  if (!firstLine) return text;
+  return firstLine.length > 110 ? firstLine.slice(0, 107) + '…' : firstLine;
 }
 
 interface Clue {

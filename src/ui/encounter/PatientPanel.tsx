@@ -3,6 +3,7 @@ import type { CaseRuntime } from '../../sim/kernel';
 import { deriveVitals, news2 } from '../../sim/vitals';
 import { MonitorAudio, loadAudioEnabled, saveAudioEnabled } from '../../sim/audio';
 import { frameCountFor, spriteSvgFor } from '../../style/sprites';
+import { Monitor, VitalsStripFrame, type VitalReading } from '../../style/frames';
 
 /**
  * Persistent patient panel — portrait + live vitals strip.
@@ -44,6 +45,33 @@ export function PatientPanel({ cs }: { cs: CaseRuntime }) {
     saveAudioEnabled(next);
   }
 
+  const readings: VitalReading[] = [
+    { label: 'HR', value: fmtHr(v.hr), unit: 'bpm', tone: paramTone(score.hr) },
+    { label: 'RR', value: fmtNum(v.rr), unit: '/min', tone: paramTone(score.rr) },
+    {
+      label: 'SpO₂',
+      value: fmtPct(v.spo2),
+      unit: v.on_o2 ? 'O2' : 'RA',
+      tone: paramTone(score.spo2 + score.o2),
+    },
+    {
+      label: 'BP',
+      value: fmtBp(v.bp_sys, v.bp_dia),
+      unit: 'mmHg',
+      tone: paramTone(score.bp_sys),
+    },
+    { label: 'GCS', value: fmtNum(v.gcs), unit: '/15', tone: paramTone(score.acvpu) },
+  ];
+  if (v.temp_c !== undefined)
+    readings.push({
+      label: 'Temp',
+      value: v.temp_c.toFixed(1),
+      unit: '°C',
+      tone: paramTone(score.temp),
+    });
+  if (v.bm !== undefined)
+    readings.push({ label: 'BM', value: v.bm.toFixed(1), unit: 'mmol/L', tone: paramTone(0) });
+
   return (
     <aside className="patient-panel" aria-label="Patient panel">
       <div className="patient-panel__toolbar">
@@ -57,56 +85,33 @@ export function PatientPanel({ cs }: { cs: CaseRuntime }) {
           {audioOn ? '♪ monitor on' : '♪ monitor off'}
         </button>
       </div>
-      <PatientPortrait caseId={cs.caseId} state={cs.state} hr={v.hr ?? 80} rr={v.rr ?? 16} />
+      <Monitor
+        width={320}
+        height={220}
+        sticker="CardioVis · v3.2"
+        style={{ width: '100%' }}
+      >
+        <div className="patient-panel__portrait-slot">
+          <PatientPortrait caseId={cs.caseId} state={cs.state} hr={v.hr ?? 80} rr={v.rr ?? 16} />
+        </div>
+      </Monitor>
       <div className="patient-panel__vitals">
         <div className={`patient-panel__news patient-panel__news--${newsBand}`}>
           <div className="patient-panel__news-label">NEWS2</div>
           <div className="patient-panel__news-value">{score.total}</div>
         </div>
-        <ul className="vitals-strip">
-          <Vital label="HR" value={fmtHr(v.hr)} unit="bpm" score={score.hr} />
-          <Vital label="RR" value={fmtNum(v.rr)} unit="/min" score={score.rr} />
-          <Vital
-            label="SpO2"
-            value={fmtPct(v.spo2)}
-            unit={v.on_o2 ? ' on O2' : ' RA'}
-            score={score.spo2 + score.o2}
-          />
-          <Vital label="BP" value={fmtBp(v.bp_sys, v.bp_dia)} unit="mmHg" score={score.bp_sys} />
-          <Vital label="GCS" value={fmtNum(v.gcs)} unit="/15" score={score.acvpu} />
-          {v.temp_c !== undefined && (
-            <Vital label="Temp" value={v.temp_c.toFixed(1)} unit="°C" score={score.temp} />
-          )}
-          {v.bm !== undefined && (
-            <Vital label="BM" value={v.bm.toFixed(1)} unit="mmol/L" score={0} />
-          )}
-        </ul>
+        <VitalsStripFrame vitals={readings} width={540} height={120} style={{ width: '100%' }} />
       </div>
     </aside>
   );
 }
 
-function Vital({
-  label,
-  value,
-  unit,
-  score,
-}: {
-  label: string;
-  value: string;
-  unit: string;
-  score: number;
-}) {
-  const tone = score >= 3 ? 'red' : score >= 2 ? 'amber' : score >= 1 ? 'soft' : 'normal';
-  return (
-    <li className={`vitals-strip__item is-${tone}`}>
-      <span className="vitals-strip__label">{label}</span>
-      <span className="vitals-strip__value">
-        {value}
-        <span className="vitals-strip__unit">{unit}</span>
-      </span>
-    </li>
-  );
+/** Map a NEWS2 sub-score (0–3) to the design's NEWS2 traffic-light hex. */
+function paramTone(s: number): string {
+  if (s >= 3) return '#C8362A';
+  if (s >= 2) return '#E0A82E';
+  if (s >= 1) return '#E0A82E';
+  return '#5BBF8F';
 }
 
 function fmtNum(n: number | undefined): string {

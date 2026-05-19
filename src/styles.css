@@ -1177,6 +1177,28 @@ a {
     radial-gradient(120% 100% at 50% 0%, rgba(124, 110, 116, 0.18), transparent 60%),
     linear-gradient(180deg, #1c1820 0%, #0d0e12 100%);
 }
+
+/* Slot inside the Monitor diegetic frame — centres the portrait sprite
+   inside the green screen area without altering its size. */
+.patient-panel__portrait-slot {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.patient-panel__portrait-slot .patient-portrait {
+  background: transparent;
+  border: none;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.patient-panel__portrait-slot .patient-portrait--sprite {
+  background: transparent;
+}
 .patient-portrait__bed {
   position: absolute;
   inset: auto 12px 14px;
@@ -1605,6 +1627,46 @@ a {
 }
 .enc__score-good strong {
   color: var(--accent);
+}
+
+/* Results-back envelope hero (M19) — pops over investigations when ≥1 result back. */
+.enc__results-hero {
+  display: flex;
+  justify-content: center;
+  margin: 4px 0 12px;
+  animation: results-arrive 0.5s ease-out;
+}
+@keyframes results-arrive {
+  0% {
+    transform: translateY(-8px) rotate(-1deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+}
+.enc__results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #1a1a1a;
+  font-family: var(--font-mono);
+}
+.enc__results-row {
+  padding: 2px 0;
+  border-bottom: 1px dashed #9c8d5c;
+}
+.enc__results-row:last-child {
+  border-bottom: none;
+}
+.enc__results-row--more {
+  color: #5a4a28;
+  font-style: italic;
+  border-bottom: none;
+  padding-top: 4px;
 }
 
 .patient-panel__toolbar {
