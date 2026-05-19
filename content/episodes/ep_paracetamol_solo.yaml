@@ -1,0 +1,108 @@
+# Single-case 20-min shift around Chloe Davies — staggered paracetamol
+# overdose. The teaching pattern is the staggered-vs-acute trap plus
+# the parallel medical + safeguarding pathway per NICE NG225.
+
+schema_version: 1
+id: ep_paracetamol_solo
+title: 'Paracetamol overdose — staggered, safeguarding parallel'
+
+learning_objectives:
+  - 'Recognise staggered paracetamol overdose: ingestion in two or more doses spanning >1 h, total >75 mg/kg — the Rumack-Matthew nomogram does NOT apply.'
+  - 'Start IV N-acetylcysteine immediately in staggered OD regardless of paracetamol level (MHRA Drug Safety Update Sep 2012; TOXBASE 2026).'
+  - 'Run the medical and safeguarding pathways in parallel: every self-harm presentation receives a psychosocial assessment before medical discharge (NICE NG225).'
+  - 'Apply the SNAP regimen (100 mg/kg over 2 h, then 200 mg/kg over 10 h) for IV NAC — same efficacy as the legacy 3-bag protocol, fewer anaphylactoid reactions.'
+  - "Recognise the King's College Hospital criteria for liver transplant referral: pH <7.30 OR INR >6.5 + creatinine >300 + grade III–IV encephalopathy."
+
+curriculum_tags: [PhP2, PhC1, MHP1]
+difficulty_band: ST3
+shift_duration_min: 20
+
+focus_cases:
+  - case_paracetamol_od_chloe
+
+ambient_cases: []
+
+scheduled_events:
+  # T+4 — paracetamol level returns. Critical moment for the player to
+  # recognise the trap: in staggered OD, the level cannot dictate treatment.
+  - id: ev_chloe_paracetamol_level
+    type: results_back
+    t_min: 4
+    case_id: case_paracetamol_od_chloe
+    investigation_id: ix_paracetamol_level
+
+  # T+5 — VBG + salicylate return.
+  - id: ev_chloe_vbg
+    type: results_back
+    t_min: 5
+    case_id: case_paracetamol_od_chloe
+    investigation_id: ix_vbg
+
+  - id: ev_chloe_salicylate
+    type: results_back
+    t_min: 5
+    case_id: case_paracetamol_od_chloe
+    investigation_id: ix_salicylate_level
+
+  # T+6 — LFTs and coag return (baseline normal; need to trend).
+  - id: ev_chloe_lfts
+    type: results_back
+    t_min: 6
+    case_id: case_paracetamol_od_chloe
+    investigation_id: ix_lfts
+
+  - id: ev_chloe_coag
+    type: results_back
+    t_min: 6
+    case_id: case_paracetamol_od_chloe
+    investigation_id: ix_coag
+
+  # T+8 — Mira (housemate) needs to update her parents; arrives in the
+  # relatives' room asking what to say to them.
+  - id: ev_chloe_mira_arrival
+    type: family_arrival
+    t_min: 8
+    case_id: case_paracetamol_od_chloe
+    npc: 'Mira (housemate, distressed, asking what to tell Chloe’s mum)'
+
+  # T+12 — if NAC not started by T+12, the case state deteriorates as
+  # the hepatic injury declares itself early. This is the SAFETY net for
+  # the staggered-vs-acute teaching point.
+  - id: ev_chloe_nac_not_started
+    type: deterioration_if_not_x_by_t
+    t_min: 12
+    case_id: case_paracetamol_od_chloe
+    required_action_ids: [mx_iv_nac]
+    new_state: deteriorating
+
+  # T+10 — liaison psychiatry lab callback: they can see her at the bedside
+  # this shift, but only if she's been medically referred to acute medicine.
+  - id: ev_chloe_psych_call
+    type: lab_callback
+    t_min: 10
+    case_id: case_paracetamol_od_chloe
+    investigation_id: ix_paracetamol_level
+    urgent_finding: 'Liaison psychiatry on the line — available now if medical admission confirmed.'
+
+  # T+14 — bed manager presses for disposition.
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 14
+    severity: firm
+
+arcs: []
+
+author_notes: |
+  Solo Tier-2 shift. The two teaching axes are:
+
+  1. Toxicology: staggered ≠ acute. Start NAC regardless of level.
+     The 4-h paracetamol level (84 mg/L) is a perfect trap — looks
+     "below treatment line" if mis-applied to a nomogram.
+  2. Safeguarding: parallel pathway. The medical NAC infusion runs
+     while liaison psychiatry assess. Cannot discharge until both
+     are resolved.
+
+  The case carries a sequence sensitivity (NAC must start by T+12) but
+  is not technically a resus case — the patient is alert and stable.
+  The deterioration clause is the SAFETY net for the staggered-vs-acute
+  trap.

@@ -69,10 +69,14 @@ import ahfEpYaml from '../content/episodes/ep_ahf_solo.yaml?raw';
 import oduyaYaml from '../content/cases/case_htn_emergency_oduya.yaml?raw';
 import htnEpYaml from '../content/episodes/ep_htn_emergency_solo.yaml?raw';
 
+// Paracetamol overdose — staggered + safeguarding parallel
+import chloeYaml from '../content/cases/case_paracetamol_od_chloe.yaml?raw';
+import paracetamolEpYaml from '../content/episodes/ep_paracetamol_solo.yaml?raw';
+
 type View = 'menu' | 'shift' | 'hub' | 'ecg' | 'skilltree';
 
 const SUBTITLES: Record<View, string> = {
-  menu: 'Episodic UK FRCEM study RPG · 14 shifts, 15 cases',
+  menu: 'Episodic UK FRCEM study RPG · 15 shifts, 16 cases',
   shift: 'Shift in progress',
   hub: 'ED hub (preview)',
   ecg: 'Daily ECG challenge',
@@ -171,6 +175,12 @@ const AHF_SOLO: () => ShiftPack = () => ({
 const HTN_EMERGENCY_SOLO: () => ShiftPack = () => ({
   episode: Episode.parse(parseYaml(htnEpYaml)),
   cases: [Case.parse(parseYaml(oduyaYaml))],
+  arcs: [],
+});
+
+const PARACETAMOL_SOLO: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(paracetamolEpYaml)),
+  cases: [Case.parse(parseYaml(chloeYaml))],
   arcs: [],
 });
 
@@ -275,6 +285,13 @@ const SHIFT_DEFS: ShiftDef[] = [
     eyebrow: 'Shift · CT2 · 20 min · 1 case',
     meta: 'BP 226/132 with encephalopathy + PRES + AKI Stage 2 + grade IV retinopathy. NICE NG136 + RCEM + ESH 2023. 10-25% reduction in 1 h — discipline over speed.',
     factory: HTN_EMERGENCY_SOLO,
+  },
+  {
+    id: 'ep_paracetamol_solo',
+    title: 'Paracetamol overdose — staggered, safeguarding parallel',
+    eyebrow: 'Shift · ST3 · 20 min · 1 case',
+    meta: '19 y/o student, ~16 g paracetamol spread over 5 hours. The staggered-vs-acute trap (nomogram doesn’t apply; NAC regardless of level) + the NICE NG225 parallel safeguarding pathway.',
+    factory: PARACETAMOL_SOLO,
   },
   {
     id: 'ep_anaphylaxis_solo',
