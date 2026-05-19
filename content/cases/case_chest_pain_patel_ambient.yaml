@@ -147,6 +147,7 @@ investigations:
     name: '12-lead ECG'
     category: ecg
     turnaround_min: 2
+    ecg_challenge_id: ecg_002_anterior_stemi
     result_summary: |
       Sinus tachycardia 102/min. **ST elevation V2–V4 (2 mm), reciprocal
       ST depression in II/III/aVF.** Anterior STEMI.

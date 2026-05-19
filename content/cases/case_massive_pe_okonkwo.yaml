@@ -303,6 +303,7 @@ investigations:
     name: '12-lead ECG'
     category: ecg
     turnaround_min: 2
+    ecg_challenge_id: ecg_005_pe_pattern
     result_summary: |
       Sinus tachycardia 124/min. **S1Q3T3** pattern present (S in I,
       Q in III, inverted T in III). **TWI in V1-V3** — anterior

@@ -7,6 +7,7 @@ import { PatientPanel } from './PatientPanel';
 import { ResusMode } from './ResusMode';
 import { IconCitation, IconCountdown, IconNewInfo, IconRedFlag, IconTrap } from '../../style/icons';
 import { ResultsEnvelope } from '../../style/frames';
+import { ECG_BANK } from '../../content/ecg-challenges';
 
 function trapHintsEnabled(): boolean {
   try {
@@ -688,12 +689,106 @@ function InvestigationsPhase({
                       : `~${ix.turnaround_min} min`}
                 </span>
               </button>
+              {isResulted && ix.ecg_challenge_id && (
+                <EcgInlineQuiz challengeId={ix.ecg_challenge_id} />
+              )}
               {isResulted && <pre className="enc__result">{ix.result_summary}</pre>}
             </li>
           );
         })}
       </ul>
     </section>
+  );
+}
+
+/**
+ * Inline ECG-bank challenge (M31). When a case's ECG investigation is
+ * tagged with an `ecg_challenge_id`, the resulted card surfaces the
+ * first interpretation question right here — so the player exercises
+ * rhythm-recognition skill at the point of clinical relevance rather
+ * than purely in the side-room daily-ECG screen.
+ */
+function EcgInlineQuiz({ challengeId }: { challengeId: string }) {
+  const ecg = useMemo(() => ECG_BANK.find((e) => e.id === challengeId), [challengeId]);
+  const [expanded, setExpanded] = useState(false);
+  const [picked, setPicked] = useState<number | null>(null);
+  const [revealed, setRevealed] = useState(false);
+
+  if (!ecg) return null;
+  const step = ecg.steps[0]!;
+
+  if (!expanded) {
+    return (
+      <button
+        type="button"
+        className="ecg-inline__toggle"
+        onClick={() => setExpanded(true)}
+      >
+        ▾ interpret the rhythm strip first ({ecg.title})
+      </button>
+    );
+  }
+
+  const isCorrect = revealed && picked === step.correctIndex;
+  return (
+    <div className="ecg-inline">
+      <div className="ecg-inline__strip-head">
+        <span className="ecg-inline__title">Rhythm strip</span>
+        <button
+          type="button"
+          className="ecg-inline__close"
+          onClick={() => {
+            setExpanded(false);
+            setPicked(null);
+            setRevealed(false);
+          }}
+          aria-label="Hide ECG quiz"
+        >
+          ✕
+        </button>
+      </div>
+      <pre className="ecg-inline__strip">{ecg.strip}</pre>
+      <p className="ecg-inline__prompt">{step.prompt}</p>
+      <ul className="ecg-inline__options">
+        {step.options.map((opt, i) => {
+          const cls = [
+            'ecg-inline__option',
+            picked === i ? 'is-picked' : '',
+            revealed && i === step.correctIndex ? 'is-correct' : '',
+            revealed && picked === i && i !== step.correctIndex ? 'is-wrong' : '',
+          ]
+            .filter(Boolean)
+            .join(' ');
+          return (
+            <li key={i}>
+              <button
+                type="button"
+                className={cls}
+                onClick={() => !revealed && setPicked(i)}
+                disabled={revealed}
+              >
+                {opt}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      {!revealed && (
+        <button
+          type="button"
+          className="ecg-inline__reveal"
+          onClick={() => setRevealed(true)}
+          disabled={picked === null}
+        >
+          Reveal answer
+        </button>
+      )}
+      {revealed && (
+        <div className={`ecg-inline__rationale ${isCorrect ? 'is-correct' : 'is-wrong'}`}>
+          <strong>{isCorrect ? '✓ Correct.' : '✗ Not quite.'}</strong> {step.rationale}
+        </div>
+      )}
+    </div>
   );
 }
 

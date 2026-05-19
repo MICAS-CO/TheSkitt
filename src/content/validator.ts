@@ -228,6 +228,17 @@ export function validateContent(rootDir: string): ValidationReport {
     }
     for (const ix of entry.data.investigations) {
       checkSupports(`case ${entry.data.id} → investigation ${ix.id}`, ix.supports);
+      // M31: ecg_challenge_id must reference a real entry in the ECG bank.
+      if (ix.ecg_challenge_id) {
+        const ecgIds = loadEcgChallengeIds(rootDir);
+        if (ecgIds.size > 0 && !ecgIds.has(ix.ecg_challenge_id)) {
+          report.errors.push({
+            file: entry.file,
+            path: `case ${entry.data.id} → investigation ${ix.id}`,
+            message: `ecg_challenge_id "${ix.ecg_challenge_id}" not found in src/content/ecg-challenges.ts`,
+          });
+        }
+      }
     }
     // Per-case integrity: prereq_action_ids reference real mx in the same case (M20).
     const mxIds = new Set(entry.data.management.map((m) => m.id));
@@ -306,6 +317,23 @@ export function validateContent(rootDir: string): ValidationReport {
 
   report.ok = report.errors.length === 0;
   return report;
+}
+
+function loadEcgChallengeIds(rootDir: string): Set<string> {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const fs = require('node:fs') as typeof import('node:fs');
+    const raw = fs.readFileSync(`${rootDir}/src/content/ecg-challenges.ts`, 'utf8');
+    // Scrape `id: 'ecg_xxx_yyy'` declarations — simple enough not to
+    // require a TS parser at validate-time.
+    const ids = new Set<string>();
+    for (const match of raw.matchAll(/id:\s*'(ecg_[a-z0-9_]+)'/g)) {
+      ids.add(match[1]!);
+    }
+    return ids;
+  } catch {
+    return new Set();
+  }
 }
 
 function loadTopicMapIds(rootDir: string): Set<string> {

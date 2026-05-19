@@ -256,6 +256,13 @@ export const Investigation = z.object({
   sources: z.array(Citation).optional(),
   /** Differentials this result clinically supports — see HistoryItem.supports. */
   supports: z.array(z.string()).optional(),
+  /**
+   * Optional link to a daily ECG bank entry (M31). When set, the
+   * resulted ix surfaces an inline 'interpret the rhythm strip' prompt
+   * before the paragraph result. Used to pair the case's clinical
+   * narrative with the standalone ECG-interpretation skill.
+   */
+  ecg_challenge_id: z.string().optional(),
 });
 
 // ─── Differential & management ──────────────────────────────────────────────
