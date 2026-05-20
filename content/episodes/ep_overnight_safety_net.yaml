@@ -44,12 +44,13 @@ scheduled_events:
     case_id: case_paracetamol_od_chloe
     investigation_id: ix_lfts
 
-  - id: ev_chloe_nac_not_started
-    type: deterioration_if_not_x_by_t
-    t_min: 12
-    case_id: case_paracetamol_od_chloe
-    required_action_ids: [mx_iv_nac]
-    new_state: deteriorating
+  # M86 (Braintrust 06 audit): the T+12 "Chloe deteriorates from no
+  # NAC" event was removed. NAC initiation is time-sensitive in the
+  # hours-since-ingestion sense (8h SNAP/Prescott curve), NOT in the
+  # 12-min-of-simulated-shift sense — the build's clock was the wrong
+  # scale of time. The case still surfaces NAC as a must-do at debrief
+  # score, so omitting it costs the player at the band level without a
+  # spurious wall-clock punishment.
 
   # ─── Stan ─────────────────────────────────────────────────────────────
   - id: ev_stan_bm

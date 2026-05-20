@@ -470,13 +470,14 @@ state_machine:
         min: 8
         required_actions: [mx_ecg_10min]
         note: 'No ECG within 10 min — patient becoming dyspnoeic in the waiting room.'
-    - from: deteriorating
-      to: arrested
-      trigger:
-        on: inaction_by
-        min: 14
-        required_actions: [mx_aspirin, mx_ppci_pathway]
-        note: 'VF arrest in the waiting room — preventable with timely STEMI workup.'
+    # M86 (Braintrust 06 audit): the deteriorating → arrested at min 14
+    # transition was removed. Silent / atypical STEMI is time-critical
+    # for outcomes (door-to-balloon clock, ~90 min target) but the
+    # clinical course does not arrest in 14 minutes from non-detection.
+    # The case stays in `deteriorating` instead — recoverable via the
+    # deteriorating → stable path (mx_aspirin) but never an unrecoverable
+    # wall-clock arrest. The teaching is delivered by the case content
+    # and the debrief score, not by a spurious deterioration timer.
     - from: deteriorating
       to: stable
       trigger:

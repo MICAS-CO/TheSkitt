@@ -544,15 +544,20 @@ state_machine:
         on: action
         action_id: mx_call_gynae
         note: 'Gynae aware — borderline stable while awaiting team.'
+    # M86 (Braintrust 06 audit): softened from arrested → deteriorating
+    # to match the episode-event softening in ep_hendo_shift. Ruptured
+    # ectopic is genuinely time-critical but a 16-min arrest from
+    # undetection is more aggressive than the clinical course allows.
     - from: triaged
-      to: arrested
+      to: deteriorating
       trigger:
         on: inaction_by
         min: 16
         required_actions: [mx_serum_bhcg, mx_call_gynae]
         note: |
-          Ruptured ectopic with cardiovascular collapse — diagnosis or
-          escalation not actioned by 16 min into the shift.
+          Ruptured ectopic with hypotension and tachycardia — perfusion
+          falling without diagnosis or escalation by 16 min into the
+          shift. Recoverable, but only with iv_fluids + gynae call.
     - from: stable
       to: deteriorating
       trigger:

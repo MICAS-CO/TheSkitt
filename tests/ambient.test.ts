@@ -58,10 +58,15 @@ describe('Ambient board pressure (Milestone 8)', () => {
     expect(kernel.getState().cases.get(stan.id)!.state).not.toBe('arrested');
   });
 
-  it('Mrs Patel arrests in the waiting room if neither ECG nor aspirin happen', () => {
+  it('Mrs Patel slides to deteriorating in the waiting room if neither ECG nor aspirin happen', () => {
+    // M86 (Braintrust 06 audit): Patel's state machine no longer
+    // arrests her at T+14 from STEMI undetection — silent MI's
+    // clinical course doesn't support 14-min arrest. She still
+    // degrades to deteriorating at min 8 (no ECG) and stays there
+    // unless rescued.
     const { kernel, patel } = bootHendoWithAmbient();
     kernel.advance(20);
-    expect(kernel.getState().cases.get(patel.id)!.state).toBe('arrested');
+    expect(kernel.getState().cases.get(patel.id)!.state).toBe('deteriorating');
   });
 
   it('Mrs Patel is saved if aspirin and PCI activation happen in time', () => {
@@ -88,8 +93,16 @@ describe('Ambient board pressure (Milestone 8)', () => {
     const { kernel } = bootHendoWithAmbient();
     kernel.advance(20); // neglect everyone
     const r = scoreEpisode(kernel.getState());
-    // All 4 cases arrest in this episode design — verify ambient count too
-    expect(r.livesLost).toBe(4);
+    // M86 (Braintrust 06 audit): post-audit, the hen-do shift has TWO
+    // arrest events (Beth T+5 anaphylaxis + Stan T+15 severe hypo) —
+    // both literature-justified. Sarah's T+16 ectopic event was
+    // softened to deteriorating (still bad, not unrecoverable); Patel's
+    // T+14 silent-STEMI event was removed entirely (the clinical course
+    // doesn't support a 14-min arrest from non-detection). So
+    // neglecting everything now produces livesLost = 2, not 4. The
+    // episode band remains 'unsafe' because any single arrested case
+    // is enough to flag the whole shift.
+    expect(r.livesLost).toBe(2);
     expect(r.band).toBe('unsafe');
   });
 });

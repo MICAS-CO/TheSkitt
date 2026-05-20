@@ -36,14 +36,15 @@ scheduled_events:
       - mx_fluid_resus
     new_state: arrested
 
-  - id: ev_dka_deterioration
-    type: deterioration_if_not_x_by_t
-    t_min: 15
-    case_id: case_dka_marcus
-    required_action_ids:
-      - mx_fluid_first
-      - mx_fixed_rate_insulin
-    new_state: arrested
+  # M86 (Braintrust 06 audit): the `ev_dka_deterioration` event was
+  # removed entirely. Adult DKA has a real time-critical bundle
+  # (JBDS-IP fluid-first, then fixed-rate insulin) but the catastrophe
+  # is over hours, not minutes. The earlier softening (arrested →
+  # deteriorating) left a no-op event — Marcus starts in `deteriorating`
+  # (initial_state) so a T+15 event setting him to `deteriorating` was
+  # redundant with the case state machine. Round-1 reviewer caught
+  # this. The case state machine retains its deteriorating → stable
+  # rescue path via mx_fixed_rate_insulin.
 
   - id: ev_sepsis_family
     type: family_arrival

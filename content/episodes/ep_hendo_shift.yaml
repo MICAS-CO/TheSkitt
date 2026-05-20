@@ -60,12 +60,23 @@ scheduled_events:
     t_min: 5
     case_id: case_ectopic_minors_sarah
 
+  # M86 (Braintrust 06 audit): softened from arrested → deteriorating
+  # (was originally `new_state: arrested`). Ruptured ectopic is time-
+  # critical but 16-min arrest from undetection is more aggressive
+  # than the clinical course allows. Kept (not removed) because
+  # this event uses ABSOLUTE clock time while the case state machine's
+  # `inaction_by` trigger uses SINCE-TRIAGE time — Sarah triages at
+  # T+5 (via ev_sarah_arrival), so her state-machine min:16 fires at
+  # T+21, past the 20-min shift end. Without this episode event there
+  # is no in-shift deterioration coverage for Sarah at all. Round-2
+  # reviewer flagged this as a no-op assuming the two sources matched;
+  # they don't, on multi-arrival shifts.
   - id: ev_sarah_rupture
     type: deterioration_if_not_x_by_t
     t_min: 16
     case_id: case_ectopic_minors_sarah
     required_action_ids: [mx_serum_bhcg, mx_call_gynae]
-    new_state: arrested
+    new_state: deteriorating
 
   # ─── Mrs Patel (ambient — STEMI in waiting room) ────────────────────────
   - id: ev_patel_news2_t8
@@ -75,12 +86,14 @@ scheduled_events:
     new_news2: 6
     if_no_action: true
 
-  - id: ev_patel_arrest_t14
-    type: deterioration_if_not_x_by_t
-    t_min: 14
-    case_id: case_chest_pain_patel_ambient
-    required_action_ids: [mx_ecg_10min, mx_aspirin]
-    new_state: arrested
+  # M86 (Braintrust 06 audit): the T+14 "Patel arrests from undetected
+  # STEMI" event was removed. NSTEMI / silent MI is time-critical for
+  # outcomes (door-to-balloon clock) but the clinical course does not
+  # support a 14-minute arrest from non-detection. The teaching point
+  # (look past the chief complaint, get an ECG, anchor on STEMI is
+  # wrong) is delivered by the case content, not by a wall-clock
+  # event. The case can still degrade through the normal deteriorating
+  # path if the player misses the must-do actions at debrief score.
 
   # ─── Stan (ambient — frequent flyer, hypoglycaemic) ─────────────────────
   - id: ev_stan_news2_t10

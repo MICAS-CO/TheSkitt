@@ -433,8 +433,11 @@ describe('SimKernel — inaction_by elapsed-since-triage (M80)', () => {
     expect(kernel.getState().cases.get(sarah.id)!.state).toBe('triaged');
 
     // T+21 globally = 16 min since triage — the window now elapses.
+    // M86 (Braintrust 06 audit): Sarah's triaged → arrested outcome
+    // was softened to triaged → deteriorating. The M80 since-triage
+    // accounting is unchanged; only the destination state differs.
     kernel.advance(1);
-    expect(kernel.getState().cases.get(sarah.id)!.state).toBe('arrested');
+    expect(kernel.getState().cases.get(sarah.id)!.state).toBe('deteriorating');
   });
 
   it('preserves prior solo-shift behaviour: T=0-triaged cases fire at clockMin >= min', () => {

@@ -651,15 +651,14 @@ state_machine:
         note: |
           Even after early hepatic injury declares, NAC + hepatology
           rescue the case — escalate to admission rather than abandon.
-    - from: deteriorating
-      to: arrested
-      trigger:
-        on: inaction_by
-        min: 18
-        required_actions: [mx_iv_nac, mx_hepatology_referral]
-        note: |
-          Fulminant hepatic failure without rescue — multi-organ
-          failure and cardiac arrest.
+    # M86 (Braintrust 06 audit): the deteriorating → arrested at min 18
+    # transition was removed. Paracetamol-induced fulminant hepatic
+    # failure is real but its arrest timescale is days, not 18 minutes
+    # of a single ED shift. The build's wall-clock was the wrong scale.
+    # Chloe can still progress through deteriorating-state-stays-
+    # deteriorating-until-NAC-and-hepatology rescue her (the existing
+    # deteriorating → admitted via mx_iv_nac transition), or sit in
+    # deteriorating to the end of shift — both outcomes credible.
 
 pearls:
   - 'Staggered paracetamol OD = NAC regardless of level. The Rumack-Matthew nomogram only applies to a single acute ingestion at a known time. (MHRA Drug Safety Update Sep 2012; TOXBASE Paracetamol monograph 2026.)'

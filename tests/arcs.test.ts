@@ -77,10 +77,15 @@ describe('SimKernel — multi-case', () => {
 
   it('runs both deterioration events on a single shift clock', () => {
     const { kernel, bethId, sarahId } = bootHendoShift();
-    // Player neglects both cases — both deteriorate at their event times.
+    // Player neglects both cases — both deterioration events still fire
+    // at T+5 and T+16. M86 (Braintrust 06 audit): Sarah's outcome was
+    // softened from arrested → deteriorating; the literature does not
+    // support a 16-minute arrest from ectopic undetection. Beth (Resus
+    // Council UK 2021 anaphylaxis adrenaline 5-min window) is textbook
+    // and stays at arrested.
     kernel.advance(20);
     expect(kernel.getState().cases.get(bethId)!.state).toBe('arrested');
-    expect(kernel.getState().cases.get(sarahId)!.state).toBe('arrested');
+    expect(kernel.getState().cases.get(sarahId)!.state).toBe('deteriorating');
   });
 
   it('saves both cases when the right interventions are done in time', () => {

@@ -560,13 +560,13 @@ state_machine:
           Fixed-rate insulin started + fluids running — ketones will
           fall over the next 4–6 h, glucose first. Needs ongoing
           HDU-level care.
-    - from: deteriorating
-      to: arrested
-      trigger:
-        on: inaction_by
-        min: 15
-        required_actions: [mx_fluid_first, mx_fixed_rate_insulin]
-        note: 'Decompensated DKA — no fluids + no insulin by T+15.'
+    # M86 (Braintrust 06 audit): the deteriorating → arrested at min 15
+    # transition was removed. Adult DKA has a real time-critical bundle
+    # (JBDS-IP fluids-first, fixed-rate insulin) but the catastrophe
+    # is over hours, not minutes. The case stays in deteriorating and
+    # remains recoverable via the deteriorating → stable transition
+    # (mx_fixed_rate_insulin) — patient doesn't crash to arrest from
+    # 15-minute undertreatment.
     - from: stable
       to: admitted
       trigger: { on: action, action_id: mx_critcare_referral }
