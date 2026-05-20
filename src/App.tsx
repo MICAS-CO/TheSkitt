@@ -433,6 +433,14 @@ export function App() {
   return (
     <div className="app">
       <header className="app__header">
+        <img
+          className="app__icon"
+          src="/app-icon.svg"
+          alt=""
+          aria-hidden="true"
+          width={36}
+          height={36}
+        />
         <h1 className="app__title">The Skitt</h1>
         <p className="app__subtitle">{SUBTITLES[view]}</p>
       </header>
