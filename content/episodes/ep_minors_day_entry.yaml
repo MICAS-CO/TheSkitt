@@ -1,0 +1,55 @@
+# M82 — Entry shift for the rota.
+#
+# Wraps the two existing minors-floor "ambient" cases (chest_pain_patel +
+# intox_stan) as a deliberately gentle first day on the floor. Both cases
+# are taught here because they're the textbook "look beyond the chief
+# complaint" pair: Patel is a stoic 72y/o with anterior STEMI presenting
+# as 'just indigestion'; Stan is the alcoholic frequent-flyer with
+# hypoglycaemia and an occult head injury under the smell of vodka.
+#
+# Per the M81 design consultation (Pixar-Braintrust): the entry shift
+# exists to establish the e-portfolio loop, the nurse-in-charge, and
+# McGrath's tone — NOT to be hard. Scheduled events are slack; the
+# deterioration timers are forgiving. Real teaching happens by the
+# player having to actually do the diagnostic work rather than
+# pattern-match the title.
+
+schema_version: 1
+id: ep_minors_day_entry
+title: 'First day shift — minors floor'
+learning_objectives:
+  - 'Settle into the minors-floor workflow: triage, history, examination, disposition.'
+  - 'Practise looking past the chief complaint when the presentation is "nothing".'
+  - 'Use the e-portfolio after debrief to file the case.'
+
+curriculum_tags: [CP1, CC1, GC1, MHC1]
+difficulty_band: CT1
+shift_duration_min: 20
+
+focus_cases:
+  - case_chest_pain_patel_ambient
+  - case_intox_stan_ambient
+
+scheduled_events:
+  # Bed manager keeps quiet on the entry shift — no pressure beat.
+  # Patel's family asks for an update at T+12; gentle social beat rather
+  # than a clock event.
+  - id: ev_patel_family_check
+    type: family_arrival
+    t_min: 12
+    case_id: case_chest_pain_patel_ambient
+    npc: Priya (daughter)
+
+  # Stan's CT-head order, if placed, returns at T+15.
+  - id: ev_stan_ct_back
+    type: results_back
+    t_min: 15
+    case_id: case_intox_stan_ambient
+    investigation_id: ix_ct_head
+
+author_notes: |
+  M82 entry shift — first stop on the rota. Deliberately gentle.
+  No deterioration_if_not_x_by_t events: the player can take the full
+  20 minutes to work both patients. The teaching points (NSTEMI in a
+  stoic elderly woman, the hypoglycaemia-under-the-smell-of-vodka
+  trap) come from the case content, not from clock pressure.

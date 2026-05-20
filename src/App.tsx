@@ -6,12 +6,15 @@ const PhaserGame = lazy(() =>
   import('./ui/PhaserGame').then((m) => ({ default: m.PhaserGame })),
 );
 import { ShiftView } from './ui/shift/ShiftView';
-import { useSim, loadShift, clearSavedShift, type SavedShift } from './state/sim';
+import { useSim, loadShift, clearSavedShift, scoreEpisode, type SavedShift } from './state/sim';
 import {
   composeConsultantMessage,
   CONSULTANT_ROLE,
   loadLastShiftMemo,
 } from './state/consultant';
+import { advanceRota, getOrInitRota, saveRota, type RotaState } from './state/shiftRota';
+import { ROTA_ORDER, ROTA_ORDER_IDS } from './state/rotaOrder';
+import { loadProgression } from './state/progression';
 import { Arc, Case, Episode, type ArcT, type CaseT, type EpisodeT } from './content/schema';
 import { SimKernel } from './sim/kernel';
 // M78: lazy-load every menu-secondary route. Each becomes its own chunk,
@@ -112,6 +115,13 @@ import safetyNetEpYaml from '../content/episodes/ep_overnight_safety_net.yaml?ra
 import amirYaml from '../content/cases/case_paeds_dka_amir.yaml?raw';
 import paedsDkaEpYaml from '../content/episodes/ep_paeds_dka_solo.yaml?raw';
 
+// M82 — Entry shift wrapping the two existing minors-floor "ambient"
+// cases (Patel chest pain + Stan intox) as a deliberately-gentle first
+// day on the floor. See dev_loop/braintrust/02-design-consultation
+// synthesis Q1 — the rota's entry shift establishes the e-portfolio
+// loop, McGrath's tone, and the nurse-in-charge before any resus.
+import minorsDayEntryEpYaml from '../content/episodes/ep_minors_day_entry.yaml?raw';
+
 type View = 'menu' | 'shift' | 'hub' | 'ecg' | 'skilltree' | 'settings' | 'styleguide' | 'practice' | 'induction';
 
 const SUBTITLES: Record<View, string> = {
@@ -135,6 +145,13 @@ interface ShiftPack {
 const SOLO_SHIFT: () => ShiftPack = () => ({
   episode: Episode.parse(parseYaml(soloEpYaml)),
   cases: [Case.parse(parseYaml(bethYaml))],
+  arcs: [],
+});
+
+// M82 — Entry shift: Patel + Stan as focus cases on a minors-floor day.
+const MINORS_DAY_ENTRY: () => ShiftPack = () => ({
+  episode: Episode.parse(parseYaml(minorsDayEntryEpYaml)),
+  cases: [Case.parse(parseYaml(patelYaml)), Case.parse(parseYaml(stanYaml))],
   arcs: [],
 });
 
@@ -239,17 +256,9 @@ const PAEDS_DKA_SOLO: () => ShiftPack = () => ({
   arcs: [],
 });
 
-/**
- * Pick today's rotating "case of the day" by day-of-year mod the
- * number of shifts (M33). Mirrors the daily ECG bank's rotation.
- */
-function pickShiftOfTheDay(shifts: { id: string }[], now: Date = new Date()): string {
-  if (shifts.length === 0) return '';
-  const dayOfYear = Math.floor(
-    (now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000,
-  );
-  return shifts[dayOfYear % shifts.length]!.id;
-}
+// M82: pickShiftOfTheDay was the M33-era "case of the day" rotator the
+// menu used to highlight one shift from the buffet. The rota replaced
+// the buffet, so the daily-rotation concept is gone.
 
 interface ShiftDef {
   id: string;
@@ -261,6 +270,15 @@ interface ShiftDef {
 }
 
 const SHIFT_DEFS: ShiftDef[] = [
+  // M82 — Entry shift on the rota. Deliberately gentle. Position 0.
+  {
+    id: 'ep_minors_day_entry',
+    title: 'First day shift — minors floor',
+    eyebrow: 'Shift · CT1 · 20 min · 2 cases',
+    meta: 'Settling in. Mrs Patel "just indigestion" + Stan, frequent flyer. Looking past the chief complaint when the presentation says "nothing".',
+    variant: 'primary',
+    factory: MINORS_DAY_ENTRY,
+  },
   {
     id: 'ep_hendo_shift',
     title: 'The hen-do',
@@ -438,6 +456,31 @@ export function App() {
   }
 
   function exitShift() {
+    // M82: if the shift actually finished (clock ran out or the player
+    // ended-early-debrief), advance the rota and log the completion.
+    // Early-exit without finishing is a no-op on the rota.
+    const k = useSim.getState().kernel;
+    if (k && k.getState().isShiftOver) {
+      try {
+        const report = scoreEpisode(k.getState());
+        const current = getOrInitRota(
+          ROTA_ORDER,
+          loadProgression().caseIdsCompleted,
+        );
+        const advanced = advanceRota(current, ROTA_ORDER_IDS, {
+          episodeId: report.episodeId,
+          band: report.band,
+          completedIso: new Date().toISOString(),
+        });
+        saveRota(advanced);
+      } catch (e) {
+        // Never block menu return on a rota-write failure — but DO
+        // surface the error so a malformed scoreEpisode or quota-full
+        // localStorage write is debuggable rather than silently
+        // swallowed.
+        console.error('M82: failed to advance rota on shift exit', e);
+      }
+    }
     destroySim();
     setView('menu');
   }
@@ -483,7 +526,6 @@ export function App() {
             }}
             onShowHub={() => setView('hub')}
             onShowEcg={() => setView('ecg')}
-            onShowPractice={() => setView('practice')}
             onShowSkillTree={() => setView('skilltree')}
             onShowSettings={() => setView('settings')}
             saved={saved}
@@ -565,7 +607,6 @@ function MenuView({
   onStart,
   onShowHub,
   onShowEcg,
-  onShowPractice,
   onShowSkillTree,
   onShowSettings,
   saved,
@@ -576,14 +617,31 @@ function MenuView({
   onStart: (id: string) => void;
   onShowHub: () => void;
   onShowEcg: () => void;
-  onShowPractice: () => void;
   onShowSkillTree: () => void;
   onShowSettings: () => void;
   saved: SavedShift | null;
   onResume: () => void;
   onClearSave: () => void;
 }) {
-  const dailyShiftId = useMemo(() => pickShiftOfTheDay(shifts), [shifts]);
+  // M82: load (or migrate) the rota. Existing players whose progression
+  // already records completed cases are auto-advanced past those rota
+  // positions — see state/shiftRota.ts.
+  const rota: RotaState = useMemo(
+    () => getOrInitRota(ROTA_ORDER, loadProgression().caseIdsCompleted),
+    [],
+  );
+  const currentShift = useMemo(() => {
+    const id = ROTA_ORDER_IDS[rota.currentShiftIndex];
+    return id ? shifts.find((s) => s.id === id) ?? null : null;
+  }, [rota.currentShiftIndex, shifts]);
+  const nextShiftTitle = useMemo(() => {
+    const id = ROTA_ORDER_IDS[rota.currentShiftIndex + 1];
+    if (!id) return null;
+    return shifts.find((s) => s.id === id)?.title ?? null;
+  }, [rota.currentShiftIndex, shifts]);
+  const totalShifts = ROTA_ORDER_IDS.length;
+  const completedCount = rota.completedShifts.length;
+
   const consultantMemo = useMemo(() => loadLastShiftMemo(), []);
   const character = useMemo(() => loadCharacter(), []);
   const consultantMessage = useMemo(
@@ -594,7 +652,7 @@ function MenuView({
   return (
     <div className="menu">
       <div className="menu__inner">
-        <h2 className="menu__title">Shift menu</h2>
+        <h2 className="menu__title">Your rota</h2>
         {character && tier && (
           <div className="menu__badge" aria-label="Active doctor + difficulty tier">
             <span className="menu__badge-name">
@@ -615,9 +673,10 @@ function MenuView({
           </aside>
         )}
         <p className="menu__copy">
-          Pick a shift. Each runs on a 20-minute simulated clock. <strong>The hen-do</strong> and{' '}
-          <strong>First seizure</strong> are the showcase shifts;{' '}
-          <strong>Family anaphylaxis</strong> is the paeds + adult parallel-dose-bands lesson.
+          You&rsquo;re on shift {Math.min(rota.currentShiftIndex + 1, totalShifts)} of {totalShifts}.
+          {completedCount > 0
+            ? ` ${completedCount} shift${completedCount === 1 ? '' : 's'} on file in your e-portfolio.`
+            : ' The e-portfolio fills as you finish shifts.'}
         </p>
         {saved && (
           <div className="menu__resume">
@@ -634,23 +693,39 @@ function MenuView({
           </div>
         )}
         <div className="menu__cards">
-          {shifts.map((s) => {
-            const isToday = s.id === dailyShiftId;
-            return (
-              <button
-                key={s.id}
-                className={`menu__card menu__card--${s.variant ?? 'secondary'} ${
-                  isToday ? 'menu__card--today' : ''
-                }`}
-                onClick={() => onStart(s.id)}
-              >
-                {isToday && <span className="menu__card-today-badge">TODAY&rsquo;S PICK</span>}
-                <span className="menu__card-eyebrow">{s.eyebrow}</span>
-                <span className="menu__card-title">{s.title}</span>
-                <span className="menu__card-meta">{s.meta}</span>
-              </button>
-            );
-          })}
+          {currentShift && (
+            <button
+              key={currentShift.id}
+              className="menu__card menu__card--primary menu__card--today"
+              onClick={() => onStart(currentShift.id)}
+            >
+              <span className="menu__card-today-badge">TODAY&rsquo;S SHIFT</span>
+              <span className="menu__card-eyebrow">{currentShift.eyebrow}</span>
+              <span className="menu__card-title">{currentShift.title}</span>
+              <span className="menu__card-meta">{currentShift.meta}</span>
+            </button>
+          )}
+          {nextShiftTitle && (
+            // Peek at the next shift. Title only, no eyebrow / no factory
+            // hint — the rota teaches what's coming without spoiling it.
+            <div
+              className="menu__card menu__card--secondary menu__card--locked"
+              aria-disabled="true"
+            >
+              <span className="menu__card-eyebrow">Next on the rota</span>
+              <span className="menu__card-title">{nextShiftTitle}</span>
+              <span className="menu__card-meta">Published after you debrief today&rsquo;s shift.</span>
+            </div>
+          )}
+          {!currentShift && (
+            <div className="menu__card menu__card--secondary" aria-disabled="true">
+              <span className="menu__card-eyebrow">Rota complete</span>
+              <span className="menu__card-title">All shifts on file</span>
+              <span className="menu__card-meta">
+                The e-portfolio lands in M83 — revisit individual cases there.
+              </span>
+            </div>
+          )}
           <button className="menu__card menu__card--secondary" onClick={onShowHub}>
             <span className="menu__card-eyebrow">Preview</span>
             <span className="menu__card-title">ED hub layout</span>
@@ -661,13 +736,6 @@ function MenuView({
             <span className="menu__card-title">ECG challenge</span>
             <span className="menu__card-meta">
               14-day rotation — one ECG-interpretation set per day, with cited sources.
-            </span>
-          </button>
-          <button className="menu__card menu__card--secondary" onClick={onShowPractice}>
-            <span className="menu__card-eyebrow">Practice</span>
-            <span className="menu__card-title">Case library</span>
-            <span className="menu__card-meta">
-              Drill any of the 17 patients on their most-focused shift — perfect for re-running a case you lost.
             </span>
           </button>
           <button className="menu__card menu__card--secondary" onClick={onShowSkillTree}>
