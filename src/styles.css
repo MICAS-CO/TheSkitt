@@ -11,9 +11,32 @@
   --muted: #9fb5b4;
   --accent: #5bbf8f; /* mon-ok */
   --warn: #e0a82e; /* mon-warn */
-  --danger: #e85045; /* alert-50 */
+  --danger: #e85045; /* alert-50 — legacy alias for brand red, kept for back-compat */
   --danger-strong: #c8362a; /* alert-100 */
   --info: #4fa3a0; /* teal-100 */
+
+  /* Semantic colour contract (M67, audit-fixes #1).
+     The audit's principle: brand red ≠ clinical alert red, and amber
+     ≠ accent. Each token has one job and one job only.
+       --brand-red    → logo · title accent · resus stripe ONLY
+       --alert-high   → NEWS2 ≥7 · red flag · deteriorating kicker
+       --alert-severe → periarrest · DNACPR · death-time stamp
+       --alert-amber  → trap icon ONLY (no kickers, no UI accents)
+       --status-ok    → NEWS2 0-4 · trending down · saved patient
+       --status-trace → ECG trace · monitor bright text
+       --status-neutral → triaged · awaiting · informational
+   */
+  --brand-red: #e85045;
+  --alert-high: #a22b23;
+  --alert-severe: #7a1e16;
+  --alert-amber: #e0a82e;
+  --status-ok: #5bbf8f;
+  --status-trace: #86e0b5;
+  --status-neutral: #7fcbc8;
+  /* Typography contract */
+  --type-subdued-ink: #9fb5b4;
+  --type-faded-ink: #5e7a78;
+  --type-paper-dim: #6b6862;
   /* Likelihood badges keep their narrative-meaning labels. */
   --top: #5bbf8f;
   --must-not-miss: #e0a82e;
@@ -598,7 +621,8 @@ a {
 }
 
 .enc__chip--red-flag {
-  background: var(--danger-strong);
+  /* Semantic contract (M67): red flag uses clinical alert-high, not brand red. */
+  background: var(--alert-high);
   color: #fff;
   margin-right: 6px;
   font-weight: 600;
@@ -1513,11 +1537,12 @@ a {
   color: var(--warn);
 }
 .patient-panel__news--red {
-  border-left: 3px solid var(--danger);
+  /* Semantic contract (M67): NEWS2 ≥7 uses alert-high, not brand red. */
+  border-left: 3px solid var(--alert-high);
   background: linear-gradient(180deg, rgba(217, 107, 92, 0.1), transparent);
 }
 .patient-panel__news--red .patient-panel__news-value {
-  color: var(--danger);
+  color: var(--alert-high);
 }
 
 .vitals-strip {
@@ -2163,7 +2188,8 @@ a {
   font-size: 9px;
   font-weight: 700;
   color: #fff;
-  background: #7a1e16;
+  /* Semantic contract (M67): STAT stamp = alert-severe (death-time stamp territory). */
+  background: var(--alert-severe);
   padding: 2px 6px;
   border-radius: 2px;
   letter-spacing: 0.12em;
