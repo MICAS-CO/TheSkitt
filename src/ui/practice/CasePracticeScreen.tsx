@@ -6,11 +6,17 @@
  * is a flat grid of all 17 cases keyed by patient + diagnosis,
  * each linking to the most-focused episode that exercises the case.
  *
- * Most cases route to their dedicated solo episode (ep_X_solo).
- * The four cases without a 1-case episode (Sam = ep_birthday_party,
- * Sarah = ep_hendo_shift, Marcus = ep_overnight_metabolic, Patel =
- * ep_hendo_shift) route to the smallest episode they appear in;
- * a future pass could author dedicated solo episodes for them.
+ * Most cases route to their dedicated solo episode (ep_X_solo). M84
+ * adds the new entry shift (ep_minors_day_entry, wrapping Patel +
+ * Stan as focus cases) so those two patients now have a focused
+ * home; both reroute there. Sam / Sarah / Marcus still ride along
+ * with their multi-case home shifts — a future pass could author
+ * dedicated solo episodes.
+ *
+ * M84: reachable from the e-portfolio (EPortfolioScreen), not from
+ * the front-door menu. The pre-M82 menu button is gone — the
+ * practice library lives behind the rota now per the M81 design
+ * consultation Q1.
  */
 
 interface CaseEntry {
@@ -52,8 +58,8 @@ const CASES: CaseEntry[] = [
     patient: 'Anjali Patel · 72F',
     diagnosis: 'Anterior STEMI (atypical presentation)',
     difficulty: 'CT2',
-    episodeId: 'ep_hendo_shift',
-    shared: 'in shift as the ambient pivot to Beth',
+    episodeId: 'ep_minors_day_entry',
+    shared: 'focus case on your first day shift, alongside Stan',
   },
   {
     caseId: 'case_dka_marcus',
@@ -103,8 +109,8 @@ const CASES: CaseEntry[] = [
     patient: 'Stan Williams · 58M',
     diagnosis: 'Intoxication + occult head injury',
     difficulty: 'ST3',
-    episodeId: 'ep_overnight_safety_net',
-    shared: 'in the overnight safety-net shift with Chloe',
+    episodeId: 'ep_minors_day_entry',
+    shared: 'focus case on your first day shift, alongside Mrs Patel',
   },
   {
     caseId: 'case_massive_pe_okonkwo',

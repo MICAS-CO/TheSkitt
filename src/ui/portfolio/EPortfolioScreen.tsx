@@ -28,10 +28,19 @@ interface Props {
    *  SHIFT_DEFS here directly (avoids a circular import). */
   shiftTitleById: Record<string, string>;
   onReplay: (episodeId: string) => void;
+  /** M84: open the case library (CasePracticeScreen) for case-by-case
+   *  drilling. The library was hidden from the menu at M82; this is
+   *  its re-exposure point per the M81 design consultation. */
+  onShowPractice: () => void;
   onExit: () => void;
 }
 
-export function EPortfolioScreen({ shiftTitleById, onReplay, onExit }: Props) {
+export function EPortfolioScreen({
+  shiftTitleById,
+  onReplay,
+  onShowPractice,
+  onExit,
+}: Props) {
   const rota: RotaState | null = useMemo(() => loadRota(), []);
   const blocks = useMemo(
     () => (rota ? getBlockProgress(rota, BLOCKS, ROTA_ORDER) : []),
@@ -54,6 +63,20 @@ export function EPortfolioScreen({ shiftTitleById, onReplay, onExit }: Props) {
 
   // Reverse-chronological — most recent attempt first.
   const entries = [...rota.completedShifts].reverse();
+
+  // M84: random recall is a deterministic-ish pick from the distinct
+  // episodes the player has attempted. The synthesis called it a
+  // "warm-up button" — it just opens one of your prior shifts at
+  // random. Disabled when nothing is on file yet.
+  const attemptedEpisodeIds = Array.from(
+    new Set(rota.completedShifts.map((c) => c.episodeId)),
+  );
+  function onRandomRecall() {
+    if (attemptedEpisodeIds.length === 0) return;
+    const pick =
+      attemptedEpisodeIds[Math.floor(Math.random() * attemptedEpisodeIds.length)]!;
+    onReplay(pick);
+  }
 
   return (
     <div className="eportfolio">
@@ -103,6 +126,42 @@ export function EPortfolioScreen({ shiftTitleById, onReplay, onExit }: Props) {
             );
           })}
         </ul>
+      </section>
+
+      <section className="eportfolio__actions">
+        <h3>Warm up</h3>
+        <div className="eportfolio__action-row">
+          <button
+            className="eportfolio__action"
+            onClick={onRandomRecall}
+            // M84: disabled until at least 2 distinct shifts are on
+            // file — random across a single pool of 1 is deterministic
+            // and reads as broken. Round-1 reviewer caught this.
+            disabled={attemptedEpisodeIds.length < 2}
+            title={
+              attemptedEpisodeIds.length === 0
+                ? 'Random recall opens once you have shifts on file.'
+                : attemptedEpisodeIds.length === 1
+                  ? 'Random recall needs at least 2 different shifts on file. Try another one first.'
+                  : `Random pick from ${attemptedEpisodeIds.length} attempted shifts.`
+            }
+          >
+            <span className="eportfolio__action-eyebrow">Random recall</span>
+            <span className="eportfolio__action-title">Roll the dice — drill any prior shift</span>
+            <span className="eportfolio__action-meta">
+              Pulls one shift at random from the episodes you&rsquo;ve already attempted.
+              No rota implications.
+            </span>
+          </button>
+          <button className="eportfolio__action" onClick={onShowPractice}>
+            <span className="eportfolio__action-eyebrow">Case library</span>
+            <span className="eportfolio__action-title">Drill a specific patient</span>
+            <span className="eportfolio__action-meta">
+              Browse the full case library by patient + diagnosis. Each one launches
+              its home shift.
+            </span>
+          </button>
+        </div>
       </section>
 
       <section className="eportfolio__log">

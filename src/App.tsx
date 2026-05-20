@@ -571,7 +571,10 @@ export function App() {
                 const def = SHIFT_DEFS.find((s) => s.id === episodeId);
                 if (def) startShift(def.factory());
               }}
-              onExit={() => setView('menu')}
+              // M84: the practice library is reached FROM the e-portfolio.
+              // Exiting returns there, not to the front-door menu — the
+              // back-stack matches the way the player got in.
+              onExit={() => setView('eportfolio')}
             />
           </Suspense>
         )}
@@ -583,6 +586,7 @@ export function App() {
                 const def = SHIFT_DEFS.find((s) => s.id === episodeId);
                 if (def) startShift(def.factory());
               }}
+              onShowPractice={() => setView('practice')}
               onExit={() => setView('menu')}
             />
           </Suspense>

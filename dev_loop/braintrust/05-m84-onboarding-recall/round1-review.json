@@ -1,0 +1,27 @@
+{
+  "verdict": "request_changes",
+  "findings": [
+    {
+      "severity": "medium",
+      "title": "Random recall button enabled with only one shift",
+      "file": "src/ui/portfolio/EPortfolioScreen.tsx",
+      "body": "The random recall button is enabled when `attemptedEpisodeIds.length === 1`. While the code explicitly handles the singular pluralization (`attemptedEpisodeIds.length === 1 ? '' : 's'`), UX-wise, a 'Roll the dice' button shouldn't be active if there's no variance. It results in a deterministic pick and an awkward tooltip: 'Random pick from 1 attempted shift.'",
+      "recommendation": "Change the disabled condition to `attemptedEpisodeIds.length < 2` and update the disabled title text to explain that at least two shifts must be on file to use random recall."
+    },
+    {
+      "severity": "low",
+      "title": "Potential NPC surname collision (Williams)",
+      "file": "content/cases/case_intox_stan_ambient.yaml",
+      "body": "Stan's surname is 'Williams', which collides with the existing stroke patient Mrs Williams. While real EDs have name collisions, if the game's dialogue lookup or sprite registry keys off surnames rather than full IDs, this could cause a regression.",
+      "recommendation": "Verify that the sprite/dialogue registry uses full IDs. If it relies on surnames, change Stan's surname to something distinct (e.g., 'Willis')."
+    },
+    {
+      "severity": "low",
+      "title": "Onboarding text repeats on replay",
+      "file": "content/cases/case_chest_pain_patel_ambient.yaml",
+      "body": "The vignette text 'It is the first time you have been alone in The Skitt.' is hardcoded in the YAML. When a player replays this shift from the e-portfolio, they will see this text again, which slightly breaks the chronological reality of a replay.",
+      "recommendation": "Acceptable as a 'flashback' limitation of static YAML for now, but consider a future engine feature to conditionally render vignette paragraphs based on `rota.completedShifts.length`."
+    }
+  ],
+  "overall_take": "The Q1 rota structure closure is solid, and the Akin onboarding voice hits the right 'mechanical confusion' notes without being overly hand-holdy. However, the random recall button needs a minor UX tweak to avoid being active when there's only one shift to pick from, and the Williams surname collision should be double-checked against the engine's lookup logic before landing."
+}
