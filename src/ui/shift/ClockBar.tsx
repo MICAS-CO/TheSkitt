@@ -5,6 +5,9 @@ interface Props {
   shiftDurationMin: number;
   isRunning: boolean;
   isShiftOver: boolean;
+  /** M85 — clock is shielded from real-time advance because the player
+   *  is in a reasoning section. Renders a visual cue. */
+  autoPaused?: boolean;
   onPlay: () => void;
   onPause: () => void;
   onSkip: () => void;
@@ -17,6 +20,7 @@ export function ClockBar({
   shiftDurationMin,
   isRunning,
   isShiftOver,
+  autoPaused = false,
   onPlay,
   onPause,
   onSkip,
@@ -25,20 +29,27 @@ export function ClockBar({
 }: Props) {
   const pct = Math.min(100, Math.round((clockMin / shiftDurationMin) * 100));
   return (
-    <div className="enc__clock">
+    <div className={`enc__clock ${autoPaused ? 'enc__clock--auto-paused' : ''}`}>
       <div
         className="enc__clock-bar"
         role="progressbar"
         aria-valuenow={clockMin}
         aria-valuemin={0}
         aria-valuemax={shiftDurationMin}
-        aria-label={`Shift clock: ${clockMin} of ${shiftDurationMin} minutes`}
+        aria-label={`Shift clock: ${clockMin} of ${shiftDurationMin} minutes${
+          autoPaused ? ' (paused — thinking time)' : ''
+        }`}
       >
         <div className="enc__clock-bar-fill" style={{ width: `${pct}%` }} />
       </div>
       <div className="enc__clock-row">
         <span className="enc__clock-text">
-          T+{clockMin}m / {shiftDurationMin}m {isShiftOver ? '· shift over' : ''}
+          T+{clockMin}m / {shiftDurationMin}m
+          {isShiftOver
+            ? ' · shift over'
+            : autoPaused
+              ? ' · thinking time (clock paused)'
+              : ''}
         </span>
         <div className="enc__clock-buttons">
           <SpeedSelect value={speedKey} onChange={onSpeedChange} />

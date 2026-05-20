@@ -58,6 +58,11 @@ interface Props {
   caseId: string;
   section: Section;
   onSectionChange: (s: Section) => void;
+  /** M85 (round 2) — resus-mode toggle is lifted to ShiftView so the
+   *  reasoning-pause logic can see it (resus is time-critical;
+   *  reasoning pause must NOT apply while resus is active). */
+  resusActive: boolean;
+  onResusToggle: () => void;
   onBackToBoard: () => void;
   onExit: () => void;
   speedKey: SimSpeedKey;
@@ -68,6 +73,8 @@ export function EncounterScreen({
   caseId,
   section,
   onSectionChange,
+  resusActive,
+  onResusToggle,
   onBackToBoard,
   onExit,
   speedKey,
@@ -79,7 +86,6 @@ export function EncounterScreen({
   const ks = kernel?.getState();
   const isRunning = ks?.isRunning ?? false;
   const isShiftOver = ks?.isShiftOver ?? false;
-  const [resusActive, setResusActive] = useState(false);
 
   // Auto-jump to debrief when the shift ends
   useEffect(() => {
@@ -147,6 +153,7 @@ export function EncounterScreen({
         shiftDurationMin={ks.shiftDurationMin}
         isRunning={isRunning}
         isShiftOver={isShiftOver}
+        autoPaused={ks.autoPaused}
         onPlay={() => kernel.start()}
         onPause={() => kernel.pause()}
         onSkip={() => kernel.advance(1)}
@@ -166,7 +173,7 @@ export function EncounterScreen({
           <button
             type="button"
             className={`enc__resus-toggle ${resusActive ? 'is-active' : ''}`}
-            onClick={() => setResusActive((v) => !v)}
+            onClick={onResusToggle}
             aria-pressed={resusActive}
           >
             {resusActive ? '← back to standard encounter' : '⚠ enter resus mode'}
@@ -1205,6 +1212,35 @@ function DebriefPhase({ cs }: { cs: CaseRuntime }) {
           <li>
             Final patient state: <strong>{cs.state}</strong>
           </li>
+          {/* M85 — differential breadth callout. Pattern-match flags
+              when <2 differentials were considered, even if the player
+              got it right. */}
+          <li
+            className={
+              score.differentialBreadth.bonusPercent > 0
+                ? 'enc__score-good'
+                : 'enc__score-warn'
+            }
+          >
+            <strong>Differential breadth:</strong>{' '}
+            {score.differentialBreadth.differentialsConsidered}{' '}
+            differential
+            {score.differentialBreadth.differentialsConsidered === 1 ? '' : 's'} considered
+            {score.differentialBreadth.bonusPercent > 0 ? (
+              <> (+{score.differentialBreadth.bonusPercent})</>
+            ) : (
+              <> — pattern-match risk; FRCEM credits breadth.</>
+            )}
+          </li>
+          {/* M85 (round 2) — workup parsimony still surfaces in the
+              debrief even though it no longer docks the score, so the
+              player gets the feedback signal without the punishment. */}
+          {score.workup.tracked && score.workup.extraIxOrdered > 0 && (
+            <li>
+              <strong>Extra investigations ordered:</strong>{' '}
+              {score.workup.extraIxOrdered} beyond the essentials (no penalty).
+            </li>
+          )}
           {score.sequenceErrors > 0 && (
             <li className="enc__score-warn">
               <strong>Sequence errors:</strong> {score.sequenceErrors} action

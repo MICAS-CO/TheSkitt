@@ -535,6 +535,23 @@ a {
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 10px 14px;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+/* M85 — clock shielded from real-time while the player is in a
+   reasoning section. Visual cue: subtle blue tint + dashed bar fill
+   so the player can see the clock is held. */
+.enc__clock--auto-paused {
+  border-color: rgba(120, 160, 220, 0.55);
+  background: linear-gradient(180deg, rgba(120, 160, 220, 0.05), var(--panel));
+}
+.enc__clock--auto-paused .enc__clock-bar-fill {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--accent),
+    var(--accent) 4px,
+    rgba(120, 160, 220, 0.4) 4px,
+    rgba(120, 160, 220, 0.4) 8px
+  );
 }
 .enc__clock-bar {
   width: 100%;

@@ -550,3 +550,54 @@ describe('SimKernel — clue selection (M80)', () => {
     expect(() => kernel.toggleClueSelection('not_a_case', 'clue_x')).not.toThrow();
   });
 });
+
+describe('M85 — autoPaused', () => {
+  it('initialises to false', () => {
+    const { kernel } = makeKernel();
+    expect(kernel.getState().autoPaused).toBe(false);
+  });
+
+  it('setAutoPaused toggles the flag', () => {
+    const { kernel } = makeKernel();
+    kernel.setAutoPaused(true);
+    expect(kernel.getState().autoPaused).toBe(true);
+    kernel.setAutoPaused(false);
+    expect(kernel.getState().autoPaused).toBe(false);
+  });
+
+  it('setAutoPaused is no-op on identical state (does not notify)', () => {
+    const { kernel } = makeKernel();
+    let notifications = 0;
+    kernel.subscribe(() => {
+      notifications += 1;
+    });
+    kernel.setAutoPaused(false); // already false
+    expect(notifications).toBe(0);
+    kernel.setAutoPaused(true);
+    expect(notifications).toBe(1);
+    kernel.setAutoPaused(true); // already true
+    expect(notifications).toBe(1);
+  });
+
+  it('autoPaused does NOT block explicit advance() — the +1m button stays usable', () => {
+    const { kernel } = makeKernel();
+    kernel.setAutoPaused(true);
+    expect(kernel.getState().clockMin).toBe(0);
+    kernel.advance(1);
+    expect(kernel.getState().clockMin).toBe(1);
+  });
+
+  it('autoPaused does NOT persist across snapshot/restore (transient)', () => {
+    const { kernel, episode, caseData, caseId } = makeKernel();
+    kernel.setAutoPaused(true);
+    const snap = kernel.serialize();
+    const k2 = new SimKernel({
+      episode,
+      cases: new Map([[caseData.id, caseData]]),
+      restore: snap,
+    });
+    expect(k2.getState().autoPaused).toBe(false);
+    // and the rest of the state still came through
+    expect(k2.getState().cases.has(caseId)).toBe(true);
+  });
+});

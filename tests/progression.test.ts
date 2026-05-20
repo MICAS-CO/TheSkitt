@@ -59,6 +59,10 @@ function fakeScore(overrides: Partial<ScoreReport> = {}): ScoreReport {
       extraIxOrdered: 0,
       penaltyPercent: 0,
     },
+      differentialBreadth: {
+        differentialsConsidered: 0,
+        bonusPercent: 0,
+      },
     dispositionCorrect: true,
     workingDxCorrect: true,
     percent: 100,

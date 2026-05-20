@@ -30,6 +30,10 @@ function mkPerCase(overrides: Partial<PerCaseReport> & { caseId: string }): PerC
         extraIxOrdered: 0,
         penaltyPercent: 0,
       },
+      differentialBreadth: {
+        differentialsConsidered: 0,
+        bonusPercent: 0,
+      },
       dispositionCorrect: true,
       workingDxCorrect: true,
       percent: 95,
@@ -102,6 +106,10 @@ describe('M37 — consultant memo + composer', () => {
           essentialIxOrdered: 0,
           extraIxOrdered: 0,
           penaltyPercent: 0,
+        },
+        differentialBreadth: {
+          differentialsConsidered: 0,
+          bonusPercent: 0,
         },
         dispositionCorrect: true,
         workingDxCorrect: true,

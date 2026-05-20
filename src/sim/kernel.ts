@@ -114,6 +114,19 @@ export interface KernelState {
   shiftDurationMin: number;
   isRunning: boolean;
   isShiftOver: boolean;
+  /**
+   * M85 — auto-pause from the UI when the player is in a reasoning
+   * section (History / Examination / Investigations / Differential).
+   * Distinct from `isRunning` (the player's Pause/Play intent). The
+   * real-time clock advances only when `isRunning && !autoPaused`.
+   * Per the Braintrust 06 timer-pedagogy synthesis: protect slow-brain
+   * differential reasoning from real-time pressure while keeping the
+   * shift clock as a triage budget on the board / management / dispo.
+   *
+   * Transient — not snapshotted. Resets to false on resume; the UI
+   * recomputes it on first render based on which view is active.
+   */
+  autoPaused: boolean;
   episode: EpisodeT;
   cases: Map<string, CaseRuntime>;
   /** Arcs loaded for this episode (keyed by arc id). */
@@ -271,6 +284,7 @@ export class SimKernel {
       shiftDurationMin: opts.episode.shift_duration_min,
       isRunning: false,
       isShiftOver: false,
+      autoPaused: false,
       episode: opts.episode,
       cases: caseMap,
       arcs: opts.arcs ?? new Map(),
@@ -332,6 +346,9 @@ export class SimKernel {
     this.state.clockMin = snap.clockMin;
     this.state.isRunning = snap.isRunning;
     this.state.isShiftOver = snap.isShiftOver;
+    // M85: autoPaused is transient — resumes from board view, the
+    // ShiftView useEffect will recompute it on first paint.
+    this.state.autoPaused = false;
     for (const sc of snap.cases) {
       const cs = this.state.cases.get(sc.caseId);
       if (!cs) continue;
@@ -392,6 +409,24 @@ export class SimKernel {
 
   pause(): void {
     this.state.isRunning = false;
+    this.notify();
+  }
+
+  /**
+   * M85 — set the auto-pause flag. Distinct from {@link pause}:
+   * `pause()` reflects the player's Pause-button intent;
+   * `setAutoPaused` reflects the UI's view state (true when the
+   * player is in a reasoning section that should be shielded from
+   * real-time clock pressure). The real-time tick gates on
+   * `isRunning && !autoPaused`; explicit `advance()` calls (e.g. the
+   * "skip 1 min" button) are unaffected.
+   *
+   * No-op if the state is already at the target value, so this can be
+   * called freely from React effects without spamming notify().
+   */
+  setAutoPaused(autoPaused: boolean): void {
+    if (this.state.autoPaused === autoPaused) return;
+    this.state.autoPaused = autoPaused;
     this.notify();
   }
 

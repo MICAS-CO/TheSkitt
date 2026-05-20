@@ -168,17 +168,29 @@ export interface ScoreReport {
    *  pivotal moments". */
   branchesPicked: number;
   branchesAvailable: number;
-  /** Workup parsimony (M36). \`tracked\` is true only when the case
-   *  has at least one investigation flagged \`essential: true\` — older
-   *  cases without essential markers stay out of the metric and pay
-   *  no penalty. \`extraIxOrdered\` is the count of non-essential ix
-   *  the player ordered. */
+  /** Workup parsimony (M36, declawed M85). \`tracked\` is true only when
+   *  the case has at least one investigation flagged \`essential: true\`.
+   *  \`extraIxOrdered\` is the count of non-essential ix the player
+   *  ordered. The penalty is held at 0 — per the Braintrust 06 timer-
+   *  pedagogy synthesis, mildly punishing thoroughness trains against
+   *  the FRCEM-shaped behaviour the build is trying to teach. The
+   *  shape is retained for the debrief surface ("you ordered N extras")
+   *  but it no longer docks the score. */
   workup: {
     tracked: boolean;
     essentialIxTotal: number;
     essentialIxOrdered: number;
     extraIxOrdered: number;
     penaltyPercent: number;
+  };
+  /** M85 — differential breadth bonus. The number of distinct
+   *  differentials for which the player linked at least one supporting
+   *  clue on the clue board. Rewards FRCEM-shaped Bayesian reasoning
+   *  ("consider 3+ differentials before committing") rather than
+   *  reflexive pattern-matching. */
+  differentialBreadth: {
+    differentialsConsidered: number;
+    bonusPercent: number;
   };
   dispositionCorrect: boolean;
   workingDxCorrect: boolean;
@@ -189,6 +201,44 @@ export interface ScoreReport {
     name: string;
     status: 'done' | 'missed' | 'trap_avoided' | 'trap_picked' | 'sequence_error';
   }[];
+}
+
+/**
+ * M85 — count the distinct differentials for which the player has
+ * linked at least one supporting clue on the clue board. Mirrors the
+ * `collectClues` + `supportTally` logic in EncounterScreen but without
+ * coupling to the React layer.
+ *
+ * Selected clue IDs are namespaced by origin (matches collectClues):
+ *   - "hx:{historyId}"
+ *   - "ex:{system}:{findingName}"  (single-colon separator)
+ *   - "ix:{ixId}"
+ * We walk each selected ID, find the matching content item, and union
+ * its `supports` array into the "differentials considered" set.
+ */
+export function countDifferentialsConsidered(cs: CaseRuntime): number {
+  const considered = new Set<string>();
+  for (const clueId of cs.selectedClueIds) {
+    if (clueId.startsWith('hx:')) {
+      const hxId = clueId.slice(3);
+      const item = cs.data.history.find((h) => h.id === hxId);
+      for (const dx of item?.supports ?? []) considered.add(dx);
+    } else if (clueId.startsWith('ex:')) {
+      const rest = clueId.slice(3);
+      const sep = rest.indexOf(':');
+      if (sep < 0) continue;
+      const system = rest.slice(0, sep);
+      const findingName = rest.slice(sep + 1);
+      const examSystem = cs.data.examination.find((e) => e.system === system);
+      const finding = examSystem?.findings.find((f) => f.name === findingName);
+      for (const dx of finding?.supports ?? []) considered.add(dx);
+    } else if (clueId.startsWith('ix:')) {
+      const ixId = clueId.slice(3);
+      const item = cs.data.investigations.find((i) => i.id === ixId);
+      for (const dx of item?.supports ?? []) considered.add(dx);
+    }
+  }
+  return considered.size;
 }
 
 export function scoreCase(cs: CaseRuntime): ScoreReport {
@@ -231,8 +281,9 @@ export function scoreCase(cs: CaseRuntime): ScoreReport {
   const topDx = cs.data.differential.find((d) => d.likelihood === 'top');
   const workingDxCorrect = !!topDx && cs.workingDx === topDx.diagnosis;
 
-  // Workup parsimony (M36). Only tracked when the case actually
-  // declares essentials; older cases pay nothing.
+  // Workup parsimony (M36, declawed M85). Counts retained for debrief
+  // surfacing but the penalty is hard-coded to zero per the Braintrust
+  // 06 synthesis.
   const essentialIx = cs.data.investigations.filter((i) => i.essential);
   const orderedIxIds = new Set(cs.ordered.keys());
   const essentialIxOrdered = essentialIx.filter((i) => orderedIxIds.has(i.id)).length;
@@ -240,17 +291,28 @@ export function scoreCase(cs: CaseRuntime): ScoreReport {
     (id) => !essentialIx.some((i) => i.id === id),
   ).length;
   const workupTracked = essentialIx.length > 0;
-  // -2% per extra ix beyond a 2-ix free allowance, capped at -10%.
-  const workupPenalty = workupTracked
-    ? Math.min(10, Math.max(0, (extraIxOrdered - 2) * 2))
-    : 0;
+  const workupPenalty = 0;
+
+  // M85 — differential breadth. How many distinct differentials had at
+  // least one supporting clue linked? Counts clues from history /
+  // examination / investigations whose authored \`supports\` field
+  // names a differential and that the player has selected on the
+  // clue board. +10 for >=3, +5 for 2, 0 for <=1 (the FRCEM-shaped
+  // reward for considering a broad differential rather than
+  // pattern-matching the obvious diagnosis).
+  const differentialsConsidered = countDifferentialsConsidered(cs);
+  const differentialBreadthBonus =
+    differentialsConsidered >= 3 ? 10 : differentialsConsidered === 2 ? 5 : 0;
 
   const safetyPenalty = mustNotDoChosen * 20;
   const sequencePenalty = sequenceErrors * 10;
+  // M85: must_do weight rebalanced from 70 to 60 to make room for the
+  // +10 differential breadth bonus. Net max remains 100.
   const score =
-    (mustDoDone / Math.max(1, mustDo.length)) * 70 +
+    (mustDoDone / Math.max(1, mustDo.length)) * 60 +
     (workingDxCorrect ? 15 : 0) +
-    (dispositionCorrect ? 15 : 0) -
+    (dispositionCorrect ? 15 : 0) +
+    differentialBreadthBonus -
     safetyPenalty -
     sequencePenalty -
     workupPenalty;
@@ -286,6 +348,10 @@ export function scoreCase(cs: CaseRuntime): ScoreReport {
       essentialIxOrdered,
       extraIxOrdered,
       penaltyPercent: workupPenalty,
+    },
+    differentialBreadth: {
+      differentialsConsidered,
+      bonusPercent: differentialBreadthBonus,
     },
     dispositionCorrect,
     workingDxCorrect,
