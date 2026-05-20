@@ -219,6 +219,22 @@ a {
   text-align: right;
 }
 
+.app__tcr-mark {
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.78;
+  transition: opacity 0.15s ease-out;
+  text-decoration: none;
+}
+.app__tcr-mark:hover {
+  opacity: 1;
+}
+.app__tcr-mark img {
+  height: 18px;
+  width: auto;
+  display: block;
+}
+
 @media (max-width: 600px) {
   .app__header {
     padding: 10px 14px;

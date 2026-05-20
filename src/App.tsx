@@ -495,6 +495,15 @@ export function App() {
           Study material for UK FRCEM candidates. Not medical advice. Not a substitute for
           supervised clinical training.
         </span>
+        <a
+          className="app__tcr-mark"
+          href="https://thecase.report"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="A TheCase.Report project"
+        >
+          <img src="/tcr-lockup.svg" alt="TheCase.Report" />
+        </a>
       </footer>
     </div>
   );
