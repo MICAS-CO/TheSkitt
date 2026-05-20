@@ -90,10 +90,15 @@ log and `RESUME.md` for current state at a glance.
 | 72    | Three more patient sprites         | Chloe + Stan + Patel · 5 states each · sprite coverage 2/17 → 5/17                                       |
 | 73    | FX particles on patient state      | urticaria / sweat / vomit / blood / pulse, diagnosis-coded, reduce-motion aware                          |
 | 74    | First-run induction                | Character creator + McGrath's 13-beat Skittstown ED tour at first launch                                  |
+| 75-76 | Full drop port + 17/17 sprites     | 13 drop archetypes × 5 states · mapped to every case · sprite coverage 17/17                              |
+| 77    | Difficulty tiering                 | F1/F2/CT1 grade affects score band thresholds + trap-hint defaults                                        |
+| 78    | LICENSE + lazy routes              | Proprietary copyright file · all menu-secondary routes lazy-loaded with Suspense                          |
+| 79    | McGrath walks in                   | Parked walk-cycle frames now drive her entrance into the consultant interrupt modal                       |
 
-Numbers: **312 unit tests · 3 E2E · 17 cases · 17 episodes · 3 arcs ·
+Numbers: **324 unit tests · 3 E2E · 17 cases · 17 episodes · 3 arcs ·
 16 daily ECGs · 8 NPC sprites + 13 patient archetypes · 20 props +
-13 world tiles + 17 FX · 8 achievement badges · 5/17 cases sprited**.
+13 world tiles + 17 FX · 8 achievement badges · 17/17 cases sprited ·
+F1/F2/CT1 difficulty tiering**.
 Lint clean, typecheck clean, validator green.
 
 ## Stack

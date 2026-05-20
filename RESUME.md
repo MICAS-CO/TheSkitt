@@ -84,6 +84,7 @@ visual integration from Claude Design + new content.
 | M76 | Full 17/17 sprite coverage — drop archetypes mapped to every authored case |
 | M77 | Difficulty tiering — F1/F2/CT1 grade affects score bands + trap-hint default |
 | M78 | LICENSE + lazy-load every menu-secondary route |
+| M79 | McGrath walks into the bay — wire the parked walk-cycle frames |
 
 ## ⏳ WAITING ON DESIGN
 

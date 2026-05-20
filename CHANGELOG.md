@@ -4,6 +4,33 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M79 — McGrath walks into the bay
+
+- Parked walk-cycle frames (M65) now drive her entrance into the
+  consultant interrupt modal — 4-frame walk loop for 880ms,
+  reduce-motion aware.
+
+### M78 — LICENSE + lazy-load every menu-secondary route
+
+- Proprietary copyright file. Suspense boundaries on Ecg /
+  SkillTree / Settings / Practice / Induction routes.
+
+### M77 — difficulty tiering wires F1/F2/CT1 into gameplay
+
+- TIERS catalogue · scoreCase reads active tier · trap-hint
+  default tier-aware · menu badge surfaces 'Dr {name} · F1 — Lenient'.
+
+### M76 — full 17/17 sprite coverage
+
+- Maps drop archetypes onto every authored case with mild
+  demographic looseness where condition + body system align.
+
+### M75 — full port of drop #3 patient sprites
+
+- 13 archetypes × 5 states ported with full state machinery
+  (skin-tint substitutions + per-cell diffs). Self-contained PAL
+  to avoid collisions with sprites.ts.
+
 ### M74 — character creator + Skittstown ED induction (first-run experience)
 
 - localStorage character record (firstName / lastName / role / inducted).
