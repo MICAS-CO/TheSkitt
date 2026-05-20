@@ -4123,3 +4123,226 @@ a {
   color: var(--muted);
   text-align: center;
 }
+
+/* ── M82/M83 — Rota chrome on menu cards ───────────────────────── */
+
+.menu__card--locked {
+  opacity: 0.55;
+  border-style: dashed;
+  cursor: default;
+  pointer-events: none;
+}
+
+.menu__card--keystone {
+  /* Subtle gold-edged glow to mark the gate; keeps Today's-shift
+     amber framing but signals that this one matters more. */
+  box-shadow:
+    0 0 0 1px rgba(224, 168, 46, 0.55),
+    0 0 24px rgba(224, 168, 46, 0.18);
+}
+
+/* ── M83 — E-portfolio screen ──────────────────────────────────── */
+
+.eportfolio {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.eportfolio__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.eportfolio__eyebrow {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.eportfolio__title {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+.eportfolio__count {
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.eportfolio__hint {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 60ch;
+}
+
+.eportfolio__empty {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--muted);
+}
+
+.eportfolio__blocks,
+.eportfolio__log {
+  margin-top: 32px;
+}
+
+.eportfolio__blocks h3,
+.eportfolio__log h3 {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 12px;
+}
+
+.eportfolio__block-list,
+.eportfolio__entries {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.eportfolio__block {
+  padding: 12px 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.eportfolio__block--cleared {
+  border-left: 3px solid var(--good, #5db075);
+}
+
+.eportfolio__block--in-progress {
+  border-left: 3px solid var(--warn);
+}
+
+.eportfolio__block--locked {
+  opacity: 0.6;
+  border-left: 3px solid var(--border);
+}
+
+.eportfolio__block-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.eportfolio__block-status {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.eportfolio__block-keystone {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.eportfolio__block-keystone-title {
+  color: inherit;
+  font-style: italic;
+}
+
+.eportfolio__entry {
+  padding: 12px 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.eportfolio__entry--excellent {
+  border-left: 3px solid var(--good, #5db075);
+}
+.eportfolio__entry--good {
+  border-left: 3px solid var(--good, #5db075);
+}
+.eportfolio__entry--borderline {
+  border-left: 3px solid var(--warn);
+}
+.eportfolio__entry--unsafe {
+  border-left: 3px solid var(--danger, #c5524a);
+}
+
+.eportfolio__entry-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.eportfolio__entry-title {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.eportfolio__entry-when {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.eportfolio__entry-side {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.eportfolio__band {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--muted);
+}
+.eportfolio__band--excellent,
+.eportfolio__band--good {
+  color: var(--good, #5db075);
+}
+.eportfolio__band--borderline {
+  color: var(--warn);
+}
+.eportfolio__band--unsafe {
+  color: var(--danger, #c5524a);
+}
+
+.eportfolio__entry-replay {
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.eportfolio__disclaimer {
+  margin-top: 32px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}

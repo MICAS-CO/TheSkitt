@@ -1,0 +1,5 @@
+{
+  "verdict": "approve",
+  "findings": [],
+  "overall_take": "Both findings have been fully addressed. The UI now correctly gates the next position based on the current shift being a keystone, rather than relying on block boundaries. The BLOCKS derivation now strictly enforces exactly one keystone per block and throws an error at module load if the invariant is violated. The new invariant tests provide solid CI coverage. Great work!"
+}

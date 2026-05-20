@@ -2,7 +2,9 @@ import { describe, expect, it, beforeEach } from 'vitest';
 import {
   advanceRota,
   clearRota,
+  clearsKeystone,
   emptyRota,
+  getBlockProgress,
   getOrInitRota,
   loadRota,
   migrateRotaFromCompletedCases,
@@ -11,12 +13,12 @@ import {
 } from '../src/state/shiftRota';
 
 const TINY_ORDER: RotaShiftRef[] = [
-  { episodeId: 'ep_one', focusCaseIds: ['case_a', 'case_b'] },
-  { episodeId: 'ep_two', focusCaseIds: ['case_c'] },
-  { episodeId: 'ep_three', focusCaseIds: ['case_d', 'case_e'] },
+  // Block 1: one non-keystone then a keystone.
+  { episodeId: 'ep_one', focusCaseIds: ['case_a', 'case_b'], blockIndex: 1, isKeystone: false },
+  { episodeId: 'ep_two', focusCaseIds: ['case_c'], blockIndex: 1, isKeystone: true },
+  // Block 2: one shift (also the final keystone in this tiny fixture).
+  { episodeId: 'ep_three', focusCaseIds: ['case_d', 'case_e'], blockIndex: 2, isKeystone: true },
 ];
-
-const TINY_IDS = TINY_ORDER.map((s) => s.episodeId);
 
 describe('M82 — shift rota', () => {
   beforeEach(() => {
@@ -37,7 +39,7 @@ describe('M82 — shift rota', () => {
 
   it('advanceRota records completion and advances when finishing the current shift', () => {
     const start = emptyRota();
-    const next = advanceRota(start, TINY_IDS, {
+    const next = advanceRota(start, TINY_ORDER, {
       episodeId: 'ep_one',
       band: 'good',
       completedIso: '2026-05-20T10:00:00.000Z',
@@ -49,7 +51,7 @@ describe('M82 — shift rota', () => {
 
   it('advanceRota does not over-advance when replaying an earlier shift', () => {
     const state = { ...emptyRota(), currentShiftIndex: 2 };
-    const next = advanceRota(state, TINY_IDS, {
+    const next = advanceRota(state, TINY_ORDER, {
       episodeId: 'ep_one', // not the current one
       band: 'excellent',
       completedIso: '2026-05-20T10:00:00.000Z',
@@ -60,13 +62,13 @@ describe('M82 — shift rota', () => {
   });
 
   it('advanceRota caps at the last shift', () => {
-    const state = { ...emptyRota(), currentShiftIndex: TINY_IDS.length - 1 };
-    const next = advanceRota(state, TINY_IDS, {
+    const state = { ...emptyRota(), currentShiftIndex: TINY_ORDER.length - 1 };
+    const next = advanceRota(state, TINY_ORDER, {
       episodeId: 'ep_three',
       band: 'good',
       completedIso: '2026-05-20T10:00:00.000Z',
     });
-    expect(next.currentShiftIndex).toBe(TINY_IDS.length - 1);
+    expect(next.currentShiftIndex).toBe(TINY_ORDER.length - 1);
   });
 
   it('migrateRotaFromCompletedCases advances past fully-completed shifts', () => {
@@ -116,7 +118,7 @@ describe('M82 — shift rota', () => {
       'case_d',
       'case_e',
     ]);
-    expect(migrated.currentShiftIndex).toBe(TINY_IDS.length - 1);
+    expect(migrated.currentShiftIndex).toBe(TINY_ORDER.length - 1);
     expect(migrated.completedShifts.length).toBe(3);
   });
 
@@ -200,5 +202,165 @@ describe('M82 — shift rota', () => {
       }),
     );
     expect(loadRota()?.currentShiftIndex).toBe(0);
+  });
+});
+
+describe('M83 — keystone gating', () => {
+  beforeEach(() => {
+    clearRota();
+  });
+
+  it('clearsKeystone: good and excellent unlock, borderline and unsafe do not', () => {
+    expect(clearsKeystone('good')).toBe(true);
+    expect(clearsKeystone('excellent')).toBe(true);
+    expect(clearsKeystone('borderline')).toBe(false);
+    expect(clearsKeystone('unsafe')).toBe(false);
+  });
+
+  it('keystone cleared at good advances into the next block', () => {
+    // Position 1 in TINY_ORDER is ep_two, a keystone.
+    const state = { ...emptyRota(), currentShiftIndex: 1 };
+    const next = advanceRota(state, TINY_ORDER, {
+      episodeId: 'ep_two',
+      band: 'good',
+      completedIso: '2026-05-20T10:00:00.000Z',
+    });
+    expect(next.currentShiftIndex).toBe(2);
+    expect(next.completedShifts.length).toBe(1);
+  });
+
+  it('keystone cleared at excellent advances into the next block', () => {
+    const state = { ...emptyRota(), currentShiftIndex: 1 };
+    const next = advanceRota(state, TINY_ORDER, {
+      episodeId: 'ep_two',
+      band: 'excellent',
+      completedIso: '2026-05-20T10:00:00.000Z',
+    });
+    expect(next.currentShiftIndex).toBe(2);
+  });
+
+  it('keystone failed at borderline freezes the rota in place for retry', () => {
+    const state = { ...emptyRota(), currentShiftIndex: 1 };
+    const next = advanceRota(state, TINY_ORDER, {
+      episodeId: 'ep_two',
+      band: 'borderline',
+      completedIso: '2026-05-20T10:00:00.000Z',
+    });
+    expect(next.currentShiftIndex).toBe(1);
+    // failed attempt still logged for the e-portfolio
+    expect(next.completedShifts.length).toBe(1);
+    expect(next.completedShifts[0]!.band).toBe('borderline');
+  });
+
+  it('keystone failed at unsafe freezes the rota in place', () => {
+    const state = { ...emptyRota(), currentShiftIndex: 1 };
+    const next = advanceRota(state, TINY_ORDER, {
+      episodeId: 'ep_two',
+      band: 'unsafe',
+      completedIso: '2026-05-20T10:00:00.000Z',
+    });
+    expect(next.currentShiftIndex).toBe(1);
+    expect(next.completedShifts.length).toBe(1);
+  });
+
+  it('successive failed keystone attempts each get logged', () => {
+    let state = { ...emptyRota(), currentShiftIndex: 1 };
+    for (const band of ['borderline', 'unsafe', 'borderline'] as const) {
+      state = advanceRota(state, TINY_ORDER, {
+        episodeId: 'ep_two',
+        band,
+        completedIso: '2026-05-20T10:00:00.000Z',
+      });
+    }
+    expect(state.currentShiftIndex).toBe(1);
+    expect(state.completedShifts.length).toBe(3);
+    // then a clear at good finally unlocks
+    state = advanceRota(state, TINY_ORDER, {
+      episodeId: 'ep_two',
+      band: 'good',
+      completedIso: '2026-05-20T10:00:00.000Z',
+    });
+    expect(state.currentShiftIndex).toBe(2);
+    expect(state.completedShifts.length).toBe(4);
+  });
+
+  it('non-keystone shifts advance unconditionally regardless of band', () => {
+    // Position 0 is ep_one, NOT a keystone.
+    for (const band of ['unsafe', 'borderline', 'good', 'excellent'] as const) {
+      const state = { ...emptyRota(), currentShiftIndex: 0 };
+      const next = advanceRota(state, TINY_ORDER, {
+        episodeId: 'ep_one',
+        band,
+        completedIso: '2026-05-20T10:00:00.000Z',
+      });
+      expect(next.currentShiftIndex).toBe(1);
+    }
+  });
+});
+
+describe('M83 — block progress derivation', () => {
+  // For these tests use a small block fixture that mirrors TINY_ORDER:
+  // 2 blocks. Block 1 has ep_one + ep_two (keystone). Block 2 has
+  // ep_three (keystone).
+  const TINY_BLOCKS = [
+    { blockIndex: 1 as const, shiftCount: 2, keystoneEpisodeId: 'ep_two', positions: [0, 1] as const },
+    { blockIndex: 2 as const, shiftCount: 1, keystoneEpisodeId: 'ep_three', positions: [2] as const },
+  ];
+
+  it('empty rota: block 1 accessible, block 2 not, no keystones cleared', () => {
+const blocks = getBlockProgress(emptyRota(), TINY_BLOCKS, TINY_ORDER);
+    expect(blocks[0]!.accessible).toBe(true);
+    expect(blocks[0]!.keystoneCleared).toBe(false);
+    expect(blocks[1]!.accessible).toBe(false);
+  });
+
+  it('block 1 keystone failed at borderline: block 2 still locked', () => {
+const state = {
+      ...emptyRota(),
+      completedShifts: [
+        { episodeId: 'ep_two', band: 'borderline' as const, completedIso: 'x' },
+      ],
+    };
+    const blocks = getBlockProgress(state, TINY_BLOCKS, TINY_ORDER);
+    expect(blocks[0]!.keystoneCleared).toBe(false);
+    expect(blocks[1]!.accessible).toBe(false);
+  });
+
+  it('block 1 keystone cleared at good: block 2 unlocks', () => {
+const state = {
+      ...emptyRota(),
+      completedShifts: [
+        { episodeId: 'ep_two', band: 'good' as const, completedIso: 'x' },
+      ],
+    };
+    const blocks = getBlockProgress(state, TINY_BLOCKS, TINY_ORDER);
+    expect(blocks[0]!.keystoneCleared).toBe(true);
+    expect(blocks[1]!.accessible).toBe(true);
+  });
+
+  it('once-cleared keystone stays cleared even after a borderline retry', () => {
+const state = {
+      ...emptyRota(),
+      completedShifts: [
+        { episodeId: 'ep_two', band: 'good' as const, completedIso: 'x' },
+        { episodeId: 'ep_two', band: 'borderline' as const, completedIso: 'y' },
+      ],
+    };
+    const blocks = getBlockProgress(state, TINY_BLOCKS, TINY_ORDER);
+    expect(blocks[0]!.keystoneCleared).toBe(true);
+  });
+
+  it('shiftsAttempted counts distinct episodes with at least one completion', () => {
+const state = {
+      ...emptyRota(),
+      completedShifts: [
+        { episodeId: 'ep_one', band: 'good' as const, completedIso: 'x' },
+        { episodeId: 'ep_one', band: 'excellent' as const, completedIso: 'y' }, // dedup
+        { episodeId: 'ep_two', band: 'borderline' as const, completedIso: 'z' },
+      ],
+    };
+    const blocks = getBlockProgress(state, TINY_BLOCKS, TINY_ORDER);
+    expect(blocks[0]!.shiftsAttempted).toBe(2);
+    expect(blocks[1]!.shiftsAttempted).toBe(0);
   });
 });

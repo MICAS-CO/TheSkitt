@@ -1,0 +1,20 @@
+{
+  "verdict": "request_changes",
+  "findings": [
+    {
+      "severity": "medium",
+      "title": "UI tightly couples block boundaries to keystone presence without enforcing it",
+      "file": "src/App.tsx",
+      "body": "The locked teaser uses `nextCrossesBlock` to determine if it should show the keystone warning:\n```typescript\nconst nextCrossesBlock =\n  !!currentRotaEntry &&\n  !!nextRotaEntry &&\n  nextRotaEntry.blockIndex !== currentRotaEntry.blockIndex;\n```\nIf `ROTA_ORDER` is updated in M84 such that a keystone is NOT the final shift of its block, `nextCrossesBlock` will be false when the player is actually on the keystone. The UI will spoil the next shift's title and omit the SHO band requirement warning. Conversely, on the actual last shift of the block (a non-keystone), it will falsely show the keystone warning.",
+      "recommendation": "Change the condition to check `currentRotaEntry?.isKeystone` instead of `nextCrossesBlock` for hiding the title and showing the warning, OR add a module-load validation in `rotaOrder.ts` that strictly enforces keystones are always the final shift of their respective blocks."
+    },
+    {
+      "severity": "low",
+      "title": "BLOCKS derivation allows multiple keystones per block, risking state desync",
+      "file": "src/state/rotaOrder.ts",
+      "body": "The derivation uses `.find()` to locate the keystone for a block:\n```typescript\nconst keystone = positions\n  .map((p) => ROTA_ORDER[p]!)\n  .find((s) => s.isKeystone);\n```\nIf a block accidentally contains multiple keystones, this silently picks the first one. `getBlockProgress` will mark the next block as `accessible` as soon as this first keystone is cleared, even though `advanceRota` will still correctly block the player at the second keystone, causing a desync between the e-portfolio UI and the actual playable rota state.",
+      "recommendation": "Enforce exactly one keystone per block during derivation: `const keystones = positions.map(p => ROTA_ORDER[p]!).filter(s => s.isKeystone); if (keystones.length !== 1) throw new Error(...)`."
+    }
+  ],
+  "overall_take": "The core gating logic in `advanceRota` and the e-portfolio state derivation are solid, but the UI and block derivation make implicit assumptions about the rota ordering (keystones being exactly one per block and always the last shift) that aren't enforced by the data structure, which could cause subtle bugs when the rota is reshuffled in M84."
+}

@@ -36,6 +36,9 @@ const AssetLibraryScreen = lazy(() =>
 const CasePracticeScreen = lazy(() =>
   import('./ui/practice/CasePracticeScreen').then((m) => ({ default: m.CasePracticeScreen })),
 );
+const EPortfolioScreen = lazy(() =>
+  import('./ui/portfolio/EPortfolioScreen').then((m) => ({ default: m.EPortfolioScreen })),
+);
 const InductionScreen = lazy(() =>
   import('./ui/induction/InductionScreen').then((m) => ({ default: m.InductionScreen })),
 );
@@ -122,7 +125,7 @@ import paedsDkaEpYaml from '../content/episodes/ep_paeds_dka_solo.yaml?raw';
 // loop, McGrath's tone, and the nurse-in-charge before any resus.
 import minorsDayEntryEpYaml from '../content/episodes/ep_minors_day_entry.yaml?raw';
 
-type View = 'menu' | 'shift' | 'hub' | 'ecg' | 'skilltree' | 'settings' | 'styleguide' | 'practice' | 'induction';
+type View = 'menu' | 'shift' | 'hub' | 'ecg' | 'skilltree' | 'settings' | 'styleguide' | 'practice' | 'induction' | 'eportfolio';
 
 const SUBTITLES: Record<View, string> = {
   menu: 'Episodic FRCEM study RPG · 17 shifts, 17 cases, 3 arcs',
@@ -134,6 +137,7 @@ const SUBTITLES: Record<View, string> = {
   styleguide: 'Visual Style Guide — internal asset library',
   practice: 'Practice library — drill any patient',
   induction: 'Skittstown ED — induction',
+  eportfolio: 'E-portfolio — shifts on file',
 };
 
 interface ShiftPack {
@@ -467,7 +471,7 @@ export function App() {
           ROTA_ORDER,
           loadProgression().caseIdsCompleted,
         );
-        const advanced = advanceRota(current, ROTA_ORDER_IDS, {
+        const advanced = advanceRota(current, ROTA_ORDER, {
           episodeId: report.episodeId,
           band: report.band,
           completedIso: new Date().toISOString(),
@@ -528,6 +532,7 @@ export function App() {
             onShowEcg={() => setView('ecg')}
             onShowSkillTree={() => setView('skilltree')}
             onShowSettings={() => setView('settings')}
+            onShowEportfolio={() => setView('eportfolio')}
             saved={saved}
             onResume={resumeSavedShift}
             onClearSave={clearAndForget}
@@ -563,6 +568,18 @@ export function App() {
           <Suspense fallback={<div className="app__loading">Loading case library…</div>}>
             <CasePracticeScreen
               onPick={(episodeId) => {
+                const def = SHIFT_DEFS.find((s) => s.id === episodeId);
+                if (def) startShift(def.factory());
+              }}
+              onExit={() => setView('menu')}
+            />
+          </Suspense>
+        )}
+        {view === 'eportfolio' && (
+          <Suspense fallback={<div className="app__loading">Loading e-portfolio…</div>}>
+            <EPortfolioScreen
+              shiftTitleById={Object.fromEntries(SHIFT_DEFS.map((s) => [s.id, s.title]))}
+              onReplay={(episodeId) => {
                 const def = SHIFT_DEFS.find((s) => s.id === episodeId);
                 if (def) startShift(def.factory());
               }}
@@ -609,6 +626,7 @@ function MenuView({
   onShowEcg,
   onShowSkillTree,
   onShowSettings,
+  onShowEportfolio,
   saved,
   onResume,
   onClearSave,
@@ -619,6 +637,7 @@ function MenuView({
   onShowEcg: () => void;
   onShowSkillTree: () => void;
   onShowSettings: () => void;
+  onShowEportfolio: () => void;
   saved: SavedShift | null;
   onResume: () => void;
   onClearSave: () => void;
@@ -634,11 +653,29 @@ function MenuView({
     const id = ROTA_ORDER_IDS[rota.currentShiftIndex];
     return id ? shifts.find((s) => s.id === id) ?? null : null;
   }, [rota.currentShiftIndex, shifts]);
+  const currentRotaEntry = ROTA_ORDER[rota.currentShiftIndex] ?? null;
+  // M83: the current shift is a keystone retry when it's a keystone
+  // AND there's at least one prior completion of it on the log (the
+  // player has tried and missed the band gate).
+  const currentKeystoneRetry =
+    !!currentRotaEntry &&
+    currentRotaEntry.isKeystone &&
+    rota.completedShifts.some((c) => c.episodeId === currentRotaEntry.episodeId);
+  const nextRotaEntry = ROTA_ORDER[rota.currentShiftIndex + 1] ?? null;
+  // M83: when today's shift is a keystone, the next position is gated
+  // by clearing it at SHO band+ — regardless of whether the gate is
+  // a block boundary or a mid-block keystone. Earlier we keyed off
+  // `nextRotaEntry.blockIndex !== currentRotaEntry.blockIndex` which
+  // implicitly assumed keystones are the LAST shift of their block.
+  // Round-1 reviewer caught the brittleness; M84 may reshape ordering.
+  const nextIsGated =
+    !!currentRotaEntry && currentRotaEntry.isKeystone && !!nextRotaEntry;
+  const nextCrossesBlock =
+    nextIsGated && nextRotaEntry!.blockIndex !== currentRotaEntry!.blockIndex;
   const nextShiftTitle = useMemo(() => {
-    const id = ROTA_ORDER_IDS[rota.currentShiftIndex + 1];
-    if (!id) return null;
-    return shifts.find((s) => s.id === id)?.title ?? null;
-  }, [rota.currentShiftIndex, shifts]);
+    if (!nextRotaEntry) return null;
+    return shifts.find((s) => s.id === nextRotaEntry.episodeId)?.title ?? null;
+  }, [nextRotaEntry, shifts]);
   const totalShifts = ROTA_ORDER_IDS.length;
   const completedCount = rota.completedShifts.length;
 
@@ -675,8 +712,15 @@ function MenuView({
         <p className="menu__copy">
           You&rsquo;re on shift {Math.min(rota.currentShiftIndex + 1, totalShifts)} of {totalShifts}.
           {completedCount > 0
-            ? ` ${completedCount} shift${completedCount === 1 ? '' : 's'} on file in your e-portfolio.`
+            ? ` ${completedCount} attempt${completedCount === 1 ? '' : 's'} on file in your e-portfolio.`
             : ' The e-portfolio fills as you finish shifts.'}
+          {currentRotaEntry?.isKeystone && (
+            <>
+              {' '}
+              <strong>Today is a keystone shift</strong> — clear it at SHO band or better
+              {nextRotaEntry ? ` to unlock block ${nextRotaEntry.blockIndex}` : ''}.
+            </>
+          )}
         </p>
         {saved && (
           <div className="menu__resume">
@@ -696,25 +740,47 @@ function MenuView({
           {currentShift && (
             <button
               key={currentShift.id}
-              className="menu__card menu__card--primary menu__card--today"
+              className={`menu__card menu__card--primary menu__card--today ${
+                currentRotaEntry?.isKeystone ? 'menu__card--keystone' : ''
+              }`}
               onClick={() => onStart(currentShift.id)}
             >
-              <span className="menu__card-today-badge">TODAY&rsquo;S SHIFT</span>
+              <span className="menu__card-today-badge">
+                {currentKeystoneRetry
+                  ? 'RETRY · KEYSTONE'
+                  : currentRotaEntry?.isKeystone
+                    ? 'TODAY · KEYSTONE'
+                    : 'TODAY’S SHIFT'}
+              </span>
               <span className="menu__card-eyebrow">{currentShift.eyebrow}</span>
               <span className="menu__card-title">{currentShift.title}</span>
               <span className="menu__card-meta">{currentShift.meta}</span>
             </button>
           )}
           {nextShiftTitle && (
-            // Peek at the next shift. Title only, no eyebrow / no factory
-            // hint — the rota teaches what's coming without spoiling it.
+            // Peek at the next position. When today's shift is a keystone,
+            // the next position is gated — hide the title. The rota
+            // teaches what's coming without spoiling what's locked. The
+            // block-boundary case gets an extra refinement in the eyebrow.
             <div
               className="menu__card menu__card--secondary menu__card--locked"
               aria-disabled="true"
             >
-              <span className="menu__card-eyebrow">Next on the rota</span>
-              <span className="menu__card-title">{nextShiftTitle}</span>
-              <span className="menu__card-meta">Published after you debrief today&rsquo;s shift.</span>
+              <span className="menu__card-eyebrow">
+                {nextCrossesBlock
+                  ? `Block ${nextRotaEntry?.blockIndex} (locked)`
+                  : nextIsGated
+                    ? 'Locked'
+                    : 'Next on the rota'}
+              </span>
+              <span className="menu__card-title">
+                {nextIsGated ? '— sealed until the keystone clears' : nextShiftTitle}
+              </span>
+              <span className="menu__card-meta">
+                {nextIsGated
+                  ? 'Clear today’s keystone at SHO band or better to unlock the next position.'
+                  : 'Published after you debrief today’s shift.'}
+              </span>
             </div>
           )}
           {!currentShift && (
@@ -722,10 +788,19 @@ function MenuView({
               <span className="menu__card-eyebrow">Rota complete</span>
               <span className="menu__card-title">All shifts on file</span>
               <span className="menu__card-meta">
-                The e-portfolio lands in M83 — revisit individual cases there.
+                Open the e-portfolio to revisit individual shifts.
               </span>
             </div>
           )}
+          <button className="menu__card menu__card--secondary" onClick={onShowEportfolio}>
+            <span className="menu__card-eyebrow">Portfolio</span>
+            <span className="menu__card-title">E-portfolio</span>
+            <span className="menu__card-meta">
+              {completedCount > 0
+                ? `${completedCount} attempt${completedCount === 1 ? '' : 's'} on file. Replay any.`
+                : 'Empty for now. Finish a shift to file your first attempt.'}
+            </span>
+          </button>
           <button className="menu__card menu__card--secondary" onClick={onShowHub}>
             <span className="menu__card-eyebrow">Preview</span>
             <span className="menu__card-title">ED hub layout</span>

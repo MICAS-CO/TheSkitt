@@ -108,29 +108,115 @@ export function clearRota(): void {
 }
 
 /**
- * Record a shift as completed and advance the rota one step. Idempotent
- * on the (episodeId, band) tuple — completing a shift twice (e.g. via
- * Replay) appends a second entry but does not over-advance.
+ * The band threshold that clears a keystone shift (M83). Anything at
+ * or above this unlocks the next block. Below this and the keystone
+ * stays in place for retry — the M81 design consultation called for
+ * "F2+ band" gating, which under the M81 grade rename is SHO+ = good.
+ */
+const KEYSTONE_BAND_THRESHOLD: ReadonlyArray<CompletedShift['band']> = [
+  'good',
+  'excellent',
+];
+
+export function clearsKeystone(band: CompletedShift['band']): boolean {
+  return KEYSTONE_BAND_THRESHOLD.includes(band);
+}
+
+export interface BlockProgress {
+  blockIndex: 1 | 2 | 3;
+  shiftCount: number;
+  /** How many of this block's shifts have at least one completion log
+   *  (regardless of band). */
+  shiftsAttempted: number;
+  /** The keystone shift's episode id. */
+  keystoneEpisodeId: string;
+  /** True if the keystone has been cleared at band >= 'good' at least
+   *  once. Once true, never reverts (the e-portfolio remembers the
+   *  best attempt). */
+  keystoneCleared: boolean;
+  /** True if the player can reach any shift in this block — i.e. the
+   *  previous block's keystone has been cleared (or this is block 1). */
+  accessible: boolean;
+}
+
+/**
+ * Derive per-block progress from the rota state. Used by the
+ * EPortfolioScreen and the MenuView's locked-shift teaser to surface
+ * block accessibility + keystone state.
+ */
+export function getBlockProgress(
+  state: RotaState,
+  blocks: ReadonlyArray<{
+    blockIndex: 1 | 2 | 3;
+    shiftCount: number;
+    keystoneEpisodeId: string;
+    positions: readonly number[];
+  }>,
+  rotaOrder: readonly RotaShiftRef[],
+): BlockProgress[] {
+  const completedByEpisode = new Map<string, CompletedShift[]>();
+  for (const c of state.completedShifts) {
+    const arr = completedByEpisode.get(c.episodeId) ?? [];
+    arr.push(c);
+    completedByEpisode.set(c.episodeId, arr);
+  }
+  const out: BlockProgress[] = [];
+  let prevKeystoneCleared = true; // block 1 is always accessible
+  for (const b of blocks) {
+    const completionsForKeystone = completedByEpisode.get(b.keystoneEpisodeId) ?? [];
+    const keystoneCleared = completionsForKeystone.some((c) => clearsKeystone(c.band));
+    const shiftsAttempted = b.positions.reduce((n, pos) => {
+      const ep = rotaOrder[pos]?.episodeId;
+      if (ep && (completedByEpisode.get(ep)?.length ?? 0) > 0) return n + 1;
+      return n;
+    }, 0);
+    out.push({
+      blockIndex: b.blockIndex,
+      shiftCount: b.shiftCount,
+      shiftsAttempted,
+      keystoneEpisodeId: b.keystoneEpisodeId,
+      keystoneCleared,
+      accessible: prevKeystoneCleared,
+    });
+    prevKeystoneCleared = keystoneCleared;
+  }
+  return out;
+}
+
+/**
+ * Record a shift as completed and advance the rota one step.
  *
- * The current rule for advancement: if the just-completed episode is
- * the shift at currentShiftIndex, advance. Otherwise (a replay or an
- * already-passed shift), just log the completion. This guards against
- * accidental rota jumps when the player replays an earlier shift.
+ * Advancement rules (M82 baseline + M83 keystone gating):
+ *  - The just-completed episode must be the one at currentShiftIndex.
+ *    Replays of earlier shifts log the completion but never advance.
+ *  - If the just-completed shift IS a keystone:
+ *      * band >= 'good' → advance (the next block unlocks)
+ *      * band <  'good' → DO NOT advance. The keystone stays at the
+ *        currentShiftIndex for retry. Completion is still logged for
+ *        the e-portfolio.
+ *  - Non-keystone shifts: advance unconditionally on completion.
+ *
+ * Completion is ALWAYS appended to `completedShifts` — failed
+ * keystones, replays, everything. The e-portfolio renders the full
+ * log; the gating affects only the playable position.
  */
 export function advanceRota(
   state: RotaState,
-  rotaOrder: readonly string[],
+  rotaOrder: readonly RotaShiftRef[],
   completed: CompletedShift,
   maxIndex: number = rotaOrder.length - 1,
 ): RotaState {
-  const isCurrent =
-    rotaOrder[state.currentShiftIndex] === completed.episodeId;
+  const currentRef = rotaOrder[state.currentShiftIndex];
+  const isCurrent = currentRef?.episodeId === completed.episodeId;
+  const isKeystoneFail =
+    isCurrent && currentRef.isKeystone && !clearsKeystone(completed.band);
   const next: RotaState = {
     ...state,
     completedShifts: [...state.completedShifts, completed],
-    currentShiftIndex: isCurrent
-      ? Math.min(state.currentShiftIndex + 1, maxIndex)
-      : state.currentShiftIndex,
+    currentShiftIndex:
+      isCurrent && !isKeystoneFail
+        ? Math.min(state.currentShiftIndex + 1, maxIndex)
+        : state.currentShiftIndex,
     updatedAt: new Date().toISOString(),
   };
   return next;
@@ -139,6 +225,12 @@ export function advanceRota(
 export interface RotaShiftRef {
   episodeId: string;
   focusCaseIds: readonly string[];
+  /** Which of the 3 blocks this shift sits in (M83). Used to compute
+   *  block-boundary gating after the player completes a keystone. */
+  blockIndex: 1 | 2 | 3;
+  /** True if this is the keystone shift for its block — the one whose
+   *  band-cleared-at-good-or-better unlocks the next block. M83. */
+  isKeystone: boolean;
 }
 
 /**
