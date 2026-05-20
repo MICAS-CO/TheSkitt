@@ -43,7 +43,7 @@ const InductionScreen = lazy(() =>
   import('./ui/induction/InductionScreen').then((m) => ({ default: m.InductionScreen })),
 );
 import { loadCharacter } from './state/character';
-import { TIERS } from './state/difficulty';
+import { getActiveTier, tierPolicy, TIERS } from './state/difficulty';
 
 // Solo shift (Milestone 4)
 import bethYaml from '../content/cases/case_anaphylaxis_adult_peanut.yaml?raw';
@@ -435,6 +435,10 @@ export function App() {
       episode: pack.episode,
       cases: new Map(pack.cases.map((c) => [c.id, c])),
       arcs: new Map(pack.arcs.map((a) => [a.id, a])),
+      // M87 — deterioration policy derived from the player's current
+      // tier. Intern gets 2x time on deterioration + no inaction-
+      // driven arrests; SHO gets 1.5x time; Registrar is unchanged.
+      difficulty: tierPolicy(getActiveTier()),
     });
     initSim(kernel);
     setView('shift');
@@ -454,6 +458,7 @@ export function App() {
       cases: new Map(pack.cases.map((c) => [c.id, c])),
       arcs: new Map(pack.arcs.map((a) => [a.id, a])),
       restore: saved.snapshot,
+      difficulty: tierPolicy(getActiveTier()),
     });
     initSim(kernel);
     setView('shift');

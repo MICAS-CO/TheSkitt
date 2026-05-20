@@ -42,6 +42,23 @@ export interface TierConfig {
   trapHintsDefault: boolean;
   /** One-line tier blurb shown in the menu next to the character. */
   blurb: string;
+  /**
+   * M87 (Braintrust 06 Tier 2) — multiplier applied to the t_min of
+   * inaction-driven deterioration events and `inaction_by` state-
+   * machine triggers. Intern gets longer windows than Registrar so
+   * the junior player has space to reason without the wall-clock
+   * killing them.
+   */
+  deteriorationTimeMultiplier: number;
+  /**
+   * M87 — when true, inaction-driven transitions whose destination is
+   * 'arrested' or 'deceased' are clamped to 'deteriorating' instead.
+   * The Intern tier should be "you can't kill a patient by accident"
+   * by design — McGrath catches the consequence one tier above the
+   * irreversible. Trap-driven arrests (player actively chose a
+   * must_not_do) are unaffected — those teach safety consequences.
+   */
+  clampInactionDeterioration: boolean;
 }
 
 export const TIERS: Record<CharacterRole, TierConfig> = {
@@ -49,21 +66,43 @@ export const TIERS: Record<CharacterRole, TierConfig> = {
     label: 'Intern — first postgraduate year',
     thresholds: { excellent: 80, good: 65 },
     trapHintsDefault: true,
-    blurb: 'Lenient scoring · trap hints on · unlimited pause.',
+    blurb: 'Lenient scoring · 2x time on deterioration · McGrath catches arrests.',
+    deteriorationTimeMultiplier: 2.0,
+    clampInactionDeterioration: true,
   },
   SHO: {
     label: 'SHO — senior house officer',
     thresholds: { excellent: 85, good: 70 },
     trapHintsDefault: true,
-    blurb: 'Lenient scoring · trap hints on · unlimited pause.',
+    blurb: 'Lenient scoring · 1.5x time on deterioration · trap hints on.',
+    deteriorationTimeMultiplier: 1.5,
+    clampInactionDeterioration: false,
   },
   Registrar: {
     label: 'Registrar — EM specialty trainee',
     thresholds: { excellent: 90, good: 75 },
     trapHintsDefault: false,
-    blurb: 'Standard scoring · trap hints off · pause budget will land next.',
+    blurb: 'Standard scoring · literature-true timing · trap hints off.',
+    deteriorationTimeMultiplier: 1.0,
+    clampInactionDeterioration: false,
   },
 };
+
+/**
+ * M87 — derive the runtime DifficultyPolicy from a tier. Used by the
+ * SimKernel via constructor injection; kept decoupled from the
+ * localStorage-backed character module so the kernel doesn't pull
+ * in browser-only dependencies.
+ */
+export function tierPolicy(tier: TierConfig): {
+  deteriorationTimeMultiplier: number;
+  clampInactionDeterioration: boolean;
+} {
+  return {
+    deteriorationTimeMultiplier: tier.deteriorationTimeMultiplier,
+    clampInactionDeterioration: tier.clampInactionDeterioration,
+  };
+}
 
 /** Default thresholds (matches the pre-M77 hard-coded values). */
 export const DEFAULT_THRESHOLDS = { excellent: 90, good: 75 } as const;

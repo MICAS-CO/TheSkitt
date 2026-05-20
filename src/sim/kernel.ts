@@ -160,10 +160,43 @@ const TERMINAL_STATES: ReadonlySet<CaseStateT> = new Set<CaseStateT>([
   'deceased',
 ]);
 
+/**
+ * M87 (Braintrust 06 Tier 2) — tier-derived policy that shapes how
+ * inaction-driven deterioration mechanics behave. Constructor-injected
+ * so the kernel stays decoupled from the localStorage-backed
+ * character/difficulty modules. See `tierPolicy` in
+ * `state/difficulty.ts` for the role → policy mapping.
+ *
+ * `deteriorationTimeMultiplier` scales the effective t_min of both
+ * episode `deterioration_if_not_x_by_t` events AND case state-machine
+ * `inaction_by` triggers — Intern (2x) gets twice as long as Registrar
+ * (1x) to act before deterioration fires.
+ *
+ * `clampInactionDeterioration`, when true, redirects any inaction-
+ * driven transition whose destination would be 'arrested' or
+ * 'deceased' down to 'deteriorating'. Trap-driven arrests (player
+ * actively chose a must_not_do) are unaffected — those teach safety
+ * consequences that even Intern should see.
+ */
+export interface DifficultyPolicy {
+  deteriorationTimeMultiplier: number;
+  clampInactionDeterioration: boolean;
+}
+
+const DEFAULT_DIFFICULTY_POLICY: DifficultyPolicy = {
+  deteriorationTimeMultiplier: 1.0,
+  clampInactionDeterioration: false,
+};
+
 export interface SimKernelOpts {
   episode: EpisodeT;
   cases: Map<string, CaseT>;
   arcs?: Map<string, ArcT>;
+  /** M87 — tier-shaped deterioration policy. Defaults to Registrar
+   *  (no time stretch, no outcome clamp) — the literature-true
+   *  baseline. Tests can omit; App.tsx passes the active tier's
+   *  policy at construction. */
+  difficulty?: DifficultyPolicy;
   /** Restore the kernel from a previously-saved snapshot. */
   /** Optional snapshot to restore from. Accepts \`unknown\` (raw
    *  localStorage / file payload) — \`migrateSnapshot\` brings it to
@@ -250,8 +283,10 @@ export function migrateSnapshot(raw: unknown): SerializedKernelSnapshot {
 export class SimKernel {
   private state: KernelState;
   private subs = new Set<() => void>();
+  private difficulty: DifficultyPolicy;
 
   constructor(opts: SimKernelOpts) {
+    this.difficulty = opts.difficulty ?? DEFAULT_DIFFICULTY_POLICY;
     const caseMap = new Map<string, CaseRuntime>();
     for (const [id, data] of opts.cases) {
       caseMap.set(id, {
@@ -289,7 +324,10 @@ export class SimKernel {
       cases: caseMap,
       arcs: opts.arcs ?? new Map(),
       revealedArcIds: new Set(),
-      unfiredEvents: [...opts.episode.scheduled_events].sort((a, b) => a.t_min - b.t_min),
+      unfiredEvents: this.applyDifficultyToEvents(
+        opts.episode.scheduled_events,
+        opts.episode.shift_duration_min,
+      ).sort((a, b) => a.t_min - b.t_min),
       firedEventIds: new Set(),
       log: [{ t_min: 0, level: 'info', text: 'Shift handover received.' }],
       pendingInterrupt: null,
@@ -376,10 +414,28 @@ export class SimKernel {
     }
     this.state.revealedArcIds = new Set(snap.revealedArcIds);
     this.state.firedEventIds = new Set(snap.firedEventIds);
-    this.state.unfiredEvents = this.state.episode.scheduled_events.filter((e) =>
-      snap.unfiredEventIds.includes(e.id),
-    );
-    this.state.unfiredEvents.sort((a, b) => a.t_min - b.t_min);
+    // M87: re-apply the tier-derived time stretch to deterioration
+    // events when restoring, then filter to whichever weren't fired
+    // before the snapshot. If a tier change between save and resume
+    // would un-stretch an event so its t_min is now strictly less
+    // than the restored clock (e.g. saved at Intern at T+6 with an
+    // event re-stretched to T+10; resumed at Registrar where the
+    // event reverts to T+5 < clockMin), clamp the event's t_min to
+    // the current clockMin so it fires gracefully on the next tick
+    // rather than firing the moment the player clicks Play with a
+    // "deteriorated at T+5" log entry that confuses the timeline.
+    const reapplied = this.applyDifficultyToEvents(
+      this.state.episode.scheduled_events,
+      this.state.shiftDurationMin,
+    ).map((ev) => {
+      if (ev.t_min < this.state.clockMin) {
+        return { ...ev, t_min: this.state.clockMin };
+      }
+      return ev;
+    });
+    this.state.unfiredEvents = reapplied
+      .filter((e) => snap.unfiredEventIds.includes(e.id))
+      .sort((a, b) => a.t_min - b.t_min);
     this.state.log = [...snap.log];
   }
 
@@ -487,6 +543,42 @@ export class SimKernel {
     if (this.state.pendingInterrupt === null) return;
     this.state.pendingInterrupt = null;
     this.notify();
+  }
+
+  /**
+   * M87 — apply the tier-derived deterioration policy to a list of
+   * scheduled events. Returns a shallow-clone where each
+   * `deterioration_if_not_x_by_t` event has its t_min stretched by
+   * the tier's `deteriorationTimeMultiplier` and (if
+   * `clampInactionDeterioration` is true) its `new_state` clamped
+   * down from arrested/deceased to 'deteriorating'. Other event
+   * types pass through unchanged — `family_arrival`,
+   * `results_back`, `bed_manager_pressure` etc are realism beats
+   * keyed to the in-shift timeline, not act-or-die clocks.
+   */
+  private applyDifficultyToEvents(
+    events: ReadonlyArray<ScheduledEventT>,
+    shiftDurationMin: number,
+  ): ScheduledEventT[] {
+    const mult = this.difficulty.deteriorationTimeMultiplier;
+    const clamp = this.difficulty.clampInactionDeterioration;
+    if (mult === 1 && !clamp) return [...events];
+    // M87 (round 2 fix) — cap the stretched t_min at the shift
+    // duration so late-shift events still fire within the shift.
+    // Without this, an authored T+18 event on a 20-min shift becomes
+    // T+36 at Intern (2x) and never fires — the player misses the
+    // pedagogical beat entirely. The cap keeps the beat available
+    // (it fires near end-of-shift) while the policy's outcome clamp
+    // still prevents an unrecoverable arrest.
+    return events.map((ev) => {
+      if (ev.type !== 'deterioration_if_not_x_by_t') return ev;
+      const next = { ...ev };
+      next.t_min = Math.min(ev.t_min * mult, shiftDurationMin);
+      if (clamp && (ev.new_state === 'arrested' || ev.new_state === 'deceased')) {
+        next.new_state = 'deteriorating';
+      }
+      return next;
+    });
   }
 
   /**
@@ -906,7 +998,19 @@ export class SimKernel {
       if (t.from !== cs.state) continue;
       if (this.triggerMatches(t.trigger, cs)) {
         const prev = cs.state;
-        cs.state = t.to;
+        // M87 (Braintrust 06 Tier 2) — when the policy clamps
+        // inaction-driven deterioration AND the trigger was inaction-
+        // shaped (the patient is being failed BY the clock, not by an
+        // active wrong choice), drop arrested/deceased destinations to
+        // deteriorating. Action-driven transitions (player picked a
+        // must_not_do trap → arrest) are unaffected: those are
+        // intentional safety-consequence teaching.
+        const isInactionDriven = t.trigger.on === 'inaction_by';
+        const wouldArrestOrDie = t.to === 'arrested' || t.to === 'deceased';
+        cs.state =
+          isInactionDriven && wouldArrestOrDie && this.difficulty.clampInactionDeterioration
+            ? 'deteriorating'
+            : t.to;
         if (t.trigger.note) cs.reasons.push(t.trigger.note);
         this.log(
           cs.state === 'arrested' || cs.state === 'deceased' ? 'danger' : 'info',
@@ -944,9 +1048,17 @@ export class SimKernel {
         // patient shifts where ambient cases arrive via new_arrival
         // mid-shift no longer have those cases born already past
         // their deterioration window.
+        //
+        // M87 (Braintrust 06 Tier 2): the effective threshold is
+        // scaled by the active tier's deterioration multiplier — at
+        // Intern (2x), an `inaction_by min:5` trigger fires only
+        // after 10 since-triage minutes elapsed. Stretching here
+        // matches the same stretch applied to episode events at
+        // construction time (see applyDifficultyToEvents).
         if (cs.triagedAt === null) return false;
+        const effectiveMin = trigger.min * this.difficulty.deteriorationTimeMultiplier;
         return (
-          this.state.clockMin - cs.triagedAt >= trigger.min &&
+          this.state.clockMin - cs.triagedAt >= effectiveMin &&
           !trigger.required_actions.every((a) => cs.actions.has(a))
         );
       }

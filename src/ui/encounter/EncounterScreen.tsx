@@ -1262,6 +1262,13 @@ function DebriefPhase({ cs }: { cs: CaseRuntime }) {
         </ul>
       </div>
 
+      {/* M87 (Braintrust 06 Tier 2) — McGrath-voiced narrative read on
+          the player's reasoning approach. Sits below the score panel
+          so the player sees the hard numbers first, then the coaching
+          frame; round-1 reviewer flagged the prior above-score
+          placement as obscuring the primary outcome. */}
+      <ReasoningRead score={score} />
+
       {cs.reasons.length > 0 && (
         <>
           <h3>What changed on the clock</h3>
@@ -1310,6 +1317,40 @@ function DebriefPhase({ cs }: { cs: CaseRuntime }) {
         Study material. Not medical advice. Not a substitute for supervised clinical training.
       </p>
     </section>
+  );
+}
+
+/**
+ * M87 (Braintrust 06 Tier 2) — McGrath-voiced reasoning callout in
+ * the debrief. Reads as a coaching observation rather than a metric:
+ * the score panel below already shows the bonus numbers; this gives
+ * the player a one-line frame for what the build is rewarding.
+ */
+function ReasoningRead({ score }: { score: ScoreReport }) {
+  const considered = score.differentialBreadth.differentialsConsidered;
+  const correct = score.workingDxCorrect;
+  let line: string;
+  let tone: 'good' | 'warn' | 'mixed';
+  if (considered >= 3) {
+    line = correct
+      ? "You linked clues to three or more differentials before committing. That's the FRCEM-shaped move — examiner credit for breadth, and you landed on the right one."
+      : "You worked a broad differential before committing — three or more diagnoses considered. The pick wasn't the top one this time, but the reasoning shape is what FRCEM rewards. Read the action-by-action below.";
+    tone = correct ? 'good' : 'mixed';
+  } else if (considered === 2) {
+    line = correct
+      ? 'You weighed a second possibility before committing — better than pure pattern-match. Push for a third next time; FRCEM SAQs typically want three to five.'
+      : 'You held two diagnoses in mind, but the commitment was wrong. Try linking a third next time — the trap on this case was reachable from a wider net.';
+    tone = correct ? 'good' : 'warn';
+  } else {
+    line = correct
+      ? 'You pattern-matched the right answer fast. Worth the win — but FRCEM SAQs reward the broader net, so push yourself to link clues to two or three plausible diagnoses on the next case even when you "know" what it is.'
+      : 'You committed without considering other differentials. Premature closure is the highest-cost cognitive error in EM (Croskerry). On the next case, link clues to two or three plausible diagnoses before locking in.';
+    tone = correct ? 'warn' : 'warn';
+  }
+  return (
+    <aside className={`enc__reasoning-read enc__reasoning-read--${tone}`}>
+      <strong>McGrath’s read:</strong> {line}
+    </aside>
   );
 }
 

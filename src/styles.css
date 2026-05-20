@@ -3351,6 +3351,35 @@ a {
   color: var(--accent);
 }
 
+/* M87 (Braintrust 06 Tier 2) — McGrath-voiced reasoning callout that
+   sits above the score panel. Tone-coloured border-left signals the
+   shape of the player's reasoning approach (good = broad differential
+   net, warn = pattern-match risk, mixed = good shape but wrong pick). */
+.enc__reasoning-read {
+  margin: 12px 0;
+  padding: 10px 14px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left-width: 3px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.enc__reasoning-read strong {
+  color: var(--text);
+  margin-right: 4px;
+}
+.enc__reasoning-read--good {
+  border-left-color: var(--accent);
+}
+.enc__reasoning-read--warn {
+  border-left-color: var(--warn);
+}
+.enc__reasoning-read--mixed {
+  border-left-color: rgba(120, 160, 220, 0.7);
+}
+
 /* Results-back envelope hero (M19) — pops over investigations when ≥1 result back. */
 .enc__results-hero {
   display: flex;

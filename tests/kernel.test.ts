@@ -554,6 +554,135 @@ describe('SimKernel — clue selection (M80)', () => {
   });
 });
 
+describe('M87 — tier-aware deterioration policy', () => {
+  function makeAnaphylaxisKernel(difficulty?: {
+    deteriorationTimeMultiplier: number;
+    clampInactionDeterioration: boolean;
+  }) {
+    // Single-case anaphylaxis episode — has both an episode
+    // `deterioration_if_not_x_by_t` event at T+5 (→ arrested) AND a
+    // case state-machine `inaction_by` at min:5 (also → arrested).
+    // Good fixture for exercising both surfaces of the policy.
+    const caseData = load('content/cases/case_anaphylaxis_adult_peanut.yaml', Case);
+    const episode: EpisodeT = Episode.parse({
+      schema_version: 1,
+      id: 'ep_tier_test',
+      title: 'Tier test',
+      learning_objectives: ['x'],
+      curriculum_tags: ['RP2'],
+      difficulty_band: 'CT2',
+      shift_duration_min: 30,
+      focus_cases: [caseData.id],
+      scheduled_events: [
+        {
+          id: 'ev_test_deterioration',
+          type: 'deterioration_if_not_x_by_t',
+          t_min: 5,
+          case_id: caseData.id,
+          required_action_ids: ['mx_adrenaline_im'],
+          new_state: 'arrested',
+        },
+      ],
+    });
+    const kernel = new SimKernel({
+      episode,
+      cases: new Map([[caseData.id, caseData]]),
+      difficulty,
+    });
+    kernel.enterCase(caseData.id);
+    return { kernel, caseId: caseData.id };
+  }
+
+  it('Registrar (default policy): episode deterioration fires at T+5 and lands at arrested', () => {
+    const { kernel, caseId } = makeAnaphylaxisKernel(); // default = Registrar
+    kernel.advance(5);
+    expect(kernel.getState().cases.get(caseId)!.state).toBe('arrested');
+  });
+
+  it('Intern (2x time + clamp): the event fires at T+10 instead of T+5, lands at deteriorating not arrested', () => {
+    const { kernel, caseId } = makeAnaphylaxisKernel({
+      deteriorationTimeMultiplier: 2.0,
+      clampInactionDeterioration: true,
+    });
+    // T+5 — pre-stretch fire time. Should NOT yet fire.
+    kernel.advance(5);
+    expect(kernel.getState().cases.get(caseId)!.state).not.toBe('arrested');
+    // T+10 — stretched fire time. Event fires; outcome clamped down.
+    kernel.advance(5);
+    const cs = kernel.getState().cases.get(caseId)!;
+    expect(cs.state).toBe('deteriorating');
+    expect(cs.state).not.toBe('arrested');
+  });
+
+  it('SHO (1.5x time, no clamp): fires at T+7.5 (rounded to T+8 by integer advance), lands at arrested', () => {
+    const { kernel, caseId } = makeAnaphylaxisKernel({
+      deteriorationTimeMultiplier: 1.5,
+      clampInactionDeterioration: false,
+    });
+    kernel.advance(7);
+    expect(kernel.getState().cases.get(caseId)!.state).not.toBe('arrested');
+    kernel.advance(1); // T+8 — past the 7.5 threshold
+    expect(kernel.getState().cases.get(caseId)!.state).toBe('arrested');
+  });
+
+  it('Intern clamp: inaction_by state-machine arrest is redirected to deteriorating', () => {
+    // Beth's case has `deteriorating → arrested at inaction_by min:5
+    // (no adrenaline + supine)` — that's the state-machine path. At
+    // Intern, the destination is clamped to 'deteriorating'.
+    // She starts in `deteriorating` (case initial_state); the event
+    // and state-machine both fire at min:5 (stretched to min:10 at
+    // Intern). The clamp redirects the state-machine arrest to
+    // deteriorating (no-op since she's already there, but the
+    // important thing is the LOG doesn't show 'arrested').
+    const { kernel, caseId } = makeAnaphylaxisKernel({
+      deteriorationTimeMultiplier: 2.0,
+      clampInactionDeterioration: true,
+    });
+    kernel.advance(11);
+    const cs = kernel.getState().cases.get(caseId)!;
+    // She must not have reached arrested or deceased via inaction.
+    expect(cs.state).not.toBe('arrested');
+    expect(cs.state).not.toBe('deceased');
+  });
+
+  it('non-deterioration scheduled events are NOT time-stretched', () => {
+    // family_arrival / results_back / etc are realism beats, not
+    // act-or-die clocks. The multiplier doesn't apply to them.
+    const caseData = load('content/cases/case_anaphylaxis_adult_peanut.yaml', Case);
+    const episode: EpisodeT = Episode.parse({
+      schema_version: 1,
+      id: 'ep_family_arrival_test',
+      title: 'Realism timing test',
+      learning_objectives: ['x'],
+      curriculum_tags: ['RP2'],
+      difficulty_band: 'CT2',
+      shift_duration_min: 30,
+      focus_cases: [caseData.id],
+      scheduled_events: [
+        {
+          id: 'ev_family',
+          type: 'family_arrival',
+          t_min: 8,
+          case_id: caseData.id,
+          npc: 'Tom',
+        },
+      ],
+    });
+    const kernel = new SimKernel({
+      episode,
+      cases: new Map([[caseData.id, caseData]]),
+      difficulty: { deteriorationTimeMultiplier: 2.0, clampInactionDeterioration: true },
+    });
+    kernel.enterCase(caseData.id);
+    kernel.advance(8);
+    // The family-arrival event fires at the authored T+8, not at
+    // T+16 — realism beats are tier-invariant.
+    expect(
+      kernel.getState().log.some((l) => l.text.toLowerCase().includes('tom')),
+    ).toBe(true);
+  });
+});
+
 describe('M85 — autoPaused', () => {
   it('initialises to false', () => {
     const { kernel } = makeKernel();

@@ -49,12 +49,23 @@ scheduled_events:
     case_id: case_stroke_acute_williams
     npc: "Carol (wife): 'Is it a stroke? Can he have the clot-buster?'"
 
+  # M87 (Braintrust 06 Tier 2): aligned new_state to `arrested` to match
+  # the case state machine and the ep_stroke_solo event. Pre-M87 this
+  # was set to 'deteriorating' (likely an attempt at softening the
+  # dual-case shift) but Williams' case state machine had
+  # `deteriorating → arrested at inaction_by min:12` with the same
+  # required actions — so the patient arrested anyway via the state
+  # machine; the event's softer new_state was silently overridden.
+  # The M87 mirror test caught this drift. Williams is the LVO-on-DOAC
+  # case; the synthesis named stroke as time-critical (NICE NG128
+  # thrombolysis window). Forgiveness via tier comes from the
+  # M87 Intern outcome clamp, not from per-episode softening.
   - id: ev_williams_deterioration
     type: deterioration_if_not_x_by_t
     t_min: 12
     case_id: case_stroke_acute_williams
     required_action_ids: [mx_call_stroke_team, mx_ct_within_1h]
-    new_state: deteriorating
+    new_state: arrested
 
   # ─── Brennan (head injury) timeline ──────────────────────────────────
   - id: ev_brennan_son_pressure
