@@ -86,10 +86,14 @@ log and `RESUME.md` for current state at a glance.
 | 68    | App icon + favicon                 | Resus-cross 'I' on dark teal · public/app-icon.svg · 36×36 in header                                     |
 | 69    | 'Time of Death' modal              | Mortuary-styled overlay on deceased transition · continue / debrief                                       |
 | 70    | Achievement badges                 | 8 pixel-art unlocks · 6 conditions wired · localStorage persistence                                       |
+| 71    | TheCase.Report brand lock-up       | public/tcr-lockup.svg in the app footer, linking thecase.report                                          |
+| 72    | Three more patient sprites         | Chloe + Stan + Patel · 5 states each · sprite coverage 2/17 → 5/17                                       |
+| 73    | FX particles on patient state      | urticaria / sweat / vomit / blood / pulse, diagnosis-coded, reduce-motion aware                          |
+| 74    | First-run induction                | Character creator + McGrath's 13-beat Skittstown ED tour at first launch                                  |
 
-Numbers: **307 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
+Numbers: **312 unit tests · 3 E2E · 17 cases · 17 episodes · 3 arcs ·
 16 daily ECGs · 8 NPC sprites + 13 patient archetypes · 20 props +
-13 world tiles + 17 FX · 8 achievement badges**.
+13 world tiles + 17 FX · 8 achievement badges · 5/17 cases sprited**.
 Lint clean, typecheck clean, validator green.
 
 ## Stack

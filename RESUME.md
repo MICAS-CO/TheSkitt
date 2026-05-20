@@ -76,6 +76,10 @@ visual integration from Claude Design + new content.
 | M68 | App icon + favicon — the resus-cross 'I' on dark teal |
 | M69 | 'Time of Death' modal — mortuary-styled overlay on deceased transition |
 | M70 | Achievement badges — 8 pixel-art unlocks · 6 wired · localStorage |
+| M71 | TheCase.Report brand lock-up in the app footer |
+| M72 | Three more patient sprites — Chloe / Stan / Patel — coverage 2/17 → 5/17 |
+| M73 | FX particles wired to patient state — sweat / urticaria / vomit / blood / pulse |
+| M74 | Character creator + Skittstown ED induction tour — first-run experience |
 
 ## ⏳ WAITING ON DESIGN
 
@@ -86,7 +90,7 @@ template. No code changes needed beyond the registry entry.
 
 ## Numbers
 
-- **307 / 307** unit tests passing (Vitest)
+- **312 / 312** unit tests passing (Vitest)
 - **2 / 2** E2E tests passing (Playwright)
 - **17 fully-authored cases**, **17 episodes**, **3 arcs**, 44-topic
   high-yield map

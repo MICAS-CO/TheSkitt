@@ -4,6 +4,33 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M74 — character creator + Skittstown ED induction (first-run experience)
+
+- localStorage character record (firstName / lastName / role / inducted).
+- First-run gate drops new players into the induction.
+- Character creation (name + F1/F2/CT1 grade) followed by McGrath's
+  13-beat tour of the systems.
+- consultantMessage now threads the player's first name.
+
+### M73 — wire FX particles to patient state
+
+- DIAGNOSIS_FX map → urticaria_flare on anaphylaxis, sweat_drop on
+  shock/AHF/DKA/ectopic/PE/dissection/sepsis/status/stroke/HTN/
+  head-injury, vomit_bowl on paracetamol-OD + intox, blood_splat on
+  variceal UGIB.
+- Universal pulse_ring on HR > 130.
+- All particle loops respect reduce-motion.
+
+### M72 — three more patient sprites — Chloe / Stan / Patel (5/17)
+
+- Sprite coverage 2/17 → 5/17 — the most narratively-dense cases
+  now render as drawn patients.
+- Seven new PAL chars on free digit slots for the clothing colours.
+
+### M71 — TheCase.Report brand lock-up in the app footer
+
+- public/tcr-lockup.svg + footer placement linking thecase.report.
+
 ### M70 — achievement badges (drop #3 polish-achievements.jsx)
 
 - 8 12×12 pixel-art badges + localStorage unlock store.
