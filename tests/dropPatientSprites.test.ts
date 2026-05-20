@@ -57,4 +57,22 @@ describe('M75 — drop #3 patient sprite catalogue', () => {
     expect(svg).not.toBeNull();
     expect(svg).toMatch(/<rect/);
   });
+
+  it('every authored case in the catalogue has a sprite (M76)', async () => {
+    const { readdirSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const dir = join(process.cwd(), 'content/cases');
+    const files = readdirSync(dir).filter(
+      (f) => f.endsWith('.yaml') && !f.includes('scratch') && !f.includes('draft'),
+    );
+    const missing: string[] = [];
+    for (const f of files) {
+      const caseId = f.replace(/\.yaml$/, '');
+      const svg = spriteSvgFor(caseId, 'stable', 0, 1);
+      if (!svg) missing.push(caseId);
+    }
+    if (missing.length) {
+      throw new Error(`Sprite missing for ${missing.length} case(s): ${missing.join(', ')}`);
+    }
+  });
 });

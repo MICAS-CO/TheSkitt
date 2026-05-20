@@ -963,31 +963,53 @@ export function frameCountFor(caseId: string, state: CaseStateT): number {
 }
 
 /**
- * Per-case mapping into the drop-#3 archetype catalogue (M75).
+ * Per-case mapping into the drop-#3 archetype catalogue (M75/M76).
  *
- * Strong matches (clinical condition + demographic align):
- *   doherty (81F urosepsis) → case_sepsis_uti_morrison (84F urosepsis)
- *   tom     (45M variceal)  → case_ugib_variceal_kowalski (54M variceal)
+ * The drop designs 15 patient sprites (Beth + Williams + 13 archetypes —
+ * design's note in extras-sections.jsx: "15 patients × 5 states ≈ 30
+ * sprites + 75 diffs"). The Skitt has 17 authored cases. M76 maps all
+ * 17 cases to a sprite by accepting mild demographic looseness on the
+ * weaker matches — supine + post-resus views read generic enough that
+ * small age / gender differences don't break the simulation.
  *
- * Acceptable matches (same body system / similar phenotype, mild
- * demographic looseness — the supine + post-resus views in particular
- * look generic enough that small age/gender differences don't read):
- *   sarah   (32F PPH)       → case_ectopic_minors_sarah (31F ectopic)
- *   ravi    (67M COPD)      → case_acute_heart_failure_ahmed (78M AHF)
- *   joan    (74F hypotherm) → case_head_injury_doac_brennan (81F faller)
- *   maya    (19F DKA)       → case_paeds_dka_amir (paeds DKA proxy — Amir is
- *                              8M; sprite is older but the DKA visual
- *                              language carries)
- *   leo     (toddler)       → no case in catalogue (parked)
- *   ahmed   (58M STEMI)     → case_chest_pain_patel_ambient (72F STEMI —
- *                              gender mismatch; left UNMAPPED to keep
- *                              the hand-authored Patel sprite)
+ * STRONG matches (clinical condition + demographic align):
+ *   doherty (81F urosepsis)       → case_sepsis_uti_morrison (84F)
+ *   tom     (45M variceal)        → case_ugib_variceal_kowalski (54M)
+ *   sarah   (32F PPH)             → case_ectopic_minors_sarah (31F ectopic)
+ *   ahmed   (58M STEMI)           → case_htn_emergency_oduya (56M cardiovascular crisis)
+ *   marcus  (26M chest stab)      → case_dka_marcus (19M DKA — name match,
+ *                                    same gender, adult young man)
+ *   joan    (74F hypothermia)     → case_head_injury_doac_brennan (81F faller)
+ *   liam    (28M MH crisis)       → case_status_epilepticus_priya (28F status —
+ *                                    same age, accept gender swap)
+ *   ravi    (67M COPD)            → case_acute_heart_failure_ahmed (78M AHF)
  *
- * Unmapped (no clean fit):
- *   ruby (6F asthma) · jake (22M polytrauma) · connor (19M opioid OD) ·
- *   marcus (26M stab) · liam (28M MH crisis) — these stay in the
- *   library for future case authoring; sprites.ts won't serve them
- *   today.
+ * ACCEPTABLE matches (same body system or visual register, mild
+ * demographic looseness):
+ *   maya    (19F DKA)             → case_massive_pe_okonkwo (34F PE — female
+ *                                    adult in respiratory distress; condition
+ *                                    differs but skin-tint substitutions
+ *                                    carry the clinical state)
+ *   ruby    (6F asthma)           → case_anaphylaxis_paeds_sibling (Sam, 8M —
+ *                                    paediatric respiratory crisis; gender
+ *                                    differs but both are small children
+ *                                    on the trolley with airway involvement)
+ *   leo     (2M febrile)          → case_paeds_dka_amir (8M DKA — smaller
+ *                                    paediatric sprite available; age gap
+ *                                    is the cost)
+ *   jake    (22M polytrauma)      → case_aortic_dissection_okafor (52M
+ *                                    dissection — male catastrophic vascular;
+ *                                    big age gap accepted)
+ *
+ * Unmapped drop archetype:
+ *   connor (19M opioid OD)        — no remaining case; stays in the
+ *                                    catalogue for future content
+ *                                    (when Chloe gets a second hand-authored
+ *                                    sprite or a new opioid-OD case lands).
+ *
+ * Five cases are hand-authored in sprites.ts (Beth, Williams, Chloe,
+ * Stan, Patel) and stay served from PATIENT_SPRITES. The 12 above are
+ * served from dropPatientSprites.ts. Total sprite coverage: 17 / 17.
  */
 const CASE_TO_DROP_ID: Record<string, string> = {
   case_sepsis_uti_morrison: 'doherty',
@@ -995,5 +1017,11 @@ const CASE_TO_DROP_ID: Record<string, string> = {
   case_ectopic_minors_sarah: 'sarah',
   case_acute_heart_failure_ahmed: 'ravi',
   case_head_injury_doac_brennan: 'joan',
-  case_paeds_dka_amir: 'maya',
+  case_paeds_dka_amir: 'leo',
+  case_anaphylaxis_paeds_sibling: 'ruby',
+  case_dka_marcus: 'marcus',
+  case_status_epilepticus_priya: 'liam',
+  case_htn_emergency_oduya: 'ahmed',
+  case_aortic_dissection_okafor: 'jake',
+  case_massive_pe_okonkwo: 'maya',
 };
