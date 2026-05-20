@@ -24,6 +24,17 @@ export interface CaseRuntime {
   state: CaseStateT;
   /** Sim-minute the player first opened the encounter. */
   enteredAt: number | null;
+  /**
+   * Sim-minute the case became eligible for player attention — i.e.
+   * the moment it entered any state other than `unseen`. For cases on
+   * the board at shift start this is 0; for cases that arrive mid-
+   * shift via a `new_arrival` scheduled event this is the event's
+   * `t_min`. Drives `inaction_by` deterioration, which measures elapsed
+   * time *since triage* (not the global clock) so a late-arriving
+   * ambient case isn't already past its deterioration window the
+   * moment it appears on the board (M80).
+   */
+  triagedAt: number | null;
   /** Player actions taken (management ids). */
   actions: Set<string>;
   /** History items asked. */
@@ -62,6 +73,15 @@ export interface CaseRuntime {
    *  per-finding payload separately from the system's base findings.
    */
   performedManoeuvres: Set<string>;
+  /**
+   * Clue ids the player has currently linked into their differential
+   * reasoning on the clue board (M80). Lifted from React local state
+   * into the kernel so that toggling away from the Differential tab
+   * and back doesn't silently drop selections. Persists across save/
+   * restore. The set is replaced (not mutated in place) on toggle so
+   * downstream useMemo deps see a fresh reference.
+   */
+  selectedClueIds: Set<string>;
 }
 
 /**
@@ -158,6 +178,10 @@ export interface SerializedCaseRuntime {
   branchChoices?: [string, string][];
   rapport?: number;
   performedManoeuvres?: string[];
+  /** Optional M80 fields — read with `?? default` for back-compat
+   *  with snapshots from before the per-case triage clock landed. */
+  triagedAt?: number | null;
+  selectedClueIds?: string[];
 }
 
 /** Current snapshot format version (M59). Bump on any non-additive
@@ -222,6 +246,7 @@ export class SimKernel {
         data,
         state: data.initial_state,
         enteredAt: null,
+        triagedAt: data.initial_state === 'unseen' ? null : 0,
         actions: new Set(),
         asked: new Set(),
         examined: new Set(),
@@ -238,6 +263,7 @@ export class SimKernel {
         rapport: 0,
         consultantInterruptsFired: new Set(),
         performedManoeuvres: new Set(),
+        selectedClueIds: new Set(),
       });
     }
     this.state = {
@@ -287,6 +313,8 @@ export class SimKernel {
         branchChoices: [...cs.branchChoices.entries()],
         rapport: cs.rapport,
         performedManoeuvres: [...cs.performedManoeuvres],
+        triagedAt: cs.triagedAt,
+        selectedClueIds: [...cs.selectedClueIds],
       })),
       revealedArcIds: [...this.state.revealedArcIds],
       firedEventIds: [...this.state.firedEventIds],
@@ -324,6 +352,10 @@ export class SimKernel {
       cs.branchChoices = new Map(sc.branchChoices ?? []);
       cs.rapport = sc.rapport ?? 0;
       cs.performedManoeuvres = new Set(sc.performedManoeuvres ?? []);
+      // Pre-M80 snapshots lack triagedAt; reconstruct from current
+      // state — anything not 'unseen' was on the board from T=0.
+      cs.triagedAt = sc.triagedAt ?? (cs.state === 'unseen' ? null : 0);
+      cs.selectedClueIds = new Set(sc.selectedClueIds ?? []);
     }
     this.state.revealedArcIds = new Set(snap.revealedArcIds);
     this.state.firedEventIds = new Set(snap.firedEventIds);
@@ -360,6 +392,20 @@ export class SimKernel {
 
   pause(): void {
     this.state.isRunning = false;
+    this.notify();
+  }
+
+  /**
+   * End the shift immediately (M80). Used when a patient dies and the
+   * player elects to jump straight to the debrief — without this,
+   * ambient cases keep degrading on the global clock while the player
+   * reads the M&M while the timer ticks. Idempotent.
+   */
+  endShiftEarly(): void {
+    if (this.state.isShiftOver) return;
+    this.state.isRunning = false;
+    this.state.isShiftOver = true;
+    this.log('info', 'Shift ended early — to debrief.');
     this.notify();
   }
 
@@ -592,6 +638,23 @@ export class SimKernel {
     this.notify();
   }
 
+  /**
+   * Toggle whether a clue (history/exam/ix-derived) is currently
+   * linked on the player's differential clue board (M80). Persists
+   * across section changes and across save/restore. Replaces the Set
+   * reference on each toggle so downstream React useMemo deps see a
+   * fresh reference. Idempotent on missing caseId.
+   */
+  toggleClueSelection(caseId: string, clueId: string): void {
+    const cs = this.state.cases.get(caseId);
+    if (!cs) return;
+    const next = new Set(cs.selectedClueIds);
+    if (next.has(clueId)) next.delete(clueId);
+    else next.add(clueId);
+    cs.selectedClueIds = next;
+    this.notify();
+  }
+
   setWorkingDx(caseId: string, dx: string): void {
     const cs = this.state.cases.get(caseId);
     if (!cs) return;
@@ -671,6 +734,7 @@ export class SimKernel {
         const cs = this.state.cases.get(ev.case_id);
         if (cs && cs.state === 'unseen') {
           cs.state = 'triaged';
+          cs.triagedAt = ev.t_min;
           cs.reasons.push(`Arrived at T+${ev.t_min}.`);
         }
         this.log('warn', `Arrival: ${cs?.data.title ?? ev.case_id}.`, ev.case_id);
@@ -836,11 +900,21 @@ export class SimKernel {
         return cs.examined.has(trigger.finding_id);
       case 'elapsed_min':
         return cs.enteredAt !== null && this.state.clockMin - cs.enteredAt >= trigger.min;
-      case 'inaction_by':
+      case 'inaction_by': {
+        // M80: 'min' is interpreted as minutes elapsed since the case
+        // became eligible for player attention (triagedAt), NOT minutes
+        // on the global shift clock. Solo shifts that start with all
+        // cases triaged at T=0 see no behaviour change (triagedAt=0
+        // so the math reduces to clockMin >= trigger.min). Multi-
+        // patient shifts where ambient cases arrive via new_arrival
+        // mid-shift no longer have those cases born already past
+        // their deterioration window.
+        if (cs.triagedAt === null) return false;
         return (
-          this.state.clockMin >= trigger.min &&
+          this.state.clockMin - cs.triagedAt >= trigger.min &&
           !trigger.required_actions.every((a) => cs.actions.has(a))
         );
+      }
       case 'scheduled_event':
         return this.state.firedEventIds.has(trigger.event_id);
     }

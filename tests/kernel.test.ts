@@ -382,3 +382,171 @@ describe('SimKernel — branching dialogue (M34)', () => {
     expect(cs.rapport).toBe(2);
   });
 });
+
+// ─── M80 ─────────────────────────────────────────────────────────────────────
+
+describe('SimKernel — inaction_by elapsed-since-triage (M80)', () => {
+  it('counts inaction_by from triage time, not the global shift clock', () => {
+    // Sarah's ectopic case is the canonical example: she ships with
+    // `initial_state: unseen` and is brought onto the board by a
+    // `new_arrival` event at T+5 in `ep_hendo_shift.yaml`. Her
+    // `from: triaged → to: arrested` trigger has `inaction_by min: 16`.
+    // Pre-M80 the kernel evaluated min against the GLOBAL clock, so she
+    // would have arrested at T+16 — only 11 minutes after the player
+    // ever saw her. M80: the window starts at triage (T+5), so she
+    // arrests at T+21 (16 min after arrival), giving the player the
+    // full authored window once she's on the board.
+    const sarah = load('content/cases/case_ectopic_minors_sarah.yaml', Case);
+    const ep: EpisodeT = Episode.parse({
+      schema_version: 1,
+      id: 'ep_sarah_arrival_test',
+      title: 'Sarah arrival window',
+      learning_objectives: ['x'],
+      curriculum_tags: ['ObC1'],
+      difficulty_band: 'CT2',
+      // Long enough to observe T+21 fire without the shift ending first.
+      shift_duration_min: 30,
+      focus_cases: [sarah.id],
+      scheduled_events: [
+        { id: 'ev_sarah_arrival', type: 'new_arrival', t_min: 5, case_id: sarah.id },
+      ],
+    });
+    const kernel = new SimKernel({ episode: ep, cases: new Map([[sarah.id, sarah]]) });
+
+    // Pre-arrival: case still unseen, triagedAt unset.
+    expect(kernel.getState().cases.get(sarah.id)!.state).toBe('unseen');
+    expect(kernel.getState().cases.get(sarah.id)!.triagedAt).toBeNull();
+
+    // Advance past the new_arrival event.
+    kernel.advance(5);
+    expect(kernel.getState().cases.get(sarah.id)!.state).toBe('triaged');
+    expect(kernel.getState().cases.get(sarah.id)!.triagedAt).toBe(5);
+
+    // T+16 globally = 11 min since triage. Pre-M80 this is when she'd
+    // arrest; post-M80 the window hasn't elapsed yet.
+    kernel.advance(11);
+    expect(kernel.getState().clockMin).toBe(16);
+    expect(kernel.getState().cases.get(sarah.id)!.state).toBe('triaged');
+
+    // T+20 globally = 15 min since triage. Still within window.
+    kernel.advance(4);
+    expect(kernel.getState().cases.get(sarah.id)!.state).toBe('triaged');
+
+    // T+21 globally = 16 min since triage — the window now elapses.
+    kernel.advance(1);
+    expect(kernel.getState().cases.get(sarah.id)!.state).toBe('arrested');
+  });
+
+  it('preserves prior solo-shift behaviour: T=0-triaged cases fire at clockMin >= min', () => {
+    // Beth starts triaged at T=0, has inaction_by min:5 — must still fire at T+5.
+    const { kernel, caseId } = makeKernel();
+    expect(kernel.getState().cases.get(caseId)!.triagedAt).toBe(0);
+    kernel.advance(5);
+    expect(kernel.getState().cases.get(caseId)!.state).toBe('arrested');
+  });
+
+  it('survives save/restore: triagedAt round-trips through a snapshot', () => {
+    const sarah = load('content/cases/case_ectopic_minors_sarah.yaml', Case);
+    const ep: EpisodeT = Episode.parse({
+      schema_version: 1,
+      id: 'ep_sarah_rt',
+      title: 'Sarah round-trip',
+      learning_objectives: ['x'],
+      curriculum_tags: ['ObC1'],
+      difficulty_band: 'CT2',
+      shift_duration_min: 30,
+      focus_cases: [sarah.id],
+      scheduled_events: [
+        { id: 'ev_arrival', type: 'new_arrival', t_min: 5, case_id: sarah.id },
+      ],
+    });
+    const k1 = new SimKernel({ episode: ep, cases: new Map([[sarah.id, sarah]]) });
+    k1.advance(5);
+    const snap = k1.serialize();
+    const k2 = new SimKernel({ episode: ep, cases: new Map([[sarah.id, sarah]]), restore: snap });
+    expect(k2.getState().cases.get(sarah.id)!.triagedAt).toBe(5);
+  });
+
+  it('pre-M80 snapshots without triagedAt default sensibly on restore', () => {
+    const { kernel, caseId } = makeKernel();
+    const snap = kernel.serialize() as unknown as Record<string, unknown> & {
+      cases: Array<Record<string, unknown>>;
+    };
+    // Strip the new field to simulate a pre-M80 snapshot.
+    for (const sc of snap.cases) delete sc.triagedAt;
+    const ep = kernel.getState().episode;
+    const caseData = kernel.getState().cases.get(caseId)!.data;
+    const k2 = new SimKernel({
+      episode: ep,
+      cases: new Map([[caseData.id, caseData]]),
+      restore: snap as unknown,
+    });
+    // Beth was on the board at T=0 in the snapshot — restored triagedAt should be 0, not null.
+    expect(k2.getState().cases.get(caseId)!.triagedAt).toBe(0);
+  });
+});
+
+describe('SimKernel — endShiftEarly (M80)', () => {
+  it('halts the clock so ambient cases do not keep degrading during debrief', () => {
+    const { kernel } = makeKernel();
+    kernel.start();
+    expect(kernel.getState().isRunning).toBe(true);
+    kernel.endShiftEarly();
+    expect(kernel.getState().isRunning).toBe(false);
+    expect(kernel.getState().isShiftOver).toBe(true);
+    const tWhenStopped = kernel.getState().clockMin;
+    kernel.advance(10);
+    expect(kernel.getState().clockMin).toBe(tWhenStopped);
+  });
+
+  it('is idempotent — calling twice does not re-log or re-notify', () => {
+    const { kernel } = makeKernel();
+    let calls = 0;
+    kernel.subscribe(() => calls++);
+    kernel.endShiftEarly();
+    const after1 = calls;
+    kernel.endShiftEarly();
+    expect(calls).toBe(after1); // no extra notify on the second call
+  });
+});
+
+describe('SimKernel — clue selection (M80)', () => {
+  it('toggles selectedClueIds on the case runtime', () => {
+    const { kernel, caseId } = makeKernel();
+    expect(kernel.getState().cases.get(caseId)!.selectedClueIds.size).toBe(0);
+    kernel.toggleClueSelection(caseId, 'clue_a');
+    expect(kernel.getState().cases.get(caseId)!.selectedClueIds.has('clue_a')).toBe(true);
+    kernel.toggleClueSelection(caseId, 'clue_b');
+    expect(kernel.getState().cases.get(caseId)!.selectedClueIds.size).toBe(2);
+    kernel.toggleClueSelection(caseId, 'clue_a');
+    expect(kernel.getState().cases.get(caseId)!.selectedClueIds.has('clue_a')).toBe(false);
+    expect(kernel.getState().cases.get(caseId)!.selectedClueIds.has('clue_b')).toBe(true);
+  });
+
+  it('replaces the Set reference on toggle so React useMemo deps recompute', () => {
+    const { kernel, caseId } = makeKernel();
+    const setRef1 = kernel.getState().cases.get(caseId)!.selectedClueIds;
+    kernel.toggleClueSelection(caseId, 'clue_a');
+    const setRef2 = kernel.getState().cases.get(caseId)!.selectedClueIds;
+    expect(setRef2).not.toBe(setRef1);
+  });
+
+  it('round-trips through save/restore', () => {
+    const { kernel, caseId, episode, caseData } = makeKernel();
+    kernel.toggleClueSelection(caseId, 'clue_a');
+    kernel.toggleClueSelection(caseId, 'clue_b');
+    const snap = kernel.serialize();
+    const k2 = new SimKernel({
+      episode,
+      cases: new Map([[caseData.id, caseData]]),
+      restore: snap,
+    });
+    expect(k2.getState().cases.get(caseId)!.selectedClueIds.has('clue_a')).toBe(true);
+    expect(k2.getState().cases.get(caseId)!.selectedClueIds.has('clue_b')).toBe(true);
+  });
+
+  it('is a no-op on missing case id', () => {
+    const { kernel } = makeKernel();
+    expect(() => kernel.toggleClueSelection('not_a_case', 'clue_x')).not.toThrow();
+  });
+});

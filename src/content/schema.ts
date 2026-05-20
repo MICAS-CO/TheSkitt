@@ -129,6 +129,13 @@ export const TransitionTrigger = z.discriminatedUnion('on', [
     action_id: z.string(),
     note: z.string().optional(),
   }),
+  // M80: `min` is interpreted by the kernel as minutes elapsed since
+  // the case became eligible for player attention (i.e. since it
+  // entered any state other than `unseen`), NOT as a global shift-
+  // clock minute. For cases on the board at T=0 this is identical to
+  // the prior behaviour; for cases that arrive mid-shift via a
+  // `new_arrival` event the deterioration window starts at arrival
+  // time, not at shift start.
   z.object({
     on: z.literal('inaction_by'),
     min: z.number().nonnegative(),

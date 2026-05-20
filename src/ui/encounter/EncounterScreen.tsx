@@ -129,6 +129,9 @@ export function EncounterScreen({
           onContinue={() => kernel.dismissDeathNotice()}
           onDebrief={() => {
             kernel.dismissDeathNotice();
+            // Halt the global clock so ambient cases don't keep
+            // degrading while the player reads the M&M (M80).
+            kernel.endShiftEarly();
             onSectionChange('debrief');
           }}
         />
@@ -212,6 +215,7 @@ export function EncounterScreen({
               cs={cs}
               onLockIn={(dx) => kernel.setWorkingDx(caseId, dx)}
               onClear={() => kernel.clearWorkingDx(caseId)}
+              onToggleClue={(id) => kernel.toggleClueSelection(caseId, id)}
             />
           )}
           {!resusActive && section === 'management' && (
@@ -1024,23 +1028,20 @@ function DifferentialPhase({
   cs,
   onLockIn,
   onClear,
+  onToggleClue,
 }: {
   cs: CaseRuntime;
   onLockIn: (dx: string) => void;
   onClear: () => void;
+  onToggleClue: (clueId: string) => void;
 }) {
   const clues = useMemo(() => collectClues(cs), [cs]);
-  const [selectedClues, setSelectedClues] = useState<Set<string>>(new Set());
+  // Selected-clue set lives on the kernel (M80) so the player's
+  // reasoning survives tabbing away to Management/Investigations and
+  // back. The kernel swaps the Set reference on each toggle so the
+  // supportTally useMemo below recomputes correctly.
+  const selectedClues = cs.selectedClueIds;
   const hasPicked = cs.workingDx !== null;
-
-  function toggleClue(id: string) {
-    setSelectedClues((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
 
   // Per-differential support tally: how many of the player's selected clues
   // actually point at this diagnosis (per author's `supports` field)?
@@ -1081,7 +1082,7 @@ function DifferentialPhase({
                   <button
                     type="button"
                     className="enc__clue-btn"
-                    onClick={() => toggleClue(c.id)}
+                    onClick={() => onToggleClue(c.id)}
                     aria-pressed={isSelected}
                   >
                     <span className={`enc__chip enc__chip--clue-${c.origin}`}>
