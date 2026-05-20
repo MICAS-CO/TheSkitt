@@ -80,6 +80,10 @@ visual integration from Claude Design + new content.
 | M72 | Three more patient sprites — Chloe / Stan / Patel — coverage 2/17 → 5/17 |
 | M73 | FX particles wired to patient state — sweat / urticaria / vomit / blood / pulse |
 | M74 | Character creator + Skittstown ED induction tour — first-run experience |
+| M75 | Full port of drop #3 patient sprites — 13 archetypes × 5 states |
+| M76 | Full 17/17 sprite coverage — drop archetypes mapped to every authored case |
+| M77 | Difficulty tiering — F1/F2/CT1 grade affects score bands + trap-hint default |
+| M78 | LICENSE + lazy-load every menu-secondary route |
 
 ## ⏳ WAITING ON DESIGN
 
@@ -90,7 +94,7 @@ template. No code changes needed beyond the registry entry.
 
 ## Numbers
 
-- **312 / 312** unit tests passing (Vitest)
+- **324 / 324** unit tests passing (Vitest)
 - **2 / 2** E2E tests passing (Playwright)
 - **17 fully-authored cases**, **17 episodes**, **3 arcs**, 44-topic
   high-yield map

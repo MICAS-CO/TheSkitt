@@ -2506,6 +2506,34 @@ a {
 .consultant-interrupt__dialog {
   position: relative;
 }
+/* McGrath walks in (M79) — uses the drop-#3 walk-cycle frames. */
+.consultant-interrupt__walkin {
+  position: absolute;
+  bottom: -16px;
+  left: -8px;
+  width: 48px;
+  height: 72px;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
+}
+.consultant-interrupt__walkin.is-walking {
+  animation: mcgrath-walk-in 0.9s ease-out;
+}
+.consultant-interrupt__walkin.is-arrived {
+  animation: mcgrath-land 0.15s ease-out;
+}
+@keyframes mcgrath-walk-in {
+  from { transform: translateX(-80px); }
+  to   { transform: translateX(0); }
+}
+@keyframes mcgrath-land {
+  from { transform: translateY(2px); }
+  to   { transform: translateY(0); }
+}
+.is-reduce-motion .consultant-interrupt__walkin.is-walking,
+.is-reduce-motion .consultant-interrupt__walkin.is-arrived {
+  animation: none;
+}
 .consultant-interrupt__name {
   font-size: 14px;
   font-weight: 700;

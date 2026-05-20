@@ -13,6 +13,7 @@ import { ResusMode } from './ResusMode';
 import { IconCitation, IconCountdown, IconNewInfo } from '../../style/icons';
 import { NPC_SPRITES, npcFrameToSvg, npcSpriteIdForSource } from '../../style/npcSprites';
 import { FX_EMOTES, fxFrameToSvg } from '../../style/fxSprites';
+import { WALK_FRAMES } from '../../style/walkCycles';
 import { hasPerk } from '../../state/progression';
 import { ExaminationPhase } from './phases/ExaminationPhase';
 import { ManagementPhase } from './phases/ManagementPhase';
@@ -759,6 +760,7 @@ function ConsultantInterruptModal({
     >
       <div className={`consultant-interrupt__dialog consultant-interrupt__dialog--${interrupt.trigger}`}>
         <ConsultantInterruptEmote trigger={interrupt.trigger} />
+        <ConsultantWalkIn />
         <header className="consultant-interrupt__head">
           <span className="consultant-interrupt__name" id="consultant-interrupt-title">
             Dr Aoife McGrath
@@ -813,6 +815,48 @@ function PatientDeathModal({
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * McGrath walks into the bay (M79) — uses the drop-#3 walk-cycle
+ * frames (M65). She enters from the left, two-step cycle, lands at
+ * her speaking position alongside the dialogue. The npc sprite is
+ * placed in the speaker slot once she arrives.
+ */
+function ConsultantWalkIn() {
+  const [walkFrame, setWalkFrame] = useState(0);
+  const [arrived, setArrived] = useState(false);
+
+  useEffect(() => {
+    // Cycle through the 4-frame walk (down_F0, down_F1, down_F0, down_F3).
+    // Land at the speaker position after ~1 second.
+    let i = 0;
+    const interval = window.setInterval(() => {
+      i += 1;
+      if (i >= 8) {
+        setArrived(true);
+        window.clearInterval(interval);
+        return;
+      }
+      setWalkFrame(i % 4);
+    }, 110);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  const frameOrder = ['f1_down_F0', 'f1_down_F1', 'f1_down_F0', 'f1_down_F3'];
+  const arrivedFrame = NPC_SPRITES.sister;
+
+  const rows = arrived ? arrivedFrame : WALK_FRAMES[frameOrder[walkFrame % 4]!];
+  if (!rows) return null;
+  const svg = arrived ? npcFrameToSvg(rows, 3) : npcFrameToSvg(rows, 3);
+
+  return (
+    <div
+      className={`consultant-interrupt__walkin ${arrived ? 'is-arrived' : 'is-walking'}`}
+      aria-hidden="true"
+      dangerouslySetInnerHTML={{ __html: svg }}
+    />
   );
 }
 
