@@ -1,6 +1,10 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { parse as parseYaml } from 'yaml';
-import { PhaserGame } from './ui/PhaserGame';
+// M78: Phaser is the heaviest dependency in the boot bundle (~1.5 MB).
+// The hub view is the only consumer, so lazy-load it.
+const PhaserGame = lazy(() =>
+  import('./ui/PhaserGame').then((m) => ({ default: m.PhaserGame })),
+);
 import { ShiftView } from './ui/shift/ShiftView';
 import { useSim, loadShift, clearSavedShift, type SavedShift } from './state/sim';
 import {
@@ -10,15 +14,28 @@ import {
 } from './state/consultant';
 import { Arc, Case, Episode, type ArcT, type CaseT, type EpisodeT } from './content/schema';
 import { SimKernel } from './sim/kernel';
-import { EcgChallengeScreen } from './ui/ecg/EcgChallengeScreen';
-import { SkillTreeScreen } from './ui/progression/SkillTreeScreen';
-import { SettingsScreen } from './ui/settings/SettingsScreen';
+// M78: lazy-load every menu-secondary route. Each becomes its own chunk,
+// loaded only when the user clicks through. The main bundle stays focused
+// on the menu + induction + active shift, which is what first-paint needs.
+const EcgChallengeScreen = lazy(() =>
+  import('./ui/ecg/EcgChallengeScreen').then((m) => ({ default: m.EcgChallengeScreen })),
+);
+const SkillTreeScreen = lazy(() =>
+  import('./ui/progression/SkillTreeScreen').then((m) => ({ default: m.SkillTreeScreen })),
+);
+const SettingsScreen = lazy(() =>
+  import('./ui/settings/SettingsScreen').then((m) => ({ default: m.SettingsScreen })),
+);
 import { isStyleGuideRequested } from './ui/styleguide/url-gate';
 const AssetLibraryScreen = lazy(() =>
   import('./ui/styleguide/AssetLibraryScreen').then((m) => ({ default: m.AssetLibraryScreen })),
 );
-import { CasePracticeScreen } from './ui/practice/CasePracticeScreen';
-import { InductionScreen } from './ui/induction/InductionScreen';
+const CasePracticeScreen = lazy(() =>
+  import('./ui/practice/CasePracticeScreen').then((m) => ({ default: m.CasePracticeScreen })),
+);
+const InductionScreen = lazy(() =>
+  import('./ui/induction/InductionScreen').then((m) => ({ default: m.InductionScreen })),
+);
 import { loadCharacter } from './state/character';
 import { TIERS } from './state/difficulty';
 
@@ -475,28 +492,46 @@ export function App() {
           />
         )}
         {view === 'shift' && <ShiftView onExit={exitShift} onReplay={replayShift} />}
-        {view === 'hub' && <PhaserGame />}
-        {view === 'ecg' && <EcgChallengeScreen onExit={() => setView('menu')} />}
-        {view === 'skilltree' && <SkillTreeScreen onExit={() => setView('menu')} />}
-        {view === 'settings' && <SettingsScreen onExit={() => setView('menu')} />}
+        {view === 'hub' && (
+          <Suspense fallback={<div className="app__loading">Loading hub…</div>}>
+            <PhaserGame />
+          </Suspense>
+        )}
+        {view === 'ecg' && (
+          <Suspense fallback={<div className="app__loading">Loading ECG drill…</div>}>
+            <EcgChallengeScreen onExit={() => setView('menu')} />
+          </Suspense>
+        )}
+        {view === 'skilltree' && (
+          <Suspense fallback={<div className="app__loading">Loading skill tree…</div>}>
+            <SkillTreeScreen onExit={() => setView('menu')} />
+          </Suspense>
+        )}
+        {view === 'settings' && (
+          <Suspense fallback={<div className="app__loading">Loading settings…</div>}>
+            <SettingsScreen onExit={() => setView('menu')} />
+          </Suspense>
+        )}
         {view === 'styleguide' && (
           <Suspense fallback={<div className="app__loading">Loading style guide…</div>}>
             <AssetLibraryScreen onExit={() => setView('menu')} />
           </Suspense>
         )}
         {view === 'practice' && (
-          <CasePracticeScreen
-            onPick={(episodeId) => {
-              const def = SHIFT_DEFS.find((s) => s.id === episodeId);
-              if (def) startShift(def.factory());
-            }}
-            onExit={() => setView('menu')}
-          />
+          <Suspense fallback={<div className="app__loading">Loading case library…</div>}>
+            <CasePracticeScreen
+              onPick={(episodeId) => {
+                const def = SHIFT_DEFS.find((s) => s.id === episodeId);
+                if (def) startShift(def.factory());
+              }}
+              onExit={() => setView('menu')}
+            />
+          </Suspense>
         )}
         {view === 'induction' && (
-          <InductionScreen
-            onComplete={() => setView('menu')}
-          />
+          <Suspense fallback={<div className="app__loading">Loading induction…</div>}>
+            <InductionScreen onComplete={() => setView('menu')} />
+          </Suspense>
         )}
       </main>
 
