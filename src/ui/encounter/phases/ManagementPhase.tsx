@@ -14,10 +14,20 @@ import type { CaseRuntime } from '../../../sim/kernel';
 import { IconTrap } from '../../../style/icons';
 import { PROP_SPRITES, propFrameToSvg, propIdForAction } from '../../../style/propSprites';
 import { hasPerk } from '../../../state/progression';
+import { getActiveTier } from '../../../state/difficulty';
 
+/**
+ * Read the trap-hints state. The Settings toggle wins if the user
+ * has touched it; otherwise the tier's default (F1/F2: on, CT1: off)
+ * applies. M77.
+ */
 function trapHintsEnabled(): boolean {
   try {
-    return window.localStorage.getItem('theSkitt.trapHints.v1') === '1';
+    const v = window.localStorage.getItem('theSkitt.trapHints.v1');
+    if (v === '1') return true;
+    if (v === '0') return false;
+    // Key absent → fall back to tier default.
+    return getActiveTier().trapHintsDefault;
   } catch {
     return false;
   }

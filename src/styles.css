@@ -331,6 +331,36 @@ a {
   border-color: var(--accent);
 }
 /* Consultant memo on the menu (M37). Small, identity-stable, tone shifts by band. */
+/* Active-doctor + tier badge (M77). */
+.menu__badge {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: baseline;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  font-size: 12px;
+}
+.menu__badge-name {
+  font-weight: 600;
+  color: var(--text);
+}
+.menu__badge-tier {
+  color: var(--alert-amber);
+  font-family: var(--mono, monospace);
+  letter-spacing: 0.04em;
+  font-size: 11px;
+}
+.menu__badge-blurb {
+  color: var(--type-subdued-ink);
+  font-style: italic;
+  flex-basis: 100%;
+}
+
 .menu__memo {
   background: var(--panel);
   border: 1px solid var(--border-2);

@@ -7,6 +7,7 @@ import {
   type SerializedKernelSnapshot,
 } from '../sim/kernel';
 import type { CaseStateT, CitationT } from '../content/schema';
+import { bandForPercent, getActiveTier } from './difficulty';
 
 interface SimStore {
   kernel: SimKernel | null;
@@ -255,12 +256,18 @@ export function scoreCase(cs: CaseRuntime): ScoreReport {
     workupPenalty;
   const percent = Math.max(0, Math.min(100, Math.round(score)));
 
+  // M77: band thresholds shift with the character's grade. F1/F2 sit
+  // at lenient bands (excellent ≥80 / good ≥65 for F1); CT1 at
+  // standard (≥90 / ≥75 — same as the pre-M77 hard-coded values).
+  // `unsafe` remains decided by clinical safety conditions and is
+  // not affected by tier.
+  const tier = getActiveTier();
   let band: ScoreReport['band'];
   if (mustNotDoChosen > 0 || cs.state === 'arrested' || cs.state === 'deceased') {
     band = 'unsafe';
-  } else if (percent >= 90) band = 'excellent';
-  else if (percent >= 75) band = 'good';
-  else band = 'borderline';
+  } else {
+    band = bandForPercent(percent, tier.thresholds);
+  }
 
   const branchesAvailable = cs.data.history.filter((h) => h.branch_choices).length;
   const branchesPicked = cs.branchChoices.size;

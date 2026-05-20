@@ -10,6 +10,7 @@ import {
 } from '../../state/sim';
 import { loadAudioEnabled, saveAudioEnabled } from '../../sim/audio';
 import { loadProgression, resetProgression, type Progression } from '../../state/progression';
+import { getActiveTier } from '../../state/difficulty';
 
 interface Props {
   onExit: () => void;
@@ -42,7 +43,19 @@ export function SettingsScreen({ onExit }: Props) {
   const [audioOn, setAudioOn] = useState<boolean>(() => loadAudioEnabled());
   const [speed, setSpeed] = useState<SimSpeedKey>(() => loadSavedSpeed());
   const [reduceMotion, setReduceMotion] = useState<boolean>(() => loadBool(REDUCE_MOTION_KEY));
-  const [trapHints, setTrapHints] = useState<boolean>(() => loadBool(TRAP_HINTS_KEY));
+  // M77: when the trap-hints key has never been written, fall back to
+  // the active tier's default (F1/F2: on, CT1: off). Once the user
+  // toggles, the explicit value wins.
+  const [trapHints, setTrapHints] = useState<boolean>(() => {
+    try {
+      const v = window.localStorage.getItem(TRAP_HINTS_KEY);
+      if (v === '1') return true;
+      if (v === '0') return false;
+      return getActiveTier().trapHintsDefault;
+    } catch {
+      return false;
+    }
+  });
   const [progression, setProgression] = useState<Progression>(() => loadProgression());
   const [savedShift, setSavedShift] = useState<SavedShift | null>(() => loadShift());
   const [confirmStatus, setConfirmStatus] = useState<string>('');

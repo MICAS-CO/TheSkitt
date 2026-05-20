@@ -20,6 +20,7 @@ const AssetLibraryScreen = lazy(() =>
 import { CasePracticeScreen } from './ui/practice/CasePracticeScreen';
 import { InductionScreen } from './ui/induction/InductionScreen';
 import { loadCharacter } from './state/character';
+import { TIERS } from './state/difficulty';
 
 // Solo shift (Milestone 4)
 import bethYaml from '../content/cases/case_anaphylaxis_adult_peanut.yaml?raw';
@@ -554,10 +555,20 @@ function MenuView({
     () => (consultantMemo ? composeConsultantMessage(consultantMemo, character?.firstName) : null),
     [consultantMemo, character],
   );
+  const tier = character ? TIERS[character.role] : null;
   return (
     <div className="menu">
       <div className="menu__inner">
         <h2 className="menu__title">Shift menu</h2>
+        {character && tier && (
+          <div className="menu__badge" aria-label="Active doctor + difficulty tier">
+            <span className="menu__badge-name">
+              Dr {character.firstName} {character.lastName}
+            </span>
+            <span className="menu__badge-tier">{tier.label}</span>
+            <span className="menu__badge-blurb">{tier.blurb}</span>
+          </div>
+        )}
         {consultantMessage && (
           <aside className={`menu__memo menu__memo--${consultantMemo!.band}`} aria-label="Note from your consultant">
             <header className="menu__memo-head">
