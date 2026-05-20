@@ -4,6 +4,8 @@ import { deriveVitals, news2 } from '../../sim/vitals';
 import { MonitorAudio, loadAudioEnabled, saveAudioEnabled } from '../../sim/audio';
 import { frameCountFor, spriteSvgFor } from '../../style/sprites';
 import { Monitor, VitalsStripFrame, type VitalReading } from '../../style/frames';
+import { FX_PARTICLES, fxFrameToSvg } from '../../style/fxSprites';
+import type { CaseStateT } from '../../content/schema';
 
 /**
  * Persistent patient panel — portrait + live vitals strip.
@@ -109,6 +111,7 @@ export function PatientPanel({ cs }: { cs: CaseRuntime }) {
       >
         <div className="patient-panel__portrait-slot">
           <PatientPortrait caseId={cs.caseId} state={cs.state} hr={v.hr ?? 80} rr={v.rr ?? 16} />
+          <PatientFxOverlay caseId={cs.caseId} state={cs.state} hr={v.hr} rr={v.rr} />
         </div>
       </Monitor>
       <div className="patient-panel__vitals">
@@ -254,6 +257,84 @@ function fmtBp(sys: number | undefined, dia: number | undefined): string {
  * frame loop driven by the patient's RR. Falls back to a CSS silhouette
  * (head + torso on a trolley) for cases without authored sprite art.
  */
+
+/**
+ * FX particle overlay on the patient portrait (M73). Maps the case
+ * diagnosis bucket + current state + vital triggers to 0–2 absolutely-
+ * positioned particles that animate gently over the portrait.
+ *
+ * Picks per state:
+ *   deteriorating + anaphylaxis → urticaria_flare (chest + neck)
+ *   deteriorating + clammy/shock → sweat_drop (forehead)
+ *   deteriorating + intox/vomit → vomit_bowl beside trolley
+ *   any state + HR > 130 → pulse_ring (subtle, pulsing)
+ *   arrested/deceased → no FX (sprite already mottled)
+ *
+ * Particles are aria-hidden — the NEWS2 panel + vitals strip already
+ * carry the semantic information for screen readers.
+ */
+const DIAGNOSIS_FX: Record<string, string> = {
+  case_anaphylaxis_adult_peanut: 'urticaria_flare',
+  case_anaphylaxis_paeds_sibling: 'urticaria_flare',
+  case_paracetamol_od_chloe: 'vomit_bowl',
+  case_intox_stan_ambient: 'vomit_bowl',
+  case_chest_pain_patel_ambient: 'sweat_drop',
+  case_acute_heart_failure_ahmed: 'sweat_drop',
+  case_dka_marcus: 'sweat_drop',
+  case_paeds_dka_amir: 'sweat_drop',
+  case_ectopic_minors_sarah: 'sweat_drop',
+  case_massive_pe_okonkwo: 'sweat_drop',
+  case_aortic_dissection_okafor: 'sweat_drop',
+  case_ugib_variceal_kowalski: 'blood_splat',
+  case_sepsis_uti_morrison: 'sweat_drop',
+  case_status_epilepticus_priya: 'sweat_drop',
+  case_stroke_acute_williams: 'sweat_drop',
+  case_head_injury_doac_brennan: 'sweat_drop',
+  case_htn_emergency_oduya: 'sweat_drop',
+};
+
+function PatientFxOverlay({
+  caseId,
+  state,
+  hr,
+}: {
+  caseId: string;
+  state: CaseStateT;
+  hr: number | undefined;
+  rr: number | undefined;
+}) {
+  // No FX when arrested / deceased — the supine + mottled sprite carries
+  // the visual weight, and a particle on top would be noise.
+  if (state === 'arrested' || state === 'deceased') return null;
+
+  const showStateFx = state === 'deteriorating' || state === 'unseen';
+  const stateFxId = showStateFx ? DIAGNOSIS_FX[caseId] : null;
+  const showPulse = hr !== undefined && hr > 130;
+
+  const stateRows = stateFxId ? FX_PARTICLES[stateFxId] : null;
+  const stateSvg = stateRows ? fxFrameToSvg(stateRows, 3) : null;
+  const pulseRows = FX_PARTICLES.pulse_ring;
+  const pulseSvg = showPulse && pulseRows ? fxFrameToSvg(pulseRows, 2) : null;
+
+  if (!stateSvg && !pulseSvg) return null;
+  return (
+    <div className="patient-panel__fx" aria-hidden="true">
+      {stateSvg && (
+        <span
+          className={`patient-panel__fx-particle patient-panel__fx-particle--${stateFxId}`}
+          dangerouslySetInnerHTML={{ __html: stateSvg }}
+        />
+      )}
+      {pulseSvg && (
+        <span
+          className="patient-panel__fx-particle patient-panel__fx-particle--pulse"
+          dangerouslySetInnerHTML={{ __html: pulseSvg }}
+        />
+      )}
+    </div>
+  );
+}
+
 function PatientPortrait({
   caseId,
   state,

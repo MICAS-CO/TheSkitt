@@ -1415,6 +1415,73 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+}
+/* FX particle overlay (M73) — diagnosis-coded sweat/blood/urticaria/etc */
+.patient-panel__fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+.patient-panel__fx-particle {
+  position: absolute;
+  display: block;
+  animation: fx-fade-in 0.6s ease-out;
+}
+@keyframes fx-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* sweat: top-right, gentle drip animation */
+.patient-panel__fx-particle--sweat_drop {
+  top: 18%;
+  right: 22%;
+  animation: fx-fade-in 0.6s ease-out, fx-sweat-drip 2.4s ease-in-out infinite 0.6s;
+}
+@keyframes fx-sweat-drip {
+  0%, 100% { transform: translateY(0); opacity: 0.95; }
+  50%      { transform: translateY(4px); opacity: 0.55; }
+}
+/* urticaria: chest area, gentle pulse to suggest the wheal flare */
+.patient-panel__fx-particle--urticaria_flare {
+  bottom: 22%;
+  left: 30%;
+  animation: fx-fade-in 0.6s ease-out, fx-urticaria 1.8s ease-in-out infinite 0.6s;
+}
+@keyframes fx-urticaria {
+  0%, 100% { opacity: 0.92; }
+  50%      { opacity: 0.55; }
+}
+/* vomit bowl: bedside, static */
+.patient-panel__fx-particle--vomit_bowl {
+  bottom: 8%;
+  right: 6%;
+  opacity: 0.9;
+}
+/* blood splat: lower-half, static (variceal UGIB) */
+.patient-panel__fx-particle--blood_splat {
+  bottom: 14%;
+  left: 18%;
+  opacity: 0.88;
+}
+/* pulse ring: centred on chest, pulsing */
+.patient-panel__fx-particle--pulse {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: fx-fade-in 0.6s ease-out, fx-pulse 1s ease-in-out infinite 0.6s;
+  opacity: 0.7;
+}
+@keyframes fx-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.7; }
+  50%      { transform: translate(-50%, -50%) scale(1.1); opacity: 0.3; }
+}
+/* Respect reduce-motion: drop the looping animations to a static state. */
+.is-reduce-motion .patient-panel__fx-particle--sweat_drop,
+.is-reduce-motion .patient-panel__fx-particle--urticaria_flare,
+.is-reduce-motion .patient-panel__fx-particle--pulse {
+  animation: fx-fade-in 0.6s ease-out;
 }
 .patient-panel__portrait-slot .patient-portrait {
   background: transparent;
