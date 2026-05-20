@@ -95,6 +95,17 @@ const PAL: PaletteMap = {
   J: '#9c9a93', // grey hair mid
   E: '#0c1c3c', // pyjama navy dark
   y: '#1b2f5a', // pyjama navy mid
+
+  // Patient sprites M72 — Chloe (paracetamol OD), Stan (intox + fall),
+  // Patel (atypical STEMI). New clothing slots use free digit chars
+  // so they don't collide with the skin / mouth / state-tint slots.
+  '0': '#3a2818', // stan jumper shadow (dark brown)
+  '4': '#5e4028', // stan jumper mid (warm brown)
+  '5': '#7e5a40', // stan jumper highlight
+  '6': '#5e2c1e', // patel saree shadow (burgundy)
+  '7': '#a04a3c', // patel saree mid
+  '8': '#e4be5c', // patel saree gold trim
+  '9': '#cfc9b8', // chloe gown subtle stripe
 };
 
 // ─── Beth ───────────────────────────────────────────────────────────────────
@@ -412,6 +423,395 @@ function williamsPostResus(): string[][] {
   return [applyDiffs(supineClammy, diffs)];
 }
 
+// ─── Chloe (M72) ────────────────────────────────────────────────────────────
+// 19F, paracetamol OD. Long dark hair past shoulders, hospital gown (W/9
+// for subtle stripe), small frame. The triaged → deteriorating arc adds
+// closed eyes + lip pallor. Arrested = supine + mottled.
+
+const chloeUpright = [
+  '........................', // 0
+  '........................', // 1
+  '.......kkkkkkkkkk.......', // 2  hair top
+  '......khhhhhhhhhhk......', // 3
+  '......khhhHHHHhhhk......', // 4
+  '......khhHHHHHHhhk......', // 5
+  '......khsssssssHhk......', // 6  forehead
+  '......khsSSSSSSsHk......', // 7
+  '......khSSLLLLSSHk......', // 8
+  '......khSLwewewLSk......', // 9  eyes (open)
+  '......khSLLLLLLLSk......', // 10
+  '......khSLLLLLLLSk......', // 11
+  '......khSLLLeLLLSk......', // 12  nose
+  '......khSLLLLLLLSk......', // 13
+  '......khSLLOOOLLSk......', // 14  closed mouth
+  '......hkSSSSSSSSkh......', // 15  hair tucks past chin
+  '......hhsssssssshh......', // 16
+  '.......hhSSSSSShh.......', // 17
+  '.......hh99WWW9hh.......', // 18  gown collar + stripe
+  '......WWWWWWWWWWWW......', // 19  gown body
+  '.....WWWWWWWWWWWWWW.....', // 20  INHALE
+  '.....WWWWWW99WWWWWW.....', // 21
+  '....WWWWWWWWWWWWWWWW....', // 22
+  '....WWWWWW99WWWWWWWW....', // 23
+  '....WWWWWWWWWWWWWWWW....', // 24
+  '....WWWWWW99WWWWWWWW....', // 25
+  '....WWWWWWWWWWWWWWWW....', // 26
+  '....WWWWWWWWWWWWWWWW....', // 27
+  '....WWWWWWWWWWWWWWWW....', // 28
+  '....WWWWWWWWWWWWWWWW....', // 29
+  '....WWWWWWWWWWWWWWWW....', // 30
+  '........................', // 31
+];
+const chloeUprightExhale = chloeUpright.slice();
+chloeUprightExhale[20] = '......WWWWWWWWWWWWWW....';
+
+const chloeSupine = [
+  '........................', // 0
+  '........................', // 1
+  '............kkkkkkk.....', // 2  hair fanned on pillow
+  '..........khhhhhhhhk....', // 3
+  '..........khhhHHHHhk....', // 4
+  '..........khhHHHHHhk....', // 5
+  '..........khsssssHHhk...', // 6
+  '..........khsSSSSsHHhk..', // 7
+  '..........hSSSLLLLSSHk..', // 8
+  '..........hSSLL~~LLSSHk.', // 9  half-closed eyes
+  '..........hSSLLLLLLLSSk.', // 10
+  '..........hSSLLLLLLLSSk.', // 11
+  '..........hSSLLLeeLLLSk.', // 12
+  '..........hSSLLqqqqLLSk.', // 13  slack mouth
+  '..........hSSLqqqqqqLSk.', // 14
+  '...........hsSSSSSSSsk..', // 15
+  '............hssssssh....', // 16
+  '..........WWWWWWWWWWW...', // 17  sheet edge
+  '........WWWWWWWWWWWWWWW.', // 18
+  '......WWWWWWWWWWWWWWWWW.', // 19
+  '.....WWWWWWWWWWWWWWWWWW.', // 20
+  '.....WWWWWWWWWWWWWWWWWW.', // 21
+  '.....WWWWWYWYWYWYWWWWWW.', // 22  sheet weave
+  '.....WWWWWWWWWWWWWWWWWW.', // 23
+  '.....WWWWWWWWWWWWWWWWWW.', // 24
+  '.....WWWWWWWWWWWWWWWWWW.', // 25
+  '.....WWWWWWWWWWWWWWWWWW.', // 26
+  '.....WWWWWWWWWWWWWWWWWW.', // 27
+  '.....WWWWWWWWWWWWWWWWWW.', // 28
+  '......WWWWWWWWWWWWWWWW..', // 29
+  '........................', // 30
+  '........................', // 31
+];
+
+function chloeStable(): string[][] {
+  return [chloeUpright, chloeUprightExhale];
+}
+
+function chloeTriaged(): string[][] {
+  // Eyes mostly closed, drowsy.
+  const diffs: SpriteDiff[] = [
+    { row: 9, col: 9, ch: '~' },
+    { row: 9, col: 10, ch: '~' },
+    { row: 9, col: 13, ch: '~' },
+    { row: 9, col: 14, ch: '~' },
+  ];
+  return [applyDiffs(chloeUpright, diffs), applyDiffs(chloeUprightExhale, diffs)];
+}
+
+function chloeDeteriorating(): string[][] {
+  // Clammy + nausea hint (vomit bowl prop would render separately).
+  const supineClammy = substSkin(chloeSupine, { s: 'C', S: 'c', L: 'd', l: 'D' });
+  return [supineClammy];
+}
+
+function chloeArrested(): string[][] {
+  return [substSkin(chloeSupine, { s: 'M', S: 'm', L: 'n', l: 'N' })];
+}
+
+function chloePostResus(): string[][] {
+  const map = { s: 'C', S: 'c', L: 'd', l: 'D' };
+  const diffs: SpriteDiff[] = [
+    // NAC infusion line into right cubital fossa
+    { row: 17, col: 9, ch: 'T' },
+    { row: 18, col: 9, ch: 'T' },
+    { row: 19, col: 8, ch: 't' },
+    // small jaundice patch on the sclera (acetaminophen toxicity marker)
+    { row: 12, col: 16, ch: 'I' },
+    { row: 12, col: 17, ch: 'I' },
+  ];
+  return [applyDiffs(substSkin(chloeSupine, map), diffs)];
+}
+
+// ─── Stan (M72) ─────────────────────────────────────────────────────────────
+// 58M, intox + occult head injury. Short greying hair, weathered face,
+// brown wool jumper (chars 0/4/5). Forehead lac visible as red on
+// deteriorating; supine + log-rolled later.
+
+const stanUpright = [
+  '........................', // 0
+  '........................', // 1
+  '.........KJKJKJK........', // 2  greying hair
+  '........KJJJJJJJK.......', // 3
+  '........#JJJJJJJ#.......', // 4
+  '........#sssssss#.......', // 5  forehead
+  '........ksSSSSSSsk......', // 6
+  '........ksSLLLLLSk......', // 7
+  '........ksSL~ww~LSk.....', // 8  brow shadow (age)
+  '.......ksSLwewewLSk.....', // 9  eyes
+  '.......ksSLLLLLLLSk.....', // 10
+  '.......ksSLL~~LLLSk.....', // 11  crow's feet
+  '.......ksSLLLeLLLSk.....', // 12  nose
+  '.......ksSLLLLLLLSk.....', // 13
+  '.......ksSL~~~~~LSk.....', // 14  stubble across upper lip
+  '.......ksSLLOOOLLSk.....', // 15  mouth
+  '.......khssssssshk......', // 16
+  '........khsssssshk......', // 17  chin + stubble
+  '........SSSSSSSSk.......', // 18  neck
+  '.......04444444440......', // 19  jumper collar
+  '......0444555554440.....', // 20  INHALE (raised)
+  '.....044455555555440....', // 21
+  '....04444555555555440...', // 22  jumper body
+  '....044455555555555440..', // 23
+  '....044555555555555440..', // 24
+  '....044555555555555440..', // 25
+  '....044555555555555440..', // 26
+  '....044555555555555440..', // 27
+  '....044555555555555440..', // 28
+  '....044444444444444440..', // 29
+  '....00000000000000000...', // 30
+  '........................', // 31
+];
+const stanUprightExhale = stanUpright.slice();
+stanUprightExhale[20] = '.......04444554444440...';
+stanUprightExhale[21] = '......044455555555440...';
+
+const stanSupine = [
+  '........................', // 0
+  '........................', // 1
+  '............KJKJKJK.....', // 2
+  '...........KJJJJJJK.....', // 3
+  '..........#JJJJJJJ#.....', // 4
+  '..........#sssssss#.....', // 5
+  '..........ksSSSSSSsk....', // 6
+  '..........ksSLLLLLSsk...', // 7
+  '..........kSSLL~~LLSSk..', // 8  half-closed eyes
+  '..........kSSLLLLLLLSSk.', // 9
+  '..........kSSLL~~LLLSk..', // 10
+  '..........kSSLLLeeLLSk..', // 11
+  '..........kSSL~~~~~LSk..', // 12  stubble
+  '..........kSSLqqqqqLSk..', // 13  open slack mouth
+  '..........kSSqqqqqqqSk..', // 14
+  '...........ksSSSSSSsk...', // 15
+  '............hsssssh.....', // 16
+  '..........WWWWWWWWWWW...', // 17  sheet edge
+  '........WWWWWWWWWWWWWWW.', // 18
+  '.......WWWWWWWWWWWWWWWWW', // 19
+  '......WWWWWWWWWWWWWWWWWW', // 20
+  '.....WWWWWWWWWWWWWWWWWWW', // 21
+  '.....WWWWWYWYWYWYWYWWWWW', // 22  sheet weave
+  '.....WWWWWWWWWWWWWWWWWWW', // 23
+  '.....WWWWWWWWWWWWWWWWWWW', // 24
+  '.....WWWWWWWWWWWWWWWWWWW', // 25
+  '.....WWWWWWWWWWWWWWWWWWW', // 26
+  '.....WWWWWWWWWWWWWWWWWWW', // 27
+  '.....WWWWWWWWWWWWWWWWWWW', // 28
+  '......WWWWWWWWWWWWWWWW..', // 29
+  '........................', // 30
+  '........................', // 31
+];
+
+function stanStable(): string[][] {
+  return [stanUpright, stanUprightExhale];
+}
+
+function stanTriaged(): string[][] {
+  // Closed eyes + slumped — alcohol gaze.
+  const diffs: SpriteDiff[] = [
+    { row: 9, col: 11, ch: '~' },
+    { row: 9, col: 12, ch: '~' },
+    { row: 9, col: 14, ch: '~' },
+    { row: 9, col: 15, ch: '~' },
+  ];
+  return [applyDiffs(stanUpright, diffs), applyDiffs(stanUprightExhale, diffs)];
+}
+
+function stanDeteriorating(): string[][] {
+  // Forehead laceration visible (the M40 manoeuvre payoff) — small red gash
+  // on left brow area + clammy skin tint.
+  const map = { s: 'C', S: 'c', L: 'd', l: 'D' };
+  const diffs: SpriteDiff[] = [
+    // Laceration over left eyebrow (from viewer's right)
+    { row: 5, col: 15, ch: 'r' },
+    { row: 6, col: 15, ch: 'r' },
+    { row: 6, col: 16, ch: 'r' },
+    // Sweat droplet on temple
+    { row: 7, col: 17, ch: 'A' },
+    { row: 8, col: 17, ch: 'a' },
+  ];
+  return [
+    applyDiffs(substSkin(stanUpright, map), diffs),
+    applyDiffs(substSkin(stanUprightExhale, map), diffs),
+  ];
+}
+
+function stanArrested(): string[][] {
+  return [substSkin(stanSupine, { s: 'M', S: 'm', L: 'n', l: 'N' })];
+}
+
+function stanPostResus(): string[][] {
+  const map = { s: 'C', S: 'c', L: 'd', l: 'D' };
+  const diffs: SpriteDiff[] = [
+    // Forehead dressing (white square)
+    { row: 4, col: 11, ch: 'W' },
+    { row: 4, col: 12, ch: 'W' },
+    { row: 4, col: 13, ch: 'W' },
+    { row: 5, col: 11, ch: 'W' },
+    { row: 5, col: 12, ch: 'W' },
+    { row: 5, col: 13, ch: 'W' },
+    // ECG lead on chest
+    { row: 17, col: 11, ch: 'Z' },
+    { row: 18, col: 11, ch: 'Z' },
+    // IV cannula L ACF
+    { row: 17, col: 9, ch: 'T' },
+    { row: 18, col: 9, ch: 'T' },
+  ];
+  return [applyDiffs(substSkin(stanSupine, map), diffs)];
+}
+
+// ─── Patel (M72) ────────────────────────────────────────────────────────────
+// 72F atypical STEMI. Grey/black bun, traditional saree wrap
+// (chars 6/7/8 — burgundy + gold trim). Stoic, sitting upright.
+
+const patelUpright = [
+  '........................', // 0
+  '........................', // 1
+  '..........kkkkkkk.......', // 2  hair bun at top
+  '.........kkkbbbkkk......', // 3
+  '........kkbbbbbbbkk.....', // 4
+  '........#bbbbbbbbb#.....', // 5  bun outline (b reused as eye-bb)
+  '........#sssssssss......', // 6  forehead
+  '........ksSSSSSSSSk.....', // 7
+  '........ksSLLLLLLSk.....', // 8
+  '.......ksSLwewewLSk.....', // 9  eyes
+  '.......ksSLLLLLLLSk.....', // 10
+  '.......ksSLL~~LLLSk.....', // 11  age lines
+  '.......ksSLLLeLLLSk.....', // 12  nose
+  '.......ksSLLLLLLLSk.....', // 13
+  '.......ksSLLOOOLLSk.....', // 14  composed mouth
+  '........ksSSSSSSSk......', // 15
+  '........kssssssssk......', // 16  chin
+  '.........SSSSSSk........', // 17  neck
+  '.......6666666666.......', // 18  saree top edge
+  '......6677777777766.....', // 19  saree body (burgundy + mid)
+  '.....667777777777766....', // 20  INHALE
+  '....66777887888777766...', // 21  gold trim across chest
+  '....667777777777777766..', // 22
+  '....677777887777887776..', // 23  gold motif
+  '....67777777777777767...', // 24
+  '....66777777777777776...', // 25
+  '....66777777777777776...', // 26
+  '....66777777777777776...', // 27
+  '....66677777777777666...', // 28
+  '....66666666666666666...', // 29
+  '....66666666666666666...', // 30
+  '........................', // 31
+];
+const patelUprightExhale = patelUpright.slice();
+patelUprightExhale[20] = '.....66777777777766.....';
+patelUprightExhale[21] = '....66777887888777766...';
+
+const patelSupine = [
+  '........................', // 0
+  '........................', // 1
+  '............kkkkk.......', // 2
+  '...........kkbbbkk......', // 3
+  '...........kkbbbbk......', // 4
+  '..........#bbbbbb#......', // 5
+  '..........#sssssss#.....', // 6
+  '..........ksSSSSSSsk....', // 7
+  '..........ksSLLLLLSsk...', // 8
+  '..........kSSL~~~~LSk...', // 9
+  '..........kSSLLLLLLSk...', // 10
+  '..........kSSLLLeLLSk...', // 11
+  '..........kSSLLLLLLSk...', // 12
+  '..........kSSLqqqqqSk...', // 13
+  '..........kSSLqqqqqqSk..', // 14
+  '...........ksSSSSSSsk...', // 15
+  '............hssssssh....', // 16
+  '..........WWWWWWWWWWW...', // 17
+  '........WWWWWWWWWWWWWWW.', // 18
+  '......WWWWWWWWWWWWWWWWWW', // 19
+  '.....WWWWWWWWWWWWWWWWWWW', // 20
+  '.....WWWWWWWWWWWWWWWWWWW', // 21
+  '.....WWWWWYWYWYWYWYWWWWW', // 22
+  '.....WWWWWWWWWWWWWWWWWWW', // 23
+  '.....WWWWWWWWWWWWWWWWWWW', // 24
+  '.....WWWWWWWWWWWWWWWWWWW', // 25
+  '.....WWWWWWWWWWWWWWWWWWW', // 26
+  '.....WWWWWWWWWWWWWWWWWWW', // 27
+  '.....WWWWWWWWWWWWWWWWWWW', // 28
+  '......WWWWWWWWWWWWWWWW..', // 29
+  '........................', // 30
+  '........................', // 31
+];
+
+function patelStable(): string[][] {
+  return [patelUpright, patelUprightExhale];
+}
+
+function patelTriaged(): string[][] {
+  // Subtle pallor + slight wince — but she IS stoic, so the change is small.
+  const diffs: SpriteDiff[] = [
+    { row: 11, col: 12, ch: 'k' }, // brow drawn
+    { row: 11, col: 13, ch: 'k' },
+    { row: 14, col: 11, ch: 'o' },
+    { row: 14, col: 14, ch: 'o' },
+  ];
+  return [applyDiffs(patelUpright, diffs), applyDiffs(patelUprightExhale, diffs)];
+}
+
+function patelDeteriorating(): string[][] {
+  // Clammy + diaphoresis on forehead. The atypical-STEMI presentation
+  // finally shows on her face — she stops masking.
+  const map = { s: 'C', S: 'c', L: 'd', l: 'D' };
+  const diffs: SpriteDiff[] = [
+    // Sweat droplets on the forehead — three of them
+    { row: 6, col: 9, ch: 'A' },
+    { row: 7, col: 9, ch: 'a' },
+    { row: 6, col: 17, ch: 'A' },
+    { row: 7, col: 17, ch: 'a' },
+    // Open mouth (laboured breathing now)
+    { row: 14, col: 12, ch: 'q' },
+    { row: 14, col: 13, ch: 'q' },
+    { row: 14, col: 14, ch: 'q' },
+  ];
+  return [
+    applyDiffs(substSkin(patelUpright, map), diffs),
+    applyDiffs(substSkin(patelUprightExhale, map), diffs),
+  ];
+}
+
+function patelArrested(): string[][] {
+  return [substSkin(patelSupine, { s: 'M', S: 'm', L: 'n', l: 'N' })];
+}
+
+function patelPostResus(): string[][] {
+  const map = { s: 'C', S: 'c', L: 'd', l: 'D' };
+  const diffs: SpriteDiff[] = [
+    // Defib pad mark on chest (visible above sheet)
+    { row: 16, col: 12, ch: 'r' },
+    { row: 16, col: 13, ch: 'r' },
+    // ECG leads
+    { row: 17, col: 11, ch: 'Z' },
+    { row: 18, col: 12, ch: 'Z' },
+    // Oxygen via NRB (visible across mouth area)
+    { row: 13, col: 12, ch: 'I' },
+    { row: 13, col: 13, ch: 'I' },
+    { row: 13, col: 14, ch: 'I' },
+    { row: 14, col: 12, ch: 'I' },
+    { row: 14, col: 13, ch: 'I' },
+    { row: 14, col: 14, ch: 'I' },
+  ];
+  return [applyDiffs(substSkin(patelSupine, map), diffs)];
+}
+
 // ─── Renderer ───────────────────────────────────────────────────────────────
 
 /** Render sprite rows to a crisp-edge SVG string. */
@@ -475,6 +875,39 @@ export const PATIENT_SPRITES: Record<
     admitted: williamsPostResus,
     discharged: williamsStable,
     post_resus: williamsPostResus,
+  },
+  case_paracetamol_od_chloe: {
+    stable: chloeStable,
+    triaged: chloeTriaged,
+    unseen: chloeStable,
+    deteriorating: chloeDeteriorating,
+    arrested: chloeArrested,
+    deceased: chloeArrested,
+    admitted: chloePostResus,
+    discharged: chloeStable,
+    post_resus: chloePostResus,
+  },
+  case_intox_stan_ambient: {
+    stable: stanStable,
+    triaged: stanTriaged,
+    unseen: stanStable,
+    deteriorating: stanDeteriorating,
+    arrested: stanArrested,
+    deceased: stanArrested,
+    admitted: stanPostResus,
+    discharged: stanStable,
+    post_resus: stanPostResus,
+  },
+  case_chest_pain_patel_ambient: {
+    stable: patelStable,
+    triaged: patelTriaged,
+    unseen: patelStable,
+    deteriorating: patelDeteriorating,
+    arrested: patelArrested,
+    deceased: patelArrested,
+    admitted: patelPostResus,
+    discharged: patelStable,
+    post_resus: patelPostResus,
   },
 };
 
