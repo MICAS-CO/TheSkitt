@@ -1,0 +1,21 @@
+Copyright © 2026 MICAS-CO. All rights reserved.
+
+THE SKITT — A TheCase.Report project.
+
+This software and its source code are proprietary. No part of this
+repository may be copied, modified, distributed, sublicensed, or used
+to train machine-learning models without the prior written consent of
+the copyright holder.
+
+The clinical content, narrative, and pixel art are authored against
+publicly available UK clinical guidance (NICE, RCEM, Resus Council UK,
+JBDS-IP, BTS, ESC, RCP, MHRA, TOXBASE, BSPED, ISPAD, BSH, Surviving
+Sepsis) for educational use. Citations are inline in the case YAML
+files; the guidance itself is governed by its respective publishers'
+terms.
+
+This is study material for UK FRCEM candidates. It is not medical
+advice and is not a substitute for supervised clinical training.
+
+For licensing enquiries, contact the copyright holder via
+https://thecase.report.

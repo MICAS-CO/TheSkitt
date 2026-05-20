@@ -1,0 +1,146 @@
+# Thematic DOAC double-bill: Mr Williams (ischaemic LVO on apixaban,
+# alteplase contraindicated → thrombectomy) AND Mrs Brennan (small
+# SDH on apixaban, andexanet alfa / 4-factor PCC reversal). Both on
+# the same shift — opposite ends of the DOAC emergency spectrum.
+#
+# No narrative arc connecting them; they're unrelated patients who
+# happen to share the same anticoagulant. The pedagogical arc is in
+# the contrast: ischaemic-vs-haemorrhagic, reperfusion-vs-reversal,
+# preserve-anticoag-vs-hold-anticoag. The bed manager and the lab
+# callback drive the time pressure.
+
+schema_version: 1
+id: ep_doac_double
+title: 'DOAC double-bill — clot and bleed'
+
+learning_objectives:
+  - 'Apply both ends of the DOAC-on-board emergency spectrum: ischaemic LVO (alteplase contraindicated within ~48 h of last dose; thrombectomy preferred) AND haemorrhagic SDH (reverse with andexanet alfa or 4-factor PCC).'
+  - 'Recognise that INR / PT / APTT do NOT measure apixaban — use apixaban-calibrated anti-Xa activity (or accept the clinical decision under uncertainty).'
+  - 'NICE TA697 (andexanet alfa) for reversal of life-threatening / uncontrolled bleeding on apixaban or rivaroxaban; idarucizumab for dabigatran; 4-factor PCC as pragmatic alternative.'
+  - 'Manage parallel time-critical pathways: stroke door-to-needle / door-to-thrombectomy AND CT-within-8h for the anticoagulated head injury.'
+
+curriculum_tags: [NeuC12, NeuP5, NeuP4, NeuP1, TP1, NeuC11]
+difficulty_band: ST3
+shift_duration_min: 20
+
+focus_cases:
+  - case_stroke_acute_williams
+  - case_head_injury_doac_brennan
+
+ambient_cases: []
+
+scheduled_events:
+  # ─── Williams (stroke) timeline ───────────────────────────────────────
+  - id: ev_williams_bm_back
+    type: results_back
+    t_min: 2
+    case_id: case_stroke_acute_williams
+    investigation_id: ix_bm
+
+  - id: ev_williams_ct_back
+    type: results_back
+    t_min: 8
+    case_id: case_stroke_acute_williams
+    investigation_id: ix_ct_head
+
+  - id: ev_williams_wife
+    type: family_arrival
+    t_min: 3
+    case_id: case_stroke_acute_williams
+    npc: "Carol (wife): 'Is it a stroke? Can he have the clot-buster?'"
+
+  - id: ev_williams_deterioration
+    type: deterioration_if_not_x_by_t
+    t_min: 12
+    case_id: case_stroke_acute_williams
+    required_action_ids: [mx_call_stroke_team, mx_ct_within_1h]
+    new_state: deteriorating
+
+  # ─── Brennan (head injury) timeline ──────────────────────────────────
+  - id: ev_brennan_son_pressure
+    type: family_arrival
+    t_min: 4
+    case_id: case_head_injury_doac_brennan
+    npc: "Son: 'Can we just go home? The grandkids are coming at 5.'"
+
+  - id: ev_brennan_bloods_back
+    type: results_back
+    t_min: 9
+    case_id: case_head_injury_doac_brennan
+    investigation_id: ix_bloods
+
+  - id: ev_brennan_ct_back
+    type: results_back
+    t_min: 13
+    case_id: case_head_injury_doac_brennan
+    investigation_id: ix_ct_head
+
+  - id: ev_brennan_ct_cspine_back
+    type: results_back
+    t_min: 13
+    case_id: case_head_injury_doac_brennan
+    investigation_id: ix_ct_cspine
+
+  - id: ev_brennan_anti_xa_back
+    type: results_back
+    t_min: 14
+    case_id: case_head_injury_doac_brennan
+    investigation_id: ix_anti_xa
+
+  - id: ev_brennan_deterioration
+    type: deterioration_if_not_x_by_t
+    t_min: 18
+    case_id: case_head_injury_doac_brennan
+    required_action_ids: [mx_ct_head_within_8h, mx_apixaban_hold]
+    new_state: deteriorating
+
+  # ─── Shift-level pressure ───────────────────────────────────────────
+  - id: ev_bed_pressure_mid
+    type: bed_manager_pressure
+    t_min: 10
+    severity: gentle
+
+  - id: ev_lab_callback
+    type: lab_callback
+    t_min: 14
+    case_id: case_head_injury_doac_brennan
+    investigation_id: ix_anti_xa
+    urgent_finding: 'Anti-Xa apixaban-calibrated 184 ng/mL — therapeutic anticoagulation confirmed; reversal call is yours.'
+
+  - id: ev_bed_pressure_end
+    type: bed_manager_pressure
+    t_min: 18
+    severity: firm
+
+arcs: []
+
+author_notes: |
+  Two-case 20-min shift. Both patients are on apixaban; the working
+  diagnosis splits them at the CT scan (LVO vs SDH) and the
+  management splits them entirely (reperfusion vs reversal).
+
+  The schedule is deliberately back-loaded: Williams' CT at T+8 is
+  the thrombolysis decision; Brennan's CT at T+13 is the SDH pivot.
+  The lab callback at T+14 surfaces the anti-Xa for Brennan, which
+  the player should already have considered.
+
+  Pedagogical contrast highlights:
+
+  - **Same drug, opposite emergencies.** Williams needs reperfusion
+    (thrombectomy because alteplase contraindicated within 48h of
+    last apixaban dose); Brennan needs reversal (andexanet alfa /
+    4-factor PCC, NOT vitamin K + FFP).
+  - **Same lab insight, different relevance.** INR/APTT don't
+    measure DOAC in either patient — anti-Xa is the actual
+    measurement.
+  - **Stroke door-to-needle 60 min (RCP / SSNAP audit standard,
+    NOT NICE NG128 per se)** vs **head-injury-on-anticoag CT within
+    8 hours (NICE NG232 mandate)** — both are time-bound but
+    differently sourced.
+  - **Both have a "wants to go home" relative** — Carol expecting
+    thrombolysis, Brennan's son pushing for safety-net discharge.
+    Pressure from different angles.
+
+  Difficulty band is ST3 — running two anticoagulated time-critical
+  patients in parallel + four UK-guideline citations active
+  simultaneously is more than CT2-level cognitive load.

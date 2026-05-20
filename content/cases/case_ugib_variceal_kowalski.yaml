@@ -1,0 +1,834 @@
+# Variceal upper GI haemorrhage in a known cirrhotic. Mr Kowalski is
+# brought in from his bedsit with massive haematemesis. He is known
+# Childs-Pugh C alcoholic liver disease, has had variceal banding 18
+# months ago, and ran out of his propranolol weeks back. The shift's
+# pacing: get him resuscitated to restrictive Hb 7-8 target,
+# terlipressin and ceftriaxone in early, endoscopy team alerted, and
+# the airway question on the table the whole time because he's
+# encephalopathic.
+#
+# Sources: NICE CG141 (Acute upper GI bleeding in over-16s,
+# updated 2016), BSG/UK Guidelines on variceal haemorrhage (Tripathi
+# 2015), HALT-IT trial (Roberts et al., Lancet 2020) — closes the
+# door on routine TXA, RCEM Best Practice — UGIB, Oxford Handbook of
+# EM 5e Ch 5.
+
+schema_version: 1
+id: case_ugib_variceal_kowalski
+title: 'Variceal UGIB — massive haematemesis in a Child-Pugh C cirrhotic'
+chief_complaint: 'Vomiting blood'
+topic_id: upper_gi_bleed
+
+vignette: |
+  Resus bay 4. 03:48.
+
+  Mr Tomasz Kowalski, 54 y/o, brought in by ambulance from his bedsit
+  after his housemate found him vomiting bright red blood and
+  "looking yellow" at the bathroom sink. Estimated 2 L vomited on the
+  floor before they called 999.
+
+  Paramedics: "He's been bringing up old food yesterday, drank vodka
+  through the night, then suddenly vomited a litre of blood. HR 124
+  sinus on the strip, BP 88/52, sats 96% on 2 L. Drowsy but rousable.
+  GCS 13. We gave a litre of saline en route, half a litre in. He's
+  on no anticoagulants we can find."
+
+  As you start the primary survey he retches and brings up another
+  500 mL of fresh red blood with clots. The bedsheet is soaked. His
+  sclerae are yellow, his abdomen is distended, his hands are
+  trembling, and there's a faint sweet smell on his breath.
+
+curriculum_tags: [GP4, GC2]
+slos: [1, 3]
+difficulty_band: ST3
+paeds: false
+
+demographics:
+  age_value: 54
+  age_unit: years
+  sex: male
+  weight_kg: 71
+  pmh:
+    - 'Alcohol-related liver cirrhosis (Child-Pugh C, MELD 18 at last clinic)'
+    - 'Oesophageal varices — band ligation 18 months ago'
+    - 'Spontaneous bacterial peritonitis once, 2023'
+    - 'Hepatic encephalopathy episodes (grade 2 twice this year)'
+    - 'Type 2 diabetes (poorly controlled)'
+  medications:
+    - 'Propranolol 80 mg BD (admits to running out 3 weeks ago)'
+    - 'Spironolactone 100 mg OD'
+    - 'Lactulose 30 mL TDS (taking inconsistently)'
+    - 'Rifaximin 550 mg BD (taking inconsistently)'
+  allergies: ['NKDA']
+  social: |
+    Polish heritage, 28 years in UK. Single, lives alone in bedsit;
+    housemate downstairs is the EM contact. Daily heavy drinker
+    (~120 units/week per gastroenterology notes). Not engaged with
+    addiction services. Brother in Warsaw — flagged as NoK on the
+    EHR.
+
+triage_category: 1
+initial_state: deteriorating
+bay: resus
+
+vitals:
+  baseline:
+    hr: 92
+    rr: 18
+    spo2: 96
+    bp_sys: 108
+    bp_dia: 68
+    gcs: 14
+    temp_c: 36.4
+    bm: 4.6
+  deteriorating:
+    hr: 124
+    rr: 22
+    spo2: 96
+    on_o2: true
+    bp_sys: 88
+    bp_dia: 52
+    gcs: 13
+    temp_c: 36.2
+    bm: 4.6
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
+# ─── History ──────────────────────────────────────────────────────────────
+history:
+  - id: hx_paramedics
+    source: paramedic
+    topic: 'Paramedic handover and prehospital observations.'
+    response: |
+      "Housemate found him at 03:10 vomiting at the bathroom sink, lots
+      of blood on the floor, estimated a couple of litres. We got there
+      03:18. He was sitting on the toilet, GCS 13 — drowsy and slow.
+      BP 88/52, HR 124 sinus, sats 96% on 2 L nasal cannulae, BM 4.6.
+      One litre of 0.9% saline started en route, ~500 mL in. He vomited
+      twice more in the truck — fresh red, with clots, maybe 700 mL
+      total. He's not on warfarin or any DOAC on the medication list."
+
+  - id: hx_drinking
+    source: family
+    topic: 'Housemate — drinking pattern, last drink, any cessation attempts?'
+    prereq_history_ids: [hx_paramedics]
+    npc_voice: "The housemate hesitates, eyes on the floor. 'It's been a rough year.'"
+    supports: ['Acute variceal upper GI haemorrhage in decompensated alcoholic cirrhosis']
+    branch_choices:
+      - id: compassionate
+        label: "I'm not here to judge him. The honest answer helps me treat him properly — what's it actually been like at home?"
+        npc_voice: "The housemate looks up. He exhales the breath he came in holding. He starts again."
+        rapport_delta: 2
+        response: |
+          "Right. Right, OK. (Sits.) He drinks all day, every day.
+          Vodka mostly — half-litre bottles in the kitchen, more in
+          the bedroom drawer he thinks I don't know about. He's been
+          worse this past week — drinking through the night. Last
+          drink about four hours ago. (Pause.) Two weeks ago he tried
+          to stop. He was shaky and being sick by lunchtime — saw a
+          thing in the bathroom that wasn't there. By the evening he
+          was drinking again. He had that camera test on his throat
+          last year, said they put bands on something. I should have
+          made him go back to the GP. I should have."
+      - id: clinical
+        label: "How much, how often, any past withdrawal?"
+        rapport_delta: 0
+        response: |
+          "Half-litre vodka daily, more in the past week. Last drink
+          4 hours ago. Withdrawal symptoms two weeks ago when he
+          tried to stop — tremor, vomiting. Banding on his throat
+          last year, no follow-up that I know of."
+      - id: judgemental
+        label: "He's drinking how much, and you let it get to this?"
+        npc_voice: "The housemate's jaw tightens. He looks at the floor for the rest of the conversation. His next answer is shorter."
+        rapport_delta: -2
+        response: |
+          "Half a bottle of vodka a day. Last one this afternoon.
+          (Pause.) I'm not his keeper, doctor. (The detail about
+          the withdrawal attempt two weeks ago is not volunteered.
+          The detail about the previous variceal banding is not
+          volunteered. The player must triangulate via records.)"
+    response: |
+      "He drinks all day every day. Vodka mostly. He'd been worse this
+      week — drinking through the night. Last drink was about 4 hours
+      ago. He'd been trying to cut down two weeks ago and was shaky
+      and sick — then he gave up and went back to it. He had that
+      camera test on his throat last year, said they put bands on
+      something."
+
+  - id: hx_recent_bowels
+    source: patient
+    topic: 'Mr Kowalski — any black stools, abdominal pain, weight loss?'
+    response: |
+      (Slurred, slow.) "Black… yes, two days. Smelled bad. Belly's
+      been bigger. Not eating much. Lost weight. The yellow's back."
+
+  - id: hx_meds_compliance
+    source: gp_letter
+    topic: 'Recent gastroenterology / GP letters.'
+    prereq_history_ids: [hx_drinking]
+    supports: ['Acute variceal upper GI haemorrhage in decompensated alcoholic cirrhosis']
+    response: |
+      "Last gastro clinic 4 months ago: Child-Pugh C, MELD 18. On
+      propranolol 80 mg BD for secondary prevention of variceal
+      rebleed (post-banding), spironolactone for ascites, lactulose
+      and rifaximin
+      for encephalopathy. Patient frequently runs out — non-compliance
+      noted. SBP episode March 2023 treated with ceftriaxone. Last
+      OGD: 3 columns of grade 2 varices post-banding, residual."
+
+  - id: hx_anticoag_screen
+    source: records
+    topic: 'Anticoagulants, antiplatelets, NSAIDs?'
+    supports: ['Peptic ulcer disease (NSAID + alcohol)']
+    response: |
+      "No documented anticoagulant or antiplatelet. No regular NSAID.
+      Took ibuprofen 'about a week ago' for backache — three doses."
+
+  - id: hx_advance_care
+    source: gp_letter
+    topic: 'Any documented advance care plan or DNACPR?'
+    prereq_history_ids: [hx_meds_compliance]
+    response: |
+      "No advance care plan documented. No DNACPR. Brother in Warsaw
+      is listed as next of kin; community alcohol team have been in
+      touch but he has not engaged. Liver transplant assessment
+      declined for ongoing alcohol use."
+
+# ─── Examination ──────────────────────────────────────────────────────────
+examination:
+  - system: general
+    findings:
+      - {
+          name: 'Appearance',
+          value: 'pale, peripheral cyanosis, jaundice',
+          present: true,
+          red_flag: true,
+        }
+      - {
+          name: 'Asterixis',
+          value: 'flapping tremor of the hands when extended — grade 2 hepatic encephalopathy',
+          present: true,
+          red_flag: true,
+        }
+      - { name: 'Spider naevi', value: 'multiple on chest wall', present: true }
+      - { name: 'Palmar erythema', value: 'present', present: true }
+      - { name: 'Fetor hepaticus', value: 'sweet musty breath odour', present: true }
+
+  - system: airway
+    findings:
+      - {
+          name: 'Airway',
+          value: 'patent but at risk — drowsy, ongoing haematemesis, soiled airway',
+          present: true,
+          red_flag: true,
+        }
+      - {
+          name: 'Suction in use',
+          value: 'continuous Yankauer; SALAD technique anticipated for RSI',
+          present: true,
+        }
+
+  - system: breathing
+    findings:
+      - { name: 'Respiratory rate', value: '22/min, shallow' }
+      - { name: 'SpO2', value: '96% on 4 L nasal cannulae' }
+      - { name: 'Chest', value: 'clear, no aspiration crackles yet' }
+
+  - system: circulation
+    findings:
+      - { name: 'Heart rate', value: '124/min, sinus, thready peripherally', red_flag: true }
+      - {
+          name: 'Blood pressure',
+          value: '86/48 mmHg after 500 mL crystalloid (down from 88/52 at scene)',
+          red_flag: true,
+        }
+      - { name: 'Capillary refill', value: '4 s peripherally', red_flag: true }
+      - { name: 'Peripheries', value: 'cool, mottled below knees' }
+      - { name: 'JVP', value: 'flat (not raised)', present: false }
+
+  - system: disability
+    findings:
+      - {
+          name: 'GCS',
+          value: '13 (E3 V4 M6) — slow, drowsy, oriented to person only',
+          red_flag: true,
+        }
+      - { name: 'Glucose', value: '4.6 mmol/L' }
+      - { name: 'Pupils', value: '3 mm, equal, sluggish but reactive' }
+
+  - system: abdomen
+    findings:
+      - {
+          name: 'Distension',
+          value: 'tense ascites — flank dullness, shifting dullness positive',
+          present: true,
+          red_flag: true,
+        }
+      - { name: 'Tenderness', value: 'mild generalised, no peritonism' }
+      - {
+          name: 'Hepatomegaly',
+          value: 'firm, irregular liver edge palpable 4 cm below the costal margin',
+        }
+      - { name: 'Splenomegaly', value: 'tip palpable below the LCM', present: true }
+      - { name: 'Caput medusae', value: 'visible umbilical veins', present: true }
+
+  - system: exposure
+    findings:
+      - { name: 'Temperature', value: '36.4°C (slightly cool)' }
+      - {
+          name: 'Stigmata of cirrhosis',
+          value: 'gynaecomastia, testicular atrophy, palmar erythema, leuconychia',
+        }
+      - {
+          name: 'Per-rectum exam',
+          value: 'melaena on the glove — black, tarry, no fresh blood per rectum',
+          present: true,
+          red_flag: true,
+        }
+
+# ─── Investigations ───────────────────────────────────────────────────────
+investigations:
+  - id: ix_gbs
+    name: 'Glasgow-Blatchford Score'
+    category: bedside
+    turnaround_min: 2
+    essential: true
+    result_summary: |
+      **GBS = 16 (high risk)** — Urea 18.6 (≥10–<25: +3), Hb 78 g/L
+      (=7.8 g/dL, male <10 g/dL: +6), systolic <90 (+3), pulse >100
+      (+1), melaena (+1), hepatic disease (+2), no cardiac failure
+      (0). Score totals 16. (Syncope is not documented in the
+      vignette so its +2 is excluded; if a frank syncope event is
+      confirmed the score would be 18.) A GBS of **0** is the
+      "safe-for-outpatient" cut-off per NICE CG141; any GBS ≥1
+      mandates the inpatient endoscopy pathway. Mr Kowalski sits at
+      the top of the high-risk band — high-care admission, urgent
+      OGD, transfusion pathway.
+    abnormal: true
+    sources:
+      - {
+          type: nice,
+          id: 'CG141',
+          ref: 'NICE CG141 — Glasgow-Blatchford for initial risk stratification in UGIB',
+        }
+
+  - id: ix_vbg
+    name: 'Venous blood gas + lactate'
+    category: gas
+    turnaround_min: 5
+    essential: true
+    result_summary: |
+      **pH 7.28 · pCO2 4.0 · HCO3 14 · BE -10 · Lactate 5.6 · Hb 76 ·
+      K 3.2 · Na 132 · Glucose 4.6.** Metabolic acidosis with raised
+      lactate — haemorrhagic shock + the splanchnic hypoperfusion
+      that comes with portal hypertension. Hypokalaemia compounds
+      arrhythmia risk.
+    abnormal: true
+
+  - id: ix_bloods
+    name: 'FBC, U&E, LFTs, coag, group + crossmatch 6 units, fibrinogen'
+    category: blood
+    turnaround_min: 30
+    essential: true
+    result_summary: |
+      **Hb 76 (was 92 three weeks ago) · Plt 84 · WCC 9.4 ·
+      INR 1.9 · APTT 48 · Fibrinogen 1.2 (low) · Na 132 · K 3.2 ·
+      Urea 18.6 (high — protein meal of swallowed blood) · Creat 124 ·
+      Albumin 22 (low) · Bilirubin 84 (high) · ALT 84 · AST 168
+      (AST:ALT 2:1 — alcoholic pattern) · ALP 162.**
+      Coagulopathy is from underlying liver synthetic failure, NOT
+      anticoagulation. INR ≠ "warfarinised" — vitamin K won't fix
+      synthetic coagulopathy in cirrhosis.
+    abnormal: true
+
+  - id: ix_blood_cultures
+    name: 'Blood cultures × 2 sets BEFORE antibiotics'
+    category: culture
+    turnaround_min: 90
+    result_summary: |
+      Drawn from two peripheral sites before ceftriaxone is given.
+      Cirrhotics with variceal bleeds have a high rate of SBP and
+      bacteraemia at presentation — culture before antibiotic where
+      possible, but DO NOT delay antibiotics beyond 1 h to chase.
+
+  - id: ix_ecg
+    name: '12-lead ECG'
+    category: ecg
+    turnaround_min: 2
+    result_summary: |
+      Sinus tachycardia 124/min. No ischaemic change. Long QTc 470 ms
+      (electrolyte-driven — K 3.2). No primary cardiac event.
+
+  - id: ix_cxr
+    name: 'Erect portable chest X-ray'
+    category: imaging
+    turnaround_min: 12
+    result_summary: |
+      Clear lung fields, no aspiration consolidation yet, no
+      pneumoperitoneum, no free air under the diaphragm. Heart size
+      normal. Useful baseline before RSI.
+
+  - id: ix_rockall_full
+    name: 'Full Rockall Score (after endoscopy)'
+    category: bedside
+    turnaround_min: 0
+    result_summary: |
+      Pre-endoscopy Rockall = 4 (age 50-59, shock, comorbidity:
+      hepatic failure). Full Rockall requires endoscopy findings —
+      score deferred. Pre-endoscopy ≥3 indicates need for inpatient
+      management.
+    sources:
+      - {
+          type: textbook,
+          ref: 'Rockall TA et al. Risk assessment after acute upper gastrointestinal haemorrhage. Gut 1996.',
+        }
+
+# ─── Differential ─────────────────────────────────────────────────────────
+differential:
+  - diagnosis: 'Acute variceal upper GI haemorrhage in decompensated alcoholic cirrhosis'
+    likelihood: top
+    discriminator: |
+      Known Child-Pugh C cirrhosis with documented varices, off
+      propranolol prophylaxis, massive haematemesis with melaena,
+      stigmata of chronic liver disease, AST:ALT 2:1, ascites,
+      encephalopathy. Variceal is the working diagnosis until
+      endoscopy proves otherwise; the management is empirically
+      variceal from minute one.
+
+  - diagnosis: 'Peptic ulcer disease (NSAID + alcohol)'
+    likelihood: must_not_miss
+    discriminator: |
+      Ibuprofen use a week ago + alcohol = ulcer risk. Cannot be
+      excluded without OGD. Initial resus + transfusion strategy is
+      similar; the specific therapy (high-dose IV PPI) is added on
+      regardless. Variceal-targeted drugs (terlipressin, ceftriaxone)
+      are not harmful if it turns out to be ulcer.
+
+  - diagnosis: 'Mallory-Weiss tear'
+    likelihood: worth_considering
+    discriminator: |
+      Vomiting before bleeding can cause Mallory-Weiss, but the
+      volume here (estimated 3-4 L) is far beyond typical Mallory-
+      Weiss self-limiting bleeds. Cirrhotic substrate makes varices
+      the dominant lesion.
+
+  - diagnosis: 'Aortoenteric fistula'
+    likelihood: unlikely
+    discriminator: |
+      Massive haematemesis can be from an AEF in a patient with prior
+      aortic surgery — Mr Kowalski has no such history. Worth
+      considering only if endoscopy is negative and bleeding continues.
+
+# ─── Management ──────────────────────────────────────────────────────────
+working_diagnosis: |
+  Acute variceal UGIB in Child-Pugh C cirrhosis with encephalopathy
+  and haemorrhagic shock. Empirical management as variceal pending
+  OGD: resuscitate to restrictive Hb 7-8 target, terlipressin +
+  ceftriaxone, urgent endoscopy, anaesthetic team for airway. Senior
+  + gastroenterology + ICU all on the line.
+
+management:
+  - id: mx_a_to_e_with_airway
+    category: monitoring
+    name: 'ABCDE + early anaesthetic call; SALAD-ready suction; large-bore IV ×2'
+    detail: |
+      The airway is the headline. Drowsy + ongoing haematemesis +
+      coagulopathy = soiled-airway aspiration risk. Anaesthetics for
+      RSI with SALAD technique (Suction-Assisted Laryngoscopy and
+      Airway Decontamination — DuCanto). Two large-bore peripheral
+      cannulae, IO if peripherals fail.
+    must_do: true
+    sources:
+      - { type: nice, id: 'CG141', ref: 'NICE CG141 — initial resuscitation in UGIB' }
+      - { type: textbook, ref: 'DuCanto J. SALAD technique — soiled airway management' }
+
+  - id: mx_restrictive_transfusion
+    category: fluid
+    name: 'Restrictive transfusion strategy — target Hb 7-8 g/dL'
+    detail: |
+      Activate the major haemorrhage protocol. Transfuse to a
+      restrictive target (Hb 7-8 g/dL) — over-transfusion in variceal
+      bleed RAISES portal pressure and worsens haemorrhage (Villanueva
+      NEJM 2013). Crossmatched packed cells, FFP if INR >1.5 and
+      actively bleeding, platelets if <50, cryoprecipitate if
+      fibrinogen <1.5 (he has 1.2).
+    must_do: true
+    sources:
+      - { type: nice, id: 'CG141', ref: 'NICE CG141 — restrictive transfusion in UGIB' }
+      - {
+          type: textbook,
+          ref: 'Villanueva C et al. Transfusion strategies for acute upper GI bleeding. NEJM 2013 — restrictive (Hb 7) had better survival than liberal (Hb 9) in cirrhotics.',
+        }
+
+  - id: mx_terlipressin
+    category: drug
+    name: 'IV terlipressin — weight-banded initial dose then 1-2 mg every 4-6 h'
+    detail: |
+      Splanchnic vasoconstrictor — reduces portal venous pressure
+      and variceal bleeding. Give EMPIRICALLY at suspicion of
+      variceal bleed; do not wait for OGD. **UK SmPC weight-banded
+      initial dose**: <50 kg = 1 mg; 50–70 kg = 1.5 mg; >70 kg =
+      2 mg. Mr Kowalski is 71 kg → **2 mg IV STAT**. Maintenance:
+      1–2 mg every 4–6 h for 2–5 days after haemostasis. Caution:
+      ischaemic side-effects (skin necrosis, MI, mesenteric
+      ischaemia) — monitor.
+    must_do: true
+    drug:
+      amount: 'Initial weight-banded (<50 kg 1 mg / 50-70 kg 1.5 mg / >70 kg 2 mg) IV STAT; then 1-2 mg every 4-6 h for 2-5 days'
+      route: IV
+      frequency: 'STAT then 4-6 hourly'
+    sources:
+      - { type: nice, id: 'CG141', ref: 'NICE CG141 — terlipressin for suspected variceal bleed' }
+      - {
+          type: textbook,
+          ref: 'BSG/UK guidelines on the management of variceal haemorrhage in cirrhotic patients (Tripathi 2015) — weight-banded terlipressin SmPC dosing.',
+        }
+      - { type: textbook, ref: 'Terlipressin SmPC (UK EMC) — weight-banded initial dose.' }
+
+  - id: mx_ceftriaxone
+    category: drug
+    name: 'IV ceftriaxone 2 g STAT (antibiotic prophylaxis)'
+    detail: |
+      Cirrhotics with UGIB have 20-50% rate of bacterial infection
+      within 48 h (SBP, pneumonia, bacteraemia). Prophylactic
+      ceftriaxone REDUCES all-cause mortality, rebleeding, and
+      bacterial infection rate (Chavez-Tapia Cochrane 2010). One of
+      the strongest evidence bases in hepatology. Give within the
+      first hour of suspected variceal UGIB.
+    must_do: true
+    drug:
+      amount: '2 g IV STAT (then 1 g daily for 7 days)'
+      route: IV
+      frequency: 'STAT then daily ×7'
+    sources:
+      - { type: nice, id: 'CG141', ref: 'NICE CG141 — ceftriaxone prophylaxis in variceal UGIB' }
+      - {
+          type: textbook,
+          ref: 'Chavez-Tapia NC et al. Antibiotic prophylaxis for cirrhotic patients with upper GI bleeding. Cochrane 2010.',
+        }
+
+  - id: mx_endoscopy_call
+    category: referral
+    name: 'Urgent endoscopy call — OGD within 24 h (within 12 h if variceal suspected)'
+    detail: |
+      NICE CG141: OGD within 24 h for all UGIB; consider immediate
+      OGD for unstable patients. In suspected variceal bleed, BSG
+      recommends within 12 h of presentation. Endoscopist provides
+      definitive haemostasis: band ligation for varices, glue
+      injection if gastric varices, or sclerotherapy.
+    must_do: true
+    sources:
+      - {
+          type: nice,
+          id: 'CG141',
+          ref: 'NICE CG141 — OGD within 24 h; immediate in haemodynamic instability',
+        }
+
+  - id: mx_anaesthetics_rsi
+    category: referral
+    name: 'Anaesthetic team for RSI — SALAD-ready airway'
+    detail: |
+      Encephalopathy + ongoing haematemesis + coagulopathy = high-
+      risk airway. Anaesthetics on the line early; have the
+      Sengstaken-Blakemore or Linton tube available as a bridge if
+      bleeding is uncontrolled and OGD delayed.
+    must_do: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'BSG guidelines — balloon tamponade as bridge to definitive therapy',
+        }
+
+  - id: mx_early_preemptive_tips
+    category: referral
+    name: 'Discuss EARLY (pre-emptive) TIPS with hepatology / IR — within 72 h, ideally <24 h'
+    detail: |
+      Baveno VII consensus (2022) recommends **early / pre-emptive
+      TIPS within 72 h** (ideally <24 h) for Child-Pugh C (<14) or
+      Child-Pugh B with active bleeding at index endoscopy.
+      Mr Kowalski is the textbook candidate (Child-Pugh C, MELD 18,
+      active bleed). This is a paradigm shift from the older "TIPS
+      as rescue after rebleed" stance. Activate the hepatology /
+      interventional-radiology pathway alongside endoscopy.
+    must_do: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'de Franchis R et al. Baveno VII — Renewing consensus in portal hypertension. J Hepatol 2022.',
+        }
+      - {
+          type: textbook,
+          ref: 'BSG (Tripathi 2015) — TIPS as definitive therapy for variceal bleed in selected patients.',
+        }
+
+  - id: mx_high_dose_ppi_if_pud
+    category: drug
+    name: 'IV pantoprazole 80 mg bolus + 8 mg/h infusion (if peptic ulcer suspected on OGD)'
+    detail: |
+      High-dose IV PPI is for non-variceal (peptic ulcer) bleeding,
+      started AFTER OGD confirms the lesion. Pre-OGD empirical PPI
+      does not change clinical outcomes for variceal bleeds. NICE
+      CG141 advises against routine pre-endoscopy PPI.
+    drug:
+      amount: '80 mg IV bolus then 8 mg/h infusion for 72 h'
+      route: IV
+      frequency: 'continuous infusion 72 h after endoscopic haemostasis'
+    sources:
+      - { type: nice, id: 'CG141', ref: 'NICE CG141 — PPI after endoscopic confirmation of PUD' }
+
+  - id: mx_thiamine_pabrinex
+    category: drug
+    name: 'IV Pabrinex 1 pair STAT (Wernicke prevention)'
+    detail: |
+      Chronic alcohol misuse + carbohydrate load (any glucose
+      infusion or refeeding) = Wernicke encephalopathy risk. Pabrinex
+      1 pair IV TDS for 3 days. Watch for ongoing thiamine deficiency
+      contributing to the current presentation.
+    must_do: true
+    drug:
+      amount: 'Pabrinex 1 pair IV'
+      route: IV
+      frequency: 'TDS for 3 days'
+    sources:
+      - {
+          type: nice,
+          id: 'CG100',
+          ref: 'NICE CG100 — alcohol-use disorders, Pabrinex for malnourished adults',
+        }
+
+  - id: mx_lactulose_for_he
+    category: drug
+    name: 'Lactulose 30 mL PO/NG TDS (hepatic encephalopathy treatment)'
+    detail: |
+      Encephalopathy precipitated by GI bleed (massive protein load
+      from swallowed blood) — lactulose 30 mL three times daily,
+      titrated to 2-3 soft stools per day. Add rifaximin 550 mg BD
+      if not already on it.
+    must_do: true
+
+  - id: mx_alcohol_withdrawal_plan
+    category: monitoring
+    name: 'Alcohol withdrawal monitoring + benzodiazepine plan (CIWA-Ar / GMAWS)'
+    detail: |
+      Last drink 4 hours ago. He will withdraw within 6-12 h. Score
+      CIWA-Ar or local GMAWS. Symptom-triggered chlordiazepoxide
+      regimen (or lorazepam if liver function precludes long-acting
+      benzos). Phenytoin not for primary withdrawal seizures unless
+      structural cause suspected.
+    must_do: true
+    sources:
+      - { type: nice, id: 'CG100', ref: 'NICE CG100 — alcohol withdrawal management' }
+
+  # ─── Examiner traps ──────────────────────────────────────────────────
+  - id: mx_no_liberal_transfusion
+    category: fluid
+    name: 'Transfuse aggressively to Hb 10 / liberal strategy'
+    detail: |
+      ❌ Liberal transfusion in variceal UGIB worsens portal pressure
+      and rebleeding (Villanueva NEJM 2013). Restrictive Hb 7-8 has
+      better survival in cirrhotics — counterintuitive to general
+      shock teaching but well-evidenced.
+    must_not_do: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'Villanueva C et al. NEJM 2013 — restrictive transfusion superior in variceal bleed.',
+        }
+
+  - id: mx_no_tranexamic_acid
+    category: drug
+    name: 'IV tranexamic acid 1 g bolus + 1 g infusion (per CRASH/major haemorrhage habit)'
+    detail: |
+      ❌ HALT-IT trial (Roberts 2020, Lancet): TXA in acute UGIB did
+      NOT reduce mortality and INCREASED venous thromboembolism
+      events. Routine TXA in UGIB is now contrary to evidence. (TXA
+      remains useful in trauma, post-partum haemorrhage, and other
+      bleeding contexts.)
+    must_not_do: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'Roberts I et al. Effects of TXA on death, disability, vascular occlusive events in acute GI bleeding (HALT-IT). Lancet 2020.',
+        }
+
+  - id: mx_no_skip_antibiotics
+    category: drug
+    name: 'Defer ceftriaxone until OGD confirms variceal'
+    detail: |
+      ❌ Ceftriaxone prophylaxis is given EMPIRICALLY at suspected
+      variceal UGIB — one of the strongest evidence bases in
+      hepatology (reduces all-cause mortality). Waiting for OGD
+      confirmation forfeits the benefit.
+    must_not_do: true
+    sources:
+      - {
+          type: nice,
+          id: 'CG141',
+          ref: 'NICE CG141 — empirical antibiotic prophylaxis in suspected variceal bleed',
+        }
+
+  - id: mx_no_vitamin_k
+    category: drug
+    name: 'Rely on IV vitamin K alone to "correct the INR"'
+    detail: |
+      ❌ INR in cirrhosis primarily reflects synthetic dysfunction,
+      not vitamin-K deficiency — vitamin K alone WILL NOT normalise
+      it. **However**, BSG 2015 still recommends a **single 10 mg
+      IV vitamin K dose** in cirrhotic UGIB because there is often
+      a vitamin-K-responsive cholestatic / malnutrition component
+      worth covering. The wrong move is RELYING on vitamin K to fix
+      coagulopathy or substituting it for FFP / platelets / cryo
+      based on actual deficits. Give the one 10 mg dose; do not
+      keep redosing or use it as the haemostatic strategy.
+    must_not_do: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'BSG (Tripathi 2015) — single 10 mg IV vitamin K dose in cirrhotic UGIB; not expected to normalise INR; FFP/platelets/cryo for actual deficits.',
+        }
+
+  - id: mx_no_high_dose_ppi_empirical
+    category: drug
+    name: 'IV pantoprazole 80 mg bolus EMPIRICALLY before OGD'
+    detail: |
+      ❌ NICE CG141 explicitly advises against routine pre-endoscopy
+      PPI — no clinical-outcome benefit and may delay endoscopy by
+      false reassurance. PPI is for AFTER OGD confirms a peptic
+      ulcer.
+    must_not_do: true
+    sources:
+      - { type: nice, id: 'CG141', ref: 'NICE CG141 — no routine pre-endoscopy PPI' }
+
+  - id: mx_no_ng_diagnostic
+    category: procedure
+    name: 'Place an NG tube to "see if it''s coffee-grounds or fresh"'
+    detail: |
+      ❌ NICE CG141 does not support routine NG aspiration for
+      diagnosis. It does not change management in the unstable
+      patient and may precipitate further variceal bleeding by
+      mechanical trauma.
+    must_not_do: true
+    sources:
+      - { type: nice, id: 'CG141', ref: 'NICE CG141 — no routine NG aspiration for diagnosis' }
+
+# ─── Disposition ─────────────────────────────────────────────────────────
+disposition_options:
+  - label: 'Admit ICU (post-OGD); gastroenterology + hepatology + ITU joint care; consider TIPS if rebleed'
+    criteria: |
+      Child-Pugh C + variceal UGIB + encephalopathy + restrictive
+      transfusion target + post-OGD recovery = ICU. TIPS
+      (Transjugular Intrahepatic Portosystemic Shunt) is the rescue
+      pathway for refractory bleeding or early rebleed.
+    appropriate: true
+    epilogue: "The OGD bands four columns at 04:30. He needs a re-look in 24 hours. His housemate is in the relatives' room."
+  - label: 'Admit gastroenterology ward post-OGD'
+    criteria: |
+      Inadequate — Child-Pugh C cirrhotic with shock + encephalopathy
+      + airway concern needs ICU-level monitoring at least 24 h.
+    appropriate: false
+    epilogue: "He rebleeds at 06:00. The ICU bed that was held has been given to a new admission."
+  - label: 'Discharge after OGD haemostasis with outpatient hepatology follow-up'
+    criteria: |
+      Unsafe — Child-Pugh C, ongoing encephalopathy, alcohol
+      withdrawal due in hours, post-bleed nutrition needs all mandate
+      inpatient care.
+    appropriate: false
+    epilogue: "Found dead at home at 09:00 the next morning."
+
+# ─── State machine ──────────────────────────────────────────────────────
+state_machine:
+  states: [deteriorating, stable, arrested, admitted]
+  transitions:
+    - from: deteriorating
+      to: stable
+      trigger:
+        on: action
+        action_id: mx_terlipressin
+        note: 'Terlipressin + restrictive transfusion + ceftriaxone control the immediate bleed pending OGD.'
+    - from: deteriorating
+      to: arrested
+      trigger:
+        on: inaction_by
+        min: 18
+        required_actions: [mx_restrictive_transfusion, mx_terlipressin, mx_endoscopy_call]
+        note: 'Without major haemorrhage protocol activation + terlipressin + endoscopy call by T+18, exsanguinating bleed → cardiac arrest.'
+    - from: stable
+      to: admitted
+      trigger:
+        on: action
+        action_id: mx_anaesthetics_rsi
+        note: 'Anaesthetic team takes the airway and transfers to ICU post-OGD.'
+
+# ─── Pearls + pitfalls ──────────────────────────────────────────────────
+pearls:
+  - "Glasgow-Blatchford = 0 is the safe-for-outpatient cut-off per NICE CG141 (avoids ~19-24% of admissions). Any GBS ≥1 mandates inpatient management; Mr Kowalski's GBS of 16 puts him at the top end of the risk spectrum."
+  - 'Variceal bleed bundle (per NICE CG141 + BSG 2015): empirical terlipressin + ceftriaxone within the first hour, restrictive transfusion Hb 7-8, OGD within 12-24 h.'
+  - 'Restrictive transfusion (Hb 7-8) BEATS liberal (Hb 9) in cirrhotic variceal bleed — over-transfusion raises portal pressure and worsens haemorrhage (Villanueva NEJM 2013).'
+  - 'HALT-IT trial 2020: TXA does NOT help in acute UGIB and increases VTE risk. The CRASH-2 trauma reflex does not apply here.'
+  - 'Ceftriaxone prophylaxis in variceal UGIB reduces all-cause mortality — one of the strongest evidence bases in hepatology (Cochrane 2010).'
+  - "INR in cirrhosis is synthetic-failure, not vitamin-K-deficiency. Vitamin K won't fix it. Use FFP/platelets/cryo based on actual deficits if actively bleeding."
+  - "Pre-endoscopy PPI is NOT supported by NICE CG141 — it's an AFTER-the-OGD-finding intervention for confirmed peptic ulcer disease."
+  - 'Alcohol withdrawal will start within 6-12 h of his last drink. Score with CIWA-Ar / GMAWS and use symptom-triggered benzodiazepines (preferably lorazepam in liver disease).'
+
+pitfalls:
+  - 'Liberal transfusion to Hb 10 — worsens variceal bleeding via raised portal pressure.'
+  - 'Giving routine IV TXA per the major-haemorrhage reflex (HALT-IT closed this door).'
+  - 'Deferring ceftriaxone until OGD confirms variceal source.'
+  - 'Vitamin K to "correct the INR" in cirrhotic coagulopathy.'
+  - 'Pre-endoscopy IV PPI bolus — wrong drug for an unconfirmed lesion.'
+  - 'Routine NG aspiration for "diagnostic" purposes.'
+  - 'Forgetting Pabrinex before any carbohydrate load — Wernicke in this population is preventable.'
+
+sources:
+  - {
+      type: nice,
+      id: 'CG141',
+      ref: 'NICE CG141 — Acute upper gastrointestinal bleeding in over-16s: management (updated 2016)',
+    }
+  - {
+      type: textbook,
+      ref: 'Tripathi D et al. UK guidelines on the management of variceal haemorrhage in cirrhotic patients (BSG 2015).',
+    }
+  - {
+      type: textbook,
+      ref: 'Villanueva C et al. Transfusion strategies for acute upper GI bleeding. NEJM 2013.',
+    }
+  - {
+      type: textbook,
+      ref: 'Roberts I et al. HALT-IT trial — tranexamic acid in acute UGIB. Lancet 2020.',
+    }
+  - {
+      type: textbook,
+      ref: 'Chavez-Tapia NC et al. Antibiotic prophylaxis for cirrhotic patients with upper GI bleeding. Cochrane 2010.',
+    }
+  - { type: rcem, ref: 'RCEM Best Practice — Upper GI Haemorrhage' }
+  - {
+      type: nice,
+      id: 'CG100',
+      ref: 'NICE CG100 — Alcohol-use disorders: Pabrinex + withdrawal management',
+    }
+  - {
+      type: textbook,
+      ref: 'Oxford Handbook of Emergency Medicine 5e — Ch 5 Gastrointestinal emergencies',
+    }
+
+author_notes: |
+  Designed as a Tier-1 SAQ-classic with three current evidence pivots
+  the previous-generation textbook misses: HALT-IT (no TXA in UGIB),
+  Villanueva NEJM 2013 (restrictive transfusion in variceal), and
+  the ceftriaxone-prophylaxis mortality reduction.
+
+  Pairs naturally with the proposed liver_cirrhosis_decompensated
+  topic for a future "alcoholic with everything" 2-case shift, or
+  with the proposed alcohol_withdrawal topic as a follow-on at T+6
+  if Mr Kowalski survives the bleed.
+
+  Inspiration: TheCase.Report S1E3 — Upper GI Bleed + SALAD.
+  Player-facing citations are NICE CG141 + BSG 2015 + NEJM/Cochrane/
+  Lancet original studies, not the podcast.

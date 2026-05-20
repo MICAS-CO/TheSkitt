@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 272 48" style="display:block">
+<rect x="8" y="4" width="24" height="4" fill="#f1ece3" shape-rendering="crispEdges"/>
+<rect x="8" y="8" width="24" height="4" fill="#f1ece3" shape-rendering="crispEdges"/>
+<rect x="8" y="12" width="112" height="4" fill="#f1ece3" shape-rendering="crispEdges"/>
+<rect x="8" y="16" width="4" height="4" fill="#f1ece3" shape-rendering="crispEdges"/>
+<rect x="12" y="16" width="104" height="4" fill="#cfc9b8" shape-rendering="crispEdges"/>
+<rect x="116" y="16" width="4" height="4" fill="#f1ece3" shape-rendering="crispEdges"/>
+<rect x="8" y="20" width="112" height="4" fill="#f1ece3" shape-rendering="crispEdges"/>
+<rect x="8" y="24" width="112" height="4" fill="#f1ece3" shape-rendering="crispEdges"/>
+<rect x="8" y="28" width="112" height="4" fill="#f1ece3" shape-rendering="crispEdges"/>
+<rect x="8" y="32" width="112" height="4" fill="#f1ece3" shape-rendering="crispEdges"/>
+<rect x="8" y="36" width="112" height="4" fill="#f1ece3" shape-rendering="crispEdges"/>
+<rect x="8" y="40" width="112" height="4" fill="#f1ece3" shape-rendering="crispEdges"/>
+<rect x="8" y="44" width="112" height="4" fill="#f1ece3" shape-rendering="crispEdges"/>
+<text x="66.0" y="34.0" font-family='"Space Grotesk", system-ui, sans-serif' font-size="24" font-weight="700" text-anchor="middle" dominant-baseline="central" fill="#0d2120" letter-spacing="-1.2">TheCase</text>
+<text x="130.0" y="34.0" font-family='"Space Grotesk", system-ui, sans-serif' font-size="26.0" font-weight="700" fill="#f1ece3" dominant-baseline="central" letter-spacing="-0.8"><tspan fill="#E85045">.</tspan>Report</text>
+</svg>

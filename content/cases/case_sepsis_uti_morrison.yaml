@@ -1,0 +1,639 @@
+# Authored from a scripts/new-case.ts skeleton (sepsis_adult topic).
+#
+# Mrs Morrison is a 72y/o nursing-home resident brought in confused with a
+# fever and tachycardia. Source: urosepsis. NEWS2 7, qSOFA 2, lactate 3.2.
+# Septic shock by Sepsis-3 if hypotension persists after fluid resus.
+# The Sepsis Six within the first hour is the SAQ-classic intervention
+# bundle. NICE NG253 (Nov 2025, supersedes NG51) + UK Sepsis Trust
+# toolkit 2025 + RCEM Best Practice.
+
+schema_version: 1
+id: case_sepsis_uti_morrison
+title: 'Urosepsis with septic shock — resus'
+chief_complaint: 'Confused, febrile elderly woman from a nursing home'
+topic_id: sepsis_adult
+
+vignette: |
+  Resus bay 4. 02:18.
+
+  Mrs Edith Morrison, 72 y/o, nursing-home resident, brought in by
+  paramedics after staff found her "not herself" overnight. Last well
+  yesterday teatime. Increasing confusion since midnight, two episodes
+  of incontinence on the way in.
+
+  She's flushed and warm. GCS 13 — opens eyes to voice, confused
+  speech ("where's my husband?"), obeys. Paramedics: "BM 6.4, sats 91
+  on air, HR 112, BP 98/62. Smells like a UTI."
+
+  The triage nurse hands you a NEWS2 of 7. She is sitting half-propped,
+  breathing fast but not gasping.
+
+curriculum_tags: [RP6, IP3, NeuP1, IP1, ElP1]
+slos: [1, 3]
+difficulty_band: CT2
+paeds: false
+
+demographics:
+  age_value: 72
+  age_unit: years
+  sex: female
+  weight_kg: 58
+  pmh:
+    - 'Alzheimer dementia (mild — usually orientated to person and place)'
+    - 'Type 2 diabetes (diet-controlled)'
+    - 'Recurrent UTIs, last one 6 weeks ago (trimethoprim)'
+    - 'AF — on apixaban 5 mg BD'
+  medications:
+    - 'apixaban 5 mg BD'
+    - 'donepezil 5 mg OD'
+    - 'paracetamol PRN'
+  allergies: ['penicillin — rash in 1990s (non-severe)']
+  social: |
+    Resident at Maple Grove Care Home. Widowed. Daughter Helen is next
+    of kin, lives 30 min away — staff have called her, en route. DNACPR
+    in place per home; advance care plan documents her wish for active
+    treatment of reversible illness.
+
+triage_category: 2
+initial_state: deteriorating
+bay: resus
+
+vitals:
+  baseline:
+    hr: 78
+    rr: 16
+    spo2: 96
+    bp_sys: 124
+    bp_dia: 72
+    gcs: 15
+    temp_c: 36.6
+  deteriorating:
+    hr: 112
+    rr: 24
+    spo2: 95
+    on_o2: true
+    bp_sys: 98
+    bp_dia: 62
+    gcs: 13
+    temp_c: 38.4
+    bm: 6.4
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
+history:
+  - id: hx_paramedics
+    source: paramedic
+    topic: 'Paramedic handover.'
+    response: |
+      "Staff found her confused at 23:30, two episodes of incontinence,
+      no fall witnessed. BM 6.4. Felt warm. Sats 91 room air, we gave
+      titrated oxygen on the way in — 4 L via nasal cannulae, now 95%.
+      HR 112 sinus on the strip, BP 98/62. Started a litre of saline en
+      route, three-quarters in. Penicillin allergy from the care home
+      records — rash in childhood."
+
+  - id: hx_baseline
+    source: records
+    topic: 'What is her baseline cognition and mobility?'
+    supports: ['Encephalopathy / delirium from a non-infective cause']
+    response: |
+      "Care plan notes she is usually orientated to person and place,
+      not always time. She mobilises with a frame. Mild Alzheimer
+      dementia. She is fully verbal at baseline."
+
+  - id: hx_nurse_marian
+    source: nurse
+    topic: "Marian (sister) recognises her — ask her impression."
+    prereq_history_ids: [hx_paramedics]
+    npc_voice: "Marian's been in 27 years. She's holding the obs chart. She doesn't sit down."
+    supports:
+      - 'Sepsis from a urinary tract source (urosepsis)'
+    branch_choices:
+      - id: trust_experience
+        label: "You've seen this exact picture before, haven't you. Talk me through what you're noticing."
+        npc_voice: "Marian nods. She moves the obs chart so you can both see it. She gets specific."
+        rapport_delta: 1
+        response: |
+          "It's the silent kind, doc. She's not feverish — she's
+          36.4 — but look at the lactate when it comes back, it'll
+          be up. (Pause.) I've seen her here twice this year and
+          she always presents flat like this. Her hands are cold
+          and her nail beds are mauve. Her care home flagged her at
+          handover as 'not herself for two days'. Bob — that's her
+          husband — usually calls before she's this far gone. We
+          haven't heard from him this time. Worth a wellbeing
+          check on him too."
+      - id: focused
+        label: "What does she normally present like and what's different today?"
+        rapport_delta: 0
+        response: |
+          "Two prior admissions this year, both urinary sepsis,
+          both presented flat. Today she's quieter, peripherally
+          shut down, mauve nail beds. No fever. Bob hasn't
+          called — that's unusual."
+      - id: dismissive
+        label: "I'm doing the sepsis workup, Marian, I'll come back to you."
+        npc_voice: "Marian's face is professional. She nods once and walks back to her bay."
+        rapport_delta: -2
+        response: |
+          "Of course, doctor."
+          (The Bob wellbeing-check observation and the 'two prior
+          presentations' pattern are NOT volunteered. The player
+          loses Marian's pattern-recognition.)
+    response: |
+      Marian (sister, 27 years' ED experience) recognises Mrs Morrison
+      from two prior urosepsis admissions this year — both presenting
+      flat with no fever, peripherally shut down. Marian flags that
+      Bob (the husband) usually calls before she gets this unwell and
+      hasn't this time — worth a wellbeing check.
+
+  - id: hx_uti_history
+    source: records
+    topic: 'Any recent infections or culture results?'
+    prereq_history_ids: [hx_baseline]
+    supports:
+      - 'Sepsis from a urinary tract source (urosepsis)'
+      - 'Acute pyelonephritis with bacteraemia'
+    response: |
+      "Recurrent UTIs through the year. Last episode 6 weeks ago,
+      trimethoprim — culture showed E. coli sensitive to nitrofurantoin
+      and cefalexin, resistant to trimethoprim retrospectively."
+
+  - id: hx_patient_speech
+    source: patient
+    topic: 'Ask Mrs Morrison directly.'
+    npc_voice: 'Mrs Morrison plucks at the blanket, eyes scanning the room.'
+    branch_choices:
+      - id: compassionate
+        label: "Mrs Morrison — I'm Dr [you]. It's the hospital. You came in tonight because you were poorly. Can I sit on the edge of your bed?"
+        npc_voice: "Her eyes find you, hold for two seconds, then drift. She nods. Then she nods again."
+        rapport_delta: 2
+        response: |
+          "Hospital. Right. Right, I — (looks at the blanket) — is
+          it Bob's brought me in? Where's Bob? (Pause.) I'm sorry,
+          dear, I'm getting muddled. (Settles slightly.) My back
+          hurts. Down here. (Indicates her flank with a vague hand.)
+          And I haven't passed water properly. Bob does the tea."
+          Disoriented to place and time, orientated to self;
+          flank pain disclosed; functional baseline contextual.
+      - id: clinical
+        label: "Mrs Morrison — what's your name, where are you, what's the date?"
+        rapport_delta: 0
+        response: |
+          "Annie. I'm — I'm where? (Pause.) Hospital? It's — I don't
+          know what day, dear. Where's Bob?" (No focal pain elicited.
+          4AT 8: alertness OK, age fail, year fail, attention fail
+          with months-backwards.)
+      - id: dismissive
+        label: "(to the nurse) She's not orientated, no point. Let's move on to the bloods."
+        npc_voice: "Mrs Morrison's eyes follow you both. She doesn't speak. The pluck on the blanket gets faster."
+        rapport_delta: -2
+        response: |
+          (No history obtained directly. The flank-pain clue stays
+          buried — the player must rely on examination + urinalysis
+          to triangulate to UTI as the source. The nursing notes
+          later record 'patient distressed when not addressed
+          directly; needed reassurance from HCA'.)
+    response: |
+      "Hello dear. Where's Bob? I want to go home. Is it morning yet?"
+      (Disoriented to place and time; orientated to self. No specific
+      pain elicited.)
+
+  - id: hx_anticoag_dnacpr
+    source: records
+    topic: 'Clarify the anticoagulant and resus status.'
+    prereq_history_ids: [hx_baseline]
+    response: |
+      "Apixaban 5 mg BD for AF (CHA₂DS₂-VASc 5, started 2022). DNACPR
+      in place — signed by GP. Advance care plan: active treatment of
+      reversible illness, including IV antibiotics and HDU admission.
+      No invasive ventilation."
+
+examination:
+  - system: general
+    findings:
+      - { name: 'appearance', value: 'flushed, mottled knees', present: true }
+      - { name: 'fever', value: 'T 38.6 °C tympanic' }
+      - { name: 'diaphoresis', present: true }
+      - { name: 'rigors observed by paramedics in transit', present: true }
+  - system: airway
+    findings:
+      - { name: 'patent, speaks in short sentences', present: true }
+  - system: breathing
+    findings:
+      - { name: 'respiratory rate', value: '24/min', red_flag: true }
+      - { name: 'SpO2', value: '95% on 4 L nasal cannulae (91% at scene on air)', red_flag: true }
+      - { name: 'chest auscultation', value: 'fine bibasal crackles, no focal consolidation' }
+  - system: circulation
+    findings:
+      - { name: 'heart rate', value: '112/min, irregularly irregular (AF)' }
+      - {
+          name: 'blood pressure',
+          value: '98/62 mmHg after 750 mL crystalloid (down from 105/68)',
+          red_flag: true,
+        }
+      - { name: 'capillary refill', value: '4 s peripherally', red_flag: true }
+      - { name: 'peripheries', value: 'warm to elbows but mottled below knees' }
+  - system: disability
+    findings:
+      - { name: 'GCS', value: '13 (E3 V4 M6) — drop from her baseline of 15', red_flag: true }
+      - { name: 'glucose', value: '6.8 mmol/L (was 6.4 pre-hospital)' }
+      - { name: 'pupils', value: '3 mm, equal, reactive' }
+  - system: abdomen
+    findings:
+      - { name: 'suprapubic tenderness on light palpation', present: true }
+      - { name: 'no peritonism', present: true, pertinent_negative: true }
+      - { name: 'no organomegaly', pertinent_negative: true }
+      - { name: 'no flank tenderness on percussion', pertinent_negative: true }
+
+investigations:
+  - id: ix_news2
+    name: 'NEWS2 + qSOFA on arrival'
+    category: bedside
+    turnaround_min: 1
+    result_summary: |
+      **NEWS2 = 7** (RR 24, SpO2 on supplemental O2, HR 112, systolic 98,
+      and a drop in consciousness from baseline). qSOFA = 2 (altered
+      mentation + RR ≥22) — high-risk.
+    abnormal: true
+    sources:
+      - { type: nhs, ref: 'NEWS2 (Royal College of Physicians)' }
+      - {
+          type: nice,
+          id: 'NG253',
+          ref: 'NICE NG253 (Nov 2025, supersedes NG51) — risk stratification of suspected sepsis in adults',
+        }
+
+  - id: ix_4at
+    name: '4AT delirium screen'
+    category: bedside
+    turnaround_min: 2
+    result_summary: |
+      **4AT = 7** (Alertness abnormal +4, AMT4 +2, Attention months-
+      backwards inattentive +1, Acute change confirmed by care-home
+      staff +4 → score ≥4 = "possible delirium + cognitive
+      impairment"). Hypoactive picture — easily missed.
+
+      Note: 4AT is the recommended bedside screen for older ED
+      presentations (no training needed). Hypoactive delirium is
+      associated with more severe underlying illness.
+    abnormal: true
+    sources:
+      - {
+          type: nice,
+          id: 'CG103',
+          ref: 'NICE CG103 — Delirium: prevention, diagnosis and management',
+        }
+      - { type: rcem, ref: 'RCEM Learning — Delirium in the Elderly' }
+
+  - id: ix_vbg_lactate
+    name: 'Venous blood gas + lactate'
+    category: gas
+    turnaround_min: 5
+    essential: true
+    result_summary: |
+      pH 7.32 · pCO2 4.0 kPa · HCO3 18 mmol/L · BE −6 · **Lactate
+      3.2 mmol/L** · Hb 118 · K 4.4 · Na 136. Metabolic acidosis with
+      a raised lactate — meets the septic-shock criterion if hypotension
+      persists after fluid resus (Sepsis-3).
+    abnormal: true
+
+  - id: ix_blood_cultures
+    name: 'Blood cultures × 2 sets'
+    category: culture
+    turnaround_min: 90
+    essential: true
+    result_summary: |
+      Drawn from two peripheral sites BEFORE antibiotics where possible
+      — do not delay antibiotics beyond an hour to chase them.
+    sources:
+      - {
+          type: nice,
+          id: 'NG253',
+          ref: 'NICE NG253 §1.5 — cultures before antibiotics if no significant delay',
+        }
+
+  - id: ix_urinalysis
+    name: 'Urine dip + send for MC&S'
+    category: urine
+    turnaround_min: 5
+    essential: true
+    result_summary: |
+      Leucocytes +++, nitrites ++, protein +, blood +. MC&S sent.
+      Compatible with UTI; in an elderly woman this alone is not
+      diagnostic (asymptomatic bacteriuria is common) — interpret with
+      clinical features.
+
+  - id: ix_fbc_uec_crp
+    name: 'FBC, U&E, CRP, LFTs, coag'
+    category: blood
+    turnaround_min: 45
+    result_summary: |
+      WCC 18.4 (neutrophilia) · Plt 92 (down — early DIC concern) ·
+      Hb 118 · Na 134 · K 4.4 · Urea 11.2 · Creat 142 (eGFR ~30, AKI
+      Stage 2 from baseline ~70 — KDIGO: ≥2.0× baseline) · CRP 184 ·
+      LFTs mildly deranged ·
+      INR 1.3 (on apixaban) · APTT normal · fibrinogen 2.1.
+    abnormal: true
+
+  - id: ix_cxr
+    name: 'Erect portable chest X-ray'
+    category: imaging
+    turnaround_min: 20
+    result_summary: |
+      Mild bibasal patchy shadowing — could be early aspiration or
+      atelectasis. No frank consolidation, no pneumothorax, no widened
+      mediastinum.
+
+  - id: ix_ecg
+    name: '12-lead ECG'
+    category: ecg
+    turnaround_min: 2
+    result_summary: 'AF with rapid ventricular response at 112/min. No acute ischaemic change.'
+
+differential:
+  - diagnosis: 'Sepsis from a urinary tract source (urosepsis)'
+    likelihood: top
+    discriminator: |
+      Fever + delirium + AKI + urinalysis with leucs/nitrites +
+      suprapubic tenderness + history of recurrent UTIs — by far the
+      most common ED sepsis source in elderly women.
+
+  - diagnosis: 'Septic shock (Sepsis-3 criteria)'
+    likelihood: must_not_miss
+    discriminator: |
+      Sepsis-3 septic shock = persistent hypotension **requiring
+      vasopressors to maintain MAP ≥65** AND lactate >2 mmol/L
+      **despite adequate fluid resus** (target ~30 mL/kg). She is
+      heading there — vasopressor will be needed if BP does not
+      respond to the next bolus, and UKST 2025 toolkit highlights
+      early-vasopressor consideration without waiting for full
+      30 mL/kg.
+
+  - diagnosis: 'Pneumonia (HAP / aspiration)'
+    likelihood: worth_considering
+    discriminator: |
+      CXR shows mild bibasal change. Could be primary source or
+      secondary atelectasis. Empirical regimen covers both — reassess.
+
+  - diagnosis: 'Acute pyelonephritis with bacteraemia'
+    likelihood: worth_considering
+    discriminator: |
+      Possible — flank percussion negative reduces probability but
+      doesn''t exclude. Empirical cover would address both.
+
+  - diagnosis: 'Encephalopathy / delirium from a non-infective cause'
+    likelihood: unlikely
+    discriminator: |
+      AF + apixaban raises an intracranial bleed concern — but the
+      fever, lactate, tachycardia, hypotension, and urinalysis are all
+      infective.
+
+  - diagnosis: 'Acute cholangitis / intra-abdominal sepsis'
+    likelihood: unlikely
+    discriminator: |
+      Charcot triad absent, no RUQ tenderness, jaundice not noted.
+      Consider if antibiotics don''t shift the picture.
+
+working_diagnosis: 'Urosepsis with evolving septic shock'
+
+management:
+  - id: mx_a_to_e
+    category: monitoring
+    name: 'ABCDE assessment; continuous monitoring; NEWS2 hourly'
+    detail: |
+      Continuous ECG, BP every 5 min, continuous SpO2, urine output
+      via catheter. Reassess after each intervention.
+    must_do: true
+
+  - id: mx_oxygen
+    category: drug
+    name: 'Titrate oxygen to SpO2 94–98%'
+    detail: |
+      Already on 4 L nasal cannulae at 95%. Aim 94–98% (BTS); do NOT
+      target 88–92% — she does not have T2RF.
+    drug:
+      amount: 'titrated O2'
+      route: NEB
+      frequency: 'continuous to SpO2 94–98%'
+    must_do: true
+    sources:
+      - { type: bts_sign, ref: 'BTS Emergency Oxygen Guideline 2017' }
+
+  - id: mx_blood_cultures_first
+    category: monitoring
+    name: 'Take blood cultures × 2 BEFORE antibiotics — but not at the cost of delay'
+    detail: |
+      Sepsis Six step. NICE NG253 (Nov 2025) says draw cultures before antibiotics
+      if there is no significant delay; otherwise give antibiotics first.
+    must_do: true
+    sources:
+      - { type: nice, id: 'NG253', ref: 'NICE NG253 §1.5 — cultures before abx if no delay' }
+
+  - id: mx_iv_abx_within_1h
+    category: drug
+    name: 'IV antibiotics within 1 h of recognising sepsis'
+    detail: |
+      Empirical regimen per local formulary for septic shock with
+      non-severe penicillin allergy. Many trusts permit piperacillin-
+      tazobactam in non-IgE rashes; otherwise a non-beta-lactam
+      regimen. Always check local guidance and document the allergy
+      discussion. Do not delay beyond 1 hour.
+    drug:
+      amount: 'per local formulary (e.g. piperacillin-tazobactam 4.5 g IV) or non-beta-lactam alternative'
+      route: IV
+      frequency: 'STAT, then per regimen'
+    must_do: true
+    sources:
+      - {
+          type: nice,
+          id: 'NG253',
+          ref: 'NICE NG253 — antibiotics within 1 hour of red-flag recognition',
+        }
+      - { type: rcem, ref: 'RCEM Best Practice — Septic Patient in the ED' }
+
+  - id: mx_fluid_resus
+    category: fluid
+    name: 'IV crystalloid 30 mL/kg over the first 3 h (≈1.7 L for her)'
+    detail: |
+      First 500 mL bolus over 15 min, reassess BP/lactate. Repeat
+      boluses to a target of ~30 mL/kg if lactate >2 or persistently
+      hypotensive. Balanced crystalloid (Hartmann''s / Plasmalyte)
+      preferred.
+    drug:
+      amount: '30 mL/kg balanced crystalloid'
+      route: IV
+      frequency: 'first 500 mL over 15 min, reassess'
+    must_do: true
+    sources:
+      - { type: nice, id: 'NG253', ref: 'NICE NG253 — IV fluid resuscitation' }
+
+  - id: mx_catheter_uop
+    category: monitoring
+    name: 'Insert urinary catheter; track urine output hourly'
+    detail: |
+      Sepsis Six monitoring step + sample for MC&S. Aim ≥0.5 mL/kg/h.
+      Falling output flags worsening AKI.
+    must_do: true
+
+  - id: mx_escalate_critcare
+    category: escalation
+    name: 'Refer to critical care for HDU/ITU review'
+    detail: |
+      Persistent hypotension after fluids and/or lactate >4 mmol/L =
+      vasopressors and HDU/ITU level care. Discuss escalation early in
+      line with her advance care plan (active treatment, no invasive
+      ventilation).
+    must_do: true
+
+  - id: mx_paracetamol
+    category: drug
+    name: 'IV paracetamol for fever and comfort'
+    detail: 'Symptomatic benefit; supports oral intake later.'
+    drug:
+      amount: '1 g'
+      route: IV
+      frequency: 'QDS'
+
+  # ─── Trap actions ──────────────────────────────────────────────────────────
+  - id: mx_no_steroids_routine
+    category: drug
+    name: 'Routine hydrocortisone before vasopressor trial'
+    detail: |
+      ❌ Reserve hydrocortisone for vasopressor-refractory shock in line
+      with the local critical care protocol. Not first-line in early ED
+      septic shock per NICE NG253.
+    must_not_do: true
+
+  - id: mx_no_delay_abx_for_cultures
+    category: drug
+    name: 'Delay antibiotics until blood cultures are back'
+    detail: |
+      ❌ The 1-hour rule trumps culture timing. NICE NG253 explicitly
+      permits giving antibiotics before cultures if drawing them would
+      delay administration.
+    must_not_do: true
+    gated_by_history: [hx_paramedics]
+
+  - id: mx_no_trimethoprim
+    category: drug
+    name: 'Trimethoprim PO as first antibiotic'
+    detail: |
+      ❌ Wrong route (this is septic shock) and likely wrong agent
+      (previous culture showed resistance). IV broad-spectrum required.
+    must_not_do: true
+
+  - id: mx_no_nsaid
+    category: drug
+    name: 'IV ibuprofen for fever'
+    detail: |
+      ❌ AKI Stage 2 + dehydration + anticoagulation. Avoid NSAIDs.
+    must_not_do: true
+
+  - id: mx_no_cpr_decision_now
+    category: communication
+    name: 'Initiate CPR resuscitation discussion mid-resus'
+    detail: |
+      ❌ DNACPR is already in place per her advance care plan. The
+      decision is documented and active — do not re-litigate at the
+      bedside in front of a delirious patient. Treat the reversible
+      illness per her wishes; brief the family when they arrive.
+    must_not_do: true
+
+disposition_options:
+  - label: 'Admit HDU after stabilisation; gen-med post-take consult'
+    criteria: |
+      Septic shock + AKI + delirium needs HDU-level monitoring. Active
+      treatment is consistent with her care plan; no invasive
+      ventilation per her wishes.
+    appropriate: true
+    epilogue: "Her son arrives at 04:00 — he had been driving from Birmingham. She is on noradrenaline. He says 'Mum' once and she opens her eyes."
+  - label: 'Refer ITU for invasive ventilation if she deteriorates further'
+    criteria: |
+      Inappropriate — advance care plan explicitly excludes invasive
+      ventilation. Discuss with family; do not intubate as a default.
+    appropriate: false
+    epilogue: "She arrests at 06:00. Her ceiling-of-care document was unclear and the resus call gets called off mid-cycle."
+  - label: 'Admit AMU under medics for IV antibiotics'
+    criteria: |
+      Only after lactate normalises and BP stable off fluids. Otherwise
+      HDU is the right step.
+    appropriate: false
+    epilogue: "The HDU registrar escalates her at 05:14. They are not happy with the original triage decision."
+  - label: 'Discharge back to nursing home with oral antibiotics'
+    criteria: |
+      Inappropriate — she meets septic shock criteria. IV abx +
+      admission mandatory.
+    appropriate: false
+    epilogue: "Re-admitted at 08:00 from the home with worsening shock. The home manager calls the ED consultant directly."
+
+state_machine:
+  states: [deteriorating, stable, arrested, admitted, deceased]
+  transitions:
+    - from: deteriorating
+      to: stable
+      trigger:
+        on: action
+        action_id: mx_iv_abx_within_1h
+        note: |
+          Empirical IV antibiotics given. Trajectory bends with fluids
+          and antibiotics; will need HDU monitoring.
+    - from: deteriorating
+      to: arrested
+      trigger:
+        on: inaction_by
+        min: 10
+        required_actions: [mx_iv_abx_within_1h, mx_fluid_resus]
+        note: 'Septic shock decompensated — no abx and no fluids by T+10.'
+    - from: stable
+      to: admitted
+      trigger: { on: action, action_id: mx_escalate_critcare }
+
+pearls:
+  - 'NICE NG253 (Nov 2025, supersedes NG51): antibiotics within 1 hour of recognising sepsis. Do not delay for blood cultures if drawing them would push past 1 hour.'
+  - 'Sepsis Six: blood cultures, urine output, FBC/lactate, oxygen, IV antibiotics, IV fluids — all within the first hour.'
+  - 'Septic shock (Sepsis-3): persistent hypotension requiring vasopressors AND lactate >2 mmol/L despite adequate fluid resus. Needs HDU/ITU.'
+  - 'Confusion in an elderly woman with a fever is sepsis until proven otherwise.'
+  - 'Always re-read the advance care plan before bedside CPR discussions: re-litigating a documented DNACPR is unkind and clinically unnecessary.'
+  - 'Penicillin allergy of "rash in childhood" is usually safe for piperacillin-tazobactam in non-severe reactions — but check local guidance and document the discussion.'
+  - 'Delirium is missed or late-diagnosed in >60% of older ED patients. Screen with 4AT in any older patient with acute change. Hypoactive (quiet) delirium is the most-missed subtype and associated with more severe underlying illness.'
+  - 'Urine dipstick in older adults: positive nitrites/leucs are common without UTI symptoms — interpret in context with clinical features, not in isolation.'
+
+pitfalls:
+  - 'Waiting for blood cultures before giving antibiotics.'
+  - 'Anchoring on "delirium from a UTI" without screening for shock features (lactate, BP, capillary refill, mottling).'
+  - "Choosing the wrong empirical agent for the patient's allergy or local resistance pattern."
+  - 'NSAIDs in an elderly patient with AKI and anticoagulation.'
+  - 'Failing to track urine output — it is a Sepsis Six step AND the cheapest perfusion monitor.'
+  - 'Re-opening the DNACPR conversation mid-resus in front of a delirious patient.'
+
+sources:
+  - {
+      type: nice,
+      id: 'NG253',
+      ref: 'Suspected sepsis in people aged 16 or over: recognition, assessment and early management (NICE 2024, evidence reviewed 2025; supersedes NG51)',
+      url: 'https://www.nice.org.uk/guidance/ng253',
+    }
+  - { type: rcem, ref: 'RCEM Best Practice — The Septic Patient in the Emergency Department' }
+  - { type: nhs, ref: 'NEWS2 — Royal College of Physicians national early warning score (2017)' }
+  - {
+      type: textbook,
+      ref: 'Wyatt JP et al. Oxford Handbook of Emergency Medicine 5e (OUP, 2020).',
+      chapter: '2',
+      page: 'pp.60–62 (sepsis); pp.220–235 (infectious diseases)',
+    }
+  - {
+      type: other,
+      ref: 'Sepsis-3 (Singer et al., JAMA 2016) — definitional reference for septic shock',
+    }
+
+author_notes: |
+  Authored from a scripts/new-case.ts skeleton. Designed to slot into
+  a future "Overnight shift" episode at triage cat 2 in resus. The
+  T+10 deterioration trigger makes the Sepsis Six tractable as a
+  one-shot bundle decision.

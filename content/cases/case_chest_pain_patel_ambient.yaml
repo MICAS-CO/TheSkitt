@@ -1,0 +1,515 @@
+# MILESTONE 8 — ambient board-pressure case.
+#
+# Mrs Patel is in the waiting room with her daughter, "just indigestion".
+# She's stoic, doesn't want to be a bother. Underneath: anterior STEMI in
+# a 72-year-old woman — the classic "atypical" / "silent" MI presentation
+# that earns NICE NG185 its full SAQ weight.
+#
+# Sources: NICE NG185 (Acute coronary syndromes), RCEM Best Practice —
+# Chest Pain, Oxford Handbook of EM 5e Ch 2.
+
+schema_version: 1
+id: case_chest_pain_patel_ambient
+title: 'Chest pain in the waiting room — minors'
+chief_complaint: '"Just indigestion"'
+topic_id: stemi
+
+vignette: |
+  Waiting room, 19:22.
+
+  Mrs Anjali Patel, 72 y/o, brought in by her daughter Priya.
+  Daughter: "Mum had a bit of chest pain when we were shopping. She
+  said it was her ulcer. I made her come in. She doesn't want to be
+  a nuisance — I'm sorry, she's stoic."
+
+  Mrs Patel sits forward on the waiting-room chair, hand on her chest,
+  not in obvious distress. Her daughter is anxious. The waiting-room
+  has 12 other patients; the triage queue is long.
+
+curriculum_tags: [CP1, CC1, CC2]
+slos: [1, 3]
+difficulty_band: CT2
+paeds: false
+
+demographics:
+  age_value: 72
+  age_unit: years
+  sex: female
+  weight_kg: 62
+  pmh: ['hypertension', 'type 2 diabetes', 'hypercholesterolaemia']
+  medications: ['amlodipine 5 mg OD', 'metformin 500 mg BD', 'atorvastatin 20 mg ON']
+  allergies: ['NKDA']
+  social: 'Lives with daughter Priya. Retired teacher. Never smoked. No alcohol.'
+
+triage_category: 3
+initial_state: triaged
+bay: triage
+
+vitals:
+  baseline:
+    hr: 78
+    rr: 14
+    spo2: 98
+    bp_sys: 132
+    bp_dia: 82
+    gcs: 15
+    temp_c: 36.6
+  deteriorating:
+    hr: 108
+    rr: 22
+    spo2: 93
+    bp_sys: 92
+    bp_dia: 58
+    gcs: 15
+    temp_c: 36.6
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
+history:
+  - id: hx_triage_note
+    source: triage_note
+    topic: 'Pull the triage card.'
+    npc_voice: "The card is on the desk. The triage nurse — Anya, second day on triage — looks up briefly when you pick it up."
+    supports:
+      - 'Anterior ST-elevation myocardial infarction (STEMI)'
+    branch_choices:
+      - id: between_lines
+        label: "Read between the lines — and ask Anya what she actually thought."
+        npc_voice: "Anya comes over. She lowers her voice. She is glad you asked."
+        rapport_delta: 1
+        response: |
+          "Card reads: '?reflux, looks well, cat 3, daughter very
+          anxious.' (Pause.) Anya: 'She wouldn't have made the
+          card unless I let her sit on the waiting room bench. The
+          daughter brought her up to me twice. I almost made her
+          cat 2 but the obs were soft and she was talking in full
+          sentences. I'm sorry — I should have. The daughter — Priya?
+          — kept asking me what we'd do if it wasn't reflux.'"
+      - id: literal
+        label: "Read the card as written."
+        rapport_delta: 0
+        response: |
+          "Card: ?reflux, looks well, cat 3, daughter very anxious.
+          BP 132/82, HR 88, SpO2 98%, RR 16, temp 36.6, no pain
+          score documented."
+      - id: trust_and_move_on
+        label: "Cat 3 with normal obs — let's see her when we get to her."
+        npc_voice: "Anya watches you take the card and walk past her station."
+        rapport_delta: -2
+        response: |
+          (You don't ask Anya for her live impression. The 'I almost
+          made her cat 2' admission is NOT volunteered. The 'daughter
+          kept asking what we'd do if it wasn't reflux' clue is NOT
+          volunteered. The player has the card data only.)
+    response: |
+      Triage card reads: '?reflux, looks well, cat 3, daughter very
+      anxious.' Obs documented: BP 132/82, HR 88, SpO2 98%, RR 16,
+      temp 36.6. Anya (the triage nurse, second day on triage)
+      had considered upgrading her but the obs were soft. The
+      daughter Priya had been advocating for upgrade.
+
+  - id: hx_pain
+    source: patient
+    topic: 'Tell me about the pain.'
+    npc_voice: "Mrs Patel rests a flat hand on her sternum. 'It's like a band, tight, here.'"
+    supports:
+      - 'Anterior ST-elevation myocardial infarction (STEMI)'
+      - 'NSTEMI / unstable angina'
+      - 'Aortic dissection'
+    response: |
+      "It started about an hour ago when we were in the supermarket.
+      It's not really a pain — more a heaviness, here, in the middle.
+      Goes through to my back a bit. I thought it was the curry from
+      lunch. It's a bit better sitting still."
+
+  - id: hx_associated
+    source: patient
+    topic: 'Anything else with it?'
+    prereq_history_ids: [hx_pain]
+    supports:
+      - 'Anterior ST-elevation myocardial infarction (STEMI)'
+      - 'NSTEMI / unstable angina'
+    response: |
+      "I felt a bit sweaty in the shop. And a bit short of breath when I
+      walked to the car. Bit of a queasy feeling. No vomiting."
+
+  - id: hx_pmh_targeted
+    source: patient
+    topic: 'Risk factors — diabetes, hypertension, family history?'
+    prereq_history_ids: [hx_pain]
+    supports:
+      - 'Anterior ST-elevation myocardial infarction (STEMI)'
+      - 'NSTEMI / unstable angina'
+    response: |
+      "Yes — sugar diabetes for 8 years, blood pressure for longer.
+      My older brother had a heart attack at 68. Cholesterol tablets
+      since 2018."
+
+  - id: hx_daughter
+    source: family
+    topic: 'Speak to the daughter.'
+    prereq_history_ids: [hx_associated]
+    npc_voice: "Priya stands a metre back from the bay, fingertips on the curtain rail. She'd rather not be in the way."
+    supports:
+      - 'Anterior ST-elevation myocardial infarction (STEMI)'
+      - 'NSTEMI / unstable angina'
+    branch_choices:
+      - id: compassionate
+        label: "You know her best. Tell me what you've seen this week — anything that worried you."
+        npc_voice: "Priya's eyes prickle. She stops apologising for being in the way."
+        rapport_delta: 2
+        response: |
+          "Thank you. (Breath.) She had this exact thing two weeks ago,
+          shopping. Made me sit her down in M&S. Saw the GP, who said
+          reflux. Last Thursday she had a twinge while she was teaching
+          a piano lesson and she didn't tell me until I came home — she
+          said it was the curry from lunch. She is the most stoic
+          person I know. She told my father she had appendicitis as
+          'a stitch' for three days in 1991. Please don't send her home
+          because she's smiling. She is smiling because you are
+          looking at her. Please take her seriously."
+      - id: clinical
+        label: "Past episodes? Any changes recently?"
+        rapport_delta: 0
+        response: |
+          "Similar pain two weeks ago — saw GP, told reflux. Twinge
+          last Thursday she didn't mention until I came home. She's
+          stoic; she'll undersell what she's feeling."
+      - id: dismissive
+        label: "She doesn't look acutely unwell. We'll work her up but it may well be reflux."
+        npc_voice: "Priya stops crying. She straightens. She doesn't trust you any more."
+        rapport_delta: -2
+        response: |
+          "Right. (Pause.) I see. Thank you, doctor. I'll be quiet."
+    response: |
+      Daughter Priya reports a similar episode 2 weeks ago managed as
+      reflux by the GP, plus a missed warning twinge last Thursday.
+      Strong family insistence that the patient routinely undersells
+      symptoms. Concerned that stoicism is masking severity.
+
+  - id: hx_patel_confides
+    source: patient
+    topic: '(quiet, after Priya steps out for the phone) Mrs Patel — are you scared?'
+    prereq_history_ids: [hx_daughter]
+    min_rapport: 2
+    npc_voice: "Mrs Patel watches her daughter walk away through the curtain. She waits until the curtain is still."
+    supports: ['Anterior ST-elevation myocardial infarction (STEMI)']
+    response: |
+      "Yes, doctor. (Pause.) Priya is forty-three. She still lives
+      with me. She gave up her own flat in 2019 to look after me
+      when her father went. She has not had a holiday in three
+      years. (Pause.) I didn't tell her how bad it got last
+      Thursday. I thought it would pass and she would never know.
+      (Beat.) When you tell her what this is — and I know what
+      this is, doctor, I taught biology for thirty-five years —
+      please tell her I wasn't scared. Even if I am. She mustn't
+      think I was lying alone in the dark frightened. She'd never
+      forgive herself."
+
+examination:
+  - system: general
+    findings:
+      - { name: 'pallor', value: 'mild — looks "off" to her daughter', present: true }
+      - { name: 'diaphoresis', value: 'cool clammy forehead', present: true }
+      - { name: 'distress', value: 'minimal — sitting still, talking', present: true }
+  - system: airway
+    findings:
+      - { name: 'patent, talking', present: true }
+  - system: breathing
+    findings:
+      - { name: 'RR', value: '20/min' }
+      - { name: 'SpO2', value: '94% on air (her baseline is 98%)' }
+      - { name: 'chest auscultation', value: 'bibasal fine crackles' }
+  - system: circulation
+    findings:
+      - { name: 'HR', value: '102/min, regular' }
+      - { name: 'BP', value: '142/92 mmHg' }
+      - { name: 'JVP', value: 'mildly raised' }
+      - { name: 'peripheries', value: 'cool to wrists' }
+    manoeuvres:
+      - id: full_auscultation
+        label: 'Auscultate at apex / LSE / aortic / pulmonic, including left-lateral and sit-forward positions'
+        findings:
+          - {
+              name: 'soft S3 gallop at apex (left-lateral position)',
+              value: 'low-pitched; appears in late ventricular filling — early LV dysfunction',
+              red_flag: true,
+              supports: ['Anterior ST-elevation myocardial infarction (STEMI)'],
+            }
+          - {
+              name: 'no murmur of acute mitral regurgitation',
+              present: false,
+              pertinent_negative: true,
+              value: 'no pansystolic murmur at apex radiating to axilla — papillary muscle rupture not yet established',
+            }
+          - {
+              name: 'no friction rub',
+              present: false,
+              pertinent_negative: true,
+              value: 'no pericardial scratch — argues against pericarditis as the alternative diagnosis',
+            }
+      - id: peripheral_pulses
+        label: 'Compare radial pulses both sides + check radio-femoral delay'
+        findings:
+          - {
+              name: 'radial pulses equal volume bilaterally',
+              present: true,
+              pertinent_negative: true,
+              value: 'no >10 s radio-femoral delay; no inter-arm pulse pressure difference >20 mmHg',
+              supports: ['Aortic dissection'],
+            }
+          - {
+              name: 'capillary refill 3 s at fingertips',
+              value: 'borderline-prolonged in a warm patient — reflects forward-flow inadequacy',
+              supports: ['Anterior ST-elevation myocardial infarction (STEMI)'],
+            }
+  - system: disability
+    findings:
+      - { name: 'GCS', value: '15' }
+      - { name: 'glucose', value: '11.2 mmol/L (mild stress hyperglycaemia)' }
+
+investigations:
+  - id: ix_ecg
+    name: '12-lead ECG'
+    category: ecg
+    turnaround_min: 2
+    essential: true
+    ecg_challenge_id: ecg_002_anterior_stemi
+    result_summary: |
+      Sinus tachycardia 102/min. **ST elevation V2–V4 (2 mm), reciprocal
+      ST depression in II/III/aVF.** Anterior STEMI.
+    abnormal: true
+    sources:
+      - { type: nice, id: 'NG185', ref: 'NICE NG185 — ECG within 10 min of arrival' }
+
+  - id: ix_tn
+    name: 'High-sensitivity troponin T'
+    category: blood
+    turnaround_min: 60
+    essential: true
+    result_summary: |
+      Initial hs-Tn T 184 ng/L (URL <14). Markedly raised. Repeat
+      at 1 h showed delta of +210 ng/L — consistent with type 1 MI.
+    abnormal: true
+    sources:
+      - { type: nice, id: 'NG185', ref: 'NICE NG185 — hs-troponin 0/1 h pathway' }
+
+  - id: ix_cxr
+    name: 'Erect portable CXR'
+    category: imaging
+    turnaround_min: 15
+    result_summary: |
+      Mild pulmonary congestion. No widened mediastinum, no pneumothorax,
+      no consolidation. Cardiac silhouette normal.
+
+  - id: ix_bloods
+    name: 'FBC, U&E, CRP, lipids, HbA1c, group + save'
+    category: blood
+    turnaround_min: 45
+    result_summary: |
+      Hb 124 · K 4.0 · Creat 78 (eGFR ~75) · CRP 8 · HbA1c 67 mmol/mol
+      (poorly controlled). Group and saved.
+
+differential:
+  - diagnosis: 'Anterior ST-elevation myocardial infarction (STEMI)'
+    likelihood: top
+    discriminator: 'ECG diagnostic of STEMI — primary PCI pathway.'
+  - diagnosis: 'NSTEMI / unstable angina'
+    likelihood: must_not_miss
+    discriminator: 'Excluded by ECG ST elevation pattern, but always the alternative path if no STE.'
+  - diagnosis: 'Aortic dissection'
+    likelihood: must_not_miss
+    discriminator: 'Pain through to back + hypertension — check BP differential, ADD-RS. CXR mediastinum normal here, lowering probability.'
+  - diagnosis: 'Pulmonary embolism'
+    likelihood: worth_considering
+    discriminator: 'Dyspnoea + tachycardia. ECG doesn’t show classic S1Q3T3; STE V2–V4 not typical for PE.'
+  - diagnosis: 'GORD / oesophageal spasm'
+    likelihood: unlikely
+    discriminator: "Daughter's framing — the ECG and troponin will not let you discharge with this."
+
+working_diagnosis: 'Anterior STEMI'
+
+management:
+  - id: mx_ecg_10min
+    category: monitoring
+    name: '12-lead ECG within 10 minutes of waiting-room presentation'
+    detail: |
+      NICE NG185 — perform a 12-lead ECG as soon as possible (target ≤10
+      min) for anyone presenting with suspected ACS. Move from waiting
+      room to a monitored bay.
+    must_do: true
+    sources:
+      - { type: nice, id: 'NG185', ref: 'NICE NG185 — 10-minute ECG target' }
+
+  - id: mx_aspirin
+    category: drug
+    name: 'Aspirin 300 mg PO loading dose'
+    detail: 'Chewed or dispersed. Hold if active bleeding, severe asthma history with aspirin sensitivity.'
+    must_do: true
+    drug:
+      amount: '300 mg'
+      route: PO
+      frequency: 'STAT'
+    sources:
+      - { type: nice, id: 'NG185', ref: 'NICE NG185 — aspirin 300 mg loading' }
+
+  - id: mx_ppci_pathway
+    category: referral
+    name: 'Activate primary PCI pathway — bleep cath lab + interventional cardiology'
+    detail: |
+      STEMI ≤12 h from symptom onset → primary PCI is the reperfusion of
+      choice. Target FMC-to-balloon ≤90 min. Communicate dispo with
+      paramedic transfer if your hospital isn’t the PCI centre.
+    must_do: true
+    sources:
+      - { type: nice, id: 'NG185', ref: 'NICE NG185 — primary PCI within 120 min of diagnosis' }
+
+  - id: mx_dual_antiplatelet
+    category: drug
+    name: 'Second antiplatelet per local PCI pathway (ticagrelor 180 mg or prasugrel)'
+    detail: |
+      Discuss with cardiology — agent depends on PCI plan and bleeding
+      risk. Do not give before cath-lab discussion if uncertain.
+    must_do: true
+    sources:
+      - {
+          type: nice,
+          id: 'NG185',
+          ref: 'NICE NG185 / Byrne RA et al. 2023 ESC Guidelines for the management of acute coronary syndromes (consolidated STEMI + NSTE-ACS) — DAPT loading per PCI pathway',
+        }
+
+  - id: mx_pain_oxygen_glucose
+    category: drug
+    name: 'GTN sublingual for pain; titrated IV morphine if severe; oxygen ONLY if SpO2 <94%'
+    detail: |
+      Routine oxygen is not recommended (AVOID trial; Stub et al.,
+      Circulation 2015). Manage glucose if >11 mmol/L per local protocol.
+    must_do: true
+    sources:
+      - { type: nice, id: 'NG185', ref: 'NICE NG185 — oxygen only if SpO2 <94%' }
+      - {
+          type: textbook,
+          ref: 'BTS Emergency Oxygen Guideline 2017 — target SpO2 94–98% in acute MI without COPD',
+        }
+
+  - id: mx_no_routine_oxygen
+    category: drug
+    name: 'Routine high-flow oxygen because she "looks unwell"'
+    detail: |
+      ❌ AVOID-style trials and NICE NG185 recommend oxygen ONLY if SpO2
+      <94% (or <88% if at risk of T2RF). Routine oxygen worsens outcomes
+      in MI.
+    must_not_do: true
+    sources:
+      - { type: nice, id: 'NG185', ref: 'NICE NG185 — oxygen if SpO2 <94%' }
+
+  - id: mx_no_thrombolysis_uk_stemi
+    category: drug
+    name: 'Default to thrombolysis (tenecteplase) without PCI discussion'
+    detail: |
+      ❌ Primary PCI is the UK pathway for STEMI when accessible within
+      120 min of diagnosis. Thrombolysis is a back-up for remote sites
+      where PCI cannot be delivered in time.
+    must_not_do: true
+    gated_by_history: [hx_pain]
+
+  - id: mx_no_discharge_reflux
+    category: disposition
+    name: 'Reassure as reflux and discharge with a GP letter'
+    detail: |
+      ❌ Daughter''s framing was the trap. ECG and troponin will fail
+      anyone who short-circuits the workup.
+    must_not_do: true
+
+disposition_options:
+  - label: 'Transfer to PCI cath lab for primary PCI'
+    criteria: 'Onset <12 h, ECG diagnostic, no contraindication — definitive treatment.'
+    appropriate: true
+    epilogue: "Mrs Patel goes to the cath lab at 19:47. Priya waits in the family room with a cup of tea she doesn't drink."
+  - label: 'Admit CCU after thrombolysis if PCI cannot be delivered within 120 min'
+    criteria: 'Back-up route in geographically remote sites only.'
+    appropriate: false
+    epilogue: "Door-to-balloon would have been 78 minutes from here. The decision is reviewable next week at M&M."
+  - label: 'Discharge with cardiology outpatient referral'
+    criteria: 'Inappropriate — STEMI is an emergency.'
+    appropriate: false
+    epilogue: "Cardiology bleep returns the call: 'You sent home an anterior STEMI. We're admitting her from the discharge area now.'"
+
+state_machine:
+  states: [triaged, stable, deteriorating, arrested, admitted]
+  transitions:
+    - from: triaged
+      to: stable
+      trigger:
+        on: action
+        action_id: mx_aspirin
+        note: 'Aspirin given; pathway initiated.'
+    - from: triaged
+      to: deteriorating
+      trigger:
+        on: inaction_by
+        min: 8
+        required_actions: [mx_ecg_10min]
+        note: 'No ECG within 10 min — patient becoming dyspnoeic in the waiting room.'
+    - from: deteriorating
+      to: arrested
+      trigger:
+        on: inaction_by
+        min: 14
+        required_actions: [mx_aspirin, mx_ppci_pathway]
+        note: 'VF arrest in the waiting room — preventable with timely STEMI workup.'
+    - from: deteriorating
+      to: stable
+      trigger:
+        on: action
+        action_id: mx_aspirin
+        note: 'Aspirin given + PCI pathway activation rescues from waiting-room deterioration.'
+    - from: stable
+      to: admitted
+      trigger:
+        on: action
+        action_id: mx_ppci_pathway
+        note: 'PCI cath lab pathway activated — patient handed over to cardiology.'
+
+pearls:
+  - 'Stoic elderly patients with chest discomfort framed as "indigestion" are an SAQ classic for atypical/silent MI — never wait for a queue to clear before ECG.'
+  - 'NICE NG185 — ECG within 10 minutes of presentation for suspected ACS.'
+  - 'Primary PCI is the UK STEMI pathway when achievable within 120 min of diagnosis.'
+  - 'Oxygen is not routine in MI — only if SpO2 <94% (or <88% if at risk of T2RF).'
+  - 'A daughter who insists "she''s stoic, take her seriously" is collateral history that should weight your differential.'
+  - 'Aortic dissection caveat: ~20% have a normal CXR and ~6% are painless. Mortality rises ≈1–2% per untreated hour. ADD-RS + BP differential + pulse deficit lower the threshold for CTA, even when troponin is up (which can mislead toward ACS).'
+
+pitfalls:
+  - 'Believing the waiting-room narrative (reflux / indigestion).'
+  - 'Routine oxygen in chest pain.'
+  - 'Defaulting to thrombolysis without considering primary PCI.'
+  - 'Discharging with GP referral.'
+
+sources:
+  - {
+      type: nice,
+      id: 'NG185',
+      ref: 'Acute coronary syndromes (NICE 2020, updated 2024)',
+      url: 'https://www.nice.org.uk/guidance/ng185',
+    }
+  - { type: rcem, ref: 'RCEM Best Practice — Chest Pain in the Emergency Department' }
+  - {
+      type: textbook,
+      ref: 'Wyatt JP et al. Oxford Handbook of Emergency Medicine 5e (OUP, 2020).',
+      chapter: '2',
+      page: 'pp.66–80',
+    }
+  - {
+      type: esc,
+      ref: 'Byrne RA et al. 2023 ESC Guidelines for the management of acute coronary syndromes (consolidated STEMI + NSTE-ACS). Eur Heart J 2023.',
+    }
+
+author_notes: |
+  Ambient case for the hen-do shift. The pressure is "she''s in the
+  waiting room and looks well — ECG her within 10 min". Deteriorates
+  at T+8 if no ECG; arrests at T+14 if no aspirin AND no PCI pathway.

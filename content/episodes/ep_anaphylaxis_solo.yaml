@@ -1,0 +1,54 @@
+# MILESTONE 4 — single-case episode driven by the simulation kernel.
+#
+# Wraps case_anaphylaxis_adult_peanut in a 20-minute shift with scheduled
+# events to exercise the kernel's event scheduler and case state machine.
+
+schema_version: 1
+id: ep_anaphylaxis_solo
+title: 'Shift: anaphylaxis (solo)'
+learning_objectives:
+  - 'Recognise and manage anaphylaxis per Resus Council UK 2021.'
+  - 'Act on the clock — adrenaline within 5 minutes of recognition.'
+  - 'Interpret time-critical investigations against turnaround.'
+
+curriculum_tags: [RP2, AP1, AP2, AC1]
+difficulty_band: CT2
+shift_duration_min: 20
+
+focus_cases:
+  - case_anaphylaxis_adult_peanut
+
+scheduled_events:
+  # Patient deteriorates to cardiac arrest if no adrenaline by T+5.
+  - id: ev_deterioration_t5
+    type: deterioration_if_not_x_by_t
+    t_min: 5
+    case_id: case_anaphylaxis_adult_peanut
+    required_action_ids: [mx_adrenaline_im]
+    new_state: arrested
+
+  # Tom (the partner) reaches the relatives' room at T+8.
+  - id: ev_family_arrival
+    type: family_arrival
+    t_min: 8
+    case_id: case_anaphylaxis_adult_peanut
+    npc: Tom (partner)
+
+  # Mast cell tryptase sample 1 returns at T+10 (separate from order-time
+  # turnaround — the build-prompt's "bloods come back at T+10" example).
+  - id: ev_tryptase_back
+    type: results_back
+    t_min: 10
+    case_id: case_anaphylaxis_adult_peanut
+    investigation_id: ix_tryptase
+
+  # Bed manager applies pressure for disposition at T+15.
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 15
+    severity: firm
+
+author_notes: |
+  Milestone 4 single-case shell. Two-case episodes with arcs land in
+  Milestone 5. The deterioration-at-T+5 event is the must-act mechanic
+  that makes the clock matter.

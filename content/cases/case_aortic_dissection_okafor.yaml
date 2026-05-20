@@ -1,0 +1,782 @@
+# Type A aortic dissection masquerading as inferior STEMI — the
+# anchor-breaker SAQ. Mr Okafor presents with sudden severe
+# interscapular pain that's now in the chest, BP differential between
+# arms, a troponin rise, and ST elevation in II/III/aVF. The reflex
+# move is the STEMI pathway. The save is recognising tearing pain +
+# BP differential + dynamic murmur + the dissection-into-coronary-
+# ostium pattern, calculating ADD-RS, and getting CTA before any
+# anticoagulation.
+#
+# Sources: RCEM/RCR Joint Best Practice Guideline 2024 — Diagnosis of Thoracic Aortic Dissection in the ED, ESC
+# Guidelines for the Management of Aortic Diseases (2024 update),
+# IRAD registry data (Hagan et al., JAMA 2000), Aortic Dissection
+# Charitable Trust UK Think Aorta campaign, Oxford Handbook of EM 5e.
+# Mortality figure (~1–2% per untreated hour) per TheCase.Report S2E5
+# / IRAD.
+
+schema_version: 1
+id: case_aortic_dissection_okafor
+title: 'Aortic dissection — Type A masquerading as inferior STEMI'
+chief_complaint: 'Sudden tearing chest/back pain'
+topic_id: aortic_dissection
+
+vignette: |
+  Resus bay 2. 11:46.
+
+  Mr Daniel Okafor, 58 y/o, brought in by ambulance after collapsing
+  at his desk 25 minutes ago. He describes "the worst pain of my
+  life" — started between the shoulder blades, ripped through to the
+  front of his chest within seconds. He's diaphoretic, anxious, and
+  retching.
+
+  Paramedics: "ECG on the truck shows ST elevation in II, III, aVF.
+  Aspirin 300 mg chewed. Sublingual GTN ×2 — no relief. BP 178/104
+  right arm; the left cuff kept reading low — they switched arms.
+  HR 96 sinus. Sats 96% on air. He's a hypertensive on amlodipine
+  and ramipril."
+
+  The cath lab has been pre-alerted. The cardiology SpR is on her way
+  down. As you start the primary survey, the patient grabs your wrist
+  and says: "It tore. I felt it tear."
+
+curriculum_tags: [CC7, CP1]
+slos: [1, 3]
+difficulty_band: ST3
+paeds: false
+
+demographics:
+  age_value: 58
+  age_unit: years
+  sex: male
+  weight_kg: 92
+  pmh:
+    - 'Hypertension (10 years, poorly controlled)'
+    - 'Type 2 diabetes (metformin)'
+    - 'Bicuspid aortic valve incidentally noted on echo 4 years ago'
+    - 'Ex-smoker (20 pack-year, stopped 6 years ago)'
+  medications:
+    - 'amlodipine 10 mg OD'
+    - 'ramipril 10 mg OD'
+    - 'metformin 1 g BD'
+    - 'atorvastatin 40 mg ON'
+  allergies: ['NKDA']
+  social: |
+    Project engineer, married, two adult children. Father had a
+    "burst aorta" in his 60s — Mr Okafor avoided thinking about it.
+    No connective tissue disease documented.
+
+triage_category: 1
+initial_state: deteriorating
+bay: resus
+resus_protocol: als_adult
+
+vitals:
+  baseline:
+    hr: 80
+    rr: 14
+    spo2: 98
+    bp_sys: 158
+    bp_dia: 96
+    gcs: 15
+    temp_c: 36.8
+  deteriorating:
+    hr: 96
+    rr: 22
+    spo2: 94
+    on_o2: true
+    bp_sys: 178
+    bp_dia: 108
+    gcs: 15
+    temp_c: 36.6
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
+# ─── History ──────────────────────────────────────────────────────────────
+history:
+  - id: hx_pain_quality
+    source: patient
+    topic: 'Describe the pain — character, onset, radiation.'
+    npc_voice: "Mr Okafor presses his palm flat to his sternum, jaw tight."
+    supports: ['Type A aortic dissection extending into RCA, with malperfusion of right upper limb']
+    response: |
+      "It came on in a second. Between my shoulder blades, like
+      somebody'd shoved a knife through me. Then it punched through
+      to the front of my chest. Tearing, ripping. It's never been
+      like anything else."
+
+  - id: hx_pain_radiation
+    source: patient
+    topic: 'Has the pain moved or changed?'
+    prereq_history_ids: [hx_pain_quality]
+    supports: ['Type A aortic dissection extending into RCA, with malperfusion of right upper limb']
+    npc_voice: "He grips the trolley rail with his left hand. His right arm is across his lap."
+    branch_choices:
+      - id: probing
+        label: "Be precise — where did it start, where is it now, and exactly when did it move?"
+        npc_voice: "He thinks. He answers slowly, in order, like he's trying to be a good witness."
+        rapport_delta: 1
+        response: |
+          "Started about 90 minutes ago, between my shoulder blades —
+          high up, tearing, like the worst muscle tear of my life.
+          (Pause.) Twenty minutes in it moved forward, into the
+          front of my chest. Now it's also up here, the right side
+          of my neck. My right arm feels strange — pins and needles
+          since about ten minutes ago. (Pause.) I thought it was a
+          muscle. I drove myself in. I'm sorry, doctor — is that the
+          heart attack? Is that what this is?"
+      - id: clinical
+        label: "Where is the pain now and where did it start?"
+        rapport_delta: 0
+        response: |
+          "Started in my back, now in my chest and right side of
+          my neck. Right arm has pins and needles. Is that the
+          heart attack?"
+      - id: reassuring_wrong
+        label: "Could just be a muscle tear with referred pain — let's get an ECG and bloods to be safe."
+        npc_voice: "His shoulders drop. He looks relieved. Then his right hand picks at the trolley sheet — he doesn't quite believe you."
+        rapport_delta: -2
+        response: |
+          "Right. (Pause.) That's what I thought. Muscle. (He stops
+          talking about the migrating pain. The detail about the
+          back-to-front-to-neck progression is NOT volunteered;
+          neither is the right-arm paraesthesia.)"
+    response: |
+      "It started in my back. Now it's in my chest and the front of
+      my neck on the right. My right arm feels strange too — pins
+      and needles. Is that the heart attack?"
+
+  - id: hx_family
+    source: patient
+    topic: 'Any family history of vascular or aortic problems?'
+    supports: ['Type A aortic dissection extending into RCA, with malperfusion of right upper limb']
+    response: |
+      "My dad died at 64 — they said his aorta had ruptured. I always
+      thought it was a heart attack. My sister had her aortic valve
+      replaced at 55, bicuspid she said. The doctor told me I had one
+      too, a few years ago, but the cardiologist said it was 'fine
+      for now.'"
+
+  - id: hx_paramedic
+    source: paramedic
+    topic: 'Full paramedic handover and the prehospital ECG.'
+    response: |
+      "We were dispatched at 11:18 for 'chest pain, collapsed at work'.
+      On scene 11:24. He was sat on the floor, sweating buckets, GCS
+      15 but agitated. ECG looked like an inferior STEMI — ST
+      elevation in II, III, aVF, reciprocal change in I and aVL. We
+      gave aspirin 300 mg chewed, GTN 800 mcg sublingual twice — no
+      response. Pre-alerted cath lab. He's saying it started in his
+      back though, not the chest, and the back pain is what brought
+      him down."
+
+  - id: hx_anticoag_screen
+    source: patient
+    topic: 'Are you on any blood thinners or recent procedures?'
+    response: |
+      "I take aspirin sometimes for headaches but not regularly. No
+      warfarin, no apixaban. No recent surgery. No recent procedures.
+      I had a tooth out a fortnight ago, no bleeding issues."
+
+  - id: hx_recent_bp
+    source: gp_letter
+    topic: 'Check the recent BP and clinic letters.'
+    prereq_history_ids: [hx_anticoag_screen]
+    response: |
+      "BP at last GP review (3 months ago): 168/98 untreated white-
+      coat-effect cuff, 162/94 ambulatory. Amlodipine titrated to
+      10 mg, ramipril to 10 mg. He admitted 'forgetting' doses. Last
+      echo (2022): bicuspid aortic valve, mild AR, normal LV
+      function, aortic root 4.0 cm at baseline."
+
+  - id: hx_marfanoid_screen
+    source: patient
+    topic: 'Marfanoid screen — wingspan, joint hypermobility, lens dislocation?'
+    prereq_history_ids: [hx_family]
+    supports: ['Type A aortic dissection extending into RCA, with malperfusion of right upper limb']
+    response: |
+      "Tall and thin as a young man, but not unusually so. No lens
+      problems I know of. I broke my wrist falling off a bike at 30
+      and that healed fine. Sister's bicuspid valve — does that
+      count?"
+
+# ─── Examination ──────────────────────────────────────────────────────────
+examination:
+  - system: general
+    findings:
+      - name: 'Appearance'
+        value: 'diaphoretic, grey, agitated; clutching anterior chest with one hand and right shoulder with the other'
+        present: true
+        red_flag: true
+      - name: 'Marfanoid habitus'
+        value: 'no obvious tall stature, no arachnodactyly, no high arched palate'
+        present: false
+
+  - system: airway
+    findings:
+      - name: 'Airway'
+        value: 'patent, talking in short sentences interrupted by pain'
+        present: true
+
+  - system: breathing
+    findings:
+      - name: 'Respiratory rate'
+        value: '24/min, shallow'
+        present: true
+      - name: 'SpO2'
+        value: '96% on air'
+        present: true
+      - name: 'Chest auscultation'
+        value: 'clear, no pleural rub, no friction'
+        present: true
+
+  - system: circulation
+    findings:
+      - name: 'BP right arm'
+        value: '178/104 mmHg'
+        present: true
+        red_flag: true
+      - name: 'BP left arm'
+        value: '92/58 mmHg — pulse pressure narrow, repeat reading confirmed'
+        present: true
+        red_flag: true
+      - name: 'BP differential between arms'
+        value: '>20 mmHg systolic (here ~86 mmHg) — a high-risk feature in ADD-RS'
+        present: true
+        red_flag: true
+      - name: 'Heart rate'
+        value: '96/min, sinus on monitor'
+        present: true
+      - name: 'Right radial pulse'
+        value: 'reduced volume and delayed compared to left'
+        present: true
+        red_flag: true
+      - name: 'Cardiac auscultation'
+        value: 'soft early diastolic murmur at the LSE — new aortic regurgitation murmur per the patient'
+        present: true
+        red_flag: true
+      - name: 'JVP'
+        value: 'not raised, no Kussmaul sign'
+        present: false
+
+  - system: disability
+    findings:
+      - name: 'GCS'
+        value: '15 — alert, anxious'
+        present: true
+      - name: 'Pupils'
+        value: '4 mm equal, reactive'
+        present: true
+      - name: 'Glucose (BM)'
+        value: '8.4 mmol/L'
+        present: true
+      - name: 'Focal neurology'
+        value: 'reduced power 4/5 right arm (paraesthesia per patient — innominate involvement)'
+        present: true
+        red_flag: true
+
+  - system: neuro
+    findings:
+      - name: 'Right arm malperfusion pattern'
+        value: 'global paraesthesia of the right arm (not strictly dermatomal); cap refill 4 s right hand vs <2 s left; radial pulse reduced — consistent with innominate-artery malperfusion, NOT a single nerve-root lesion'
+        present: true
+        red_flag: true
+      - name: 'Lower limb power and pulses'
+        value: 'symmetric 5/5; femoral pulses palpable bilaterally; no claudication'
+        present: true
+
+  - system: exposure
+    findings:
+      - name: 'Skin / abdomen'
+        value: 'no pulsatile abdominal mass; no flank haematoma; no Cullen/Grey-Turner'
+        present: false
+      - name: 'Temperature'
+        value: '36.8°C'
+        present: true
+
+# ─── Investigations ───────────────────────────────────────────────────────
+investigations:
+  - id: ix_ecg
+    name: '12-lead ECG (compare to prehospital strip)'
+    category: ecg
+    turnaround_min: 2
+    essential: true
+    result_summary: |
+      Sinus rhythm 96/min. **ST elevation 1–2 mm in II, III, aVF**;
+      reciprocal depression in I and aVL. Subtle PR depression in
+      II. No anterior changes.
+
+      **The trap**: this looks like inferior STEMI. **But** in the
+      context of tearing pain and BP differential, the working
+      diagnosis is dissection of the ascending aorta extending into
+      the RCA ostium — RCA is the proximal coronary in ~30% of
+      Type A dissections (IRAD 2007). The inferior changes are a
+      consequence, not a primary culprit.
+    abnormal: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'Hagan PG et al., IRAD: Aortic dissection clinical profiles, JAMA 2000.',
+        }
+      - {
+          type: rcem,
+          ref: 'RCEM/RCR Joint Best Practice Guideline 2024 — Diagnosis of Thoracic Aortic Dissection in the ED — ECG patterns mimicking ACS',
+        }
+
+  - id: ix_cxr
+    name: 'Erect portable chest X-ray'
+    category: imaging
+    turnaround_min: 8
+    result_summary: |
+      **Mediastinal widening at the aortic knob; loss of aortic-
+      pulmonary window; small left pleural effusion ("apical cap").**
+      No pneumothorax. Lung fields clear.
+
+      Caveat: ~20% of aortic dissections have a normal CXR (IRAD
+      registry). A normal CXR DOES NOT exclude AD when the pretest
+      probability is high — go straight to CTA.
+    abnormal: true
+    sources:
+      - {
+          type: rcem,
+          ref: 'RCEM/RCR Joint Best Practice Guideline 2024 — Diagnosis of Thoracic Aortic Dissection in the ED — CXR has poor sensitivity (~64%) and normal in ~20%',
+        }
+
+  - id: ix_pocus
+    name: 'Bedside POCUS — parasternal long and suprasternal view'
+    category: bedside
+    turnaround_min: 5
+    result_summary: |
+      Parasternal long-axis: **dilated aortic root (4.8 cm)** with a
+      mobile intimal flap visible. Moderate aortic regurgitation jet.
+      Small pericardial effusion (~6 mm) — no tamponade physiology
+      yet. Suprasternal: intimal flap in proximal arch.
+
+      POCUS is rule-IN, not rule-OUT, for AD. A positive scan
+      mandates CTA + cardiothoracics; a negative scan does not
+      exclude the diagnosis.
+    abnormal: true
+    sources:
+      - { type: rcem, ref: 'RCEM Learning — POCUS in suspected aortic dissection' }
+
+  - id: ix_cta_aorta
+    name: 'CT aorta with contrast (CTA) — gold standard'
+    category: imaging
+    turnaround_min: 25
+    essential: true
+    result_summary: |
+      **Type A aortic dissection.** Intimal flap from the aortic root
+      to just distal to the left subclavian artery (Stanford A,
+      DeBakey I). Dissection extends into the proximal RCA — accounts
+      for inferior ST elevation. Aortic root 4.9 cm. Small
+      haemopericardium without tamponade. False lumen partially
+      thrombosed. Innominate artery involved — explains right-arm
+      hypoperfusion and paraesthesia.
+
+      **This is a surgical emergency.** Cardiothoracics theatre,
+      anaesthetics, and cell salvage on the line.
+    abnormal: true
+    sources:
+      - {
+          type: esc,
+          ref: 'Mazzolai L et al. 2024 ESC Guidelines for the management of peripheral arterial and aortic diseases. Eur Heart J 2024;45:3538-3700 — CTA as gold standard; introduces TEM classification for acute aortic syndromes.',
+        }
+
+  - id: ix_troponin
+    name: 'High-sensitivity troponin (hs-cTnI)'
+    category: blood
+    turnaround_min: 30
+    essential: true
+    result_summary: |
+      **hs-cTnI 184 ng/L (upper reference 14 ng/L for men).** Mildly
+      elevated. Consistent with coronary-ostium involvement by the
+      dissection flap — NOT primary plaque-rupture MI.
+
+      The audit-classic anchor: a troponin rise in a chest pain
+      patient with an ECG pattern that looks ischaemic can lock the
+      team into the ACS pathway. Always re-test the dissection
+      hypothesis against the history and bedside features (tearing
+      pain, BP differential, pulse deficit, new AR murmur).
+  - id: ix_bloods
+    name: 'FBC, U&E, LFTs, coag, group + crossmatch 4 units, lactate'
+    category: blood
+    turnaround_min: 45
+    result_summary: |
+      Hb 138 · Plt 224 · WCC 11.8 · INR 1.0 · APTT 32 · Na 138 ·
+      K 4.4 · Urea 6.8 · Creat 102 · Lactate 2.4 (mildly raised) ·
+      LFTs normal. **D-dimer 4200 ng/mL** (raised — non-specific but
+      adds weight; D-dimer <500 has 95% NPV per RCEM rule-out tools,
+      but a positive D-dimer does NOT rule in).
+    abnormal: true
+
+  - id: ix_add_rs
+    name: 'ADD-RS — Aortic Dissection Detection Risk Score'
+    category: bedside
+    turnaround_min: 2
+    essential: true
+    result_summary: |
+      **High-risk features ticked**:
+      • Predisposing condition: bicuspid aortic valve + family history
+        of aortic disease (+1).
+      • Pain features: abrupt onset, severe intensity, tearing/ripping
+        character (+1).
+      • Examination features: BP differential >20 mmHg, pulse deficit
+        right radial, new AR murmur, focal neuro right arm (+1).
+
+      **ADD-RS = 3 (high risk).** Urgent CTA + cardiothoracic
+      activation. With a positive POCUS and a high ADD-RS the pre-
+      test probability of dissection is in the 60–80% range and CTA
+      must not be delayed for further bloods.
+    abnormal: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'Rogers AM et al. Sensitivity of the Aortic Dissection Detection Risk Score (ADD-RS), Circulation 2011.',
+        }
+      - { type: rcem, ref: 'RCEM Best Practice — ADD-RS for risk stratification' }
+
+# ─── Differential ─────────────────────────────────────────────────────────
+differential:
+  - diagnosis: 'Type A aortic dissection extending into RCA, with malperfusion of right upper limb'
+    likelihood: top
+    discriminator: |
+      Tearing interscapular → anterior pain + BP differential >20 mmHg
+      + pulse deficit + new AR murmur + focal neuro of right arm +
+      mediastinal widening on CXR + flap on POCUS = ADD-RS 3.
+      Inferior ST elevation is from coronary-ostium involvement, not
+      primary thrombotic MI.
+
+  - diagnosis: 'Inferior STEMI (proximal RCA)'
+    likelihood: must_not_miss
+    discriminator: |
+      ECG fits. Troponin fits. BUT: tearing radiating-to-back pain,
+      BP differential >86 mmHg, right radial pulse deficit, and a
+      new AR murmur are NOT MI features. Treating as STEMI (heparin,
+      ticagrelor, tenecteplase if no PCI available) would be lethal
+      if AD is missed — anticoagulation expands the haematoma.
+
+  - diagnosis: 'Pulmonary embolism (massive)'
+    likelihood: worth_considering
+    discriminator: |
+      Sudden severe chest pain + dyspnoea — but the pain is anterior
+      not pleuritic, BP differential and pulse deficit are NOT PE
+      features, and the ECG is regional ST elevation not the S1Q3T3
+      / RV strain pattern.
+
+  - diagnosis: 'Oesophageal rupture (Boerhaave syndrome)'
+    likelihood: worth_considering
+    discriminator: |
+      Severe chest pain after retching — Mr Okafor has been retching,
+      but tearing pre-vomiting onset + BP differential + pulse
+      deficit point to dissection. CXR would show mediastinal air or
+      pneumothorax in Boerhaave; here it shows mediastinal widening.
+
+  - diagnosis: 'Cardiac tamponade from primary pericarditis'
+    likelihood: unlikely
+    discriminator: |
+      POCUS shows pericardial effusion BUT no tamponade physiology
+      (no RV diastolic collapse, no pulsus). Effusion in this
+      context is the secondary consequence of haemopericardium from
+      AD, not the primary diagnosis.
+
+# ─── Management ──────────────────────────────────────────────────────────
+working_diagnosis: |
+  Type A acute aortic dissection (Stanford A, DeBakey I) with proximal
+  RCA involvement causing inferior ST elevation, innominate
+  involvement causing right-arm malperfusion, small haemopericardium,
+  and moderate AR. Surgical emergency — cardiothoracics, anaesthetics,
+  cell salvage, group + crossmatch 4 units.
+
+management:
+  - id: mx_a_to_e_monitoring
+    category: monitoring
+    resus_letter: A
+    name: 'ABCDE; large-bore IV ×2 above the diaphragm; full monitoring; arterial line in the right arm'
+    detail: |
+      Avoid lines through the femoral if iliac dissection extension
+      is possible. The right arm is the high-pressure side here, so
+      an art line there gives the truest reading. Cell salvage and
+      crossmatch 4 units in parallel.
+    must_do: true
+    sources:
+      - { type: rcem, ref: 'RCEM Best Practice — Aortic Dissection initial assessment' }
+
+  - id: mx_iv_labetalol
+    category: drug
+    resus_letter: C
+    name: 'IV labetalol bolus + infusion — target HR <60, systolic <120 mmHg'
+    detail: |
+      Combined alpha/beta blockade lowers shear stress (dP/dt) on the
+      flap. Bolus 10–20 mg IV (≈0.1–0.2 mg/kg in an adult), repeat
+      every 10 min as tolerated to a max ~200 mg cumulative bolus
+      (BNF cap; harmonised with hypertensive-emergency dosing in
+      Oduya case), then infusion 0.5–2 mg/min titrated to HR + BP.
+      Heart-rate control is as important as BP control — lowering BP
+      without slowing HR can paradoxically raise dP/dt. ESC 2024
+      target: **HR <60** in acute Type A.
+    must_do: true
+    drug:
+      amount: '10–20 mg IV bolus (max ~200 mg cumulative); infusion 0.5–2 mg/min'
+      route: IV
+      frequency: 'titrate to HR <60 and systolic <120 mmHg'
+    sources:
+      - { type: esc, ref: 'ESC Aortic Diseases Guideline 2024 — BP and HR targets in acute AD' }
+      - { type: rcem, ref: 'RCEM Best Practice — Aortic Dissection 2023' }
+
+  - id: mx_gtn_after_beta
+    category: drug
+    resus_letter: C
+    prereq_action_ids: [mx_iv_labetalol]
+    name: 'IV GTN AFTER beta-blockade (never before)'
+    detail: |
+      Vasodilator before beta-blocker → reflex tachycardia → ↑dP/dt
+      → propagation of the dissection. ALWAYS achieve rate control
+      before adding GTN. GTN 2–10 mg/h infusion to fine-tune the
+      systolic.
+    drug:
+      amount: '2–10 mg/h IV infusion'
+      route: IV
+      frequency: 'titrate to systolic <120 mmHg, AFTER beta-blockade established'
+    sources:
+      - { type: esc, ref: 'ESC Aortic Diseases Guideline 2024 — sequencing of BP agents' }
+
+  - id: mx_analgesia
+    category: drug
+    resus_letter: D
+    name: 'IV morphine titrated (1–2 mg, repeat after 5 min) + antiemetic'
+    detail: |
+      Adequate analgesia lowers sympathetic drive, which lowers dP/dt
+      and indirectly slows propagation. Pair with an antiemetic
+      (ondansetron 4 mg IV).
+    must_do: true
+    drug:
+      amount: 'Morphine 1–2 mg IV, repeat every 5 min to effect (max ~10 mg in this period); ondansetron 4 mg IV.'
+      route: IV
+      frequency: 'titrate to pain ≤4/10'
+
+  - id: mx_cardiothoracics_call
+    category: referral
+    name: 'Cardiothoracic surgery activation + retrieval if local hospital not a surgical centre'
+    detail: |
+      Type A is a surgical emergency — open repair (Bentall procedure
+      / arch replacement) within hours. Coordinate with anaesthetics,
+      transfusion (cell salvage), ITU bed. If you are not in a
+      surgical centre, blue-light retrieval transfer.
+    must_do: true
+    sources:
+      - {
+          type: esc,
+          ref: 'ESC 2024 — Type A AD: immediate surgical referral, mortality ~50% in first 48 h if untreated',
+        }
+      - { type: textbook, ref: 'Aortic Dissection Charitable Trust — Think Aorta UK pathway' }
+
+  - id: mx_anaesthetics_call
+    category: referral
+    name: 'Anaesthetics for theatre preparation + airway plan'
+    detail: |
+      Patient may need RSI in ED if deteriorating. Pre-induction
+      labetalol is critical — avoid catecholamine surge that
+      propagates dissection. Have crossmatched blood at the bedside.
+    must_do: true
+
+  - id: mx_crossmatch_blood
+    category: procedure
+    resus_letter: C
+    name: 'Crossmatch 4–6 units; activate cell salvage; notify haematology'
+    detail: 'Bentall + arch repair often need 6–10 units. Notify the blood bank early.'
+    must_do: true
+
+  - id: mx_pain_documentation
+    category: communication
+    name: 'Document time of onset; family communication; consent for emergency surgery'
+    detail: |
+      Time of pain onset is the start of the survival clock. Family
+      need to be at the bedside before he goes to theatre — Type A
+      operative mortality is ~25%, untreated mortality is ~50% at
+      48 h.
+    must_do: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'IRAD registry: Type A AD untreated mortality ~1–2% per hour in first 48 h.',
+        }
+
+  # ─── Examiner traps ──────────────────────────────────────────────────
+  - id: mx_no_aspirin_more
+    category: drug
+    name: 'Continue/repeat aspirin 300 mg; load with ticagrelor 180 mg per STEMI pathway'
+    detail: |
+      ❌ The paramedics gave aspirin 300 mg before the dissection was
+      suspected — that horse has bolted, but DO NOT escalate to dual
+      antiplatelet or anticoagulation. Antiplatelets/anticoagulants
+      expand the false lumen and worsen pericardial bleeding.
+    must_not_do: true
+    gated_by_history: [hx_paramedic]
+    sources:
+      - {
+          type: rcem,
+          ref: 'RCEM Best Practice — antiplatelets/anticoagulants are CONTRAINDICATED in suspected AD',
+        }
+
+  - id: mx_no_heparin
+    category: drug
+    name: 'IV unfractionated heparin (per STEMI pathway)'
+    detail: |
+      ❌ Heparin expands the haematoma and can convert a contained
+      dissection into a free rupture. Stop the ACS pathway the moment
+      dissection becomes a serious differential — BEFORE the ECG
+      argument is "settled".
+    must_not_do: true
+
+  - id: mx_no_pci
+    category: procedure
+    name: 'Primary PCI activation for inferior STEMI'
+    detail: |
+      ❌ Catheterising a dissected aortic root can extend the
+      dissection or create a new entry tear. The cath lab is the
+      wrong room. CTA + cardiothoracic surgical theatre is the
+      pathway.
+    must_not_do: true
+
+  - id: mx_no_gtn_alone
+    category: drug
+    name: 'IV GTN infusion as the first BP agent (without beta-blocker)'
+    detail: |
+      ❌ Vasodilator before rate control = reflex tachycardia =
+      higher dP/dt = dissection propagation. Beta-blocker first,
+      vasodilator second.
+    must_not_do: true
+
+  - id: mx_no_lp_for_neuro
+    category: procedure
+    name: 'Lumbar puncture for the right-arm paraesthesia (work up stroke / SAH)'
+    detail: |
+      ❌ The neuro signs are from innominate-artery malperfusion, not
+      cerebral pathology. LP delays the surgical decision and risks
+      anticoagulation-related complications.
+    must_not_do: true
+
+  - id: mx_no_femoral_line
+    category: procedure
+    name: 'Femoral central line for access'
+    detail: |
+      ❌ If iliac extension is present, femoral access can disturb
+      the dissection or measure a falsely low pressure. Use upper-
+      limb access on the high-reading side (right arm here).
+    must_not_do: true
+
+# ─── Disposition ─────────────────────────────────────────────────────────
+disposition_options:
+  - label: 'Direct transfer to cardiothoracic theatre under anaesthetic team; group-crossmatched blood at bedside'
+    criteria: |
+      Type A AD with malperfusion + haemopericardium = immediate
+      surgical repair. The ED stabilisation window is minutes, not
+      hours — every hour of delay is ~1–2% extra mortality.
+    appropriate: true
+    epilogue: "He is on bypass by 14:08. The chest pain ended on induction."
+  - label: 'Admit CCU on a labetalol infusion; cardiothoracics review in the morning'
+    criteria: |
+      Inadequate — Type A AD does not wait until morning. CCU is the
+      pathway for medical management of Type B AD, not Type A.
+    appropriate: false
+    epilogue: "He arrests on the unit at 18:24. Type A dissection cannot wait for the morning."
+  - label: 'Primary PCI activation per inferior STEMI pathway'
+    criteria: |
+      Lethal — anticoagulating and cannulating a dissected aorta
+      propagates the bleed. The inferior ECG changes are a
+      consequence of coronary-ostium involvement; the primary
+      diagnosis is the dissection.
+    appropriate: false
+    epilogue: "The cath lab calls back five minutes in. 'This isn't ACS. You need cardiothoracics, not us.'"
+
+# ─── State machine ──────────────────────────────────────────────────────
+state_machine:
+  states: [deteriorating, stable, arrested, admitted]
+  transitions:
+    - from: deteriorating
+      to: stable
+      trigger:
+        on: action
+        action_id: mx_iv_labetalol
+        note: 'Beta-blockade brings HR + BP toward target; pain settles; dissection propagation slowed pending surgery.'
+    - from: deteriorating
+      to: arrested
+      trigger:
+        on: inaction_by
+        min: 20
+        required_actions: [mx_iv_labetalol, mx_cardiothoracics_call]
+        note: 'Without BP/HR control and surgical activation by T+20 the dissection extends, the haemopericardium worsens, and the patient tamponades / free-ruptures.'
+    - from: stable
+      to: admitted
+      trigger:
+        on: action
+        action_id: mx_anaesthetics_call
+        note: 'Anaesthetic team takes the airway and transfers to theatre — ED responsibility ends.'
+
+# ─── Pearls + pitfalls ──────────────────────────────────────────────────
+pearls:
+  - 'IRAD/TheCase.Report S2E5: AD mortality rises ~1–2% per untreated hour. ~20% have a normal CXR. ~6% are painless. The clinical features (BP differential, pulse deficit, AR murmur, focal neuro) carry more weight than imaging alone in deciding pretest probability.'
+  - 'ADD-RS ≥1 with classic features should trigger urgent CTA. ADD-RS 0 + D-dimer <500 ng/mL gives a high NPV for safely ruling out (per ADvISED study).'
+  - 'Type A (Stanford A / DeBakey I or II) = ascending aorta involved = surgical emergency. Type B (Stanford B / DeBakey III) = descending only = medical management in most cases.'
+  - 'BP and HR control: target systolic <120 mmHg AND HR 60–80. Beta-blocker BEFORE vasodilator — reflex tachycardia propagates the dissection.'
+  - 'Coronary-ostium dissection (RCA in ~30% of Type A) mimics inferior STEMI. Tearing pain + BP differential + pulse deficit + new AR murmur ALL outweigh the ECG. Anchoring on STEMI kills.'
+  - 'Antiplatelets and anticoagulants are CONTRAINDICATED in suspected AD. If aspirin was given before suspicion was raised, do not escalate.'
+  - 'Cell salvage + 4–6 unit crossmatch in parallel with the surgical call — the operative blood requirement is substantial.'
+
+pitfalls:
+  - 'Anchoring on the STEMI ECG and missing the tearing pain + BP differential.'
+  - 'Giving heparin / ticagrelor / alteplase in suspected AD.'
+  - 'Reading the CXR as "no widening" and excluding AD on that basis (~20% normal in confirmed AD).'
+  - 'Vasodilator before beta-blockade — reflex tachycardia, dissection propagation.'
+  - 'Femoral access (line or art line) in a patient with potential iliac extension.'
+  - "Anchoring on AD when it isn't — the must-not-miss alternative is genuinely an MI; pretest probability and ADD-RS guide the call."
+
+sources:
+  - {
+      type: rcem,
+      ref: 'RCEM/RCR Joint Best Practice Guideline 2024 — Diagnosis of Thoracic Aortic Dissection in the ED',
+    }
+  - { type: esc, ref: 'ESC Guidelines for the Management of Aortic Diseases (2024 update)' }
+  - {
+      type: textbook,
+      ref: 'Hagan PG et al. The International Registry of Acute Aortic Dissection (IRAD). JAMA 2000.',
+    }
+  - {
+      type: textbook,
+      ref: 'Rogers AM et al. Sensitivity of the Aortic Dissection Detection Risk Score (ADD-RS). Circulation 2011.',
+    }
+  - {
+      type: textbook,
+      ref: 'Nazerian P et al. ADvISED prospective multicentre study — ADD-RS plus D-dimer for ruling out AD. Circulation 2018.',
+    }
+  - {
+      type: textbook,
+      ref: 'Aortic Dissection Charitable Trust UK — Think Aorta campaign and the AD assessment pathway.',
+    }
+  - {
+      type: textbook,
+      ref: 'Oxford Handbook of Emergency Medicine 5e — Ch 4 Cardiovascular emergencies',
+    }
+
+author_notes: |
+  Designed as the SAQ-classic anchor-breaker: chest pain + ST
+  elevation + troponin rise that turns out to be Type A aortic
+  dissection involving the RCA ostium. The save is the tearing
+  history + BP differential + pulse deficit + new AR murmur.
+
+  Pairs thematically with case_chest_pain_patel_ambient (STEMI in a
+  72-year-old woman who DOES have a STEMI) — the contrast teaches the
+  diagnostic-anchor pattern: the differential matters as much as the
+  ECG.
+
+  Mortality, CXR sensitivity, and ECG patterns are sourced from the
+  IRAD registry (JAMA 2000) and the ESC 2024 aortic diseases
+  guideline. ADD-RS sensitivity and combined ADD-RS + D-dimer rule-
+  out from Rogers 2011 + Nazerian 2018. RCEM Best Practice 2023 +
+  Aortic Dissection Charitable Trust Think Aorta pathway are the UK
+  practice references. TheCase.Report S2E5 was the inspiration but
+  doesn't appear in player-facing citations.

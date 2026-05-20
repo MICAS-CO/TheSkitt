@@ -1,0 +1,545 @@
+# Authored against BSPED Paediatric DKA Guideline 2021 (last reviewed
+# 26 Nov 2024) and APLS 7th edition. Key
+# differences from adult JBDS-IP that this case teaches:
+#   - 0.9% saline boluses 10 mL/kg over 30 min (NOT 500 mL adult bolus)
+#   - Fluid deficit replaced over 48 h (not 24 h) — slower correction
+#     reduces cerebral oedema risk
+#   - Insulin starts 1 HOUR after fluids commenced (NOT concurrent)
+#   - Insulin rate 0.05-0.1 units/kg/h (titrate from 0.05 in <2 y)
+#   - Hourly neuro obs for the FIRST 24 hours (cerebral oedema = most
+#     feared complication, peaks 4-12 h into treatment)
+#
+# Amir is an 8 y/o new-onset T1DM. Trap density: 4 must_not_do
+# actions including the 20-mL/kg bolus, concurrent insulin, insulin
+# bolus, and bicarbonate.
+
+schema_version: 1
+id: case_paeds_dka_amir
+title: 'Paediatric DKA — first presentation, 8 y/o'
+chief_complaint: '?Paediatric DKA · first presentation'
+topic_id: paeds_dka
+
+vignette: |
+  Paeds resus. 14:32.
+
+  Amir Hassan, 8 y/o, brought in by his mum Yasmin and her partner.
+  Triage cat 1. Paramedics' handover: "Mum says he's been drinking
+  litres and weeing constantly for three weeks. Vomiting since
+  yesterday morning. Got drowsy at school this morning. By lunchtime
+  he wasn't really making sense. We were called at 13:50. On scene
+  BM 'HI' on the meter, sats 99% air, RR 36 deep and sighing,
+  HR 138 sinus, BP 96/58. We gave 10 mL/kg saline en route —
+  250 mL of 0.9% sodium chloride, all in. He's been semi-rousable.
+  No prior medical history."
+
+  Amir is supine, eyes closed, breathing deeply and rapidly. Mum
+  is at the bedside, holding his hand.
+
+curriculum_tags: [EnC2, GC3]
+slos: [1, 3, 5]
+difficulty_band: ST3
+paeds: true
+
+demographics:
+  age_value: 8
+  age_unit: years
+  sex: male
+  weight_kg: 26
+  pmh: ['no past medical history of note']
+  medications: []
+  allergies: ['NKDA']
+  social: |
+    Year 4 at primary school. Lives with mum (Yasmin) and her
+    partner Naveed. No prior MH or safeguarding involvement.
+
+triage_category: 1
+initial_state: deteriorating
+bay: paeds
+resus_protocol: apls_paeds
+
+vitals:
+  baseline:
+    hr: 88
+    rr: 20
+    spo2: 99
+    bp_sys: 102
+    bp_dia: 62
+    gcs: 15
+    temp_c: 36.7
+    bm: 5.4
+  deteriorating:
+    hr: 138
+    rr: 36
+    spo2: 99
+    bp_sys: 96
+    bp_dia: 58
+    gcs: 12
+    temp_c: 36.6
+    bm: 36.0
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
+history:
+  - id: hx_paramedics
+    source: paramedic
+    topic: 'Paramedic handover.'
+    supports:
+      - 'Severe paediatric DKA — first presentation of type 1 diabetes mellitus'
+    response: |
+      "999 call 13:50. On scene 14:02. BM read 'HI' on the meter.
+      RR was 36 deep and sighing, HR 138, BP 96/58. He's been
+      drowsy en route. Mum says polyuria and polydipsia three
+      weeks. Vomiting 24 hours. We gave 10 mL/kg saline IV en
+      route — 250 mL of 0.9% sodium chloride, all in. No insulin
+      given prehospital."
+
+  - id: hx_yasmin_timeline
+    source: family
+    topic: 'Mum — walk me through the last few weeks.'
+    supports:
+      - 'Severe paediatric DKA — first presentation of type 1 diabetes mellitus'
+    npc_voice: "Yasmin doesn't take her eyes off Amir while she answers."
+    branch_choices:
+      - id: compassionate
+        label: "You're the expert on him. Tell me everything — anything that's been off, even small things."
+        npc_voice: "She lets out a breath. She still doesn't look away from him. But she finds more to say."
+        rapport_delta: 2
+        response: |
+          "Three weeks. (Pause.) Getting up at night to drink — two,
+          three times. Wetting the bed twice — he hasn't done that
+          since he was four, he was so ashamed I didn't tell anyone.
+          The teacher said he's asked to go to the toilet maybe
+          ten times a day at school. (Breath.) His trousers are
+          loose. He didn't want his birthday cake on Saturday — he's
+          seven, he had no birthday cake on Saturday and I didn't
+          know what to do. He hasn't eaten properly for two days.
+          Sick three or four times since yesterday morning. He woke
+          up this morning and I couldn't get him out of bed. (Beat.)
+          I'm sorry I didn't bring him in sooner. I thought it was a
+          virus."
+      - id: clinical
+        label: "How long has this been going on? What changed?"
+        rapport_delta: 0
+        response: |
+          "Three weeks of polydipsia + polyuria. Weight loss. Two
+          days of vomiting. Couldn't rouse him this morning."
+      - id: judgemental
+        label: "Three weeks? Why didn't you bring him in sooner?"
+        npc_voice: "She finally looks at you. Just once. Then back at Amir."
+        rapport_delta: -2
+        response: |
+          "I thought it was a virus."
+          (The bedwetting episodes and the missed birthday cake are
+          NOT volunteered. The player has the bones of the prodrome
+          but loses the texture that helps stratify how unwell he
+          truly was.)
+    response: |
+      "Three weeks ago he started getting up two or three times a
+      night to drink. The teacher said he's asked to go to the
+      toilet maybe ten times a day. He's lost weight — his trousers
+      are loose. He hasn't eaten properly for two days. Sick three
+      or four times since yesterday morning. He woke up this
+      morning and I couldn't get him out of bed."
+
+  - id: hx_recent_illness
+    source: family
+    topic: 'Any recent infections, sore throat, cough, tummy upset?'
+    prereq_history_ids: [hx_yasmin_timeline]
+    response: |
+      "He had a viral cold-thing two weeks ago — cough and
+      temperature for three days. Got over it. No tummy bugs at
+      school I know of. Has he caught something?"
+
+  - id: hx_family_pmh
+    source: family
+    topic: 'Family history — diabetes, autoimmune conditions?'
+    prereq_history_ids: [hx_yasmin_timeline]
+    response: |
+      "My sister has under-active thyroid. My mum had pernicious
+      anaemia in her seventies. No diabetes in the family. Naveed
+      has no family history he knows of."
+
+  - id: hx_amir_speak
+    source: patient
+    topic: 'Ask Amir — can you tell me what hurts, mate?'
+    prereq_history_ids: [hx_paramedics]
+    npc_voice: "Amir opens his eyes slowly. His breath is deep and fruity. He doesn't focus."
+    response: |
+      "Thirsty. Tummy hurts. Sleepy. Mummy?"
+      (Returns to closed eyes; opens to voice but won't engage.
+      GCS approximately E3 V4 M6 = 13.)
+
+  - id: hx_meds_now
+    source: family
+    topic: 'Any medications, supplements, recent paracetamol?'
+    response: |
+      "Just calpol — paracetamol — yesterday and last night for
+      his tummy. Maybe four doses total. Nothing else."
+
+  - id: hx_school
+    source: records
+    topic: 'School nurse / GP records.'
+    response: |
+      "GP record: no prior diabetes screening. Last GP visit
+      14 months ago for childhood asthma — has not used inhaler
+      since. School nurse note 3 weeks ago: 'frequent toilet
+      trips, mum informed'. No prior CYPMHS involvement."
+
+examination:
+  - system: paeds_assessment_triangle
+    findings:
+      - { name: 'Appearance', value: 'reduced — drowsy, won’t engage', present: true, red_flag: true }
+      - { name: 'Work of breathing', value: 'deep + rapid (Kussmaul)', present: true, red_flag: true }
+      - { name: 'Circulation to skin', value: 'pale, cool peripheries, mottled knees', present: true, red_flag: true }
+  - system: airway
+    findings:
+      - { name: 'airway', value: 'patent; fruity acetone breath', present: true,
+          supports: ['Severe paediatric DKA — first presentation of type 1 diabetes mellitus'] }
+  - system: breathing
+    findings:
+      - { name: 'respiratory rate', value: '36/min — deep + sighing (Kussmaul)', red_flag: true,
+          supports: ['Severe paediatric DKA — first presentation of type 1 diabetes mellitus'] }
+      - { name: 'SpO2', value: '99% on air' }
+      - { name: 'auscultation', value: 'clear bilaterally — no wheeze, no crackles' }
+  - system: circulation
+    findings:
+      - { name: 'heart rate', value: '138/min (paeds 6-12y normal 70-115)', red_flag: true }
+      - { name: 'blood pressure', value: '96/58 mmHg' }
+      - { name: 'capillary refill', value: '3-4 seconds centrally', red_flag: true,
+          supports: ['Severe paediatric DKA — first presentation of type 1 diabetes mellitus'] }
+      - { name: 'peripheries', value: 'cool to mid-forearm', present: true }
+  - system: disability
+    findings:
+      - { name: 'GCS', value: '13 (E3 V4 M6)', red_flag: true,
+          supports: ['Cerebral oedema (peri-treatment paediatric DKA complication)'] }
+      - { name: 'pupils', value: '3 mm, equal, reactive' }
+      - { name: 'glucose (capillary)', value: '36 mmol/L (HI on meter at scene)' }
+      - { name: 'ketones (capillary)', value: '5.6 mmol/L',
+          supports: ['Severe paediatric DKA — first presentation of type 1 diabetes mellitus'] }
+  - system: abdomen
+    findings:
+      - { name: 'tenderness', value: 'diffuse, mild — no peritonism' }
+  - system: exposure
+    findings:
+      - { name: 'temperature', value: '36.7 °C' }
+      - { name: 'no rash, no signs of trauma', pertinent_negative: true }
+
+investigations:
+  - id: ix_vbg
+    name: 'Venous blood gas + ketones'
+    category: gas
+    turnaround_min: 5
+    essential: true
+    abnormal: true
+    result_summary: |
+      pH 7.04, pCO₂ 1.8, HCO₃ 6, BE −22, lactate 3.2, glucose 36,
+      Na 134, K 5.4. Ketones 5.6 mmol/L. Severe DKA by BSPED 2021:
+      pH <7.1 OR HCO3 <5 + ketones >3.
+    supports: ['Severe paediatric DKA — first presentation of type 1 diabetes mellitus']
+
+  - id: ix_fbc_ues
+    name: 'FBC, U&E, CRP'
+    category: blood
+    turnaround_min: 30
+    essential: true
+    abnormal: true
+    result_summary: |
+      Hb 134, WCC 16.2 (neutrophilia — common in DKA), plts 280.
+      Na 134, K 5.4, Cl 102, urea 9.8, Cr 78 (raised for age — AKI).
+      Mg 0.62, Phos 0.7 (low — will drop with insulin). CRP 22.
+    supports: ['Severe paediatric DKA — first presentation of type 1 diabetes mellitus']
+
+  - id: ix_corrected_na
+    name: 'Corrected sodium calculation'
+    category: bedside
+    turnaround_min: 0
+    essential: true
+    abnormal: true
+    result_summary: |
+      Corrected Na = 134 + (0.4 × (36 − 5.5)) = 146 mmol/L.
+      Hidden hypernatraemia. Falling corrected Na in treatment
+      = cerebral-oedema warning.
+
+  - id: ix_hba1c
+    name: 'HbA1c (baseline for new T1DM)'
+    category: blood
+    turnaround_min: 60
+    abnormal: true
+    result_summary: |
+      HbA1c 109 mmol/mol (12.1%). Confirms chronic hyperglycaemia.
+      Send anti-GAD + anti-islet cell inpatient.
+
+  - id: ix_urine_dip
+    name: 'Urine dipstick'
+    category: urine
+    turnaround_min: 5
+    abnormal: true
+    result_summary: |
+      Glucose 4+, ketones 4+, leucs neg, nitrites neg. No UTI.
+
+  - id: ix_ecg
+    name: '12-lead ECG (assess hyperkalaemia)'
+    category: ecg
+    turnaround_min: 5
+    abnormal: false
+    result_summary: |
+      Sinus tachycardia 138/min. PR / QRS / QT all normal for age.
+      No peaked T waves despite K+ 5.4.
+
+  - id: ix_cxr
+    name: 'Chest X-ray (rule out infective trigger)'
+    category: imaging
+    turnaround_min: 30
+    abnormal: false
+    result_summary: |
+      Heart size normal. Lung fields clear. No focal consolidation,
+      no effusion.
+
+differential:
+  - diagnosis: 'Severe paediatric DKA — first presentation of type 1 diabetes mellitus'
+    likelihood: top
+    discriminator: |
+      BSPED severe criteria met: pH 7.04, HCO3 6, ketones 5.6, gluc
+      36, GCS 13. Chronic polydipsia / polyuria / weight loss + 24 h
+      vomiting + Kussmaul + fruity breath = unambiguous.
+  - diagnosis: 'Hyperosmolar hyperglycaemic state (HHS)'
+    likelihood: must_not_miss
+    discriminator: |
+      Less common in children; T2DM, acidosis mild, minimal
+      ketones. Amir's severe ketonaemia rules HHS out here.
+  - diagnosis: 'Cerebral oedema (peri-treatment paediatric DKA complication)'
+    likelihood: must_not_miss
+    discriminator: |
+      0.5-1% of paediatric DKA, peaks 4-12 h into treatment.
+      Headache, falling GCS, bradycardia + hypertension. Treat
+      with 3% hypertonic saline 2.5-5 mL/kg OR mannitol 0.5-1 g/kg
+      + slow fluids.
+  - diagnosis: 'Sepsis with metabolic decompensation of new T1DM'
+    likelihood: worth_considering
+    discriminator: |
+      Sepsis can precipitate DKA. CRP 22 + WCC 16.2 non-specific
+      (DKA causes both). CXR clear — treat the DKA + take cultures
+      + reassess.
+  - diagnosis: 'Salicylate / methanol / ethylene glycol toxicity'
+    likelihood: must_not_miss
+    discriminator: |
+      Wide-anion-gap acidosis + Kussmaul. Negative history but
+      worth flagging.
+  - diagnosis: 'Acute abdomen (DKA mimic)'
+    likelihood: unlikely
+    discriminator: |
+      DKA mimics appendicitis. No peritonism. Re-examine when
+      acidosis corrects.
+
+working_diagnosis: 'Severe paediatric DKA — first presentation of type 1 diabetes mellitus'
+
+management:
+  - id: mx_a_to_e_paeds
+    category: monitoring
+    name: 'Paediatric ABCDE + monitoring (SpO2, ECG, NIBP every 15 min, hourly neuro obs 24 h)'
+    must_do: true
+    resus_letter: A
+
+  - id: mx_call_paeds_team
+    category: escalation
+    name: 'Call paeds reg + PICU pre-alert (severe DKA + GCS <15)'
+    must_do: true
+
+  - id: mx_iv_access_bloods
+    category: procedure
+    name: 'IV access × 2 + VBG + bloods + ketones'
+    must_do: true
+    resus_letter: C
+
+  - id: mx_paeds_saline_bolus
+    category: fluid
+    name: '0.9% saline 10 mL/kg bolus over 30 min (paeds dose, NOT 20)'
+    must_do: true
+    resus_letter: C
+    drug:
+      amount: '10 mL/kg = 260 mL'
+      route: IV
+      frequency: 'over 30 min, repeat once if shocked'
+      paeds_dose: '10 mL/kg over 30 min'
+    detail: |
+      BSPED 2021 paediatric DKA: smaller bolus (10 mL/kg) than
+      adult JBDS-IP. Reduces rapid-osmolality cerebral-oedema risk.
+
+  - id: mx_paeds_maintenance_fluid
+    category: fluid
+    name: '0.9% saline maintenance + 48-h deficit replacement (NOT 24 h)'
+    must_do: true
+    resus_letter: C
+    detail: |
+      Severe DKA = 10% deficit = 2600 mL over 48 h. Maintenance
+      for 26 kg ≈ 1620 mL/24 h. Subtract boluses already given.
+      Add KCl 20 mmol/500 mL once urinating + K+ <5.5.
+
+  - id: mx_paeds_insulin_1h_after
+    category: drug
+    name: 'IV insulin infusion 0.05-0.1 units/kg/h, START 1 HOUR AFTER fluids'
+    must_do: true
+    resus_letter: C
+    prereq_action_ids: [mx_paeds_saline_bolus]
+    drug:
+      amount: '0.05-0.1 units/kg/h'
+      route: IV
+      frequency: 'continuous; aim glucose drop 4-5 mmol/L/h'
+      paeds_dose: '0.05 units/kg/h in <2 y; 0.1 otherwise'
+    detail: |
+      Paeds DKA: insulin starts H+1, NOT concurrent. No bolus.
+      Once glucose <14, add 10% dextrose to saline infusion.
+
+  - id: mx_paeds_neuro_obs
+    category: monitoring
+    name: 'Hourly neuro obs (GCS + pupils) for 24 h — cerebral oedema watch'
+    must_do: true
+    detail: |
+      Cerebral oedema = leading cause of paeds DKA mortality
+      (0.5-1%, peaks 4-12 h). Headache, falling GCS, bradycardia
+      + hypertension are warnings.
+
+  - id: mx_paeds_glucose_monitoring
+    category: monitoring
+    name: 'Hourly capillary glucose + ketones for 24 h'
+    must_do: true
+
+  - id: mx_potassium_replacement
+    category: drug
+    name: 'KCl 20 mmol per 500 mL maintenance (once urinating + K+ <5.5)'
+    must_do: true
+
+  - id: mx_picu_admission
+    category: disposition
+    name: 'Admit to PICU / paediatric HDU'
+    must_do: true
+
+  - id: mx_family_communication
+    category: communication
+    name: 'Honest age-appropriate explanation + early diabetes-nurse contact'
+    must_do: true
+
+  # ─── Distractors / examiner traps ─────────────────────────────────────────
+  - id: mx_adult_bolus_20
+    category: fluid
+    name: '0.9% saline 20 mL/kg bolus (adult JBDS-IP dose)'
+    must_not_do: true
+    gated_by_history: [hx_paramedics]
+    detail: |
+      ❌ TRAP. Paeds bolus is 10 mL/kg (NOT 20). Bigger bolus →
+      rapid osmolality shift → cerebral-oedema risk.
+
+  - id: mx_insulin_concurrent
+    category: drug
+    name: 'Start IV insulin at the same time as the saline bolus'
+    must_not_do: true
+    gated_by_history: [hx_paramedics]
+    detail: |
+      ❌ TRAP. Paeds BSPED 2021 deliberately delays insulin by 1
+      hour. Concurrent insulin in children is a cerebral-oedema
+      risk factor.
+
+  - id: mx_insulin_bolus
+    category: drug
+    name: 'IV insulin bolus 0.1 units/kg STAT'
+    must_not_do: true
+    gated_by_history: [hx_paramedics]
+    detail: |
+      ❌ TRAP. No insulin bolus in DKA (paeds or adult). No
+      benefit; rapid osmolality shift.
+
+  - id: mx_iv_bicarbonate
+    category: drug
+    name: 'IV sodium bicarbonate 1 mmol/kg for the severe acidosis'
+    must_not_do: true
+    detail: |
+      ❌ TRAP. Bicarb NOT recommended in DKA outside life-
+      threatening hyperkalaemia with ECG changes. Worsens CSF pH;
+      acidosis self-corrects with fluids + insulin.
+
+disposition_options:
+  - label: 'PICU / paediatric HDU admission with diabetes-team handover'
+    criteria: |
+      Severe paeds DKA + GCS <15 + ongoing insulin infusion +
+      hourly neuro obs for 24 h. Diabetes specialist nurse before
+      transfer.
+    appropriate: true
+    epilogue: "Amir's parents arrive at 16:18. The paeds diabetes nurse meets them in the family room first."
+  - label: 'Paediatric ward admission with hourly obs'
+    criteria: |
+      Reasonable for moderate DKA (pH 7.1-7.2) but severe DKA +
+      GCS <15 warrants HDU/PICU.
+    appropriate: false
+    epilogue: "The ward escalates him to PICU at 19:00. The handover documents your initial decision."
+  - label: 'Adult ICU admission'
+    criteria: |
+      ❌ Not appropriate for an 8 y/o.
+    appropriate: false
+    epilogue: "Adult ICU declines politely. PICU at the regional centre accept him by 17:00."
+  - label: 'Discharge once glucose <14 on infusion'
+    criteria: |
+      ❌ Premature. Resolution: pH >7.30, HCO3 >18, ketones <0.6,
+      eating + drinking + SC insulin transition.
+    appropriate: false
+    epilogue: "He arrests at home at 22:00 with cerebral oedema."
+
+state_machine:
+  states: [stable, deteriorating, arrested, admitted, discharged]
+  transitions:
+    - from: deteriorating
+      to: admitted
+      trigger:
+        on: action
+        action_id: mx_picu_admission
+        note: 'Accepted by PICU for severe DKA management.'
+    - from: deteriorating
+      to: arrested
+      trigger:
+        on: inaction_by
+        min: 25
+        required_actions:
+          - mx_paeds_saline_bolus
+          - mx_paeds_insulin_1h_after
+        note: |
+          Severe acidosis uncorrected — cardiovascular collapse from
+          dehydration + hyperkalaemia + acidosis.
+    - from: stable
+      to: deteriorating
+      trigger:
+        on: elapsed_min
+        min: 30
+        note: |
+          Safety-net transition — acidosis declares itself with time.
+
+pearls:
+  - 'Paediatric DKA: 10 mL/kg saline bolus (NOT 20), 48-h deficit replacement (NOT 24 h), insulin 1 HOUR AFTER fluids — all to reduce cerebral-oedema risk. (BSPED 2021, last reviewed Nov 2024.)'
+  - 'No insulin bolus in DKA — paediatric OR adult. (BSPED 2021 + JBDS-IP 2023.)'
+  - 'No routine sodium bicarbonate in DKA — even at pH 7.04.'
+  - 'Hourly neuro obs for 24 h: cerebral oedema = leading cause of paeds DKA mortality (0.5–1%), peaks 4–12 h into treatment.'
+  - 'Corrected Na = Na + 0.4 × (gluc − 5.5). FALLING corrected Na during treatment = cerebral-oedema warning — slow the fluids, reassess GCS.'
+  - 'New-onset T1DM: diabetes specialist nurse should see the family in ED before transfer. Reduces later DKA readmissions.'
+
+pitfalls:
+  - "Applying adult JBDS-IP doses to a paediatric patient (20 mL/kg, concurrent insulin). Both wrong in BSPED 2021 paediatric DKA."
+  - 'Treating reduced GCS as a separate problem (LP, CT) before correcting acidosis.'
+  - 'Giving an insulin bolus. No evidence of benefit; rapid osmolality shift risk.'
+  - 'Forgetting to subtract resuscitation boluses from the calculated deficit.'
+  - 'Discharging when glucose is "normal" without confirming ketones <0.6 + pH >7.30 + SC insulin transition.'
+
+sources:
+  - { type: bsped, ref: 'BSPED Paediatric DKA Guideline 2021 (last reviewed 26 Nov 2024)' }
+  - { type: rcpch, ref: 'RCPCH State of Child Health 2023 — diabetes section' }
+  - { type: nice_cks, ref: 'NICE CKS Diabetes type 1 (paediatric section)' }
+  - { type: other, ref: 'APLS 7th edition — paediatric DKA chapter' }
+
+author_notes: |
+  Pairs deliberately with Marcus (adult DKA). Same pathophysiology,
+  meaningfully different protocols — confusing them is dangerous.
+  Trap density is high (4 must_not_do actions). Future arc opportunity:
+  'overnight metabolic resus, adult + paeds' weaving Marcus + Amir on
+  the same shift.
