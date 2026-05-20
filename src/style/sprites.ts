@@ -15,6 +15,7 @@
  */
 
 import type { CaseStateT } from '../content/schema';
+import { dropFrameToSvg, dropPatientFrames } from './dropPatientSprites';
 
 type PaletteMap = Record<string, string | null>;
 
@@ -914,6 +915,12 @@ export const PATIENT_SPRITES: Record<
 /**
  * Returns the rendered SVG markup for a patient at a given case state,
  * or null if the patient has no authored sprite yet.
+ *
+ * Two registries (M75): drop-#3's curated archetypes win where mapped
+ * via CASE_TO_DROP_ID — they're rendered with their own self-contained
+ * PAL via the dropPatientSprites module. Cases not in the drop map
+ * fall through to PATIENT_SPRITES (the hand-authored Beth + Williams +
+ * Chloe + Stan + Patel from sprites.ts).
  */
 export function spriteSvgFor(
   caseId: string,
@@ -921,6 +928,16 @@ export function spriteSvgFor(
   frameIndex = 0,
   scale = 6,
 ): string | null {
+  // 1. Drop-#3 mapped patient first.
+  const dropId = CASE_TO_DROP_ID[caseId];
+  if (dropId) {
+    const frames = dropPatientFrames(dropId, state);
+    if (frames) {
+      const frame = frames[frameIndex % frames.length];
+      if (frame) return dropFrameToSvg(frame, scale);
+    }
+  }
+  // 2. Hand-authored fallback (Beth, Williams, Chloe, Stan, Patel).
   const reg = PATIENT_SPRITES[caseId];
   if (!reg) return null;
   const factory = reg[state];
@@ -933,9 +950,50 @@ export function spriteSvgFor(
 
 /** Returns the number of animation frames for the given state. */
 export function frameCountFor(caseId: string, state: CaseStateT): number {
+  const dropId = CASE_TO_DROP_ID[caseId];
+  if (dropId) {
+    const frames = dropPatientFrames(dropId, state);
+    if (frames) return frames.length;
+  }
   const reg = PATIENT_SPRITES[caseId];
   if (!reg) return 0;
   const factory = reg[state];
   if (!factory) return 0;
   return factory().length;
 }
+
+/**
+ * Per-case mapping into the drop-#3 archetype catalogue (M75).
+ *
+ * Strong matches (clinical condition + demographic align):
+ *   doherty (81F urosepsis) → case_sepsis_uti_morrison (84F urosepsis)
+ *   tom     (45M variceal)  → case_ugib_variceal_kowalski (54M variceal)
+ *
+ * Acceptable matches (same body system / similar phenotype, mild
+ * demographic looseness — the supine + post-resus views in particular
+ * look generic enough that small age/gender differences don't read):
+ *   sarah   (32F PPH)       → case_ectopic_minors_sarah (31F ectopic)
+ *   ravi    (67M COPD)      → case_acute_heart_failure_ahmed (78M AHF)
+ *   joan    (74F hypotherm) → case_head_injury_doac_brennan (81F faller)
+ *   maya    (19F DKA)       → case_paeds_dka_amir (paeds DKA proxy — Amir is
+ *                              8M; sprite is older but the DKA visual
+ *                              language carries)
+ *   leo     (toddler)       → no case in catalogue (parked)
+ *   ahmed   (58M STEMI)     → case_chest_pain_patel_ambient (72F STEMI —
+ *                              gender mismatch; left UNMAPPED to keep
+ *                              the hand-authored Patel sprite)
+ *
+ * Unmapped (no clean fit):
+ *   ruby (6F asthma) · jake (22M polytrauma) · connor (19M opioid OD) ·
+ *   marcus (26M stab) · liam (28M MH crisis) — these stay in the
+ *   library for future case authoring; sprites.ts won't serve them
+ *   today.
+ */
+const CASE_TO_DROP_ID: Record<string, string> = {
+  case_sepsis_uti_morrison: 'doherty',
+  case_ugib_variceal_kowalski: 'tom',
+  case_ectopic_minors_sarah: 'sarah',
+  case_acute_heart_failure_ahmed: 'ravi',
+  case_head_injury_doac_brennan: 'joan',
+  case_paeds_dka_amir: 'maya',
+};
