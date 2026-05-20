@@ -17,6 +17,11 @@ import { PATIENT_SPRITES, spriteSvgFor } from '../../style/sprites';
 import { NPC_SPRITES, npcFrameToSvg } from '../../style/npcSprites';
 import { PROP_SPRITES, propFrameToSvg } from '../../style/propSprites';
 import { WORLD_TILES, worldFrameToSvg } from '../../style/worldSprites';
+import { EXTRA_PATIENT_SPRITES, extraPatientToSvg } from '../../style/extraPatientSprites';
+import { EXTRA_EQUIPMENT } from '../../style/extraEquipment';
+import { EXTRA_WORLD_TILES } from '../../style/extraWorldTiles';
+import { FX_PARTICLES, FX_ALERTS, FX_EMOTES, fxFrameToSvg } from '../../style/fxSprites';
+import { WALK_FRAMES } from '../../style/walkCycles';
 import type { CaseStateT } from '../../content/schema';
 
 export function AssetLibraryScreen({ onExit }: { onExit: () => void }) {
@@ -38,9 +43,14 @@ export function AssetLibraryScreen({ onExit }: { onExit: () => void }) {
       <PaletteSection />
       <IconsSection />
       <PatientSpritesSection />
+      <ExtraPatientSpritesSection />
       <NpcSpritesSection />
       <PropSpritesSection />
+      <ExtraEquipmentSection />
       <WorldTilesSection />
+      <ExtraWorldTilesSection />
+      <FxSection />
+      <WalkCycleSection />
     </div>
   );
 }
@@ -167,6 +177,128 @@ function WorldTilesSection() {
           <figure key={id}>
             <div dangerouslySetInnerHTML={{ __html: worldFrameToSvg(rows, 3) }} />
             <figcaption>{id.replace(/_/g, ' ')}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ExtraPatientSpritesSection() {
+  return (
+    <section className="asset-lib__section" id="extra-patients">
+      <h2>Extra patient archetypes ({Object.keys(EXTRA_PATIENT_SPRITES).length}) — drop #3</h2>
+      <p className="asset-lib__caption">
+        Character designs from the latest design drop. Names overlap with case names
+        (Ahmed / Sarah / Marcus) but the archetypes are different presentations — not
+        wired to PATIENT_SPRITES. Use these as a library for future case authoring.
+      </p>
+      {Object.entries(EXTRA_PATIENT_SPRITES).map(([pid, frames]) => (
+        <div key={pid} className="asset-lib__patient">
+          <h3>{pid}</h3>
+          <div className="asset-lib__grid">
+            {Object.entries(frames).map(([state, rows]) => (
+              <figure key={state}>
+                <div dangerouslySetInnerHTML={{ __html: extraPatientToSvg(rows, 4) }} />
+                <figcaption>{state}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function ExtraEquipmentSection() {
+  return (
+    <section className="asset-lib__section" id="extra-equipment">
+      <h2>Extension equipment ({Object.keys(EXTRA_EQUIPMENT).length}) — drop #3</h2>
+      <p className="asset-lib__caption">
+        Authored against the existing PROP_SPRITES palette (no new colour keys).
+        Adrenaline ampule + hydrocort vial + saline bag etc.
+      </p>
+      <div className="asset-lib__grid">
+        {Object.entries(EXTRA_EQUIPMENT).map(([id, rows]) => (
+          <figure key={id}>
+            <div dangerouslySetInnerHTML={{ __html: propFrameToSvg(rows, 3) }} />
+            <figcaption>{id.replace(/_/g, ' ')}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ExtraWorldTilesSection() {
+  return (
+    <section className="asset-lib__section" id="extra-world">
+      <h2>Extra world tiles ({Object.keys(EXTRA_WORLD_TILES).length}) — drop #3</h2>
+      <p className="asset-lib__caption">
+        Trolleys (40×20) + 10 environment tiles (16×16). Doors, blood, resus floor,
+        nursing station, computer terminal, signs, pillar, suction outlet.
+      </p>
+      <div className="asset-lib__grid">
+        {Object.entries(EXTRA_WORLD_TILES).map(([id, rows]) => (
+          <figure key={id}>
+            <div dangerouslySetInnerHTML={{ __html: worldFrameToSvg(rows, 3) }} />
+            <figcaption>{id.replace(/_/g, ' ')}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function FxSection() {
+  const sections: { title: string; sprites: Record<string, string[]> }[] = [
+    { title: 'Particles', sprites: FX_PARTICLES },
+    { title: 'Alerts', sprites: FX_ALERTS },
+    { title: 'Emotes', sprites: FX_EMOTES },
+  ];
+  return (
+    <section className="asset-lib__section" id="fx">
+      <h2>FX sprites — drop #3</h2>
+      <p className="asset-lib__caption">
+        Particles (sweat, blood, sparkle, defib bolt, etc.) · alerts (crash call,
+        pager, pre-alert) · emotes (exclamation, question, ellipsis, heart_pulse,
+        relief_exhale). For event toasts + state-change feedback.
+      </p>
+      {sections.map((s) => (
+        <div key={s.title} className="asset-lib__patient">
+          <h3>{s.title} ({Object.keys(s.sprites).length})</h3>
+          <div className="asset-lib__grid">
+            {Object.entries(s.sprites).map(([id, rows]) => (
+              <figure key={id}>
+                <div dangerouslySetInnerHTML={{ __html: fxFrameToSvg(rows, 4) }} />
+                <figcaption>{id.replace(/_/g, ' ')}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function WalkCycleSection() {
+  return (
+    <section className="asset-lib__section" id="walk-cycle">
+      <h2>F1 doctor walk cycle ({Object.keys(WALK_FRAMES).length} frames) — drop #3</h2>
+      <p className="asset-lib__caption">
+        4-direction × 4-frame standard. Renders via the NPC palette (NPC sprite
+        renderer). Currently authored: down step + side stance + alias frames per
+        the design&rsquo;s &lsquo;pose reuse — saves animation memory&rsquo; pattern.
+      </p>
+      <div className="asset-lib__grid">
+        {Object.entries(WALK_FRAMES).map(([id, rows]) => (
+          <figure key={id}>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: npcFrameToSvg(rows, 3),
+              }}
+            />
+            <figcaption>{id}</figcaption>
           </figure>
         ))}
       </div>
