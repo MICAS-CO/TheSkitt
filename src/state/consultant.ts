@@ -102,10 +102,15 @@ export interface ConsultantMessage {
  * Deterministic per memo — same input always renders the same lines,
  * so re-renders on the menu stay stable.
  */
-export function composeConsultantMessage(memo: ShiftMemo): ConsultantMessage {
+export function composeConsultantMessage(
+  memo: ShiftMemo,
+  playerFirstName?: string,
+): ConsultantMessage {
   const sinceHours = hoursSince(memo.whenIso);
   const recency = sinceHours < 6 ? 'just now' : sinceHours < 24 ? 'earlier' : 'last shift';
-  const greeting = `${CONSULTANT_NAME} — ${recency}`;
+  const greeting = `${CONSULTANT_NAME} — ${recency}${
+    playerFirstName ? ` — for Dr ${playerFirstName}` : ''
+  }`;
 
   const focus = memo.highlightCaseTitle ? `: ${memo.highlightCaseTitle}` : '';
   const tagBlurb = memo.topTags.length > 0 ? ` Around ${memo.topTags.slice(0, 2).join(' / ')}.` : '';

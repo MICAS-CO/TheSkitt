@@ -9,6 +9,19 @@ import { test, expect } from '@playwright/test';
  * mounts, and returning to the board works.
  */
 test('hen-do shift: board ↔ department view toggle', async ({ page }) => {
+  // M74: skip the first-run induction by seeding a completed character.
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      'theSkitt.character.v1',
+      JSON.stringify({
+        firstName: 'Test',
+        lastName: 'Doctor',
+        role: 'F1',
+        inducted: true,
+        createdIso: '2026-01-01T00:00:00.000Z',
+      }),
+    );
+  });
   await page.goto('/');
   await page.getByRole('button', { name: /The hen-do/ }).click();
   await expect(page.getByRole('heading', { name: 'Focus cases' })).toBeVisible();

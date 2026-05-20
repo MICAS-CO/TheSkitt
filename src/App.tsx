@@ -18,6 +18,8 @@ const AssetLibraryScreen = lazy(() =>
   import('./ui/styleguide/AssetLibraryScreen').then((m) => ({ default: m.AssetLibraryScreen })),
 );
 import { CasePracticeScreen } from './ui/practice/CasePracticeScreen';
+import { InductionScreen } from './ui/induction/InductionScreen';
+import { loadCharacter } from './state/character';
 
 // Solo shift (Milestone 4)
 import bethYaml from '../content/cases/case_anaphylaxis_adult_peanut.yaml?raw';
@@ -92,7 +94,7 @@ import safetyNetEpYaml from '../content/episodes/ep_overnight_safety_net.yaml?ra
 import amirYaml from '../content/cases/case_paeds_dka_amir.yaml?raw';
 import paedsDkaEpYaml from '../content/episodes/ep_paeds_dka_solo.yaml?raw';
 
-type View = 'menu' | 'shift' | 'hub' | 'ecg' | 'skilltree' | 'settings' | 'styleguide' | 'practice';
+type View = 'menu' | 'shift' | 'hub' | 'ecg' | 'skilltree' | 'settings' | 'styleguide' | 'practice' | 'induction';
 
 const SUBTITLES: Record<View, string> = {
   menu: 'Episodic UK FRCEM study RPG · 17 shifts, 17 cases, 3 arcs',
@@ -103,6 +105,7 @@ const SUBTITLES: Record<View, string> = {
   settings: 'Settings — preferences and local data',
   styleguide: 'Visual Style Guide — internal asset library',
   practice: 'Practice library — drill any patient',
+  induction: 'Skittstown ED — induction',
 };
 
 interface ShiftPack {
@@ -369,7 +372,14 @@ const KNOWN_SHIFTS: Record<string, () => ShiftPack> = Object.fromEntries(
 export function App() {
   // M46: hidden ?style-guide=1 URL gate opens the Asset Library without
   // exposing it on the menu. Design uses this to verify drops in-browser.
-  const [view, setView] = useState<View>(() => (isStyleGuideRequested() ? 'styleguide' : 'menu'));
+  // M74: first-run gate. If no character is on disk yet (and they
+  // didn't ask for the style guide), drop into Skittstown induction.
+  const [view, setView] = useState<View>(() => {
+    if (isStyleGuideRequested()) return 'styleguide';
+    const c = loadCharacter();
+    if (!c || !c.inducted) return 'induction';
+    return 'menu';
+  });
   const [saved, setSaved] = useState<SavedShift | null>(null);
   const initSim = useSim((s) => s.init);
   const destroySim = useSim((s) => s.destroy);
@@ -482,6 +492,11 @@ export function App() {
             onExit={() => setView('menu')}
           />
         )}
+        {view === 'induction' && (
+          <InductionScreen
+            onComplete={() => setView('menu')}
+          />
+        )}
       </main>
 
       <footer className="app__footer">
@@ -534,9 +549,10 @@ function MenuView({
 }) {
   const dailyShiftId = useMemo(() => pickShiftOfTheDay(shifts), [shifts]);
   const consultantMemo = useMemo(() => loadLastShiftMemo(), []);
+  const character = useMemo(() => loadCharacter(), []);
   const consultantMessage = useMemo(
-    () => (consultantMemo ? composeConsultantMessage(consultantMemo) : null),
-    [consultantMemo],
+    () => (consultantMemo ? composeConsultantMessage(consultantMemo, character?.firstName) : null),
+    [consultantMemo, character],
   );
   return (
     <div className="menu">
