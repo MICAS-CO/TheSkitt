@@ -474,7 +474,7 @@ export class SimKernel {
     cs: CaseRuntime,
     ctx: Omit<InterruptContext, 'caseName'>,
   ): void {
-    const fullCtx: InterruptContext = { caseName: cs.data.title, ...ctx };
+    const fullCtx: InterruptContext = { caseName: cs.data.chief_complaint, ...ctx };
     const composed =
       trigger === 'trap_caught'
         ? composeTrapCaughtInterrupt(fullCtx)
@@ -485,7 +485,7 @@ export class SimKernel {
       id: `${trigger}_${cs.caseId}_${this.state.clockMin}`,
       trigger,
       caseId: cs.caseId,
-      caseName: cs.data.title,
+      caseName: cs.data.chief_complaint,
       line: composed.line,
       aside: composed.aside,
     };
@@ -527,7 +527,7 @@ export class SimKernel {
     if (!cs) return;
     if (cs.enteredAt === null) {
       cs.enteredAt = this.state.clockMin;
-      this.log('info', `Entered ${cs.data.title}.`, caseId);
+      this.log('info', `Entered ${cs.data.chief_complaint}.`, caseId);
     }
     this.checkTransitions(cs);
     this.notify();
@@ -766,7 +766,7 @@ export class SimKernel {
           );
           this.log(
             'danger',
-            `${cs.data.title}: deterioration (${prev} → ${cs.state}) — required actions not completed.`,
+            `${cs.data.chief_complaint}: deterioration (${prev} → ${cs.state}) — required actions not completed.`,
             cs.caseId,
           );
           // M39: McGrath takes over when a deterioration fires due to
@@ -784,7 +784,7 @@ export class SimKernel {
         } else {
           this.log(
             'info',
-            `${cs.data.title}: critical interventions completed in time.`,
+            `${cs.data.chief_complaint}: critical interventions completed in time.`,
             cs.caseId,
           );
         }
@@ -828,7 +828,7 @@ export class SimKernel {
         const prev = cs.state;
         cs.state = effect.changes_state_to;
         cs.reasons.push(`Arc "${arc.title}" changed state ${prev} → ${cs.state}.`);
-        this.log('info', `${cs.data.title}: ${prev} → ${cs.state} (arc effect).`, cs.caseId);
+        this.log('info', `${cs.data.chief_complaint}: ${prev} → ${cs.state} (arc effect).`, cs.caseId);
       }
       if (effect.note) cs.reasons.push(`Arc: ${effect.note}`);
     }
@@ -875,7 +875,7 @@ export class SimKernel {
         if (t.trigger.note) cs.reasons.push(t.trigger.note);
         this.log(
           cs.state === 'arrested' || cs.state === 'deceased' ? 'danger' : 'info',
-          `${cs.data.title}: ${prev} → ${cs.state}.`,
+          `${cs.data.chief_complaint}: ${prev} → ${cs.state}.`,
           cs.caseId,
         );
         // M69: surface a 'time of death' notice when a case transitions
@@ -883,7 +883,7 @@ export class SimKernel {
         if (cs.state === 'deceased' && this.state.pendingDeathNotice === null) {
           this.state.pendingDeathNotice = {
             caseId: cs.caseId,
-            caseName: cs.data.title,
+            caseName: cs.data.chief_complaint,
             timeOfDeath: this.state.clockMin,
           };
         }

@@ -17,7 +17,7 @@ import type { EpisodeReport } from './sim';
 
 const KEY = 'theSkitt.lastShiftMemo.v1';
 export const CONSULTANT_NAME = 'Dr Aoife McGrath';
-export const CONSULTANT_ROLE = 'ED consultant';
+export const CONSULTANT_ROLE = 'EM consultant';
 
 export interface ShiftMemo {
   episodeId: string;

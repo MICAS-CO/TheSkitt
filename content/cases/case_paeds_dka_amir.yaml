@@ -16,7 +16,7 @@
 schema_version: 1
 id: case_paeds_dka_amir
 title: 'Paediatric DKA — first presentation, 8 y/o'
-chief_complaint: '?Paediatric DKA · first presentation'
+chief_complaint: 'Child, vomiting and breathing fast, off food for days'
 topic_id: paeds_dka
 
 vignette: |

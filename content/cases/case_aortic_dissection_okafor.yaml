@@ -17,7 +17,7 @@
 schema_version: 1
 id: case_aortic_dissection_okafor
 title: 'Aortic dissection — Type A masquerading as inferior STEMI'
-chief_complaint: 'Sudden tearing chest/back pain'
+chief_complaint: 'Severe chest pain radiating to back · query STEMI'
 topic_id: aortic_dissection
 
 vignette: |

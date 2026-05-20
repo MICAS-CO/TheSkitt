@@ -8,7 +8,7 @@
 schema_version: 1
 id: case_anaphylaxis_adult_peanut
 title: 'Anaphylaxis — adult, peanut at restaurant'
-chief_complaint: '?Anaphylaxis after food'
+chief_complaint: 'Throat tightening, rash, collapse after dinner'
 topic_id: anaphylaxis
 
 vignette: |

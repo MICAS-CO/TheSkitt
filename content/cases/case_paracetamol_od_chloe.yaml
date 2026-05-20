@@ -21,7 +21,7 @@
 schema_version: 1
 id: case_paracetamol_od_chloe
 title: 'Paracetamol overdose — staggered, university student'
-chief_complaint: '?Paracetamol overdose · staggered'
+chief_complaint: 'Self-harm ingestion · staggered, university student'
 topic_id: paracetamol_od
 
 vignette: |

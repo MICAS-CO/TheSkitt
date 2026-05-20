@@ -2,7 +2,7 @@
  * Skittstown ED Induction (M74).
  *
  * Two phases:
- *   1. Character creation — first name + last name + grade (F1/F2/CT1)
+ *   1. Character creation — first name + last name + grade (Intern/SHO/Registrar)
  *   2. Induction tour — Dr Aoife McGrath walks you through the systems
  *      the simulation models: the board, the patient panel, history
  *      tone, examinations + manoeuvres, investigations + ECG, the
@@ -25,16 +25,16 @@ interface Props {
 type Phase = 'create' | 'tour';
 
 const ROLES: { value: CharacterRole; title: string; sub: string }[] = [
-  { value: 'F1', title: 'F1 — Foundation Year 1', sub: 'New doctor, 4 months in. Lenient scoring, unlimited pause.' },
-  { value: 'F2', title: 'F2 — Foundation Year 2', sub: 'Trauma + acute med rotations done. Standard scoring.' },
-  { value: 'CT1', title: 'CT1 — Core Trainee', sub: 'Acute medicine / emergency medicine. Strict scoring.' },
+  { value: 'Intern', title: 'Intern — first postgraduate year', sub: 'New doctor, four months in. Lenient scoring, unlimited pause.' },
+  { value: 'SHO', title: 'SHO — senior house officer', sub: 'Acute med + a rotation or two done. Lenient scoring.' },
+  { value: 'Registrar', title: 'Registrar — EM specialty trainee', sub: 'You are the registrar tonight. Standard scoring, trap hints off.' },
 ];
 
 export function InductionScreen({ onComplete }: Props) {
   const [phase, setPhase] = useState<Phase>('create');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [role, setRole] = useState<CharacterRole>('F1');
+  const [role, setRole] = useState<CharacterRole>('Registrar');
 
   function startInduction() {
     if (!firstName.trim() || !lastName.trim()) return;
@@ -115,7 +115,7 @@ export function InductionScreen({ onComplete }: Props) {
                 const fallback: Character = {
                   firstName: 'Hannah',
                   lastName: 'Kovač',
-                  role: 'F1',
+                  role: 'Registrar',
                   inducted: true,
                   createdIso: new Date().toISOString(),
                 };
@@ -159,17 +159,17 @@ interface Beat {
 
 function tourBeats(firstName: string, role: CharacterRole): Beat[] {
   const intro =
-    role === 'CT1'
-      ? "You're CT1 already, you've done this dance before. Bear with me — Skittstown does it differently."
-      : role === 'F2'
-        ? "F2 means you're not strictly green any more. I'll keep it brisk."
-        : "F1 means I'm officially supposed to assume you know nothing. I'll talk to you like a colleague anyway.";
+    role === 'Registrar'
+      ? "You're the registrar tonight — you've done this dance before. Bear with me, Skittstown does it differently."
+      : role === 'SHO'
+        ? "SHO grade, so you're not strictly green any more. I'll keep it brisk."
+        : "Intern means I'm officially supposed to assume you know nothing. I'll talk to you like a colleague anyway.";
 
   return [
     {
       title: 'The doctors\' mess',
       speaker: 'mcgrath',
-      body: `Sit a minute, Dr ${firstName}. I'm Aoife McGrath, ED consultant. I'll be supervising you tonight. ${intro} Let me walk you through how we work.`,
+      body: `Sit a minute, Dr ${firstName}. I'm Aoife McGrath, EM consultant. I'll be supervising you tonight. ${intro} Let me walk you through how we work.`,
     },
     {
       title: 'The board',

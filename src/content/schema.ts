@@ -443,8 +443,27 @@ export const CaseId = z
 export const Case = z.object({
   schema_version: z.literal(1),
   id: CaseId,
-  title: z.string().min(1).describe('Internal title for content authors.'),
-  chief_complaint: z.string().min(1).describe('Short player-facing label, e.g. "?Anaphylaxis".'),
+  title: z
+    .string()
+    .min(1)
+    .describe(
+      'INTERNAL clinical title for content authors and debrief. ' +
+        'Names the diagnosis. NEVER displayed at the encounter header, ' +
+        'shift board, or any pre-disposition surface — that would spoil ' +
+        'the reasoning loop. Surfaced only at the post-disposition debrief ' +
+        "as 'What this was:'. Player-facing surfaces use chief_complaint " +
+        'and vignette instead (M81).',
+    ),
+  chief_complaint: z
+    .string()
+    .min(1)
+    .describe(
+      'Short player-facing label as it reads on the tracking board ' +
+        'and the encounter header. Triage shorthand (e.g. "Throat ' +
+        'swelling after dinner", "Fall at home, on apixaban"). MUST ' +
+        'NOT contain the diagnosis word — that lives in `title` and ' +
+        'is revealed at debrief.',
+    ),
   vignette: z.string().min(1).describe('Player-facing scene-set on arrival.'),
   topic_id: z.string().describe('References content/topic-map.yaml topic id.'),
 

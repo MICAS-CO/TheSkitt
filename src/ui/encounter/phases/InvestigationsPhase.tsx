@@ -36,7 +36,10 @@ export function InvestigationsPhase({
             height={220}
             ward={`ED · ${cs.data.bay?.toUpperCase() ?? 'BAY'}`}
             from="LAB · PATHOLOGY"
-            re={cs.data.title}
+            // M81: lab envelope 'Re:' shows the triage line, not the
+            // diagnosis. Real UK lab envelopes carry patient identifiers
+            // and the indication — not the final dx.
+            re={cs.data.chief_complaint}
             style={{ width: '100%', maxWidth: 560 }}
           >
             <div className="enc__results-list">

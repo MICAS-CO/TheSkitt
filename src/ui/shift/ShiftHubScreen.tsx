@@ -43,7 +43,9 @@ export function ShiftHubScreen({
       if (cs.state === 'unseen' || !cs.data.bay) continue;
       patients.push({
         caseId: cs.caseId,
-        title: cs.data.title,
+        // M81: hub-card title is chief_complaint, not the spoiler-y
+        // clinical title.
+        title: cs.data.chief_complaint,
         bay: cs.data.bay,
         state: cs.state,
         triageCategory: cs.data.triage_category,

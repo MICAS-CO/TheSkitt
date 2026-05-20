@@ -194,15 +194,17 @@ function CaseCard({
     <li className={`board__card board__card--${cs.state} ${ambient ? 'board__card--ambient' : ''}`}>
       <button className="board__card-btn" onClick={() => onEnter(cs.caseId)}>
         <div className="board__card-row">
+          {/* M81: board card title is chief_complaint (the triage line),
+              NEVER cs.data.title which names the diagnosis. */}
           <span className="board__card-title">
             {ambient && <span className="board__card-tag">ambient</span>}
-            {cs.data.title}
+            {cs.data.chief_complaint}
           </span>
           <span className={`enc__chip enc__chip--state-${cs.state}`}>{cs.state}</span>
         </div>
         <div className="board__card-meta">
           {cs.data.demographics.age_value} {cs.data.demographics.age_unit} ·{' '}
-          {cs.data.demographics.sex} · triage {cs.data.triage_category} · {cs.data.chief_complaint}
+          {cs.data.demographics.sex} · triage {cs.data.triage_category}
         </div>
 
         <BoardMiniVitals

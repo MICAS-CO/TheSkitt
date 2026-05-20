@@ -115,7 +115,7 @@ import paedsDkaEpYaml from '../content/episodes/ep_paeds_dka_solo.yaml?raw';
 type View = 'menu' | 'shift' | 'hub' | 'ecg' | 'skilltree' | 'settings' | 'styleguide' | 'practice' | 'induction';
 
 const SUBTITLES: Record<View, string> = {
-  menu: 'Episodic UK FRCEM study RPG · 17 shifts, 17 cases, 3 arcs',
+  menu: 'Episodic FRCEM study RPG · 17 shifts, 17 cases, 3 arcs',
   shift: 'Shift in progress',
   hub: 'ED hub (preview)',
   ecg: 'Daily ECG challenge',
@@ -543,7 +543,7 @@ export function App() {
           </button>
         )}
         <span className="app__disclaimer">
-          Study material for UK FRCEM candidates. Not medical advice. Not a substitute for
+          Study material for FRCEM candidates. Not medical advice. Not a substitute for
           supervised clinical training.
         </span>
         <a

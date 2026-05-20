@@ -6,7 +6,7 @@ import {
   saveCharacter,
 } from '../src/state/character';
 
-describe('M74 — character module', () => {
+describe('M74/M81 — character module', () => {
   beforeEach(() => {
     clearCharacter();
   });
@@ -20,7 +20,7 @@ describe('M74 — character module', () => {
     const c = {
       firstName: 'Hannah',
       lastName: 'Kovač',
-      role: 'F1' as const,
+      role: 'Intern' as const,
       inducted: false,
       createdIso: created,
     };
@@ -28,7 +28,7 @@ describe('M74 — character module', () => {
     expect(loadCharacter()).toEqual(c);
   });
 
-  it('coerces unknown role to F1 on restore', () => {
+  it('coerces unknown role to Intern on restore (lenient default for corrupted saves)', () => {
     window.localStorage.setItem(
       'theSkitt.character.v1',
       JSON.stringify({
@@ -39,7 +39,7 @@ describe('M74 — character module', () => {
         createdIso: '2026-01-01T00:00:00.000Z',
       }),
     );
-    expect(loadCharacter()?.role).toBe('F1');
+    expect(loadCharacter()?.role).toBe('Intern');
   });
 
   it('characterDisplayName prepends Dr', () => {
@@ -47,7 +47,7 @@ describe('M74 — character module', () => {
       characterDisplayName({
         firstName: 'Hannah',
         lastName: 'Kovač',
-        role: 'F1',
+        role: 'Registrar',
         inducted: true,
         createdIso: '2026-01-01T00:00:00.000Z',
       }),
@@ -58,12 +58,32 @@ describe('M74 — character module', () => {
     saveCharacter({
       firstName: 'Test',
       lastName: 'Doctor',
-      role: 'F2',
+      role: 'SHO',
       inducted: true,
       createdIso: '2026-01-01T00:00:00.000Z',
     });
     expect(loadCharacter()).not.toBeNull();
     clearCharacter();
     expect(loadCharacter()).toBeNull();
+  });
+
+  it('M81: migrates pre-M81 F1/F2/CT1 role values to Intern/SHO/Registrar', () => {
+    for (const [legacy, expected] of [
+      ['F1', 'Intern'],
+      ['F2', 'SHO'],
+      ['CT1', 'Registrar'],
+    ] as const) {
+      window.localStorage.setItem(
+        'theSkitt.character.v1',
+        JSON.stringify({
+          firstName: 'Migrated',
+          lastName: 'Save',
+          role: legacy,
+          inducted: true,
+          createdIso: '2026-01-01T00:00:00.000Z',
+        }),
+      );
+      expect(loadCharacter()?.role).toBe(expected);
+    }
   });
 });

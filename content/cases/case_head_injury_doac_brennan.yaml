@@ -6,7 +6,7 @@
 schema_version: 1
 id: case_head_injury_doac_brennan
 title: 'Head injury — mechanical fall on apixaban'
-chief_complaint: '?Bleed on anticoagulant'
+chief_complaint: 'Fall at home, knock to the head, on apixaban'
 topic_id: head_injury
 
 vignette: |

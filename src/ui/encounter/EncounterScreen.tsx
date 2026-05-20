@@ -264,8 +264,12 @@ function EncounterHeader({
   return (
     <header className="enc__head">
       <div>
+        {/* M81: header shows chief_complaint (triage shorthand), NEVER
+            cs.data.title (which names the diagnosis and would spoil
+            the reasoning loop). The diagnosis is revealed only at the
+            post-disposition debrief. */}
         <div className="enc__head-title">
-          {cs.data.title}{' '}
+          {cs.data.chief_complaint}{' '}
           <span className={`enc__chip enc__chip--state-${cs.state}`}>{cs.state}</span>
         </div>
         <div className="enc__head-meta">
@@ -592,14 +596,14 @@ function HistoryPhase({
       </header>
       {patientSilenced && (
         <div className="enc__banner enc__banner--danger" role="status">
-          <strong>{firstName(cs.data.title)} can&rsquo;t talk right now.</strong> They need urgent
+          <strong>{firstName(cs.data.chief_complaint)} can&rsquo;t talk right now.</strong> They need urgent
           stabilisation before you take more first-person history. Family, paramedic and triage
           sources remain available.
         </div>
       )}
       {!patientSilenced && rapportCollapsed && (
         <div className="enc__banner enc__banner--warn" role="status">
-          <strong>{firstName(cs.data.title)} has pulled away.</strong> First-person history is
+          <strong>{firstName(cs.data.chief_complaint)} has pulled away.</strong> First-person history is
           closed for now — they&rsquo;ll answer family or paramedic questions, but not yours
           directly. The way you asked got there.
         </div>
@@ -628,7 +632,7 @@ function HistoryPhase({
           <>
             {' '}
             <em>
-              {rapportUnlockedHidden} more would open if {firstName(cs.data.title).toLowerCase()}{' '}
+              {rapportUnlockedHidden} more would open if {firstName(cs.data.chief_complaint).toLowerCase()}{' '}
               trusted you more.
             </em>
           </>
@@ -646,7 +650,7 @@ function HistoryPhase({
           const silenced = silencedReason !== null;
           const silenceTitle =
             silencedReason === 'rapport'
-              ? `${firstName(cs.data.title)} has pulled away — they won't answer you directly right now.`
+              ? `${firstName(cs.data.chief_complaint)} has pulled away — they won't answer you directly right now.`
               : silencedReason === 'physiology'
                 ? 'Patient cannot answer right now — they need stabilisation.'
                 : undefined;
@@ -961,10 +965,13 @@ function BranchPicker({
   );
 }
 
-function firstName(title: string): string {
-  // Cases are titled e.g. "Anaphylaxis — adult, peanut at restaurant".
-  // We don't have a firstName field, so fall back to a neutral pronoun.
-  const m = title.match(/—\s*([A-Z][a-z]+)/);
+function firstName(source: string): string {
+  // M81: the source is now chief_complaint (triage line), not the
+  // diagnosis-bearing title. Triage lines are noun phrases ("Throat
+  // tightening, rash, collapse after dinner") with no person name, so
+  // this almost always falls back to the neutral pronoun. A future
+  // iteration can add Demographics.name to surface the real first name.
+  const m = source.match(/—\s*([A-Z][a-z]+)/);
   return m?.[1] ?? 'They';
 }
 
@@ -1062,7 +1069,7 @@ function DifferentialPhase({
       <h2>Differential — build a case, then lock it in</h2>
       <p className="enc__hint">
         {hasPicked
-          ? 'Working diagnosis locked. Likelihood revealed. Use ✗ to un-lock and reconsider.'
+          ? 'Working diagnosis locked. Likelihood + the answer are revealed at debrief. Use ✗ to un-lock and reconsider.'
           : 'Tap a clue to add it to your reasoning. The differential cards tally how many of your linked clues point at each diagnosis. When you have a working diagnosis, lock it in.'}
       </p>
 
@@ -1107,19 +1114,19 @@ function DifferentialPhase({
         {cs.data.differential.map((d) => {
           const isPicked = cs.workingDx === d.diagnosis;
           const supports = supportTally.get(d.diagnosis) ?? 0;
-          const isTop = d.likelihood === 'top';
           return (
             <li
               key={d.diagnosis}
-              className={pickCardClass({ isPicked, hasPicked, isCorrect: isTop })}
+              className={pickCardClass({ isPicked, hasPicked })}
             >
               <div className="enc__diff-card-head">
                 <div className="enc__diff-card-left">
-                  {hasPicked && (
-                    <span className={`enc__chip enc__chip--${d.likelihood}`}>
-                      {d.likelihood.replace('_', ' ')}
-                    </span>
-                  )}
+                  {/* M81: likelihood chips no longer reveal at lock-in.
+                      Committing a working diagnosis and then watching the
+                      case unfold is the highest-value teaching moment
+                      in the build — don't grade it the moment the player
+                      clicks. The diagnosis + the player's commitment vs
+                      reality are shown side-by-side at the debrief. */}
                   <span className="enc__diff-name">{d.diagnosis}</span>
                   {supports > 0 && (
                     <span
@@ -1168,7 +1175,20 @@ function DebriefPhase({ cs }: { cs: CaseRuntime }) {
 
   return (
     <section className="enc__phase">
-      <h2>Debrief — {c.title}</h2>
+      {/* M81: the title (the diagnosis) is revealed HERE for the first
+          time. The header above showed only the chief_complaint
+          throughout play, so this side-by-side IS the teaching beat. */}
+      <h2>Debrief</h2>
+      <div className="enc__debrief-reveal">
+        <div className="enc__debrief-reveal-row">
+          <span className="enc__debrief-reveal-label">How they came in</span>
+          <span className="enc__debrief-reveal-value">{c.chief_complaint}</span>
+        </div>
+        <div className="enc__debrief-reveal-row enc__debrief-reveal-row--diagnosis">
+          <span className="enc__debrief-reveal-label">What this was</span>
+          <span className="enc__debrief-reveal-value">{c.title}</span>
+        </div>
+      </div>
       <div className={`enc__score enc__score--${score.band}`}>
         <div className="enc__score-pct">{score.percent}%</div>
         <div className="enc__score-band">{score.band.toUpperCase()}</div>
@@ -1260,16 +1280,18 @@ function DebriefPhase({ cs }: { cs: CaseRuntime }) {
 function pickCardClass({
   isPicked,
   hasPicked,
-  isCorrect,
 }: {
   isPicked: boolean;
   hasPicked: boolean;
-  isCorrect: boolean;
 }): string {
+  // M81: correct/wrong styling at lock-in was removed (it spoiled the
+  // grade the moment the player committed). Pre-M81's `isCorrect`
+  // parameter is no longer threaded in. Whether the player's pick was
+  // right is surfaced at debrief in the score panel rather than as
+  // card colouring.
   const parts = ['enc__card'];
   if (isPicked) parts.push('is-revealed');
-  if (hasPicked && isCorrect) parts.push('enc__card--correct');
-  if (hasPicked && isPicked && !isCorrect) parts.push('enc__card--wrong');
+  if (hasPicked && isPicked) parts.push('enc__card--locked-in');
   return parts.join(' ');
 }
 
