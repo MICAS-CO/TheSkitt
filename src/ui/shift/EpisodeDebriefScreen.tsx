@@ -10,6 +10,14 @@ import {
   type PerCaseXp,
 } from '../../state/progression';
 import { memoFromEpisodeReport, saveLastShiftMemo } from '../../state/consultant';
+import {
+  Achievement,
+  BADGES,
+  badgeFrameToSvg,
+  loadUnlocked,
+  saveUnlocked,
+  scanAchievements,
+} from '../../state/achievements';
 
 interface Props {
   onExit: () => void;
@@ -22,6 +30,7 @@ export function EpisodeDebriefScreen({ onExit, onReplay }: Props) {
   const [awarded, setAwarded] = useState<{ awards: PerCaseXp[]; before: Progression; after: Progression } | null>(
     null,
   );
+  const [newBadges, setNewBadges] = useState<string[]>([]);
 
   const report = useMemo(() => (kernel ? scoreEpisode(kernel.getState()) : null), [kernel]);
 
@@ -53,7 +62,39 @@ export function EpisodeDebriefScreen({ onExit, onReplay }: Props) {
     }
     // M37: persist a co-worker memo for the next session's menu.
     saveLastShiftMemo(memoFromEpisodeReport(report));
+    // M70: scan for newly-earned achievement badges. Persist + count
+    // the total shifts played so the marathon badge eventually unlocks.
+    const SHIFT_COUNT_KEY = 'theSkitt.shiftCount.v1';
+    const totalShifts = (() => {
+      try {
+        const n = Number(window.localStorage.getItem(SHIFT_COUNT_KEY) ?? '0') + 1;
+        window.localStorage.setItem(SHIFT_COUNT_KEY, String(n));
+        return n;
+      } catch {
+        return 1;
+      }
+    })();
+    const allAttended = [...report.cases, ...report.ambientCases].filter((c) => c.attended);
+    const totalSeqErrors = allAttended.reduce((s, c) => s + c.score.sequenceErrors, 0);
+    const branchesWithPositive = allAttended.filter((c) => c.score.rapport > 0).length;
+    const totalBranchesAvail = allAttended.reduce((s, c) => s + c.score.branchesAvailable, 0);
+    const unlocked = loadUnlocked();
+    const newly = scanAchievements(
+      {
+        livesSaved: report.livesSaved,
+        band: report.band,
+        sequenceErrors: totalSeqErrors,
+        totalShiftsPlayed: totalShifts,
+        attendedCaseIds: allAttended.map((c) => c.caseId),
+        branchesWithPositiveRapport: branchesWithPositive,
+        branchesAvailable: totalBranchesAvail,
+      },
+      unlocked,
+    );
+    for (const id of newly) unlocked.add(id);
+    if (newly.length > 0) saveUnlocked(unlocked);
     setAwarded({ awards, before, after: progression });
+    setNewBadges(newly);
   }, [kernel, report, awarded]);
 
   if (!kernel || !report) return null;
@@ -81,6 +122,7 @@ export function EpisodeDebriefScreen({ onExit, onReplay }: Props) {
 
       <main className="ep-debrief">
         <Overall report={report} />
+        {newBadges.length > 0 && <BadgesUnlockedPanel ids={newBadges} />}
         {awarded && awarded.awards.length > 0 && <XpPanel awarded={awarded} />}
         <CasesPanel cases={report.cases} title="Focus cases" />
         {report.ambientCases.length > 0 && (
@@ -134,6 +176,32 @@ function Overall({ report }: { report: EpisodeReport }) {
           </li>
         )}
       </ul>
+    </section>
+  );
+}
+
+function BadgesUnlockedPanel({ ids }: { ids: string[] }) {
+  const items = ids
+    .map((id) => BADGES[id])
+    .filter((b): b is Achievement => b !== undefined);
+  if (items.length === 0) return null;
+  return (
+    <section className="ep-debrief__badges" aria-label="Badges unlocked">
+      <h3 className="ep-debrief__badges-head">Unlocked this shift</h3>
+      <div className="ep-debrief__badges-row">
+        {items.map((b) => (
+          <figure key={b.id} className="ep-debrief__badge">
+            <div
+              className="ep-debrief__badge-art"
+              dangerouslySetInnerHTML={{ __html: badgeFrameToSvg(b.rows, 5) }}
+            />
+            <figcaption>
+              <strong>{b.title}</strong>
+              <span>{b.sub}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
     </section>
   );
 }

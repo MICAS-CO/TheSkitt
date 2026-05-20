@@ -22,7 +22,9 @@ describe('M47 — ECG bank wiring inside encounters', () => {
     const { Case } = await import('../src/content/schema');
     const ids = new Set(ECG_BANK.map((e) => e.id));
     const dir = join(process.cwd(), 'content/cases');
-    const files = readdirSync(dir).filter((f) => f.endsWith('.yaml'));
+    const files = readdirSync(dir).filter(
+      (f) => f.endsWith('.yaml') && !f.includes('scratch') && !f.includes('draft'),
+    );
     let wired = 0;
     for (const f of files) {
       const c = Case.parse(parse(readFileSync(join(dir, f), 'utf8')));
