@@ -1717,6 +1717,86 @@ a {
   margin: 0 0 6px 0;
 }
 
+/* Time-of-death modal (M69) — per drop #3 outcomes.jsx mortuary spec. */
+.death-modal {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: death-fade-in 0.6s ease-out;
+}
+@keyframes death-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.death-modal__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 40%, rgba(13, 33, 32, 0.7) 0%, #000 80%);
+  pointer-events: none;
+}
+.death-modal__inner {
+  position: relative;
+  max-width: 560px;
+  text-align: center;
+  padding: 24px 36px;
+}
+.death-modal__eyebrow {
+  font-family: var(--mono, monospace);
+  font-size: 11px;
+  letter-spacing: 0.5em;
+  color: var(--type-faded-ink);
+  margin-bottom: 18px;
+}
+.death-modal__time {
+  font-family: var(--mono, monospace);
+  font-size: 56px;
+  color: var(--text);
+  letter-spacing: 4px;
+  line-height: 1;
+}
+.death-modal__name {
+  font-size: 28px;
+  color: var(--text);
+  font-weight: 500;
+  letter-spacing: -0.5px;
+  margin: 32px 0 8px;
+}
+.death-modal__instruction {
+  font-style: italic;
+  font-size: 14px;
+  color: var(--type-subdued-ink);
+  max-width: 440px;
+  margin: 28px auto 0;
+  line-height: 1.6;
+}
+.death-modal__actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 28px;
+}
+.death-modal__btn {
+  background: transparent;
+  color: var(--text);
+  padding: 12px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: var(--mono, monospace);
+  font-size: 11px;
+  letter-spacing: 2px;
+  cursor: pointer;
+}
+.death-modal__btn:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.death-modal__btn--ghost {
+  color: var(--type-subdued-ink);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
 /* Suspense fallback for lazy-loaded routes (M64). */
 .app__loading {
   padding: 40px 24px;

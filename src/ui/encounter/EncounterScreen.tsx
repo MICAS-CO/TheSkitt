@@ -113,12 +113,23 @@ export function EncounterScreen({
     cs.state === 'deteriorating';
 
   const pendingInterrupt = ks.pendingInterrupt;
+  const pendingDeath = ks.pendingDeathNotice;
   return (
     <div className="enc">
       {pendingInterrupt && (
         <ConsultantInterruptModal
           interrupt={pendingInterrupt}
           onDismiss={() => kernel.dismissConsultantInterrupt()}
+        />
+      )}
+      {pendingDeath && (
+        <PatientDeathModal
+          notice={pendingDeath}
+          onContinue={() => kernel.dismissDeathNotice()}
+          onDebrief={() => {
+            kernel.dismissDeathNotice();
+            onSectionChange('debrief');
+          }}
         />
       )}
       <EncounterHeader
@@ -759,6 +770,47 @@ function ConsultantInterruptModal({
         <button type="button" className="consultant-interrupt__dismiss" onClick={onDismiss} autoFocus>
           Noted — back to the bay
         </button>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Time-of-death modal (M69). Per drop #3 outcomes.jsx — a mortuary-
+ * styled overlay when a case transitions into the deceased state.
+ * Two routes: continue the shift, or jump straight to the debrief.
+ *
+ * Renders once per death (set by kernel when state hits 'deceased',
+ * cleared on dismiss). Not snapshotted — single-fire beat.
+ */
+function PatientDeathModal({
+  notice,
+  onContinue,
+  onDebrief,
+}: {
+  notice: { caseId: string; caseName: string; timeOfDeath: number };
+  onContinue: () => void;
+  onDebrief: () => void;
+}) {
+  const tod = `T+${notice.timeOfDeath}`;
+  return (
+    <div className="death-modal" role="dialog" aria-modal="true" aria-labelledby="death-modal-title">
+      <div className="death-modal__vignette" />
+      <div className="death-modal__inner">
+        <div className="death-modal__eyebrow">· TIME OF DEATH ·</div>
+        <div className="death-modal__time">{tod}</div>
+        <div className="death-modal__name" id="death-modal-title">{notice.caseName}</div>
+        <p className="death-modal__instruction">
+          Take a moment. Then go back to it — there are other patients waiting.
+        </p>
+        <div className="death-modal__actions">
+          <button type="button" className="death-modal__btn" onClick={onContinue} autoFocus>
+            ↵&nbsp; continue shift
+          </button>
+          <button type="button" className="death-modal__btn death-modal__btn--ghost" onClick={onDebrief}>
+            D&nbsp; debrief now
+          </button>
+        </div>
       </div>
     </div>
   );

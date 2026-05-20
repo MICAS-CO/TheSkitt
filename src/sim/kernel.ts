@@ -111,6 +111,13 @@ export interface KernelState {
    * Not part of the serialised snapshot — beats are run-only.
    */
   pendingInterrupt: ConsultantInterrupt | null;
+  /**
+   * Mortuary-style 'time of death' notice for the patient death modal
+   * (M69). Set when a case transitions into the deceased state. UI
+   * shows the modal until dismissDeathNotice() is called. Not
+   * snapshotted — single-fire beat.
+   */
+  pendingDeathNotice: { caseId: string; caseName: string; timeOfDeath: number } | null;
 }
 
 const TERMINAL_STATES: ReadonlySet<CaseStateT> = new Set<CaseStateT>([
@@ -246,6 +253,7 @@ export class SimKernel {
       firedEventIds: new Set(),
       log: [{ t_min: 0, level: 'info', text: 'Shift handover received.' }],
       pendingInterrupt: null,
+      pendingDeathNotice: null,
     };
     if (opts.restore) {
       this.applySnapshot(migrateSnapshot(opts.restore));
@@ -397,6 +405,16 @@ export class SimKernel {
   dismissConsultantInterrupt(): void {
     if (this.state.pendingInterrupt === null) return;
     this.state.pendingInterrupt = null;
+    this.notify();
+  }
+
+  /**
+   * Drop the pending death notice (M69). Called by the UI when the
+   * player dismisses the PatientDeathModal. Idempotent.
+   */
+  dismissDeathNotice(): void {
+    if (this.state.pendingDeathNotice === null) return;
+    this.state.pendingDeathNotice = null;
     this.notify();
   }
 
@@ -796,6 +814,15 @@ export class SimKernel {
           `${cs.data.title}: ${prev} → ${cs.state}.`,
           cs.caseId,
         );
+        // M69: surface a 'time of death' notice when a case transitions
+        // into the deceased terminal state. Drives the PatientDeathModal.
+        if (cs.state === 'deceased' && this.state.pendingDeathNotice === null) {
+          this.state.pendingDeathNotice = {
+            caseId: cs.caseId,
+            caseName: cs.data.title,
+            timeOfDeath: this.state.clockMin,
+          };
+        }
         break;
       }
     }
