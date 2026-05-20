@@ -12,6 +12,7 @@ import { PatientPanel } from './PatientPanel';
 import { ResusMode } from './ResusMode';
 import { IconCitation, IconCountdown, IconNewInfo } from '../../style/icons';
 import { NPC_SPRITES, npcFrameToSvg, npcSpriteIdForSource } from '../../style/npcSprites';
+import { FX_EMOTES, fxFrameToSvg } from '../../style/fxSprites';
 import { hasPerk } from '../../state/progression';
 import { ExaminationPhase } from './phases/ExaminationPhase';
 import { ManagementPhase } from './phases/ManagementPhase';
@@ -746,6 +747,7 @@ function ConsultantInterruptModal({
       }}
     >
       <div className={`consultant-interrupt__dialog consultant-interrupt__dialog--${interrupt.trigger}`}>
+        <ConsultantInterruptEmote trigger={interrupt.trigger} />
         <header className="consultant-interrupt__head">
           <span className="consultant-interrupt__name" id="consultant-interrupt-title">
             Dr Aoife McGrath
@@ -759,6 +761,39 @@ function ConsultantInterruptModal({
         </button>
       </div>
     </div>
+  );
+}
+
+/**
+ * Trigger-coded FX emote in the corner of the consultant interrupt
+ * modal (M66). Maps each trigger to one of the drop-#3 phase-2 emotes
+ * so the player can see the modal's *tone* before they read the line.
+ *  trap_caught          → exclamation (sharp '!')
+ *  deterioration_takeover → heart_pulse (urgent)
+ *  unsafe_midshift      → relief_exhale ('step out, take a breath')
+ */
+function ConsultantInterruptEmote({
+  trigger,
+}: {
+  trigger: 'trap_caught' | 'deterioration_takeover' | 'unsafe_midshift';
+}) {
+  const emoteId =
+    trigger === 'trap_caught'
+      ? 'exclamation'
+      : trigger === 'deterioration_takeover'
+        ? 'heart_pulse'
+        : 'relief_exhale';
+  const svg = useMemo(() => {
+    const rows = FX_EMOTES[emoteId];
+    return rows ? fxFrameToSvg(rows, 3) : null;
+  }, [emoteId]);
+  if (!svg) return null;
+  return (
+    <div
+      className={`consultant-interrupt__emote consultant-interrupt__emote--${emoteId}`}
+      aria-hidden="true"
+      dangerouslySetInnerHTML={{ __html: svg }}
+    />
   );
 }
 
