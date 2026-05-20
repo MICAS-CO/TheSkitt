@@ -4,6 +4,48 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M70 — achievement badges (drop #3 polish-achievements.jsx)
+
+- 8 12×12 pixel-art badges + localStorage unlock store.
+- scanAchievements() fires on episode debrief; 6 of 8 conditions
+  wired (first_save, anaphylaxis_ace, cool_hands, marathon,
+  honest_to_god, perfect_resus).
+- BadgesUnlockedPanel surfaces newly-earned badges in the debrief.
+
+### M69 — Time-of-Death modal (drop #3 outcomes.jsx)
+
+- KernelState.pendingDeathNotice fires when a case transitions to
+  the deceased terminal state.
+- PatientDeathModal mortuary-styled overlay with two routes:
+  continue shift or jump to debrief.
+
+### M68 — app icon + favicon
+
+- public/app-icon.svg generated from drop #3 app-icon.jsx (32×32
+  resus-cross 'I' on dark teal field).
+- Wired as favicon + 36×36 next to the wordmark in the header.
+
+### M67 — semantic colour contract (drop #3 audit-fixes-1)
+
+- New CSS tokens: --brand-red / --alert-high / --alert-severe /
+  --alert-amber / --status-ok / --status-trace / --status-neutral.
+- Applied to red-flag chip + NEWS2 ≥7 panel + STAT stamp.
+- Back-compat aliases (--danger / --warn) retained.
+
+### M66 — FX emotes accent consultant interrupts (drop #3 phase2-sprites)
+
+- Trigger-coded 48×48 emote in the corner of the consultant modal.
+  trap_caught → exclamation · deterioration_takeover → heart_pulse ·
+  unsafe_midshift → relief_exhale.
+
+### M65 — integrate drop #3 sprites
+
+- New TS modules: extraPatientSprites (13 character archetypes),
+  extraEquipment (8), extraWorldTiles (13: 3 trolleys + 10 tiles),
+  fxSprites (8 particles + 3 alerts + 6 emotes), walkCycles (4 F1
+  doctor walk frames).
+- Asset Library extended with 5 new sections under ?style-guide=1.
+
 ### M64 — code-split the style guide route
 
 - AssetLibraryScreen + url-gate split. Main bundle unchanged

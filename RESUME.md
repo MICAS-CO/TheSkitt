@@ -70,6 +70,12 @@ visual integration from Claude Design + new content.
 | M62 | Five more exam manoeuvres — Marcus / Sam / Ahmed / Okonkwo / Williams |
 | M63 | Case practice library — flat 17-card menu route |
 | M64 | Code-split AssetLibraryScreen — lazy-loaded behind ?style-guide=1 |
+| M65 | Drop #3 sprites — 13 patient archetypes / 8 equipment / 13 world tiles / 17 FX / 4 walk frames |
+| M66 | FX emotes accent consultant interrupts — trigger-coded 48×48 corner sprite |
+| M67 | Semantic colour contract — brand red ≠ clinical alert red ≠ accent amber |
+| M68 | App icon + favicon — the resus-cross 'I' on dark teal |
+| M69 | 'Time of Death' modal — mortuary-styled overlay on deceased transition |
+| M70 | Achievement badges — 8 pixel-art unlocks · 6 wired · localStorage |
 
 ## ⏳ WAITING ON DESIGN
 
@@ -80,7 +86,7 @@ template. No code changes needed beyond the registry entry.
 
 ## Numbers
 
-- **297 / 297** unit tests passing (Vitest)
+- **307 / 307** unit tests passing (Vitest)
 - **2 / 2** E2E tests passing (Playwright)
 - **17 fully-authored cases**, **17 episodes**, **3 arcs**, 44-topic
   high-yield map

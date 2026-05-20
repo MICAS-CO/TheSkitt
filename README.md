@@ -80,9 +80,16 @@ log and `RESUME.md` for current state at a glance.
 | 62    | Five more exam manoeuvres          | Marcus / Sam / Ahmed / Okonkwo / Williams · coverage 6/17 → 11/17                                         |
 | 63    | Case practice library              | Flat 17-card grid · 'drill any patient on their most-focused shift'                                       |
 | 64    | Code-split styleguide              | AssetLibraryScreen lazy-loaded · style guide is a 9 kB chunk                                              |
+| 65    | Drop #3 sprites                    | 13 patient archetypes · 8 equipment · 13 tiles · 17 FX · 4 walk frames                                    |
+| 66    | FX in consultant interrupt         | Trigger-coded emote in modal corner — exclamation / heart_pulse / relief_exhale                          |
+| 67    | Semantic colour contract           | brand-red ≠ alert-high ≠ alert-amber · applied to red flag / NEWS2-red / STAT stamp                       |
+| 68    | App icon + favicon                 | Resus-cross 'I' on dark teal · public/app-icon.svg · 36×36 in header                                     |
+| 69    | 'Time of Death' modal              | Mortuary-styled overlay on deceased transition · continue / debrief                                       |
+| 70    | Achievement badges                 | 8 pixel-art unlocks · 6 conditions wired · localStorage persistence                                       |
 
-Numbers: **300 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
-16 daily ECGs · 8 NPC sprites · 12 encounter props · 11 world tiles**.
+Numbers: **307 unit tests · 2 E2E · 17 cases · 17 episodes · 3 arcs ·
+16 daily ECGs · 8 NPC sprites + 13 patient archetypes · 20 props +
+13 world tiles + 17 FX · 8 achievement badges**.
 Lint clean, typecheck clean, validator green.
 
 ## Stack
