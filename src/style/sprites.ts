@@ -16,6 +16,11 @@
 
 import type { CaseStateT } from '../content/schema';
 import { dropFrameToSvg, dropPatientFrames } from './dropPatientSprites';
+import {
+  bustFrameToSvg,
+  bustPatientFrames,
+  CASE_TO_BUST_ID,
+} from './bustPortraitSprites';
 
 type PaletteMap = Record<string, string | null>;
 
@@ -928,7 +933,22 @@ export function spriteSvgFor(
   frameIndex = 0,
   scale = 6,
 ): string | null {
-  // 1. Drop-#3 mapped patient first.
+  // 1. M98 bust portrait (48×48) — beats drop, beats hand-authored.
+  // Bust sprite renders at scale 3 by default (144×144 px). The
+  // Monitor screen area in PatientPanel is ~292×182 CSS px after the
+  // bezel + sticker bar, so the bust fits with ~70px width margin
+  // (OSD chip, edge effects) and ~40px height margin (room for the
+  // BAY MONITOR chip at the bottom-left). Callers can override —
+  // gallery uses smaller cells, larger displays could push to 4.
+  const bustId = CASE_TO_BUST_ID[caseId];
+  if (bustId) {
+    const frames = bustPatientFrames(bustId, state);
+    if (frames) {
+      const frame = frames[frameIndex % frames.length];
+      if (frame) return bustFrameToSvg(frame, scale === 6 ? 3 : scale);
+    }
+  }
+  // 2. Drop-#3 mapped patient (24×32).
   const dropId = CASE_TO_DROP_ID[caseId];
   if (dropId) {
     const frames = dropPatientFrames(dropId, state);
@@ -937,7 +957,7 @@ export function spriteSvgFor(
       if (frame) return dropFrameToSvg(frame, scale);
     }
   }
-  // 2. Hand-authored fallback (Beth, Williams, Chloe, Stan, Patel).
+  // 3. Hand-authored fallback (Beth-24×32, Williams, Chloe, Stan, Patel).
   const reg = PATIENT_SPRITES[caseId];
   if (!reg) return null;
   const factory = reg[state];
@@ -950,6 +970,11 @@ export function spriteSvgFor(
 
 /** Returns the number of animation frames for the given state. */
 export function frameCountFor(caseId: string, state: CaseStateT): number {
+  const bustId = CASE_TO_BUST_ID[caseId];
+  if (bustId) {
+    const frames = bustPatientFrames(bustId, state);
+    if (frames) return frames.length;
+  }
   const dropId = CASE_TO_DROP_ID[caseId];
   if (dropId) {
     const frames = dropPatientFrames(dropId, state);

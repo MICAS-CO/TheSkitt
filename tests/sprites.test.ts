@@ -103,3 +103,55 @@ describe('M93 — state-responsive portraits + bay-monitor frame', () => {
     }
   });
 });
+
+describe('M98 — bust portrait resolver (Beth)', () => {
+  // The bust resolver priority is: CASE_TO_BUST_ID → CASE_TO_DROP_ID →
+  // PATIENT_SPRITES. case_anaphylaxis_adult_peanut is the only entry in
+  // CASE_TO_BUST_ID at this milestone, and it must beat the existing
+  // hand-authored 24×32 Beth in PATIENT_SPRITES.
+
+  it('Beth routes through the bust system, not the legacy 24×32', () => {
+    // Bust renders at 48×48 viewBox; the legacy hand-authored Beth
+    // renders at 24×32. Distinguish by inspecting the viewBox.
+    const svg = spriteSvgFor('case_anaphylaxis_adult_peanut', 'stable', 0, 4);
+    expect(svg).not.toBeNull();
+    expect(svg, 'bust viewBox should be 0 0 48 48').toContain('viewBox="0 0 48 48"');
+  });
+
+  it('Beth has a sprite for every authored state via the bust resolver', () => {
+    const states: CaseStateT[] = ['stable', 'triaged', 'deteriorating', 'arrested', 'admitted'];
+    for (const s of states) {
+      const svg = spriteSvgFor('case_anaphylaxis_adult_peanut', s, 0, 4);
+      expect(svg, `bust Beth → ${s} should have an SVG`).not.toBeNull();
+      expect(svg, `bust Beth → ${s} should be the 48×48 bust`).toContain('viewBox="0 0 48 48"');
+    }
+  });
+
+  it('Beth upright states still animate (2 frames per state)', () => {
+    expect(frameCountFor('case_anaphylaxis_adult_peanut', 'stable')).toBe(2);
+    expect(frameCountFor('case_anaphylaxis_adult_peanut', 'triaged')).toBe(2);
+    expect(frameCountFor('case_anaphylaxis_adult_peanut', 'deteriorating')).toBe(2);
+    expect(frameCountFor('case_anaphylaxis_adult_peanut', 'admitted')).toBe(2);
+  });
+
+  it('Beth arrested is a single still frame (no breathing)', () => {
+    expect(frameCountFor('case_anaphylaxis_adult_peanut', 'arrested')).toBe(1);
+  });
+
+  it('encounter-screen scale path: spriteSvgFor with scale=6 picks bust scale 3 (144px)', () => {
+    // PatientPanel passes scale=6 explicitly (legacy hand-authored
+    // default). The bust resolver special-cases that to render at 3
+    // so 48×48 × 3 = 144 fits the Monitor screen area (~292×182).
+    const svg = spriteSvgFor('case_anaphylaxis_adult_peanut', 'stable', 0, 6);
+    expect(svg).not.toBeNull();
+    expect(svg, 'bust at encounter scale should be 144px square').toContain('width:144px;height:144px');
+  });
+
+  it('deteriorating Beth differs from triaged in the bust system too', () => {
+    const triaged = spriteSvgFor('case_anaphylaxis_adult_peanut', 'triaged', 0, 4);
+    const deteriorating = spriteSvgFor('case_anaphylaxis_adult_peanut', 'deteriorating', 0, 4);
+    expect(triaged).not.toBeNull();
+    expect(deteriorating).not.toBeNull();
+    expect(deteriorating, 'bust deteriorating should differ from triaged').not.toBe(triaged);
+  });
+});

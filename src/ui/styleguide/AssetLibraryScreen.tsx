@@ -14,6 +14,7 @@
 import { PALETTE_RAMPS } from '../../style/palette';
 import { IconCitation, IconCountdown, IconMustDo, IconNewInfo, IconRedFlag, IconTrap, IconTrendDown, IconTrendUp } from '../../style/icons';
 import { CASE_TO_DROP_ID, PATIENT_SPRITES, spriteSvgFor } from '../../style/sprites';
+import { CASE_TO_BUST_ID } from '../../style/bustPortraitSprites';
 import { NPC_SPRITES, npcFrameToSvg } from '../../style/npcSprites';
 import { PROP_SPRITES, propFrameToSvg } from '../../style/propSprites';
 import { WORLD_TILES, worldFrameToSvg } from '../../style/worldSprites';
@@ -107,14 +108,21 @@ function IconsSection() {
 }
 
 function PatientSpritesSection() {
-  const states: CaseStateT[] = ['stable', 'triaged', 'deteriorating', 'arrested'];
+  // M98: include `admitted` so post-ROSC / post-resus recipes
+  // (intubated, sedated, recovering) get a gallery cell. For bust
+  // sprites this maps to bethPostResus and similar.
+  const states: CaseStateT[] = ['stable', 'triaged', 'deteriorating', 'arrested', 'admitted'];
   // Show ALL cases that resolve to a sprite — both the hand-authored
   // entries in PATIENT_SPRITES and the drop-catalogue cases routed via
   // CASE_TO_DROP_ID. The drop-mapped ones were previously invisible
   // in this gallery, making it impossible to QA the deteriorating
   // recipes for Marcus / Leo / Ruby / Joan etc.
   const allCases = Array.from(
-    new Set([...Object.keys(PATIENT_SPRITES), ...Object.keys(CASE_TO_DROP_ID)]),
+    new Set([
+      ...Object.keys(CASE_TO_BUST_ID),
+      ...Object.keys(PATIENT_SPRITES),
+      ...Object.keys(CASE_TO_DROP_ID),
+    ]),
   ).sort();
   return (
     <section className="asset-lib__section" id="patients">
