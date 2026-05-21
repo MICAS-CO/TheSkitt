@@ -13,6 +13,13 @@ import { execSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+// Node's built-in fetch (undici) has a 5-minute headers-timeout that
+// isn't configurable from userland without an `undici` dep. The
+// Gemini 3 Pro Preview endpoint occasionally crosses that on large
+// review payloads — retry up to 3 times on UND_ERR_HEADERS_TIMEOUT
+// rather than add a runtime dependency just for a dev-loop script.
+const MAX_ATTEMPTS = 3;
+
 const here = dirname(fileURLToPath(import.meta.url));
 const apiKey = process.env.GEMINI_API_KEY;
 if (!apiKey) {
@@ -146,20 +153,43 @@ console.error(`Prompt size: ${prompt.length} chars`);
 console.error(`Calling Gemini ...`);
 
 const t0 = Date.now();
-const res = await fetch(
-  `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-  {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: {
-        responseMimeType: 'application/json',
-        responseSchema,
-      },
-    }),
+const requestBody = JSON.stringify({
+  contents: [{ role: 'user', parts: [{ text: prompt }] }],
+  generationConfig: {
+    responseMimeType: 'application/json',
+    responseSchema,
   },
-);
+});
+
+async function callOnce() {
+  return await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: requestBody,
+    },
+  );
+}
+
+let res;
+for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+  try {
+    res = await callOnce();
+    break;
+  } catch (err) {
+    const isHeadersTimeout = err?.cause?.code === 'UND_ERR_HEADERS_TIMEOUT';
+    const isLast = attempt === MAX_ATTEMPTS;
+    console.error(
+      `Attempt ${attempt} failed: ${err?.cause?.code ?? err?.code ?? err?.message ?? err}`,
+    );
+    if (!isHeadersTimeout || isLast) throw err;
+    const backoff = 5_000 * attempt;
+    console.error(`Retrying in ${backoff / 1000}s ...`);
+    await new Promise((r) => setTimeout(r, backoff));
+  }
+}
+
 const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
 console.error(`HTTP ${res.status} in ${elapsed}s`);
 
