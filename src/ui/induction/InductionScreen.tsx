@@ -210,7 +210,7 @@ function tourBeats(firstName: string, role: CharacterRole): Beat[] {
       title: 'Differential',
       speaker: 'mcgrath',
       body:
-        "Make a working dx. Pick from a list weighted top / must-not-miss / worth-considering / unlikely. The must-not-miss is the one that gets you in trouble at M&M next Tuesday. Lock it in even if it's not top — that's how you stop yourself anchoring.",
+        "Make a working dx. Pick from a list weighted top / must-not-miss / worth-considering / unlikely. The must-not-miss is the one the next monthly M&M will look back at and ask why nobody flagged. Lock it in even if it's not top — that's how you stop yourself anchoring.",
       mechanic: 'Differentials with likelihood weighting',
     },
     {

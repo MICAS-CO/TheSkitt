@@ -448,7 +448,7 @@ disposition_options:
   - label: 'Admit CCU after thrombolysis if PCI cannot be delivered within 120 min'
     criteria: 'Back-up route in geographically remote sites only.'
     appropriate: false
-    epilogue: "Door-to-balloon would have been 78 minutes from here. The decision is reviewable next week at M&M."
+    epilogue: "Door-to-balloon would have been 78 minutes from here. McGrath will pull the chart for next month's M&M."
   - label: 'Discharge with cardiology outpatient referral'
     criteria: 'Inappropriate — STEMI is an emergency.'
     appropriate: false

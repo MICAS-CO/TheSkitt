@@ -1,0 +1,13 @@
+{
+  "promptTokenCount": 2556,
+  "candidatesTokenCount": 66,
+  "totalTokenCount": 3319,
+  "promptTokensDetails": [
+    {
+      "modality": "TEXT",
+      "tokenCount": 2556
+    }
+  ],
+  "thoughtsTokenCount": 697,
+  "serviceTier": "standard"
+}
