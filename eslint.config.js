@@ -36,4 +36,19 @@ export default tseslint.config(
       'react/prop-types': 'off',
     },
   },
+  // Dev-loop scripts (braintrust reviewer calls, screenshot capture) run
+  // under Node. Playwright capture scripts also pass closures to
+  // `page.evaluate` that run in the browser context, so browser globals
+  // (window, document, localStorage) are legitimately referenced too.
+  {
+    files: ['dev_loop/**/*.mjs', 'scripts/**/*.{js,mjs,cjs}'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: { ...globals.node, ...globals.browser },
+    },
+    rules: {
+      'no-empty': ['error', { allowEmptyCatch: true }],
+    },
+  },
 );

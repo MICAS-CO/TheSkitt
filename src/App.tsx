@@ -1,10 +1,9 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { parse as parseYaml } from 'yaml';
-// M78: Phaser is the heaviest dependency in the boot bundle (~1.5 MB).
-// The hub view is the only consumer, so lazy-load it.
-const PhaserGame = lazy(() =>
-  import('./ui/PhaserGame').then((m) => ({ default: m.PhaserGame })),
-);
+// M92: the menu's ED-hub preview tile renders the same static SVG
+// floorplan the in-shift hub uses, with no live patients. Cheap and
+// synchronous — no need to lazy-load.
+import { EdFloorplan } from './ui/shift/EdFloorplan';
 import { ShiftView } from './ui/shift/ShiftView';
 import { useSim, loadShift, clearSavedShift, scoreEpisode, type SavedShift } from './state/sim';
 import {
@@ -550,9 +549,9 @@ export function App() {
         )}
         {view === 'shift' && <ShiftView onExit={exitShift} onReplay={replayShift} />}
         {view === 'hub' && (
-          <Suspense fallback={<div className="app__loading">Loading hub…</div>}>
-            <PhaserGame />
-          </Suspense>
+          <div className="app__hub-preview">
+            <EdFloorplan />
+          </div>
         )}
         {view === 'ecg' && (
           <Suspense fallback={<div className="app__loading">Loading ECG drill…</div>}>
@@ -827,7 +826,9 @@ function MenuView({
           <button className="menu__card menu__card--secondary" onClick={onShowHub}>
             <span className="menu__card-eyebrow">Preview</span>
             <span className="menu__card-title">ED hub layout</span>
-            <span className="menu__card-meta">Placeholder Phaser scene from Milestone 1</span>
+            <span className="menu__card-meta">
+              Static department floorplan — bays, triage, resus, paeds, relatives&apos; room.
+            </span>
           </button>
           <button className="menu__card menu__card--secondary" onClick={onShowEcg}>
             <span className="menu__card-eyebrow">Daily</span>

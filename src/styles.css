@@ -141,13 +141,103 @@ a {
   color: var(--info);
 }
 
-/* Phaser load-failure fallback */
-.phaser-error {
-  padding: 16px;
-  border: 1px solid var(--danger);
-  color: var(--danger);
+/* M92: static SVG ED floorplan (replaces the Phaser hub canvas).
+   Aspect ratio mirrors the old GAME_WIDTH × GAME_HEIGHT (1280 × 720)
+   so the SVG and the overlay buttons share the same coordinate space. */
+.ed-floorplan {
+  position: relative;
+  width: 100%;
+  max-width: 1280px;
+  aspect-ratio: 1280 / 720;
+  margin: 16px auto;
+  background: var(--bg);
   border-radius: 6px;
-  max-width: 480px;
+  overflow: hidden;
+}
+.ed-floorplan__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ed-floorplan__overlay {
+  position: absolute;
+  inset: 0;
+}
+.ed-floorplan__card {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px 8px;
+  background: #0f1115;
+  border: 2px solid var(--muted);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 80ms ease, box-shadow 80ms ease, border-color 80ms ease;
+  overflow: hidden;
+}
+.ed-floorplan__card:hover:not(:disabled),
+.ed-floorplan__card:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  outline: none;
+}
+.ed-floorplan__card:focus-visible {
+  border-color: var(--text);
+}
+.ed-floorplan__card:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.ed-floorplan__card-title {
+  font-size: clamp(9px, 0.9vw, 11px);
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ed-floorplan__card-meta {
+  font-size: clamp(8px, 0.8vw, 10px);
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* State-driven border colours. M94 will audit any tokens that leak the
+   M67 semantic contract — for now, mirror the encounter UI's vitals
+   chips (existing behaviour from the Phaser scene). */
+.ed-floorplan__card--stable { border-color: var(--accent); }
+.ed-floorplan__card--triaged { border-color: var(--muted); }
+.ed-floorplan__card--admitted { border-color: var(--info); }
+.ed-floorplan__card--discharged { border-color: var(--status-trace); }
+.ed-floorplan__card--deteriorating {
+  border-color: var(--warn);
+  animation: edFloorplanPulse 1.4s ease-in-out infinite;
+}
+.ed-floorplan__card--arrested,
+.ed-floorplan__card--deceased {
+  border-color: var(--danger-strong);
+  animation: edFloorplanPulse 1.4s ease-in-out infinite;
+}
+@keyframes edFloorplanPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ed-floorplan__card--deteriorating,
+  .ed-floorplan__card--arrested,
+  .ed-floorplan__card--deceased {
+    animation: none;
+  }
+  .ed-floorplan__card { transition: none; }
 }
 
 .app {
@@ -191,17 +281,12 @@ a {
   padding: 0;
 }
 
-.phaser-root {
+.app__hub-preview {
   width: 100%;
-  max-width: 1280px;
-  aspect-ratio: 16 / 9;
-  margin: 16px;
-}
-
-.phaser-root canvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
 }
 
 .app__footer {
@@ -913,13 +998,13 @@ a {
     grid-template-columns: 1fr;
   }
 }
-.hub__phaser {
+.hub__floorplan {
   width: 100%;
   display: flex;
   align-items: stretch;
   justify-content: center;
 }
-.hub__phaser .phaser-root {
+.hub__floorplan .ed-floorplan {
   margin: 0;
 }
 

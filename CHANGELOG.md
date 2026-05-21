@@ -4,6 +4,41 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M92 — replace Phaser hub with static SVG floorplan
+
+- Removed `phaser` from `package.json` dependencies. Single-file build
+  drops from ~2.8MB to ~1.35MB; main bundle no longer ships ~1.5MB of
+  game engine for a screen that rendered as coloured rectangles + a
+  walk-cycle avatar (Braintrust 15 unanimous: cut / reduce-to-static).
+- New component `src/ui/shift/EdFloorplan.tsx`: `<svg>` floorplan with
+  bay rectangles + labels from the existing `ED_ZONES` table, plus
+  patient cards absolutely positioned over the SVG as real HTML
+  `<button>` elements (native focus / keyboard / a11y). State-driven
+  border colour + reduced-motion-aware pulse on deteriorating /
+  arrested. Used by both the in-shift hub (with live patients) and
+  the menu preview tile (empty layout).
+- Deleted `src/ui/PhaserGame.tsx`, `src/game/boot.ts`,
+  `src/game/scenes/EDScene.ts`. Kept `src/style/walkCycles.ts` —
+  contrary to the BT 15 synthesis's claim, it is still imported by
+  `EncounterScreen` (M79 McGrath-walks-in animation) and
+  `AssetLibraryScreen`. Kept `src/game/layout.ts` — the SVG floorplan
+  reuses `ED_ZONES`, `GAME_WIDTH`, `GAME_HEIGHT`, `PALETTE`, and
+  `tests/layout.test.ts` still covers the floorplan shape.
+- `ShiftHubScreen` now passes the live `FloorplanPatient[]` straight
+  to `EdFloorplan` (no Phaser scene-restart dance). Menu's "ED hub
+  layout" preview-card copy updated to drop "Placeholder Phaser
+  scene" framing.
+- E2E `hub-flow.spec.ts`: `data-testid="phaser-root"` →
+  `data-testid="ed-floorplan"`. Test passes.
+- `eslint.config.js`: added a dev-loop / scripts files block with
+  Node + browser globals (Playwright capture scripts ship closures to
+  the browser) + `allowEmptyCatch`. Fixes 31 lint errors that were
+  already present pre-M92 from `capture-screens.mjs`.
+- All six pre-flight checks pass clean: vitest 444/444, typecheck,
+  lint, validate-content (17 cases / 18 episodes / 3 arcs), build,
+  build:single-file.
+- `exports/the-skitt.html` regenerated.
+
 ### Braintrust 15 — fourth reviewer (GPT-5.5) + revised synthesis
 
 - OpenAI env allowlist + `OPENAI_API_KEY` unblocked between sessions;

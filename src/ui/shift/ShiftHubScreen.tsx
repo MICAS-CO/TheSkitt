@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
-import { PhaserGame } from '../PhaserGame';
+import { EdFloorplan, type FloorplanPatient } from './EdFloorplan';
 import { useSim, type SimSpeedKey } from '../../state/sim';
 import { ClockBar } from './ClockBar';
 import type { CaseRuntime, LogEntry } from '../../sim/kernel';
-import type { HubPatient, EDSceneData } from '../../game/scenes/EDScene';
 
 interface Props {
   onEnterCase: (caseId: string) => void;
@@ -15,10 +14,14 @@ interface Props {
 }
 
 /**
- * Diegetic department view — Phaser scene renders patient cards in the
- * bays they're sitting in. Click a card to enter that encounter. Mirrors
- * the board's controls so the player never feels like they've left the
- * shift to look at the hub.
+ * Diegetic department view — static SVG floorplan with patient cards in
+ * the bays they're sitting in. Click a card to enter that encounter.
+ * Mirrors the board's controls so the player never feels like they've
+ * left the shift to look at the hub.
+ *
+ * M92: replaced the Phaser walk-around with `EdFloorplan` — same bay
+ * geometry from `ED_ZONES`, same card-in-bay rendering, no canvas, no
+ * walk-cycle.
  */
 export function ShiftHubScreen({
   onEnterCase,
@@ -31,13 +34,13 @@ export function ShiftHubScreen({
   const tick = useSim((s) => s.tick);
   const kernel = useSim((s) => s.kernel);
 
-  const sceneData = useMemo<EDSceneData | undefined>(() => {
-    if (!kernel) return undefined;
+  const floorplanPatients = useMemo<FloorplanPatient[]>(() => {
+    if (!kernel) return [];
     // `tick` is read so the linter and React both know this recomputes
     // on every kernel notify; the body reads kernel state imperatively.
     void tick;
     const ks = kernel.getState();
-    const patients: HubPatient[] = [];
+    const patients: FloorplanPatient[] = [];
     const focusSet = new Set(ks.episode.focus_cases);
     for (const cs of ks.cases.values()) {
       if (cs.state === 'unseen' || !cs.data.bay) continue;
@@ -52,12 +55,8 @@ export function ShiftHubScreen({
         isAmbient: !focusSet.has(cs.caseId),
       });
     }
-    return {
-      patients,
-      clockLabel: `T+${ks.clockMin}m / ${ks.shiftDurationMin}m`,
-      onCaseClick: onEnterCase,
-    };
-  }, [kernel, onEnterCase, tick]);
+    return patients;
+  }, [kernel, tick]);
 
   if (!kernel) return null;
   const ks = kernel.getState();
@@ -101,8 +100,12 @@ export function ShiftHubScreen({
       />
 
       <div className="hub">
-        <div className="hub__phaser">
-          <PhaserGame sceneData={sceneData} />
+        <div className="hub__floorplan">
+          <EdFloorplan
+            patients={floorplanPatients}
+            clockLabel={`T+${ks.clockMin}m / ${ks.shiftDurationMin}m`}
+            onCaseClick={onEnterCase}
+          />
         </div>
         <ShiftLog log={ks.log} />
       </div>

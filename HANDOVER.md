@@ -1,8 +1,8 @@
 # HANDOVER — The Skitt
 
-**Last session ended**: 2026-05-21, post-M91b + Braintrust 15 **complete** (GPT-5.5 fourth reviewer added in a follow-on session, synthesis revised).
+**Last session ended**: 2026-05-21, post-M92 (Phaser hub replaced with static SVG floorplan) + BT 15 four-reviewer synthesis complete.
 **Branch**: `claude/review-and-continue-HjlEy` — merged `claude/new-session-Sax8M` forward. Previous branch tip `c622850` is preserved in history.
-**Numbers**: 444 unit tests passing · 37 test files · 3 E2E specs · 17 cases · 17 episodes · 3 arcs · 17-shift rota · F1/F2/CT1 → Intern/SHO/Registrar tier ladder.
+**Numbers**: 444 unit tests passing · 37 test files · 3 E2E specs · 17 cases · 18 episodes · 3 arcs · 17-shift rota · Intern/SHO/Registrar tier ladder. Single-file build: 1.35MB (down from ~2.8MB pre-M92).
 
 Live single-file playable build at `exports/the-skitt.html` (regenerate with `npm run build:single-file && cp dist/index.html exports/the-skitt.html`).
 
@@ -42,6 +42,7 @@ The previous handover stopped at M79. Since then, 12 implementation milestones +
 | M91 | Akin teaches M&M folder culture | "Make sure you leave a sticker in the M&M folder" — NHS-accurate way to flag cases for retrospective review. |
 | M91b | M&M timing accuracy sweep | Audited every M&M reference across content; M&Ms are MONTHLY retrospective chart reviews, never real-time. Fixed all in-line mentions. |
 | **BT 15** | Visual elements (COMPLETE — `dev_loop/braintrust/15-visual-elements/synthesis.md`) | Four-reviewer multimodal: Gemini Pro + GPT-5.5 (both real-API) + Opus + Sonnet (orchestrator-voice). GPT-5.5 materially revised round 1 — Patel portrait does not yet earn its size; semantic-colour contract is leaking (amber + red); v0.0.1 footer should hide from learners. M93 plan expanded to include state-responsive portrait variants (was *Reserved*). |
+| M92 | Phaser hub → static SVG floorplan | Removed `phaser` from deps; deleted `PhaserGame.tsx` + `EDScene.ts` + `game/boot.ts`. New `EdFloorplan.tsx` renders bays from `ED_ZONES` as SVG + patient cards as absolutely-positioned HTML buttons (native a11y, no canvas). Kept `walkCycles.ts` (still used by `EncounterScreen` M79 + `AssetLibraryScreen`) and `game/layout.ts` (the SVG reuses `ED_ZONES`). Single-file build ~1.35MB, down from ~2.8MB. |
 
 ---
 
@@ -51,7 +52,7 @@ The previous handover stopped at M79. Since then, 12 implementation milestones +
 
 See `dev_loop/braintrust/15-visual-elements/synthesis.md` for the full revised synthesis.
 
-1. **M92 — Phaser hub → static SVG floorplan** (2-3h, four-reviewer consensus). Remove `phaser` from `package.json` + `import Phaser` + `PhaserGame` lazy chunk + `game/scenes/EDScene.ts` + `style/walkCycles.ts` (only the hub avatar uses it). Replace with a static SVG floorplan **plus current-case chips placed in their bays** (GPT-5.5's framing: the static map should do MORE than just sit there). Sheds ~1.5MB from the bundle. Unchanged from round 1 in shape; the framing is now "reduce to static" rather than "cut entirely" — same implementation.
+1. ~~**M92 — Phaser hub → static SVG floorplan**~~ **SHIPPED** (commit follows BT 15 completion). `phaser` dep removed, `PhaserGame.tsx` + `EDScene.ts` + `game/boot.ts` deleted. New `EdFloorplan.tsx` renders SVG bays + HTML-button patient cards. `walkCycles.ts` correctly kept (M79 EncounterScreen + AssetLibraryScreen still import it — the synthesis's claim it was "only used by the hub avatar" was wrong). All six pre-flight checks green. **Pending: Pattern B iteration review (see Section 12).**
 
 2. **M93 — State-responsive portrait + diegetic monitor frame** (REVISED, 4-6h for full or 2-3h for lite). GPT-5.5 disagreed with round 1 that monitor framing alone fixes the portrait. Round 1's *Reserved* state-responsive-portrait item is now promoted to the M93 critical path. Two acceptable shapes:
    - **M93 (full, recommended)**: wire `extraPatientSprites.ts` variants to the case state machine for 3-4 cases (Patel STEMI, anaphylaxis, DKA, head injury) — clinical state changes the sprite (sweat / pallor / urticaria / oxygen mask). Then frame the EncounterScreen patient-portrait container as a bay-monitor feed (scanline / phosphor / vignette / "BAY MONITOR · bay {n} · {clock}m"). Clinical job justifies the size; monitor frame justifies the pixel register.
@@ -228,9 +229,9 @@ Security posture from `BRAINTRUST_PATTERN.md` still applies: never echo, never c
 
 1. **Read `dev_loop/braintrust/BRAINTRUST_PATTERN.md`.** Non-negotiable. It is how this project ships decisions.
 2. **Read `dev_loop/braintrust/15-visual-elements/synthesis.md`** for the revised M92-M94 plan (note: M93 materially changed in the four-reviewer synthesis vs the round-1 version).
-3. Decide M93 shape with the user: full (state-responsive portrait + monitor frame, 4-6h) vs lite (shrink portrait, demote to compact patient-state card, 2-3h).
-4. Ship M92 first regardless of M93 choice. Reviewer pipeline as standard (pattern B from `BRAINTRUST_PATTERN.md`: Gemini round1 → fixes → round2).
-5. After M92: M93 (full or lite per author call) → M94 (token-contract leak audit + shift-log defer + Caveat audit + v0.0.1 footer hide).
+3. **Run the Pattern B iteration review for M92** if `GEMINI_API_KEY` is set in this session env. M92 shipped without one — see Section 12. If pushing further changes to M92 in response, do them as a `M92 patch:` commit and run round 2.
+4. Decide M93 shape with the user: full (state-responsive portrait + monitor frame, 4-6h) vs lite (shrink portrait, demote to compact patient-state card, 2-3h).
+5. Ship M93 → then M94 (token-contract leak audit + shift-log defer + Caveat audit + v0.0.1 footer hide).
 
 If picking up cold and shipping completely-unrelated work, the priority list from the earlier handover still stands (wire un-conditioned achievements, schema `case_coda?: string`, two more arcs, UI integration tests, a11y audit).
 
@@ -247,9 +248,11 @@ If picking up cold and shipping completely-unrelated work, the priority list fro
 
 ---
 
-## 12. Contact / context
+## 12. Contact / context + M92 pending review note
 
 Repo: `MICAS-CO/TheSkitt`. Parent MedEd project: **TheCase.Report**. Branch as of handover: `claude/review-and-continue-HjlEy` (merged `claude/new-session-Sax8M` forward via a `--no-ff` merge commit; both branches remain on origin for reference).
+
+**M92 was shipped without a Pattern B iteration review** because `GEMINI_API_KEY` is not set in this session's env (it was set in the prior session that ran BT 15 round 1; appears to have rolled off when the env was reconfigured for OpenAI). All six local pre-flight checks pass clean (vitest 444/444, typecheck, lint, validate-content, build, build:single-file). For methodology purity per `BRAINTRUST_PATTERN.md` Pattern B, the next session should set `GEMINI_API_KEY` and run a round-1 Gemini review against the M92 diff (commit `<M92 sha>` vs `6f44240`). If a round-1 finding requires changes, ship those as `M92 patch:` and run round 2 to close.
 
 If the next session is a different model or a different operator, conventions in `CLAUDE.md` carry forward. The codebase rewards being read top-down (App.tsx → kernel.ts → schema.ts → an example case YAML). Test density is highest on kernel + schema + scoring; lowest on UI — pattern-match from existing tests rather than introduce new frameworks.
 
