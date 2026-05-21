@@ -44,3 +44,62 @@ describe('M18 — pixel sprite engine', () => {
     expect(frameToSvg([])).toBe('');
   });
 });
+
+describe('M93 — state-responsive portraits + bay-monitor frame', () => {
+  // The four cases BT 15 named as the state-responsive showcase.
+  // (Plus Brennan, the head-injury case explicitly chosen with the
+  // others.) Each entry lists the case + the kernel states the case
+  // actually authors a sprite recipe for. spriteSvgFor must return
+  // a non-null result for every (case, state) pair below, otherwise
+  // the EncounterScreen portrait will silently fall back to the CSS
+  // silhouette and lose its state responsiveness.
+  const M93_CASES: Array<{ caseId: string; states: CaseStateT[] }> = [
+    {
+      caseId: 'case_anaphylaxis_adult_peanut',
+      states: ['stable', 'triaged', 'deteriorating', 'arrested', 'admitted'],
+    },
+    {
+      caseId: 'case_anaphylaxis_paeds_sibling',
+      states: ['triaged', 'deteriorating', 'arrested'],
+    },
+    {
+      caseId: 'case_dka_marcus',
+      states: ['triaged', 'deteriorating', 'arrested'],
+    },
+    {
+      caseId: 'case_paeds_dka_amir',
+      states: ['triaged', 'deteriorating', 'arrested'],
+    },
+    {
+      caseId: 'case_head_injury_doac_brennan',
+      states: ['stable', 'triaged', 'deteriorating', 'arrested'],
+    },
+  ];
+
+  it('each of the four named cases resolves a sprite for every authored state', () => {
+    for (const { caseId, states } of M93_CASES) {
+      for (const s of states) {
+        const svg = spriteSvgFor(caseId, s, 0, 4);
+        expect(svg, `${caseId} → ${s} must have a sprite`).not.toBeNull();
+        expect(svg, `${caseId} → ${s} sprite must be valid SVG`).toContain('<svg');
+      }
+    }
+  });
+
+  it('deteriorating sprite is visually distinct from triaged for each case', () => {
+    // Same caseId + same frame index but different state should
+    // produce different SVG output (different skinMap or diffs).
+    // Catches accidental regressions where a state recipe gets
+    // dropped or aliased to another.
+    for (const { caseId } of M93_CASES) {
+      const triagedSvg = spriteSvgFor(caseId, 'triaged', 0, 4);
+      const deterioratingSvg = spriteSvgFor(caseId, 'deteriorating', 0, 4);
+      expect(triagedSvg, `${caseId} triaged`).not.toBeNull();
+      expect(deterioratingSvg, `${caseId} deteriorating`).not.toBeNull();
+      expect(
+        deterioratingSvg,
+        `${caseId}: deteriorating sprite must differ from triaged`,
+      ).not.toBe(triagedSvg);
+    }
+  });
+});

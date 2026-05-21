@@ -4,6 +4,63 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M93 — state-responsive portraits + diegetic BAY MONITOR frame
+
+Unanimous BT 15 four-reviewer pick. The EncounterScreen's patient
+portrait panel becomes a diegetic CCTV feed showing the patient as a
+sprite with state-driven recipe, framed inside a CRT-styled monitor
+with subtle scanlines, corner vignette, and an OSD chip carrying the
+bay + shift clock.
+
+**Monitor (`src/style/frames.tsx`):**
+- New optional `cornerLabel` prop. When set, renders an OSD chip
+  top-left of the screen area (dark backdrop, phosphor-green mono
+  text). Wraps in a `<g pointerEvents="none">` so it doesn't catch
+  clicks meant for content underneath.
+- Static scanlines (3% opacity horizontal stripes on a 3-unit pitch)
+  drawn as an SVG `<pattern>` over the screen fill.
+- Corner vignette via a `<radialGradient>` from transparent centre →
+  35% black at the outer ring. Both effects respect prefers-reduced-
+  motion implicitly (no animation involved).
+- SVG `<defs>` ids now suffixed via `useId()`. Pre-M93 the static ids
+  (`bezelGrad`, `glassRefl`) collided when two Monitors rendered on
+  the same page (Asset Library preview). Latent bug now fixed.
+
+**PatientPanel:**
+- New optional `clockMin` prop, threaded from EncounterScreen
+  (`ks.clockMin`).
+- `bayMonitorLabel(cs, clockMin)` composes the OSD text:
+  `BAY MONITOR · {bayLabel} · {clockMin}m`. Falls back gracefully if
+  bay or clock is absent (Asset Library shows `BAY MONITOR · {bay}`).
+
+**Bay label helper:**
+- `bayLabelFor(bayId)` in `src/game/layout.ts` maps case bay ids
+  (`resus`, `majors`, `paeds`, ...) to human labels (RESUS, MAJORS,
+  PAEDS). Upper-cased id fallback for unknown bays; em-dash for
+  undefined.
+
+**State responsiveness verification:**
+- 5 new tests across `tests/sprites.test.ts` + `tests/layout.test.ts`:
+  - Sprite resolution succeeds for every authored state of the four
+    BT 15 named cases (anaphylaxis adult, anaphylaxis paeds, DKA
+    Marcus, DKA Amir, head-injury Brennan).
+  - Deteriorating SVG output differs from triaged SVG output for
+    each named case — protects against accidental recipe aliasing.
+  - `bayLabelFor` covers all known bay ids, fallback for unknown,
+    em-dash for undefined / null / empty.
+
+**Verification:**
+- BEFORE/AFTER screenshots captured for Beth (TRIAGE, triaged) and
+  Marcus (MINORS, deteriorating). BEFORE: bare bezel + sticker only.
+  AFTER: bezel + scanlines + vignette + `BAY MONITOR · TRIAGE · 0m`
+  OSD chip + sticker. Visual diff is clear.
+- Single-file bundle: 1.355 MB → 1.355 MB (+0.06%). Effectively
+  no-cost visual treatment.
+
+**Pattern B:**
+- Multimodal Gemini review (JSON + 4 screenshots). Reviewer scripts
+  + outputs in `dev_loop/braintrust/17-m93-state-portraits/`.
+
 ### M92 patch 3 + BT 16 round 3 — WCAG danger cues, deceased click-affordance, e2e tighten
 
 - **WCAG 1.4.1 (use of colour)**: `prefers-reduced-motion` no longer

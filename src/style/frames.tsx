@@ -13,6 +13,7 @@
  * plus a positioned slot for content. Callers pass children for the slot.
  */
 
+import { useId } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 
 // ─── Clipboard ──────────────────────────────────────────────────────────────
@@ -144,15 +145,31 @@ export function Monitor({
   width = 360,
   height = 240,
   sticker = 'CardioVis · v3.2',
+  cornerLabel,
   style,
 }: {
   children?: ReactNode;
   width?: number;
   height?: number;
   sticker?: string;
+  /**
+   * Top-left chip text, e.g. "BAY MONITOR · RESUS · 18m". Renders over
+   * the scanline overlay so it reads as an OSD on the patient feed.
+   * Omit to suppress the chip entirely.
+   */
+  cornerLabel?: string;
   style?: CSSProperties;
 }) {
   const bezel = 14;
+  const screenX = bezel;
+  const screenY = bezel;
+  const screenW = width - bezel * 2;
+  const screenH = height - bezel * 2 - 10;
+  // Stable instance id so SVG <defs> ids don't collide when more than
+  // one Monitor renders on the same page (e.g. asset library preview).
+  const idSuffix = useId().replace(/:/g, '_');
+  const scanId = `mScan_${idSuffix}`;
+  const vignetteId = `mVignette_${idSuffix}`;
   return (
     <div
       style={{
@@ -172,17 +189,33 @@ export function Monitor({
         aria-hidden
       >
         <defs>
-          <linearGradient id="bezelGrad" x1="0" x2="0" y1="0" y2="1">
+          <linearGradient id={`bezelGrad_${idSuffix}`} x1="0" x2="0" y1="0" y2="1">
             <stop offset="0" stopColor="#3a3a3a" />
             <stop offset="0.5" stopColor="#1a1a1a" />
             <stop offset="1" stopColor="#0a0a0a" />
           </linearGradient>
-          <linearGradient id="glassRefl" x1="0" x2="1" y1="0" y2="1">
+          <linearGradient id={`glassRefl_${idSuffix}`} x1="0" x2="1" y1="0" y2="1">
             <stop offset="0" stopColor="#ffffff" stopOpacity="0.08" />
             <stop offset="0.4" stopColor="#ffffff" stopOpacity="0" />
           </linearGradient>
+          {/* M93: subtle horizontal scanlines (3% opacity) and a corner
+              vignette darkening the four corners to simulate CRT
+              curvature. Both reduce to a single render pass and respect
+              prefers-reduced-motion (no animation; static effect). */}
+          <pattern
+            id={scanId}
+            patternUnits="userSpaceOnUse"
+            width="100"
+            height="3"
+          >
+            <rect x="0" y="0" width="100" height="1" fill="#000" opacity="0.03" />
+          </pattern>
+          <radialGradient id={vignetteId} cx="0.5" cy="0.5" r="0.75">
+            <stop offset="0.55" stopColor="#000" stopOpacity="0" />
+            <stop offset="1" stopColor="#000" stopOpacity="0.35" />
+          </radialGradient>
         </defs>
-        <rect x="0" y="0" width={width} height={height} rx="6" fill="url(#bezelGrad)" />
+        <rect x="0" y="0" width={width} height={height} rx="6" fill={`url(#bezelGrad_${idSuffix})`} />
         <rect
           x="2"
           y="2"
@@ -205,18 +238,37 @@ export function Monitor({
           opacity="0.7"
         />
         <rect
-          x={bezel}
-          y={bezel}
-          width={width - bezel * 2}
-          height={height - bezel * 2 - 10}
+          x={screenX}
+          y={screenY}
+          width={screenW}
+          height={screenH}
           fill="#1A2A28"
         />
         <rect
-          x={bezel}
-          y={bezel}
-          width={width - bezel * 2}
-          height={(height - bezel * 2) / 2}
-          fill="url(#glassRefl)"
+          x={screenX}
+          y={screenY}
+          width={screenW}
+          height={screenH / 2}
+          fill={`url(#glassRefl_${idSuffix})`}
+          pointerEvents="none"
+        />
+        {/* Scanline + vignette overlays sit above the screen fill but
+            below the bottom-bezel sticker. They are aria-hidden as
+            part of the outer <svg aria-hidden>. */}
+        <rect
+          x={screenX}
+          y={screenY}
+          width={screenW}
+          height={screenH}
+          fill={`url(#${scanId})`}
+          pointerEvents="none"
+        />
+        <rect
+          x={screenX}
+          y={screenY}
+          width={screenW}
+          height={screenH}
+          fill={`url(#${vignetteId})`}
           pointerEvents="none"
         />
         <rect
@@ -242,6 +294,32 @@ export function Monitor({
         </text>
         <circle cx={bezel + 6} cy={height - 8} r="2" fill="#5BBF8F" />
         <circle cx={bezel + 6} cy={height - 8} r="3.5" fill="#5BBF8F" opacity="0.3" />
+        {cornerLabel && (
+          <g pointerEvents="none">
+            {/* M93 bay-monitor OSD chip — small dark rect with mono-
+                phosphor-tinted text sat inside the top-left corner
+                of the screen area. */}
+            <rect
+              x={screenX + 4}
+              y={screenY + 4}
+              width={Math.min(screenW - 8, Math.max(110, cornerLabel.length * 4.4 + 10))}
+              height="12"
+              rx="2"
+              fill="#000"
+              opacity="0.45"
+            />
+            <text
+              x={screenX + 9}
+              y={screenY + 12}
+              fill="#86E0B5"
+              fontSize="7"
+              fontFamily="JetBrains Mono"
+              letterSpacing="0.5"
+            >
+              {cornerLabel}
+            </text>
+          </g>
+        )}
       </svg>
       <div
         style={{

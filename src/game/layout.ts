@@ -79,3 +79,16 @@ export const ED_ZONES: readonly Zone[] = [
     color: PALETTE.ambulatory,
   },
 ] as const;
+
+/**
+ * Map a case's `bay` id (e.g. 'resus', 'majors') to its human-readable
+ * label ('RESUS', 'MAJORS'). Falls back to the id upper-cased if no
+ * zone matches, so M93's bay-monitor chip degrades gracefully if a
+ * future case references a bay we haven't authored yet.
+ */
+export function bayLabelFor(bayId: string | undefined | null): string {
+  if (!bayId) return '—';
+  const z = ED_ZONES.find((zone) => zone.id === bayId);
+  if (z) return z.label;
+  return bayId.toUpperCase();
+}

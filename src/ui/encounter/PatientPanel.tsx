@@ -5,6 +5,7 @@ import { MonitorAudio, loadAudioEnabled, saveAudioEnabled } from '../../sim/audi
 import { frameCountFor, spriteSvgFor } from '../../style/sprites';
 import { Monitor, VitalsStripFrame, type VitalReading } from '../../style/frames';
 import { FX_PARTICLES, fxFrameToSvg } from '../../style/fxSprites';
+import { bayLabelFor } from '../../game/layout';
 import type { CaseStateT } from '../../content/schema';
 
 /**
@@ -12,8 +13,20 @@ import type { CaseStateT } from '../../content/schema';
  * Stays visible across all encounter sections so the player sees the
  * patient evolve as time passes, deterioration clauses fire, or
  * interventions are taken.
+ *
+ * M93: the Monitor wrapper is now framed as a diegetic BAY MONITOR
+ * feed. The optional `clockMin` prop drives the OSD chip overlay
+ * showing which bay the patient occupies and how many minutes into
+ * the shift the kernel is at. Falls back gracefully if either is
+ * absent (e.g. asset library preview).
  */
-export function PatientPanel({ cs }: { cs: CaseRuntime }) {
+export function PatientPanel({
+  cs,
+  clockMin,
+}: {
+  cs: CaseRuntime;
+  clockMin?: number;
+}) {
   const target = deriveVitals(cs.state, cs.data.vitals);
   // M41: interpolate displayed vitals toward the kernel target over a
   // wall-clock window so the player sees the patient deteriorate /
@@ -107,6 +120,7 @@ export function PatientPanel({ cs }: { cs: CaseRuntime }) {
         width={320}
         height={220}
         sticker="CardioVis · v3.2"
+        cornerLabel={bayMonitorLabel(cs, clockMin)}
         style={{ width: '100%' }}
       >
         <div className="patient-panel__portrait-slot">
@@ -249,6 +263,18 @@ function fmtBp(sys: number | undefined, dia: number | undefined): string {
   if (sys === undefined && dia === undefined) return '—';
   if (sys === 0 && dia === 0) return 'unrecordable';
   return `${sys ?? '—'}/${dia ?? '—'}`;
+}
+
+/**
+ * Compose the bay-monitor OSD label from the patient's bay assignment
+ * and the kernel clock. Renders the bay always; the clock only when
+ * provided (the asset library preview, for example, has no shift
+ * clock to show).
+ */
+function bayMonitorLabel(cs: CaseRuntime, clockMin?: number): string {
+  const bay = bayLabelFor(cs.data?.bay);
+  if (clockMin === undefined) return `BAY MONITOR · ${bay}`;
+  return `BAY MONITOR · ${bay} · ${clockMin}m`;
 }
 
 /**

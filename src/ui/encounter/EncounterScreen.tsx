@@ -164,7 +164,7 @@ export function EncounterScreen({
 
       <div className="enc__top">
         <VignetteCard cs={cs} />
-        <PatientPanel cs={cs} />
+        <PatientPanel cs={cs} clockMin={ks.clockMin} />
       </div>
 
       <DeteriorationTimers caseId={caseId} ks={ks} />

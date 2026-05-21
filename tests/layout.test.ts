@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ED_ZONES, GAME_HEIGHT, GAME_WIDTH } from '../src/game/layout';
+import { ED_ZONES, GAME_HEIGHT, GAME_WIDTH, bayLabelFor } from '../src/game/layout';
 
 describe('ED layout', () => {
   it('defines the expected zones', () => {
@@ -37,5 +37,22 @@ describe('ED layout', () => {
         expect(curr.x).toBeGreaterThanOrEqual(prev.x + prev.w);
       }
     }
+  });
+
+  describe('bayLabelFor (M93)', () => {
+    it('returns the human label for known bay ids', () => {
+      expect(bayLabelFor('resus')).toBe('RESUS');
+      expect(bayLabelFor('majors')).toBe('MAJORS');
+      expect(bayLabelFor('paeds')).toBe('PAEDS');
+      expect(bayLabelFor('triage')).toBe('TRIAGE');
+    });
+    it('falls back to upper-cased id for unknown bays', () => {
+      expect(bayLabelFor('cubicle_42')).toBe('CUBICLE_42');
+    });
+    it('shows an em-dash when no bay is assigned', () => {
+      expect(bayLabelFor(undefined)).toBe('—');
+      expect(bayLabelFor(null)).toBe('—');
+      expect(bayLabelFor('')).toBe('—');
+    });
   });
 });
