@@ -4,6 +4,52 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M92 patch 3 + BT 16 round 3 — WCAG danger cues, deceased click-affordance, e2e tighten
+
+- **WCAG 1.4.1 (use of colour)**: `prefers-reduced-motion` no longer
+  strips danger cues entirely. With motion on, deteriorating /
+  arrested cards keep their pulsing border (motion + colour). With
+  motion off, the pulse is replaced by a thicker dashed border (style
+  + colour). Both modes carry a non-colour signal.
+- **Deceased card affordance**: removed `opacity: 0.7`. Modern web UI
+  reads dimmed opacity as "non-interactive", but deceased cards must
+  still be clickable for the M91 NHS M&M workflow. Replaced with a
+  dashed danger-strong border + cool grey background — visually
+  distinct, still clearly clickable.
+- **E2E**: belt-and-braces — assert both `getByTestId('ed-floorplan')`
+  for structural mount and `getByRole('region', { name: /department
+  floorplan/i })` for the a11y landmark validation (the regex matches
+  the stable prefix so it tolerates dynamic patient-count suffix).
+- **Deferred** (round-3 finding 1, HIGH): the kernel-tick polling
+  pattern in `ShiftHubScreen` (`useSim((s) => s.tick); void tick;`)
+  was correctly flagged as wasteful — but it is **pre-existing**
+  behaviour, not introduced by M92. M92 swapped the render target
+  from Phaser to SVG and preserved the existing kernel-subscription
+  pattern verbatim. Filing as a future architectural milestone
+  (M9x — kernel selectors instead of tick polling) rather than
+  expanding M92 scope. Round-3 also surfaced two `approve_with_note`
+  items recorded for future work: JS `shortTitle` truncation could
+  hide clinical disambiguation; the e2e regex couples the test to
+  the component's English copy (mitigated by the testid backstop).
+- Closes the BT 16 review cycle. Three Gemini rounds, all
+  `request_changes`; each round surfaced legitimate findings that
+  patched within minutes. Pattern B's "milestone shipped when round 2
+  is approve-with-note across the board" wasn't met as written — but
+  the doc's escape hatch ("or all residual request_changes are
+  explicitly deferred to a later milestone") applies. One residual
+  explicitly deferred with reasoning above.
+
+### M92 patch + BT 16 round 1: address Gemini iteration review findings
+
+- See commit `0016b3d` body for round-1 detail (disabled → aria-disabled,
+  hardcoded card height percentage → content-sized).
+
+### M92 patch 2 + BT 16 round 2: a11y tree, deceased click, bay-stack flex
+
+- See commit `f83238a` body for round-2 detail (`role="img"` → `role="region"`,
+  removed `!alive` guard, replaced per-card absolute with per-bay flex stack,
+  useMemo on byBay, visually-hidden span for WCAG 2.5.3).
+
 ### M92 — replace Phaser hub with static SVG floorplan
 
 - Removed `phaser` from `package.json` dependencies. Single-file build

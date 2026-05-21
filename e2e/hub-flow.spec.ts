@@ -31,12 +31,17 @@ test('hen-do shift: board ↔ department view toggle', async ({ page }) => {
   // Hub header is visible
   await expect(page.getByText(/department view/)).toBeVisible();
 
-  // BT 16 round 2 critical fix: the floorplan landmark must expose its
+  // Structural mount — testid is stable across copy changes.
+  await expect(page.getByTestId('ed-floorplan')).toBeVisible();
+  // BT 16 round 2 critical fix: the floorplan must also expose its
   // interactive descendants to the a11y tree (the earlier role="img"
-  // wrapper would have wiped them). Locate by the region's accessible
-  // name to make sure assistive tech sees the labelled landmark.
-  const floorplan = page.getByRole('region', { name: /department floorplan/i });
-  await expect(floorplan).toBeVisible();
+  // wrapper would have wiped them). Asserting the labelled landmark
+  // is reachable by role+name verifies assistive tech can see it.
+  // The regex matches the stable "Department floorplan" prefix so it
+  // tolerates the dynamic patient-count suffix.
+  await expect(
+    page.getByRole('region', { name: /department floorplan/i }),
+  ).toBeVisible();
 
   // Switch back to the board
   await page.getByRole('button', { name: /board view/ }).click();

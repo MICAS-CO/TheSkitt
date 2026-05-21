@@ -1,6 +1,6 @@
 # HANDOVER — The Skitt
 
-**Last session ended**: 2026-05-21, post-M92 (Phaser hub replaced with static SVG floorplan) + BT 15 four-reviewer synthesis complete.
+**Last session ended**: 2026-05-21, post-M92 + BT 16 (3 rounds; M92 closed with one residual finding explicitly deferred to a future kernel-selector milestone) + BT 15 four-reviewer synthesis complete.
 **Branch**: `claude/review-and-continue-HjlEy` — merged `claude/new-session-Sax8M` forward. Previous branch tip `c622850` is preserved in history.
 **Numbers**: 444 unit tests passing · 37 test files · 3 E2E specs · 17 cases · 18 episodes · 3 arcs · 17-shift rota · Intern/SHO/Registrar tier ladder. Single-file build: 1.35MB (down from ~2.8MB pre-M92).
 
@@ -52,7 +52,7 @@ The previous handover stopped at M79. Since then, 12 implementation milestones +
 
 See `dev_loop/braintrust/15-visual-elements/synthesis.md` for the full revised synthesis.
 
-1. ~~**M92 — Phaser hub → static SVG floorplan**~~ **SHIPPED** (commit follows BT 15 completion). `phaser` dep removed, `PhaserGame.tsx` + `EDScene.ts` + `game/boot.ts` deleted. New `EdFloorplan.tsx` renders SVG bays + HTML-button patient cards. `walkCycles.ts` correctly kept (M79 EncounterScreen + AssetLibraryScreen still import it — the synthesis's claim it was "only used by the hub avatar" was wrong). All six pre-flight checks green. **Pending: Pattern B iteration review (see Section 12).**
+1. ~~**M92 — Phaser hub → static SVG floorplan**~~ **SHIPPED + BT 16 reviewed (3 rounds)**. `phaser` dep removed, `PhaserGame.tsx` + `EDScene.ts` + `game/boot.ts` deleted. New `EdFloorplan.tsx` renders SVG bays + per-bay flex card stacks with HTML-button patients. `walkCycles.ts` correctly kept (M79 EncounterScreen + AssetLibraryScreen still import it — the synthesis's claim it was "only used by the hub avatar" was wrong). All six pre-flight checks green; single-file build 1.35MB (down from ~2.8MB). BT 16 round-3 residual: kernel-tick polling in `ShiftHubScreen` flagged HIGH but **pre-existing** (not introduced by M92); deferred to a future kernel-selectors milestone (M9x).
 
 2. **M93 — State-responsive portrait + diegetic monitor frame** (REVISED, 4-6h for full or 2-3h for lite). GPT-5.5 disagreed with round 1 that monitor framing alone fixes the portrait. Round 1's *Reserved* state-responsive-portrait item is now promoted to the M93 critical path. Two acceptable shapes:
    - **M93 (full, recommended)**: wire `extraPatientSprites.ts` variants to the case state machine for 3-4 cases (Patel STEMI, anaphylaxis, DKA, head injury) — clinical state changes the sprite (sweat / pallor / urticaria / oxygen mask). Then frame the EncounterScreen patient-portrait container as a bay-monitor feed (scanline / phosphor / vignette / "BAY MONITOR · bay {n} · {clock}m"). Clinical job justifies the size; monitor frame justifies the pixel register.
@@ -65,6 +65,12 @@ See `dev_loop/braintrust/15-visual-elements/synthesis.md` for the full revised s
 
 - **Visual-contract CI test** — assert each semantic token is referenced from a small allowlist of selectors. Becomes writable after M94's leak audit. M95 candidate.
 - **Mobile responsiveness pass** (NEW, GPT-5.5): the build is laptop-shaped. Two-column → stacked at phone widths, side panels collapse, density audit per screen size. Milestone-scale, **run a fresh braintrust before scoping**.
+
+### From BT 16 (deferred from M92's review)
+
+- **M9x — kernel selectors instead of tick polling** (HIGH, deferred). `ShiftHubScreen` (and likely other in-shift views) subscribe to `useSim((s) => s.tick)` and force a full re-render on every kernel notify. The hub now rebuilds a small SVG + ~10 button DOM elements per tick; cheap but wasteful. Cleaner: expose selectors from `useSim` that only fire when the visible patient slice materially changes (`focus_cases` list + per-case `state`/`bay`). Pre-existing behaviour — Phaser had the same pattern. Worth a dedicated architectural pass before any future view that subscribes more aggressively.
+- **e2e click→encounter assertion** (LOW, deferred). Tried in M92 patch 2; backed off because card presence depends on kernel-startup timing the e2e wasn't otherwise exercising. Worth picking up when the e2e gets a dedicated rework.
+- **`shortTitle` JS truncation vs CSS ellipsis** (LOW, deferred). Current implementation slices at 26 chars in JS; in dense bays this could hide clinical disambiguation. CSS `text-overflow: ellipsis` is already applied; could drop the JS truncation entirely.
 
 ### Standing TODOs (preserved from earlier handover)
 

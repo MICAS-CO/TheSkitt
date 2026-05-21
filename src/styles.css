@@ -200,9 +200,11 @@ a {
 .ed-floorplan__card:focus-visible {
   border-color: var(--text);
 }
-.ed-floorplan__card--deceased {
-  opacity: 0.7;
-}
+/* BT 16 round 3: opacity dimming signals "non-interactive" in modern
+   UI, but deceased cards must still be clicked (M91 NHS M&M workflow).
+   Keep full opacity; use a desaturated background tone + dashed border
+   in the state-driven block below so the card still reads as clickable
+   while clinically distinct. */
 .ed-floorplan__card-title {
   font-size: clamp(9px, 0.9vw, 11px);
   font-weight: 600;
@@ -230,20 +232,32 @@ a {
   border-color: var(--warn);
   animation: edFloorplanPulse 1.4s ease-in-out infinite;
 }
-.ed-floorplan__card--arrested,
-.ed-floorplan__card--deceased {
+.ed-floorplan__card--arrested {
   border-color: var(--danger-strong);
   animation: edFloorplanPulse 1.4s ease-in-out infinite;
+}
+.ed-floorplan__card--deceased {
+  /* Distinct visual register from arrested (which is still salvageable):
+     dashed border + cooler background. Still clickable. */
+  border-color: var(--danger-strong);
+  border-style: dashed;
+  background: #181a1e;
 }
 @keyframes edFloorplanPulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.55; }
 }
 @media (prefers-reduced-motion: reduce) {
+  /* BT 16 round 3 + WCAG 1.4.1: a danger state can't rely on colour
+     alone. When motion is off, replace the pulsing border with a
+     non-motion fallback — heavier dashed border + a visible danger
+     glyph drawn via box-shadow inset so the state is detectable to
+     low-vision and colour-deficient users. */
   .ed-floorplan__card--deteriorating,
-  .ed-floorplan__card--arrested,
-  .ed-floorplan__card--deceased {
+  .ed-floorplan__card--arrested {
     animation: none;
+    border-style: dashed;
+    border-width: 3px;
   }
   .ed-floorplan__card { transition: none; }
 }
