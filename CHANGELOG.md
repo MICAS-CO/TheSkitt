@@ -4,6 +4,93 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M97 — case-content deteriorating-vitals audit (last BT 17 deferred)
+
+Audited all 17 cases' `vitals.deteriorating` blocks by computing
+NEWS2 for the layered baseline + deteriorating override. 16/17
+cases already produced NEWS2 ≥ 6 (AMBER/RED) — clinically
+correct for a kernel-flagged deteriorating patient. The single
+outlier was `case_stroke_acute_williams` at NEWS2 = 4 (GREEN
+band), which is wrong for a deteriorating acute stroke
+(haemorrhagic conversion, aspiration, raised ICP). Adjusted:
+
+- `rr: 18 → 22` — aspiration / Cheyne-Stokes pattern.
+- `spo2: 97 → 93` — early aspiration.
+- `gcs: 14 → 12` — drowsier on deterioration.
+- BP stays at 172 (hypertensive stroke response, correct).
+
+New NEWS2 score = 8 (RED).
+
+Tightened `tests/vitals.test.ts` "every deteriorating-state vitals
+trips at least the NEWS2 escalation threshold" assertion from
+`total ≥ 3 OR maxParam ≥ 3` to `total ≥ 5` (AMBER bar). The old
+condition let Williams pass at NEWS2=4 via the GCS-14 single-param
+escape clause — the new bar refuses any deteriorating case that
+doesn't clear the AMBER threshold by itself.
+
+The BT 17 R3 reviewer's "deteriorating DKA shows NEWS2=0" finding
+turned out to be a screenshot-mislabelling artefact in the capture
+script (Marcus wasn't actually rendered; a different card was).
+Marcus's authored deteriorating NEWS2 is 10 RED.
+
+Closes the last of the four BT 16/17 deferred items.
+
+### M96 — clinical-cue sprite recipes + asset library extension
+
+Two improvements.
+
+1. **Asset Library** at `?style-guide=1` now iterates both
+   `PATIENT_SPRITES` (hand-authored) and `CASE_TO_DROP_ID` (drop-
+   catalogue cases). Previously only 5 hand-authored cases were
+   visible in the gallery; now all 16 cases that resolve to a
+   sprite via `spriteSvgFor` are shown — finally surfacing
+   Marcus / Leo / Ruby / Joan / Maya / etc for QA. Exported
+   `CASE_TO_DROP_ID` from `src/style/sprites.ts`.
+2. **Marcus DKA deteriorating recipe** — was carrying pallor +
+   leg z-marks but no facial cue. Added the drowsy / Kussmaul
+   pattern that Leo (paeds DKA) already uses:
+   - Eye row 8 cols 12 & 14 get `S` chars — replacing the black
+     `e` pupils. With the existing pallor skinMap remapping
+     `S → c`, this renders as closed pale eyelids.
+   - Mouth row 12 cols 11-15 get `dddooD` — pale lips with a
+     darker `o` gap in the middle, reading as parted open
+     mouth (Kussmaul breathing).
+   Triaged-vs-deteriorating now visually distinct.
+
+Verified the other named cases (Leo, Joan, Ruby, Beth) already
+carry meaningful deteriorating cues via the gallery capture.
+
+### M95 — useKernelSelector + Monitor SVG memoization (BT 16/17 deferred)
+
+Two architectural fixes that close BT 16 R3 finding 1 + BT 17 R1
+finding 5 (same root cause: views over-subscribe to kernel tick).
+
+1. **New `useKernelSelector(selector)` hook** in
+   `src/state/sim.ts`. Wraps `useSim` with `useShallow` from
+   `zustand/react/shallow`. Consumers project a narrow slice of
+   the kernel state; the hook re-runs the selector on every
+   notify but only re-renders the consumer if the projection
+   changes (shallow equality). Designed for hot-path consumers
+   that currently do `useSim((s) => s.tick); kernel.getState()`
+   and then read a narrow slice. PatientPanel migrated as proof
+   — reads `clockMin` directly via the selector; EncounterScreen
+   no longer needs to thread the prop down.
+2. **Monitor SVG layers memoized**. Extracted the bezel
+   (gradient + screen fill + glass reflection + sticker + LED)
+   and the CRT effects (scanlines + corner vignette) into
+   `MonitorBezel` and `MonitorCRTEffects` — both `React.memo`'d.
+   Their props are all scalars and don't change after mount, so
+   the SVG layers render once and never re-render on tick
+   changes. Only the OSD chip HTML overlay re-renders when
+   `cornerLabel` actually changes (per-minute updates).
+
+Pattern is documented in the hook's docblock for incremental
+migration of the other tick-polling callsites (ShiftHubScreen /
+ShiftBoardScreen / ShiftView / EpisodeDebriefScreen /
+EncounterScreen).
+
+### M94 — VitalsStrip layout repair (BT 17 deferred fix)
+
 ### M93 patch 3 + BT 17 round 3 close-out — diegetic clock + WAITING ROOM CCTV
 
 Round 3 verdict was request_changes with 5 findings. Two voice /

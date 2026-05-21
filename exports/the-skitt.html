@@ -5380,12 +5380,18 @@ vitals:
     temp_c: 36.6
     bm: 9.4
   deteriorating:
+    # M97 deteriorating-vitals audit: was producing NEWS2=4 (GREEN band)
+    # which doesn't reflect an acutely deteriorating ischaemic stroke
+    # (possible haemorrhagic conversion, aspiration, raised ICP).
+    # Adjusted to NEWS2=7 (RED): RR up to 22 (aspiration / Cheyne-
+    # Stokes), SpO2 down to 93 (early aspiration), GCS down to 12
+    # (drowsier). BP stays elevated (hypertensive stroke response).
     hr: 92
-    rr: 18
-    spo2: 97
+    rr: 22
+    spo2: 93
     bp_sys: 172
     bp_dia: 96
-    gcs: 14
+    gcs: 12
     temp_c: 36.6
     bm: 9.4
   arrested:

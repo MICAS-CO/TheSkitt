@@ -52,12 +52,15 @@ describe('content vitals discipline', () => {
     }
   });
 
-  it('every deteriorating-state vitals trips at least the NEWS2 escalation threshold', async () => {
-    // RCP NEWS2: total ≥ 3 OR any single parameter ≥ 3 should escalate. This
-    // is the clinical bar we want every "deteriorating" patient to clear.
-    // Some pathologies (acute stroke, raised ICP) deteriorate primarily on
-    // GCS with otherwise-near-baseline obs — we accept those if a single
-    // parameter (ACVPU) hits 3, even if the total stays modest.
+  it('every deteriorating-state vitals lands in NEWS2 AMBER+ (total ≥ 5)', async () => {
+    // RCP NEWS2 banding: 0-4 LOW, 5-6 MEDIUM (AMBER — urgent review),
+    // 7+ HIGH (RED — immediate response). M97 audit: every case
+    // explicitly kernel-flagged as `deteriorating` should produce at
+    // least a MEDIUM-band NEWS2, otherwise the simulation lies to the
+    // clinical reasoning — the state machine says "deteriorating" but
+    // the vitals strip says "go back to your cuppa". The previous bar
+    // (total ≥ 3 OR maxParam ≥ 3) let `case_stroke_acute_williams`
+    // pass at NEWS2=4 GREEN because GCS-14 alone tripped maxParam.
     const { readdirSync, readFileSync } = await import('node:fs');
     const { join } = await import('node:path');
     const { parse } = await import('yaml');
@@ -70,12 +73,10 @@ describe('content vitals discipline', () => {
       if (!c.vitals?.deteriorating) continue;
       const v = deriveVitals('deteriorating', c.vitals);
       const s = news2(v);
-      const maxParam = Math.max(s.rr, s.spo2, s.temp, s.bp_sys, s.hr, s.acvpu);
-      const triggers = s.total >= 3 || maxParam >= 3;
       expect(
-        triggers,
-        `${c.id} deteriorating: NEWS2 total ${s.total}, max-param ${maxParam} — does not trip escalation`,
-      ).toBe(true);
+        s.total,
+        `${c.id} deteriorating: NEWS2 total ${s.total} — below the AMBER (5+) bar that flags genuine clinical concern`,
+      ).toBeGreaterThanOrEqual(5);
     }
   });
 });
