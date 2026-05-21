@@ -82,12 +82,15 @@ export const ED_ZONES: readonly Zone[] = [
 
 /**
  * Map a case's `bay` id (e.g. 'resus', 'majors') to its human-readable
- * label ('RESUS', 'MAJORS'). Falls back to the id upper-cased if no
- * zone matches, so M93's bay-monitor chip degrades gracefully if a
- * future case references a bay we haven't authored yet.
+ * label ('RESUS', 'MAJORS'). Falls back to 'TRIAGE QUEUE' for cases
+ * that haven't been assigned a bay yet — real ED telemetry boards
+ * never show a null state, the patient is somewhere on the floor or
+ * waiting to be seen. Upper-cases unknown ids so a future case
+ * referencing a bay we haven't authored doesn't render a blank chip.
+ * BT 17 round 2 diegesis fix.
  */
 export function bayLabelFor(bayId: string | undefined | null): string {
-  if (!bayId) return '—';
+  if (!bayId) return 'TRIAGE QUEUE';
   const z = ED_ZONES.find((zone) => zone.id === bayId);
   if (z) return z.label;
   return bayId.toUpperCase();

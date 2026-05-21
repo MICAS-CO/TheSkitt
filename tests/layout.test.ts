@@ -49,10 +49,13 @@ describe('ED layout', () => {
     it('falls back to upper-cased id for unknown bays', () => {
       expect(bayLabelFor('cubicle_42')).toBe('CUBICLE_42');
     });
-    it('shows an em-dash when no bay is assigned', () => {
-      expect(bayLabelFor(undefined)).toBe('—');
-      expect(bayLabelFor(null)).toBe('—');
-      expect(bayLabelFor('')).toBe('—');
+    it('falls back to "TRIAGE QUEUE" when no bay is assigned', () => {
+      // BT 17 round 2 diegesis fix: real ED boards never show a null
+      // state, they show where the patient currently is. Em-dash was
+      // breaking the worldbuilding for unassigned cases.
+      expect(bayLabelFor(undefined)).toBe('TRIAGE QUEUE');
+      expect(bayLabelFor(null)).toBe('TRIAGE QUEUE');
+      expect(bayLabelFor('')).toBe('TRIAGE QUEUE');
     });
   });
 });

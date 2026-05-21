@@ -1,0 +1,24 @@
+{
+  "model": "gemini-3-pro-preview",
+  "diff": "cb70aa5..HEAD",
+  "prompt_text_chars": 84646,
+  "images": 4,
+  "elapsed_seconds": 125.9,
+  "usage": {
+    "promptTokenCount": 16777,
+    "candidatesTokenCount": 1319,
+    "totalTokenCount": 27992,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 12409
+      },
+      {
+        "modality": "IMAGE",
+        "tokenCount": 4368
+      }
+    ],
+    "thoughtsTokenCount": 9896,
+    "serviceTier": "standard"
+  }
+}

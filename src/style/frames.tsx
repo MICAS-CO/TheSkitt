@@ -180,6 +180,12 @@ export function Monitor({
         ...style,
       }}
     >
+      {/* Layer 1 — bezel + screen fill + glass reflection + sticker
+          chrome + power LED. Renders FIRST so it sits behind the
+          patient content. The scanline/vignette CRT effects used to
+          live here too, but BT 17 round 2 flagged that the sprite
+          content rendered ON TOP and broke the diegetic illusion —
+          those effects now ship in Layer 3 below. */}
       <svg
         viewBox={`0 0 ${width} ${height}`}
         width="100%"
@@ -198,22 +204,6 @@ export function Monitor({
             <stop offset="0" stopColor="#ffffff" stopOpacity="0.08" />
             <stop offset="0.4" stopColor="#ffffff" stopOpacity="0" />
           </linearGradient>
-          {/* M93: subtle horizontal scanlines (3% opacity) and a corner
-              vignette darkening the four corners to simulate CRT
-              curvature. Both reduce to a single render pass and respect
-              prefers-reduced-motion (no animation; static effect). */}
-          <pattern
-            id={scanId}
-            patternUnits="userSpaceOnUse"
-            width="100"
-            height="3"
-          >
-            <rect x="0" y="0" width="100" height="1" fill="#000" opacity="0.03" />
-          </pattern>
-          <radialGradient id={vignetteId} cx="0.5" cy="0.5" r="0.75">
-            <stop offset="0.55" stopColor="#000" stopOpacity="0" />
-            <stop offset="1" stopColor="#000" stopOpacity="0.35" />
-          </radialGradient>
         </defs>
         <rect x="0" y="0" width={width} height={height} rx="6" fill={`url(#bezelGrad_${idSuffix})`} />
         <rect
@@ -252,25 +242,6 @@ export function Monitor({
           fill={`url(#glassRefl_${idSuffix})`}
           pointerEvents="none"
         />
-        {/* Scanline + vignette overlays sit above the screen fill but
-            below the bottom-bezel sticker. They are aria-hidden as
-            part of the outer <svg aria-hidden>. */}
-        <rect
-          x={screenX}
-          y={screenY}
-          width={screenW}
-          height={screenH}
-          fill={`url(#${scanId})`}
-          pointerEvents="none"
-        />
-        <rect
-          x={screenX}
-          y={screenY}
-          width={screenW}
-          height={screenH}
-          fill={`url(#${vignetteId})`}
-          pointerEvents="none"
-        />
         <rect
           x={width - 110}
           y={height - 12}
@@ -295,39 +266,11 @@ export function Monitor({
         <circle cx={bezel + 6} cy={height - 8} r="2" fill="#5BBF8F" />
         <circle cx={bezel + 6} cy={height - 8} r="3.5" fill="#5BBF8F" opacity="0.3" />
       </svg>
-      {cornerLabel && (
-        // BT 17 round 1 — three findings on one block all solve with
-        // the same move: render the OSD chip as an HTML overlay
-        // outside the SVG. That fixes (1) top-left occluding the
-        // patient face by repositioning to bottom-left above the
-        // sticker, (2) the brittle SVG-width magic number by letting
-        // CSS padding flow naturally with text, and (3) the WCAG
-        // contrast regression by using a solid 85%-opacity dark
-        // backdrop. pointerEvents: none keeps the chip from catching
-        // clicks meant for content underneath.
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            left: bezel + 6,
-            bottom: bezel + 12,
-            padding: '2px 6px',
-            background: 'rgba(0, 0, 0, 0.85)',
-            color: '#86E0B5',
-            fontFamily: 'JetBrains Mono, monospace',
-            fontSize: 9,
-            letterSpacing: 0.5,
-            borderRadius: 2,
-            pointerEvents: 'none',
-            maxWidth: `calc(100% - ${bezel * 2 + 12}px)`,
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }}
-        >
-          {cornerLabel}
-        </div>
-      )}
+
+      {/* Layer 2 — patient content (sprite). Renders in DOM order
+          between the bezel and the CRT effects so the scanlines and
+          vignette read as if the sprite is being captured by the
+          monitor camera. */}
       <div
         style={{
           position: 'absolute',
@@ -341,6 +284,75 @@ export function Monitor({
       >
         {children}
       </div>
+
+      {/* Layer 3 — CRT effects (scanlines + corner vignette) on top
+          of the sprite. pointer-events: none so click-through still
+          reaches the content underneath. */}
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        width="100%"
+        height="100%"
+        preserveAspectRatio="none"
+        style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
+        aria-hidden
+      >
+        <defs>
+          <pattern
+            id={scanId}
+            patternUnits="userSpaceOnUse"
+            width="100"
+            height="3"
+          >
+            <rect x="0" y="0" width="100" height="1" fill="#000" opacity="0.06" />
+          </pattern>
+          <radialGradient id={vignetteId} cx="0.5" cy="0.5" r="0.75">
+            <stop offset="0.55" stopColor="#000" stopOpacity="0" />
+            <stop offset="1" stopColor="#000" stopOpacity="0.45" />
+          </radialGradient>
+        </defs>
+        <rect
+          x={screenX}
+          y={screenY}
+          width={screenW}
+          height={screenH}
+          fill={`url(#${scanId})`}
+        />
+        <rect
+          x={screenX}
+          y={screenY}
+          width={screenW}
+          height={screenH}
+          fill={`url(#${vignetteId})`}
+        />
+      </svg>
+
+      {/* Layer 4 — OSD chip on the very top so the patient sprite
+          can't clip the bay/clock readout. */}
+      {cornerLabel && (
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            left: bezel + 6,
+            bottom: bezel + 12,
+            padding: '2px 6px',
+            background: 'rgba(0, 0, 0, 0.85)',
+            color: 'var(--status-trace)',
+            fontFamily: 'var(--font-mono)',
+            fontSize: 9,
+            letterSpacing: 0.5,
+            borderRadius: 2,
+            pointerEvents: 'none',
+            maxWidth: `calc(100% - ${bezel * 2 + 12}px)`,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            zIndex: 2,
+          }}
+        >
+          {cornerLabel}
+        </div>
+      )}
     </div>
   );
 }

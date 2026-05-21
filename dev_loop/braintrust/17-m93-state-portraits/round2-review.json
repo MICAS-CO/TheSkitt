@@ -1,0 +1,54 @@
+{
+  "verdict": "request_changes",
+  "findings": [
+    {
+      "severity": "critical",
+      "verdict": "request_changes",
+      "title": "CRT overlays render completely behind the patient sprite",
+      "file": "src/style/frames.tsx",
+      "body": "The SVG element containing the scanlines, vignette, and glass reflection (lines 188-297) is rendered before the absolutely positioned HTML div hosting the `{children}` sprite (lines 332-344). Because DOM order dictates stacking context, the sprite paints cleanly over the CRT effects. This physically breaks the diegetic CCTV illusion requested by the Braintrust, as seen in the screenshots where the patient is unaffected by the scanlines.",
+      "recommendation": "Extract the foreground effects (scanlines, vignette, glass reflection) into a separate `<svg pointerEvents=\"none\">` and place it in the DOM after the `{children}` div so the texture applies to the patient."
+    },
+    {
+      "severity": "high",
+      "verdict": "request_changes",
+      "title": "Patient sprite occludes the OSD clock text",
+      "file": "src/style/frames.tsx",
+      "body": "The `cornerLabel` HTML block (lines 298-331) is rendered before the `{children}` div. As both are absolutely positioned without a defined `z-index`, the patient's pixel body covers the OSD text (clipping 'TRIAGE' down to 'T' in Image 2). This prevents the player from reading the shift clock and bay assignment.",
+      "recommendation": "Move the `{cornerLabel && ...}` block below the `{children}` div in the render return, or assign it `zIndex: 10` to ensure it sits on the absolute top visual layer."
+    },
+    {
+      "severity": "critical",
+      "verdict": "request_changes",
+      "title": "Vitals telemetry layout is entirely illegible",
+      "file": "src/ui/encounter/PatientPanel.tsx",
+      "body": "In the provided screenshots, the vitals strip renders as a continuous, unspaced numerical string (e.g., `781498%132/821536.6`). While not strictly in the M93 diff, this is a fatal UI regression on the EncounterScreen. The FRCEM simulation-depth bar cannot be met if players cannot read core physiological data at a glance to make clinical decisions.",
+      "recommendation": "Implement a CSS grid or flex layout with an explicit `gap` on the vitals row container to ensure distinct separation between HR, RR, SpO2, BP, GCS, and TEMP."
+    },
+    {
+      "severity": "medium",
+      "verdict": "request_changes",
+      "title": "Design system leak in the OSD styling",
+      "file": "src/style/frames.tsx",
+      "body": "The inline style for `cornerLabel` (lines 313-315) hardcodes `color: '#86E0B5'` and `fontFamily: 'JetBrains Mono, monospace'`. This circumvents the semantic CSS variable contract that the project relies on, perpetuating the exact token leak issues GPT-5.5 already flagged for cleanup in M94.",
+      "recommendation": "Replace the hardcoded hex and font string with the appropriate application design tokens (e.g., `var(--font-mono)` and `var(--brand-teal)`)."
+    },
+    {
+      "severity": "medium",
+      "verdict": "approve_with_note",
+      "title": "Brittle state-responsiveness test gives false confidence",
+      "file": "tests/sprites.test.ts",
+      "body": "The test sweep asserts `deterioratingSvg !== triagedSvg` (line 98). Structural string inequality proves the output differs, but not that the change is pedagogically useful or clinically accurate. This acts as a test-coverage safety blanket without actually enforcing FRCEM clinical rigor (like checking for pallor or sweat).",
+      "recommendation": "Update the test to assert the inclusion of specific semantic tokens in the SVG diff (e.g., `expect(deterioratingSvg).toContain('layer-sweat')`) to guarantee the visual presentation evolves correctly."
+    },
+    {
+      "severity": "low",
+      "verdict": "approve_with_note",
+      "title": "Diegesis-breaking fallback for missing bays",
+      "file": "src/game/layout.ts",
+      "body": "The `bayLabelFor` helper returns an em-dash (`—`) when `bayId` is falsy (line 89), causing the monitor to display `BAY MONITOR · —`. Real ED telemetry boards default to actionable locations like 'WAITING ROOM' or 'IN TRANSIT'. Exposing an internal null state via an em-dash breaks the worldbuilding immersion.",
+      "recommendation": "Change the falsy fallback return value in `bayLabelFor` to 'WAITING ROOM' or 'TRIAGE QUEUE' to align with actual clinical operations and maintain the Disco Elysium-level voice."
+    }
+  ],
+  "overall_take": "The core ambition of M93—grounding the pixel-art portraits in a diegetic CCTV feed to reconcile the visual clash—is structurally sound, but fails in execution due to a simple DOM stacking error. The sprite rendering completely on top of the CRT scanlines, vignette, and OSD text shatters the illusion. If you only change one thing before the next playtest, refactor the `Monitor` component to render the CRT effects and `cornerLabel` layer over the `{children}` div. This five-minute layering fix will instantly unify the EncounterScreen's visual identity, apply the CRT texture to the patient, and restore the currently unreadable shift clock."
+}
