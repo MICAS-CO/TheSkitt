@@ -1,0 +1,17 @@
+{
+  "model": "gpt-5.5-2026-04-23",
+  "status": "completed",
+  "usage": {
+    "input_tokens": 65311,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 1954,
+    "output_tokens_details": {
+      "reasoning_tokens": 516
+    },
+    "total_tokens": 67265
+  },
+  "id": "resp_0af3c7c7c9ae1144006a0eb98153ec8191880624cd49d738be",
+  "elapsed_seconds": 47.2
+}

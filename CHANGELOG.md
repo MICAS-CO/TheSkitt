@@ -4,6 +4,29 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### Braintrust 15 — fourth reviewer (GPT-5.5) + revised synthesis
+
+- OpenAI env allowlist + `OPENAI_API_KEY` unblocked between sessions;
+  fourth-reviewer call shipped against `gpt-5.5-2026-04-23` (real
+  multimodal API, same prompt + 8 screenshots Gemini saw).
+- New tracked dev-loop script: `dev_loop/braintrust/15-visual-elements/openai-call.mjs`
+  (parity with `capture-screens.mjs`; uses `fetch` against `/v1/responses`,
+  no SDK added to `package.json`).
+- GPT-5.5 reinforces consensus on Phaser hub + typography + brand identity;
+  **materially challenges** round 1 on (a) Patel portrait does not yet
+  earn its size — monitor framing alone is cosmetic, needs clinical job;
+  (b) semantic-colour contract is leaking (amber on TODAY'S SHIFT /
+  e-portfolio / awaiting-clinician / bed-state, red on pick / decide /
+  core-action pills). New finding: v0.0.1 footer shouldn't be visible
+  to learners; build isn't mobile-ready.
+- `synthesis.md` revised. Round-1 *Reserved* state-responsive-portrait
+  item promoted to M93 critical path. M94 expands with token-contract
+  leak audit + v0.0.1 footer removal. M95+ candidate: mobile pass.
+- `STATUS.md` deleted (consultation no longer interim).
+- `HANDOVER.md` updated: BT 15 marked complete; cost ledger +$0.15
+  (running total ~$1.69); first-moves checklist points at the revised
+  synthesis.
+
 ### M79 — McGrath walks into the bay
 
 - Parked walk-cycle frames (M65) now drive her entrance into the

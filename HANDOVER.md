@@ -1,7 +1,7 @@
 # HANDOVER — The Skitt
 
-**Last session ended**: 2026-05-21, post-M91b + Braintrust 15 in-progress.
-**Branch**: `claude/new-session-Sax8M` at `c622850` (pushed).
+**Last session ended**: 2026-05-21, post-M91b + Braintrust 15 **complete** (GPT-5.5 fourth reviewer added in a follow-on session, synthesis revised).
+**Branch**: `claude/review-and-continue-HjlEy` — merged `claude/new-session-Sax8M` forward. Previous branch tip `c622850` is preserved in history.
 **Numbers**: 444 unit tests passing · 37 test files · 3 E2E specs · 17 cases · 17 episodes · 3 arcs · 17-shift rota · F1/F2/CT1 → Intern/SHO/Registrar tier ladder.
 
 Live single-file playable build at `exports/the-skitt.html` (regenerate with `npm run build:single-file && cp dist/index.html exports/the-skitt.html`).
@@ -41,24 +41,29 @@ The previous handover stopped at M79. Since then, 12 implementation milestones +
 | M88b/89/90 | Narrative thread complete across the rota | NTS (non-technical skills) arc threaded through all 17 shifts, crescendo at the dissection case. |
 | M91 | Akin teaches M&M folder culture | "Make sure you leave a sticker in the M&M folder" — NHS-accurate way to flag cases for retrospective review. |
 | M91b | M&M timing accuracy sweep | Audited every M&M reference across content; M&Ms are MONTHLY retrospective chart reviews, never real-time. Fixed all in-line mentions. |
-| **BT 15** | Visual elements (IN PROGRESS — see `dev_loop/braintrust/15-visual-elements/STATUS.md`) | Gemini Pro multimodal call + Opus voice + Sonnet voice complete. OpenAI third-reviewer call BLOCKED by env network allowlist. |
+| **BT 15** | Visual elements (COMPLETE — `dev_loop/braintrust/15-visual-elements/synthesis.md`) | Four-reviewer multimodal: Gemini Pro + GPT-5.5 (both real-API) + Opus + Sonnet (orchestrator-voice). GPT-5.5 materially revised round 1 — Patel portrait does not yet earn its size; semantic-colour contract is leaking (amber + red); v0.0.1 footer should hide from learners. M93 plan expanded to include state-responsive portrait variants (was *Reserved*). |
 
 ---
 
 ## 3. Pending roadmap (in priority order)
 
-### From Braintrust 15 — ship as separate commits, each reviewable
+### From Braintrust 15 (REVISED after GPT-5.5 fourth reviewer) — ship as separate commits, each reviewable
 
-1. **M92 — Phaser hub cut** (2-3h, consensus first move). Remove `import phaser` + `PhaserGame` lazy chunk + `game/scenes/EDScene.ts` + `style/walkCycles.ts` (only the hub avatar uses it). Replace the hub view with a static SVG floorplan (same bay rectangles, same labels, no walk-around). Sheds ~1.5MB from the bundle. The Phaser hub renders as "coloured rectangles + wobbly walk-cycle" and reads as half-built on every reviewer pass.
+See `dev_loop/braintrust/15-visual-elements/synthesis.md` for the full revised synthesis.
 
-2. **M93 — Diegetic pixel art** (2-4h, highest-leverage visual fix). Frame the patient portrait container in EncounterScreen as a CCTV / bay-monitor feed: subtle scanline overlay, phosphor tint at edges, slight CRT vignette, label "BAY MONITOR · bay {bay} · {clock}m". Same treatment to any other pixel surface (status icons, small avatars). Reconciles the build's two visual identities (sober pixel craft + modern clinical UI) by making the pixel art something the modern UI is *rendering*, not something stuck on top of it.
+1. **M92 — Phaser hub → static SVG floorplan** (2-3h, four-reviewer consensus). Remove `phaser` from `package.json` + `import Phaser` + `PhaserGame` lazy chunk + `game/scenes/EDScene.ts` + `style/walkCycles.ts` (only the hub avatar uses it). Replace with a static SVG floorplan **plus current-case chips placed in their bays** (GPT-5.5's framing: the static map should do MORE than just sit there). Sheds ~1.5MB from the bundle. Unchanged from round 1 in shape; the framing is now "reduce to static" rather than "cut entirely" — same implementation.
 
-3. **M94 — Shift log defer + Caveat audit** (1-2h, polish). Move ShiftLog side panel to a collapsible chip; expand on click; auto-expand when a new entry arrives. Default state at T+0 is collapsed. Then `grep -r 'font-hand\|Caveat' src/` — if Caveat is unused, delete the import + font-face. If used somewhere unseen, document where in `src/styles.css`.
+2. **M93 — State-responsive portrait + diegetic monitor frame** (REVISED, 4-6h for full or 2-3h for lite). GPT-5.5 disagreed with round 1 that monitor framing alone fixes the portrait. Round 1's *Reserved* state-responsive-portrait item is now promoted to the M93 critical path. Two acceptable shapes:
+   - **M93 (full, recommended)**: wire `extraPatientSprites.ts` variants to the case state machine for 3-4 cases (Patel STEMI, anaphylaxis, DKA, head injury) — clinical state changes the sprite (sweat / pallor / urticaria / oxygen mask). Then frame the EncounterScreen patient-portrait container as a bay-monitor feed (scanline / phosphor / vignette / "BAY MONITOR · bay {n} · {clock}m"). Clinical job justifies the size; monitor frame justifies the pixel register.
+   - **M93 (lite, fallback)**: shrink the portrait, demote into a compact right-rail "patient state" module (small portrait + NEWS2 + vitals + trend + last event). Skip the monitor framing. Frees vertical space.
+   - Author's call.
+
+3. **M94 — Token-contract leak audit + shift-log defer + Caveat audit + v0.0.1 footer** (EXPANDED, 2-3h). GPT-5.5 found amber leaking onto "TODAY'S SHIFT" header / e-portfolio block / awaiting-clinician chip / bed-state; red leaking onto "pick" / "decide" / core-action pills. The M67 contract says amber = trap icon only, red = logo + resus stripe. Either migrate the leaking sites to new operational-status tokens, or amend the contract. After the audit, the round-1 *Reserved* visual-contract CI test becomes writable. Plus: collapse the shift log to a chip (unchanged from round 1), audit / purge Caveat (unchanged from round 1), and hide the `v0.0.1` footer from learner-facing chrome.
 
 ### Deferred (from BT 15, file as future)
 
-- **Visual-contract CI test** (Opus suggestion): assert each semantic token is referenced from a small allowlist of selectors. Insurance against future leak.
-- **Patient sprite state variants** (Opus suggestion): use `extraPatientSprites.ts` to render Mrs Patel more unwell as case state degrades, or delete the variants. Pedagogical win if done.
+- **Visual-contract CI test** — assert each semantic token is referenced from a small allowlist of selectors. Becomes writable after M94's leak audit. M95 candidate.
+- **Mobile responsiveness pass** (NEW, GPT-5.5): the build is laptop-shaped. Two-column → stacked at phone widths, side panels collapse, density audit per screen size. Milestone-scale, **run a fresh braintrust before scoping**.
 
 ### Standing TODOs (preserved from earlier handover)
 
@@ -178,7 +183,7 @@ npm run build              # production bundle into dist/
 npx playwright test        # 3 E2E (optional; slower)
 ```
 
-All six pass clean as of `c622850`.
+All six pass clean as of `c622850` (last code-changing commit; BT 15 fourth-reviewer commits are docs-only).
 
 ---
 
@@ -196,44 +201,36 @@ cp dist/index.html exports/the-skitt.html  # update exported single-file
 
 ## 8. Cost ledger
 
-Rough running spend on real-API braintrust calls this session:
+Rough running spend on real-API braintrust calls this rota:
 
 - Gemini Pro Preview text calls (BT 01-14): ~$0.04-0.10 each, ~$0.80 total.
-- Gemini Pro Preview multimodal call (BT 15, 8 screenshots): ~$0.06.
-- OpenAI calls: $0.00 (blocked by env network allowlist).
+- Gemini Pro Preview multimodal call (BT 15 round 1, 8 screenshots): ~$0.06.
+- OpenAI GPT-5.5 multimodal call (BT 15 fourth reviewer, 8 screenshots, 65k input + ~2k output incl. 516 reasoning tokens): ~$0.15.
 - Opus / Sonnet voices: free (orchestrator-written register).
 
-Running total this rota: **~$1.54** against the user's noted budget (~$15 envelope).
+Running total this rota: **~$1.69** against the user's noted budget (~$15 envelope).
 
 ---
 
-## 9. Live state pending — Braintrust 15 OpenAI reviewer
+## 9. Env access — OpenAI now unblocked (BT 15 follow-on)
 
-`dev_loop/braintrust/15-visual-elements/STATUS.md` captures this fully. Short version:
+When BT 15 was first written, `api.openai.com` was blocked at the env allowlist level and `OPENAI_API_KEY` was not set. The fourth reviewer was deferred and round 1 shipped with three voices.
 
-- User pasted an OpenAI API key in plaintext mid-session asking to swap Sonnet for OpenAI as third reviewer.
-- Container's network policy blocked `api.openai.com` (default `Trusted` allowlist doesn't include it).
-- Sonnet-voice (orchestrator-written) take stands in for now. Synthesis is robust on the convergences (Phaser cut, semantic-colour triumph, encounter density OK, typography keep first 3 fonts).
+**As of the follow-on session (2026-05-21):** `OPENAI_API_KEY` is set and `api.openai.com` is reachable. The fourth-reviewer call ran successfully against `gpt-5.5-2026-04-23`, took 47s, returned ~7k chars of substantive critique. Take in `dev_loop/braintrust/15-visual-elements/openai-take.md`; usage in `openai-usage.json`. Synthesis revised; `STATUS.md` deleted (consultation no longer interim).
 
-**Steps for the user to unblock OpenAI** (also in STATUS.md):
-1. **Rotate the leaked OpenAI key** on the OpenAI dashboard — it appears in plaintext in the chat transcript.
-2. Open env settings (cloud icon → settings) → switch Network access from Trusted to Custom.
-3. Add `api.openai.com` to Allowed domains; tick "Also include default list of common package managers".
-4. Add `OPENAI_API_KEY=sk-proj-...` to Environment variables.
-5. Open a new session (env cache rebuilds ~5min one-off).
+Gemini key (`GEMINI_API_KEY`) is **not currently set** in this session env — that's fine for now (no pending Gemini calls), but the next session that wants to run a Gemini iteration review will need it.
 
-Once unblocked, the next session can run a fourth reviewer pass against `gpt-5` (or current frontier OpenAI vision model) with the same prompt + screenshots, save to `openai-take.md`, revise `synthesis.md`. **OR** the author can choose to ship M92-M94 on the current Gemini+Opus+Sonnet synthesis without waiting — the substantive convergences will hold.
+Security posture from `BRAINTRUST_PATTERN.md` still applies: never echo, never commit, never save to a tracked file. The `openai-call.mjs` script reads from `process.env.OPENAI_API_KEY` and never writes it anywhere.
 
 ---
 
 ## 10. First moves for the next session (in priority order)
 
 1. **Read `dev_loop/braintrust/BRAINTRUST_PATTERN.md`.** Non-negotiable. It is how this project ships decisions.
-2. **Read `dev_loop/braintrust/15-visual-elements/synthesis.md`** for the M92-M94 plan.
-3. **Read `dev_loop/braintrust/15-visual-elements/STATUS.md`** for the OpenAI pending state.
-4. Decide with the user: do we wait for OpenAI to unblock, or ship M92 now?
-5. If shipping M92: pick the Phaser hub cut. Lowest-risk, biggest-perceived-quality lift per hour. Reviewer pipeline as standard (single-reviewer iteration review pattern from `BRAINTRUST_PATTERN.md`).
-6. After M92: M93 diegetic monitor framing → M94 shift-log defer + Caveat audit.
+2. **Read `dev_loop/braintrust/15-visual-elements/synthesis.md`** for the revised M92-M94 plan (note: M93 materially changed in the four-reviewer synthesis vs the round-1 version).
+3. Decide M93 shape with the user: full (state-responsive portrait + monitor frame, 4-6h) vs lite (shrink portrait, demote to compact patient-state card, 2-3h).
+4. Ship M92 first regardless of M93 choice. Reviewer pipeline as standard (pattern B from `BRAINTRUST_PATTERN.md`: Gemini round1 → fixes → round2).
+5. After M92: M93 (full or lite per author call) → M94 (token-contract leak audit + shift-log defer + Caveat audit + v0.0.1 footer hide).
 
 If picking up cold and shipping completely-unrelated work, the priority list from the earlier handover still stands (wire un-conditioned achievements, schema `case_coda?: string`, two more arcs, UI integration tests, a11y audit).
 
@@ -252,7 +249,7 @@ If picking up cold and shipping completely-unrelated work, the priority list fro
 
 ## 12. Contact / context
 
-Repo: `MICAS-CO/TheSkitt`. Parent MedEd project: **TheCase.Report**. Branch as of handover: `claude/new-session-Sax8M`.
+Repo: `MICAS-CO/TheSkitt`. Parent MedEd project: **TheCase.Report**. Branch as of handover: `claude/review-and-continue-HjlEy` (merged `claude/new-session-Sax8M` forward via a `--no-ff` merge commit; both branches remain on origin for reference).
 
 If the next session is a different model or a different operator, conventions in `CLAUDE.md` carry forward. The codebase rewards being read top-down (App.tsx → kernel.ts → schema.ts → an example case YAML). Test density is highest on kernel + schema + scoring; lowest on UI — pattern-match from existing tests rather than introduce new frameworks.
 
