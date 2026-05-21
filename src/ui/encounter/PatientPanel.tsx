@@ -267,14 +267,32 @@ function fmtBp(sys: number | undefined, dia: number | undefined): string {
 
 /**
  * Compose the bay-monitor OSD label from the patient's bay assignment
- * and the kernel clock. Renders the bay always; the clock only when
- * provided (the asset library preview, for example, has no shift
- * clock to show).
+ * and the kernel clock.
+ *
+ * BT 17 round 3 fixes:
+ * - Format the kernel's relative tick counter as a simulated wall-
+ *   clock time of day (shift starts 07:00), instead of "0m" / "18m"
+ *   which read as non-diegetic. A real CCTV monitor shows a clock.
+ * - When the case has no bay (patient still in the triage queue /
+ *   waiting room), the OSD reads "WAITING ROOM CCTV · {time}"
+ *   instead of "BAY MONITOR · TRIAGE QUEUE · {time}" — calling an
+ *   unbayed feed a bay monitor was internally inconsistent.
  */
+const SHIFT_START_HOUR = 7;
+function formatShiftClock(clockMin: number): string {
+  const total = SHIFT_START_HOUR * 60 + Math.max(0, Math.floor(clockMin));
+  const h = Math.floor(total / 60) % 24;
+  const m = total % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
 function bayMonitorLabel(cs: CaseRuntime, clockMin?: number): string {
-  const bay = bayLabelFor(cs.data?.bay);
-  if (clockMin === undefined) return `BAY MONITOR · ${bay}`;
-  return `BAY MONITOR · ${bay} · ${clockMin}m`;
+  const bayId = cs.data?.bay;
+  const time = clockMin === undefined ? null : formatShiftClock(clockMin);
+  if (!bayId) {
+    return time ? `WAITING ROOM CCTV · ${time}` : 'WAITING ROOM CCTV';
+  }
+  const bay = bayLabelFor(bayId);
+  return time ? `BAY MONITOR · ${bay} · ${time}` : `BAY MONITOR · ${bay}`;
 }
 
 /**

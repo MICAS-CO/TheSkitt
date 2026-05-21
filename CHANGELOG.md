@@ -4,6 +4,59 @@ Format: one line per change, newest first.
 
 ## [Unreleased]
 
+### M93 patch 3 + BT 17 round 3 close-out — diegetic clock + WAITING ROOM CCTV
+
+Round 3 verdict was request_changes with 5 findings. Two voice /
+diegesis fixes folded into this patch; three clinical / content
+gaps and the pre-existing vitals-strip layout collapse explicitly
+deferred per Pattern B's "all residual request_changes deferred to
+a later milestone" clause.
+
+**Applied (round 3 approve_with_note → ship)**
+
+- Raw `clockMin` → simulated shift-clock time. New helper
+  `formatShiftClock` in PatientPanel formats the kernel's tick
+  counter as HH:MM (shift starts 07:00). The OSD now reads
+  `BAY MONITOR · TRIAGE · 07:00` instead of the non-diegetic
+  `BAY MONITOR · TRIAGE · 0m`.
+- Unbayed patients no longer surface a "BAY MONITOR · TRIAGE
+  QUEUE" — that wrapper was semantically wrong (a triage-queue
+  patient isn't yet in a bay). The OSD now reads
+  `WAITING ROOM CCTV · 07:00` for cases without a bay
+  assignment. Same `formatShiftClock` helper feeds both branches.
+
+**Deferred (explicit residual deferral per BRAINTRUST_PATTERN.md)**
+
+- **R3 finding 1 (HIGH, clinical): "Fake compliance" on state-
+  responsive portraits.** The reviewer correctly noted that the
+  test sweep proves byte difference but doesn't prove a clinical
+  visual cue (sweat, pallor, urticaria, oxygen mask) actually
+  renders. That's a sprite-recipe authoring task — adding diffs
+  to the `deteriorating` state recipes in
+  `src/style/dropPatientSprites.ts` for the four named cases.
+  Substantial pixel-art work, separate scope from M93's wiring +
+  frame milestone. Filed as **M9x — clinical-cue sprite recipe
+  enhancement**.
+- **R3 finding 2 (CRITICAL, clinical): Deteriorating DKA case
+  shows NEWS2=0.** Real concern, but M93 didn't touch case YAMLs
+  or `deriveVitals`. The deteriorating state block in
+  `case_dka_marcus.yaml` doesn't author meaningful vitals
+  overrides (sweat, tachypnea, dehydration tachycardia). Filed as
+  **M9x — case-content audit: deteriorating-state vitals** —
+  needs a content sweep of all 17 cases' deteriorating recipes.
+- **R3 finding 3 (HIGH, architecture): Vitals strip layout.**
+  Re-reported from round 2. Pre-existing — visible in both BEFORE
+  and AFTER screenshots from round 1. Already filed as the M9x
+  vitals-strip repair.
+
+**Recorded approve_with_note** — none new this round; the
+tautological-test finding repeated from rounds 1 + 2 stays filed
+for the future sprite-engine semantic-data-attribute milestone.
+
+**BT 17 review cycle closed.** Three Gemini Pro Preview multimodal
+rounds. Cycle cost: gemini-3-pro-preview, ~$0.30 across the three
+rounds (multimodal payload is more expensive than text-only).
+
 ### M93 — state-responsive portraits + diegetic BAY MONITOR frame
 
 Unanimous BT 15 four-reviewer pick. The EncounterScreen's patient

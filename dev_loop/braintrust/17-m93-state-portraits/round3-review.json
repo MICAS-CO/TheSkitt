@@ -1,0 +1,46 @@
+{
+  "verdict": "request_changes",
+  "findings": [
+    {
+      "severity": "high",
+      "verdict": "request_changes",
+      "title": "[Clinical] Fake compliance on state-responsive portraits",
+      "file": "tests/sprites.test.ts",
+      "body": "The M93 implementation bypassed the BT15 pedagogical mandate to map clinical variants (sweat, pallor). The symptom is that portraits in 'deteriorating' states show no clinical changes despite tests passing. The underlying cause is that the test assertion in `sprites.test.ts` only checks for strict SVG string inequality (`not.toBe`), which passes on trivial baseline diffs without requiring actual clinical visual wiring. The fix is to implement the `extraPatientSprites.ts` mappings for the named cases as originally scoped.",
+      "recommendation": "Author actual clinical visual indicators (e.g., oxygen masks, diaphoresis) for the named cases in the sprite resolver, or revert to the M93-lite compact UI scope."
+    },
+    {
+      "severity": "critical",
+      "verdict": "request_changes",
+      "title": "[Clinical] Deteriorating state decoupled from vitals engine",
+      "file": "case_dka_marcus.yaml",
+      "body": "The case state machine is failing to propagate clinical modifiers to the vitals generator. The symptom is a 'deteriorating' DKA patient in the screenshots displaying perfectly normal vitals (NEWS2 0, HR 88, RR 14). The fix is to add proper physiologic overrides (e.g., Kussmaul breathing tachypnea, dehydration tachycardia) to the `deteriorating` state block in the YAML to meet the stated FRCEM SAQ simulation bar.",
+      "recommendation": "Audit the `deteriorating` state block in `case_dka_marcus.yaml` and ensure it applies vitals overrides that reflect a degrading clinical picture."
+    },
+    {
+      "severity": "high",
+      "verdict": "request_changes",
+      "title": "[Architecture] Vitals strip text overlapping renders telemetry illegible",
+      "file": "src/ui/encounter/PatientPanel.tsx",
+      "body": "The vitals rendering container lacks internal spacing and width constraints. The symptom is the text nodes overflowing and merging into a single unreadable string (e.g., '781498%130/801536.6') across all provided screenshots. The fix is to enforce layout isolation between the vital columns at the CSS/component level.",
+      "recommendation": "Apply a `gap` property to the flex container in the vitals strip, enforce `font-variant-numeric: tabular-nums`, and appropriately scale the font size to prevent collisions."
+    },
+    {
+      "severity": "medium",
+      "verdict": "approve_with_note",
+      "title": "[Voice] Exposing raw shift-timer breaks diegesis",
+      "file": "src/ui/encounter/PatientPanel.tsx",
+      "body": "The `PatientPanel` is piping raw kernel state (`clockMin`) directly into a diegetic UI layer. The symptom is a hospital CCTV monitor displaying '0m' instead of a realistic time of day, breaking the Disco Elysium-level in-universe immersion. The fix is to transform the relative tick counter into a localized timestamp string before rendering.",
+      "recommendation": "Format `clockMin` into a simulated absolute time of day (e.g., T+0 becomes '08:00', T+18 becomes '08:18') before passing it to the `cornerLabel` prop."
+    },
+    {
+      "severity": "low",
+      "verdict": "approve_with_note",
+      "title": "[Voice] Triage queue implies non-existent physical monitors",
+      "file": "src/game/layout.ts",
+      "body": "The layout mapping naively wraps all patients in the CRT monitor UI, regardless of their spatial location. The symptom is waiting room ('TRIAGE QUEUE') patients appearing on dedicated bay CCTV feeds, which violates the physical logic of the department. The fix is to conditionally bypass the `Monitor` wrapper for unassigned patients.",
+      "recommendation": "Conditionally strip the CRT styling or change the OSD label to 'WAITING ROOM CCTV' if the patient lacks a proper bay assignment."
+    }
+  ],
+  "overall_take": "The team shipped the aesthetic shell of M93 without the clinical substance. The tests pass on technicalities, but the portraits still fail to perform the clinical pedagogical job (sweat, pallor) that justified keeping them large in the first place, and the telemetry engine is spitting out completely normal vitals for a deteriorating DKA case. If I could only change one thing before the next playtest, it would be enforcing the clinical rigor of the simulation: wire the state machine to actually alter the vitals and the pixel art. Without that, the UI is lying to the clinical simulation, and we fail both the FRCEM and Dwarf Fortress ambitions of the project."
+}

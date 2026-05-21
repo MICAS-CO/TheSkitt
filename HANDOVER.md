@@ -1,6 +1,6 @@
 # HANDOVER — The Skitt
 
-**Last session ended**: 2026-05-21, post-M93 (state-responsive portraits + BAY MONITOR frame, BT 17 multimodal review pending) + M92 closed + BT 16 closed + BT 15 synthesis complete.
+**Last session ended**: 2026-05-21, post-M93 closed (state-responsive portraits + BAY MONITOR frame; BT 17 three-round multimodal review complete; three residual content / pre-existing findings explicitly deferred to a vitals-strip + content-sweep + clinical-cue sprite milestone) + M92 closed + BT 16 closed + BT 15 synthesis complete.
 **Branch**: `claude/review-and-continue-HjlEy` — merged `claude/new-session-Sax8M` forward. Previous branch tip `c622850` is preserved in history.
 **Numbers**: 444 unit tests passing · 37 test files · 3 E2E specs · 17 cases · 18 episodes · 3 arcs · 17-shift rota · Intern/SHO/Registrar tier ladder. Single-file build: 1.35MB (down from ~2.8MB pre-M92).
 
@@ -64,9 +64,15 @@ See `dev_loop/braintrust/15-visual-elements/synthesis.md` for the full revised s
 - **Visual-contract CI test** — assert each semantic token is referenced from a small allowlist of selectors. Becomes writable after M94's leak audit. M95 candidate.
 - **Mobile responsiveness pass** (NEW, GPT-5.5): the build is laptop-shaped. Two-column → stacked at phone widths, side panels collapse, density audit per screen size. Milestone-scale, **run a fresh braintrust before scoping**.
 
+### From BT 17 (deferred from M93's three-round review)
+
+- **M9x — vitals-strip layout repair** (HIGH, deferred). The vitals row in `PatientPanel` collapses all metric values into a single run-on string ("781498%132/821536.6") at the current viewport. Visible in every BT 17 round 1/2/3 screenshot; pre-existing — not introduced by M93. Likely needs the `VitalsStripFrame` (in `src/style/frames.tsx`) rebuilt with a real CSS grid / flex-with-gap layout + `font-variant-numeric: tabular-nums`. Fatal for the FRCEM clinical-rigor bar, so candidate for the next visual milestone.
+- **M9x — clinical-cue sprite recipe enhancement** (HIGH, deferred). BT 17 R3 finding 1: the `deteriorating` recipes in `src/style/dropPatientSprites.ts` for the four BT 15 named cases (anaphylaxis adult/paeds, DKA Marcus/Amir, head-injury Brennan) carry skinMap + diffs but the diffs are minimal — no explicit sweat / urticaria / pallor / pupil-change layer that surfaces the clinical state. Wiring is done (M93); content is thin. Substantial pixel-art authoring scope; should slot before any further "screenshot the encounter screen" review.
+- **M9x — case-content audit: deteriorating-state vitals** (CRITICAL, deferred). BT 17 R3 finding 2: a `deteriorating` DKA case shows NEWS2=0 because the YAML's deteriorating state block doesn't author meaningful vitals overrides. Needs a sweep of all 17 cases' `deteriorating` state vitals authoring to enforce a minimum clinical bar. M93 didn't touch case content; this is content work.
+
 ### From BT 16 (deferred from M92's review)
 
-- **M9x — kernel selectors instead of tick polling** (HIGH, deferred). `ShiftHubScreen` (and likely other in-shift views) subscribe to `useSim((s) => s.tick)` and force a full re-render on every kernel notify. The hub now rebuilds a small SVG + ~10 button DOM elements per tick; cheap but wasteful. Cleaner: expose selectors from `useSim` that only fire when the visible patient slice materially changes (`focus_cases` list + per-case `state`/`bay`). Pre-existing behaviour — Phaser had the same pattern. Worth a dedicated architectural pass before any future view that subscribes more aggressively.
+- **M9x — kernel selectors instead of tick polling** (HIGH, deferred). `ShiftHubScreen` (and likely other in-shift views) subscribe to `useSim((s) => s.tick)` and force a full re-render on every kernel notify. The hub now rebuilds a small SVG + ~10 button DOM elements per tick; cheap but wasteful. Cleaner: expose selectors from `useSim` that only fire when the visible patient slice materially changes (`focus_cases` list + per-case `state`/`bay`). Pre-existing behaviour — Phaser had the same pattern. Worth a dedicated architectural pass before any future view that subscribes more aggressively. BT 17 R1 + R3 re-reported the same pattern in PatientPanel — same root cause, same deferral.
 - **e2e click→encounter assertion** (LOW, deferred). Tried in M92 patch 2; backed off because card presence depends on kernel-startup timing the e2e wasn't otherwise exercising. Worth picking up when the e2e gets a dedicated rework.
 - **`shortTitle` JS truncation vs CSS ellipsis** (LOW, deferred). Current implementation slices at 26 chars in JS; in dense bays this could hide clinical disambiguation. CSS `text-overflow: ellipsis` is already applied; could drop the JS truncation entirely.
 
