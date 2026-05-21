@@ -1,0 +1,19 @@
+{
+  "model": "gemini-3-pro-preview",
+  "diff": "6f44240..HEAD",
+  "prompt_chars": 61073,
+  "elapsed_seconds": 130.8,
+  "usage": {
+    "promptTokenCount": 19226,
+    "candidatesTokenCount": 940,
+    "totalTokenCount": 26087,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 19226
+      }
+    ],
+    "thoughtsTokenCount": 5921,
+    "serviceTier": "standard"
+  }
+}

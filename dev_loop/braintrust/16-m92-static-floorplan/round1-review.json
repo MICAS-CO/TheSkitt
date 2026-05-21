@@ -1,0 +1,46 @@
+{
+  "verdict": "request_changes",
+  "findings": [
+    {
+      "severity": "high",
+      "verdict": "request_changes",
+      "title": "Deceased patients are invisible to screen readers",
+      "file": "src/ui/shift/EdFloorplan.tsx",
+      "body": "The patient card applies the native HTML disabled attribute to deceased cases. This removes the button entirely from the accessibility tree focus order, meaning keyboard-only and screen-reader users cannot perceive that a deceased patient occupies the bay. This breaks clinical state parity for assistive technology users.",
+      "recommendation": "Remove the disabled attribute. Replace it with aria-disabled=\"true\" and handle the early return block inside the onClick handler. This ensures the element remains focusable and the aria-label is read."
+    },
+    {
+      "severity": "high",
+      "verdict": "request_changes",
+      "title": "Absolute height percentage causes severe overflow on smaller viewports",
+      "file": "src/ui/shift/EdFloorplan.tsx",
+      "body": "Patient cards are assigned an inline height percentage of 5.55% (40 / 720). When the 1280px container scales down on a standard laptop screen (e.g., 800px wide), the card's computed height shrinks to ~25px. However, the CSS forces 8px vertical padding, a minimum 9px font size across two lines, and a 2px gap, requiring at least 28px of space. The text will immediately overflow the container bounds and break the UI.",
+      "recommendation": "Change the inline style from height to minHeight, or remove the height constraint entirely. Allow the internal padding and typography to dictate the card's physical height naturally, anchoring only the top coordinate."
+    },
+    {
+      "severity": "medium",
+      "verdict": "approve_with_note",
+      "title": "Ambient state indicator is easily lost to text truncation",
+      "file": "src/ui/shift/EdFloorplan.tsx",
+      "body": "The ambient text string is appended to the very end of the card's meta span. Because the span relies on white-space: nowrap and text-overflow: ellipsis, the ambient indicator is the first element visually truncated when horizontal space is constrained, completely masking a crucial gameplay noise-vs-signal cue.",
+      "recommendation": "Prepend an ambient indicator or icon to the beginning of the meta string, or apply a global visual treatment to ambient cards (such as reduced opacity), ensuring the status survives horizontal text truncation."
+    },
+    {
+      "severity": "low",
+      "verdict": "approve_with_note",
+      "title": "Missed opportunity to verify interaction in E2E tests",
+      "file": "e2e/hub-flow.spec.ts",
+      "body": "The previous Phaser implementation prevented Playwright from interacting with patient cards, so the E2E test only asserted visibility. Now that the patients are standard HTML buttons, the test continues to just assert visibility, leaving the card-click-to-encounter routing entirely unverified by CI.",
+      "recommendation": "Update the E2E test to explicitly locate a patient card via getByRole('button') and click it, verifying that the view successfully transitions to the encounter screen."
+    },
+    {
+      "severity": "low",
+      "verdict": "approve_with_note",
+      "title": "Mixed styling paradigms for floorplan theme",
+      "file": "src/ui/shift/EdFloorplan.tsx",
+      "body": "The SVG mixes native CSS variables for text fill with React-injected JS layout constants for rect fill (toCss(PALETTE.floor)). While this was necessary for Phaser's Canvas, the new DOM-based floorplan can read CSS variables natively. Retaining the PALETTE dependency here fragments the source of truth for the design system.",
+      "recommendation": "In a future polish milestone, migrate the ED_ZONES color definitions to use CSS custom properties directly and remove the toCss(PALETTE) bindings from the SVG entirely."
+    }
+  ],
+  "overall_take": "The migration from Phaser to DOM is exactly the right strategic move, shedding 1.5MB of vanity dependency while unlocking native accessibility. However, the implementation introduces a critical a11y regression for deceased cases and a severe layout overflow bug on smaller viewports. The hardcoded percentage height on patient cards physically cannot contain the clamped font sizes when the container scales down below 1280px. Fix the disabled attribute accessibility gap and the height constraint, and this is ready to merge."
+}

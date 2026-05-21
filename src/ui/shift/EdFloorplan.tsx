@@ -144,21 +144,32 @@ function PatientCard({ patient, zone, index, onClick }: CardProps) {
   const cardY = zone.y + 30 + index * (CARD_HEIGHT + CARD_GAP);
   const cardWidth = Math.min(zone.w - 2 * CARD_PAD, 200);
 
+  // BT 16 round 1 finding: a hardcoded height percentage overflows on
+  // small viewports — 5.55% of a 450px-tall container is ~25px, but
+  // the clamped font + padding + gap need ~28-32px minimum. Anchor
+  // only the top coordinate; let content size the card vertically.
   const style: CSSProperties = {
     left: `${(cardX / GAME_WIDTH) * 100}%`,
     top: `${(cardY / GAME_HEIGHT) * 100}%`,
     width: `${(cardWidth / GAME_WIDTH) * 100}%`,
-    height: `${(CARD_HEIGHT / GAME_HEIGHT) * 100}%`,
   };
 
+  // BT 16 round 1 finding: HTML `disabled` removes the button from the
+  // a11y tree entirely. For deceased patients we want the card to stay
+  // focusable and announced (so screen-reader users can tell the bay
+  // is occupied by a deceased patient). aria-disabled + a no-op
+  // onClick handler keeps the element in the focus order.
   const alive = patient.state !== 'deceased';
   return (
     <button
       type="button"
       className={`ed-floorplan__card ed-floorplan__card--${patient.state}`}
       style={style}
-      onClick={onClick}
-      disabled={!alive}
+      onClick={() => {
+        if (!alive) return;
+        onClick();
+      }}
+      aria-disabled={!alive}
       aria-label={`${patient.title} in ${zone.label}, ${patient.state}, triage category ${patient.triageCategory}${patient.isAmbient ? ', ambient' : ''}`}
     >
       <span className="ed-floorplan__card-title">{shortTitle(patient.title)}</span>
