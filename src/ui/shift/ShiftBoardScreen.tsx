@@ -1,9 +1,11 @@
 import { useSim, type SimSpeedKey } from '../../state/sim';
 import { ClockBar } from './ClockBar';
+import { PreShiftHandover } from './PreShiftHandover';
 import type { CaseRuntime, KernelState, LogEntry } from '../../sim/kernel';
 import { deriveVitals, news2 } from '../../sim/vitals';
 import { IconCountdown, IconRedFlag } from '../../style/icons';
 import { hasPerk } from '../../state/progression';
+import { ROTA_ORDER_IDS } from '../../state/rotaOrder';
 
 interface Props {
   onEnterCase: (caseId: string) => void;
@@ -12,6 +14,10 @@ interface Props {
   onExit: () => void;
   speedKey: SimSpeedKey;
   onSpeedChange: (k: SimSpeedKey) => void;
+  /** M88 — Akin handover dismiss state lifted from ShiftView so the
+   *  handover stays collapsed across board ↔ encounter navigation. */
+  handoverDismissed: boolean;
+  onHandoverDismissChange: (dismissed: boolean) => void;
 }
 
 export function ShiftBoardScreen({
@@ -21,6 +27,8 @@ export function ShiftBoardScreen({
   onExit,
   speedKey,
   onSpeedChange,
+  handoverDismissed,
+  onHandoverDismissChange,
 }: Props) {
   useSim((s) => s.tick);
   const kernel = useSim((s) => s.kernel);
@@ -69,6 +77,18 @@ export function ShiftBoardScreen({
         onSkip={() => kernel.advance(1)}
         speedKey={speedKey}
         onSpeedChange={onSpeedChange}
+      />
+
+      {/* M88 (Braintrust 10) — Charge nurse Akin's pre-shift handover.
+          Renders only when authored content exists for this rota
+          position; otherwise the component returns null. Dismissible.
+          Dismiss state is lifted to ShiftView so it survives
+          board ↔ encounter navigation (round-1 reviewer caught the
+          local-state remount bug). */}
+      <PreShiftHandover
+        rotaIndex={ROTA_ORDER_IDS.indexOf(ks.episode.id)}
+        dismissed={handoverDismissed}
+        onDismissChange={onHandoverDismissChange}
       />
 
       <div className="enc__split">

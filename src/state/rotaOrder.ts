@@ -43,7 +43,10 @@ export const ROTA_ORDER: ReadonlyArray<RotaShiftRef> = [
   { episodeId: 'ep_ugib_solo', focusCaseIds: ['case_ugib_variceal_kowalski'], blockIndex: 2, isKeystone: false },
   { episodeId: 'ep_paracetamol_solo', focusCaseIds: ['case_paracetamol_od_chloe'], blockIndex: 2, isKeystone: false },
   { episodeId: 'ep_paeds_dka_solo', focusCaseIds: ['case_paeds_dka_amir'], blockIndex: 2, isKeystone: false },
-  { episodeId: 'ep_birthday_party', focusCaseIds: ['case_anaphylaxis_adult_peanut', 'case_anaphylaxis_paeds_sibling'], blockIndex: 2, isKeystone: false },
+  // M88 (Braintrust 10 audit): Beth (case_anaphylaxis_adult_peanut) was
+  // dropped from this shift to fix patient over-recurrence. Sam is the
+  // sole focus case now.
+  { episodeId: 'ep_birthday_party', focusCaseIds: ['case_anaphylaxis_paeds_sibling'], blockIndex: 2, isKeystone: false },
   { episodeId: 'ep_seizure_solo', focusCaseIds: ['case_status_epilepticus_priya'], blockIndex: 2, isKeystone: true },
   // ─── Block 3 — doubles + late-game anchor-breakers ──────────────
   { episodeId: 'ep_hendo_shift', focusCaseIds: ['case_anaphylaxis_adult_peanut', 'case_ectopic_minors_sarah'], blockIndex: 3, isKeystone: false },

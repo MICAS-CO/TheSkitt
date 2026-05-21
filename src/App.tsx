@@ -66,9 +66,12 @@ import sepsisEpYaml from '../content/episodes/ep_overnight_sepsis_solo.yaml?raw'
 import marcusYaml from '../content/cases/case_dka_marcus.yaml?raw';
 import metabolicEpYaml from '../content/episodes/ep_overnight_metabolic.yaml?raw';
 
-// Family anaphylaxis — Beth + Sam (adult + paeds)
+// M88 (Braintrust 10 audit): the birthday-party shift was reshaped
+// from Beth+Sam (adult + paeds parallel) to Sam-only paeds. Beth was
+// removed to fix patient over-recurrence. arc_family_peanut_party
+// was retired alongside; the YAML file is kept for reference but no
+// episode references it any more.
 import samYaml from '../content/cases/case_anaphylaxis_paeds_sibling.yaml?raw';
-import familyArcYaml from '../content/arcs/arc_family_peanut_party.yaml?raw';
 import birthdayEpYaml from '../content/episodes/ep_birthday_party.yaml?raw';
 
 // Stroke solo
@@ -182,10 +185,12 @@ const METABOLIC_SHIFT: () => ShiftPack = () => ({
   arcs: [],
 });
 
-const FAMILY_SHIFT: () => ShiftPack = () => ({
+// M88: factory renamed from FAMILY_SHIFT to PAEDS_ANAPH_SHIFT after the
+// Beth cull. Sam is the sole focus case; no arcs.
+const PAEDS_ANAPH_SHIFT: () => ShiftPack = () => ({
   episode: Episode.parse(parseYaml(birthdayEpYaml)),
-  cases: [Case.parse(parseYaml(bethYaml)), Case.parse(parseYaml(samYaml))],
-  arcs: [Arc.parse(parseYaml(familyArcYaml))],
+  cases: [Case.parse(parseYaml(samYaml))],
+  arcs: [],
 });
 
 const STROKE_SOLO: () => ShiftPack = () => ({
@@ -293,10 +298,10 @@ const SHIFT_DEFS: ShiftDef[] = [
   },
   {
     id: 'ep_birthday_party',
-    title: 'Family anaphylaxis — adult + paeds',
-    eyebrow: 'Shift · ST3 · 20 min · 2 cases · 1 arc',
-    meta: 'Beth + her 8y/o brother Sam. Resus Council UK 2021 algorithm, two dose bands, one shift.',
-    factory: FAMILY_SHIFT,
+    title: 'Paediatric anaphylaxis — the birthday party',
+    eyebrow: 'Shift · ST3 · 20 min · 1 case',
+    meta: 'Sam, 8, peanut anaphylaxis at a friend\'s birthday party. Mum at the bedside. Resus Council UK 2021 paeds algorithm, 300 mcg dose band.',
+    factory: PAEDS_ANAPH_SHIFT,
   },
   {
     id: 'ep_overnight_metabolic',

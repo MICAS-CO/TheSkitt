@@ -12,13 +12,76 @@ function load<T>(rel: string, schema: { parse: (raw: unknown) => T }): T {
   return schema.parse(parseYaml(readFileSync(join(ROOT, rel), 'utf8')));
 }
 
+// M88: the live ep_hendo_shift no longer has ambient cases (the Patel +
+// Stan ambients were dropped in the Braintrust 10 audit). The ambient-
+// mechanic test suite now uses a SYNTHETIC test-only episode that loads
+// the real case YAMLs but assembles its own ambient_cases list and
+// scheduled_events. This decouples the kernel-level ambient mechanic
+// from the live content audit — the mechanic itself still works; the
+// content just chose not to use it on the hen-do shift any more.
 function bootHendoWithAmbient() {
   const beth = load('content/cases/case_anaphylaxis_adult_peanut.yaml', Case);
   const sarah = load('content/cases/case_ectopic_minors_sarah.yaml', Case);
   const stan = load('content/cases/case_intox_stan_ambient.yaml', Case);
   const patel = load('content/cases/case_chest_pain_patel_ambient.yaml', Case);
   const arc = load('content/arcs/arc_hendo_dinner.yaml', Arc);
-  const episode = load('content/episodes/ep_hendo_shift.yaml', Episode);
+  // Synthetic episode for the ambient mechanic test. Beth's
+  // deterioration event is the only inaction-driven scheduled event;
+  // Stan + Patel are driven entirely by their own case state machines.
+  const episode = Episode.parse({
+    schema_version: 1,
+    id: 'ep_test_hendo_with_ambient',
+    title: 'Test fixture: hen-do with ambient',
+    learning_objectives: ['x'],
+    curriculum_tags: ['RP2', 'AP2', 'CP1', 'GC1'],
+    difficulty_band: 'ST3',
+    shift_duration_min: 20,
+    focus_cases: [beth.id, sarah.id],
+    ambient_cases: [stan.id, patel.id],
+    scheduled_events: [
+      {
+        id: 'ev_beth_deterioration',
+        type: 'deterioration_if_not_x_by_t',
+        t_min: 5,
+        case_id: beth.id,
+        required_action_ids: ['mx_adrenaline_im'],
+        new_state: 'arrested',
+      },
+      // Sarah arrives mid-shift (matches the real hen-do behaviour
+      // that her since-triage clock starts at T+5, not T+0).
+      {
+        id: 'ev_sarah_arrival',
+        type: 'new_arrival',
+        t_min: 5,
+        case_id: sarah.id,
+      },
+      // Intermediate scheduled events at T+10 and T+15 keep the
+      // kernel's checkAllTransitions cadence honest — without these,
+      // a single advance(20) call only triggers one state-machine
+      // transition per case (the loop fires events first then runs
+      // checkAllTransitions once at target, and the transition
+      // machine breaks after the first match). Pre-M88 these existed
+      // on the live hen-do shift; M88 removed them from there but
+      // the ambient mechanic test still needs the cadence.
+      {
+        id: 'ev_stan_news2_t10',
+        type: 'news2_escalation',
+        t_min: 10,
+        case_id: stan.id,
+        new_news2: 5,
+        if_no_action: true,
+      },
+      {
+        id: 'ev_patel_news2_t8',
+        type: 'news2_escalation',
+        t_min: 8,
+        case_id: patel.id,
+        new_news2: 6,
+        if_no_action: true,
+      },
+    ],
+    arcs: [arc.id],
+  });
   const kernel = new SimKernel({
     episode,
     cases: new Map([

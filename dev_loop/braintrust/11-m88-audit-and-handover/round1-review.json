@@ -1,0 +1,20 @@
+{
+  "verdict": "request_changes",
+  "findings": [
+    {
+      "severity": "medium",
+      "title": "Repetitive text between handover and Patel vignette",
+      "file": "content/narrative/akin_handovers.yaml",
+      "body": "The handover text includes: \"First one's in the waiting room. Mrs Patel. The daughter brought her in. The daughter will tell you it's nothing. You decide what it is.\" As noted in the PR description, this is verbatim from the existing Patel case vignette. Having the exact same stylized dialogue appear in the pre-shift handover and then immediately below in the case vignette is repetitive and breaks the narrative immersion.",
+      "recommendation": "Remove or alter the line in the handover, or update the Patel case vignette to remove the duplication. The handover could just say \"Mrs Patel in the waiting room. Daughter's with her.\" leaving the punchy line for the vignette."
+    },
+    {
+      "severity": "medium",
+      "title": "Handover dismiss state does not persist across board navigations",
+      "file": "src/ui/shift/PreShiftHandover.tsx",
+      "body": "The `open` state is local to the `PreShiftHandover` component (`const [open, setOpen] = useState(true);`). Because the component is mounted inside `ShiftBoardScreen`, navigating to a case and back to the board will unmount and remount the component, resetting `open` to `true`. The player will have to re-dismiss the handover every time they return to the board.",
+      "recommendation": "Lift the dismiss state out of the component (e.g., into the parent `ShiftBoardScreen` state, or a higher-level shift context) so that once dismissed, the handover stays collapsed for the duration of the shift."
+    }
+  ],
+  "overall_take": "The clinical audit and narrative reframing (Stan as HIU, Sam's solo vignette) are excellent and defensible. However, the UI state bug with the dismissible handover and the verbatim text duplication between the handover and the vignette need to be addressed before merging."
+}

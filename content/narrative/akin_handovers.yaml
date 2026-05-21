@@ -1,0 +1,51 @@
+# M88 (Braintrust 10 round-2) — Charge Nurse Adesuwa Akin's pre-shift
+# handover lines, one per rota position. Rendered above the shift
+# board on shift start by the <PreShiftHandover /> component.
+#
+# Voice: dual register. Each entry pairs clinical handover content
+# (the bed state, the staffing situation, the floor's current weather)
+# with one slice-of-life observation that lands like dry EM gallows
+# humour. The seriousness and the comedy are spoken by the same
+# character in the same paragraph — that's how Disco does it, and
+# that's the texture the build is trying to earn.
+#
+# This is also where the M88 narrative thread seeds. Block 1 (positions
+# 0-4) is innocuous frictions: missing handover sheets, sarcastic
+# comments about bed management, a printer that won't print the
+# allergy list. Block 2 (positions 5-10) escalates: a near-miss, a
+# nursing handover that breaks down. Block 3 (positions 11-17) the
+# latent failures surface as the conditions for the missed dissection
+# at the keystone. The pedagogy is non-technical-skills (NTS) — RCEM
+# curriculum-relevant.
+#
+# M88 ships ONE handover (position 0, entry shift) to prove the voice.
+# Phased expansion at M89: author the remaining 17.
+
+schema_version: 1
+
+handovers:
+  # ─── Block 1 ────────────────────────────────────────────────────────────
+  - rota_index: 0
+    bed_state: amber
+    # Position 0: entry shift. The voice is established here. Watching-
+    # you, brisk, a little tired, finds the world mildly absurd. The
+    # comedy beat is the printer / IT system — a deeply universal NHS
+    # gallows-humour staple. The clinical content is real handover.
+    text: |
+      Akin, charge nurse. The bed state's amber, which means we're not
+      drowning but we are damp. Two in the waiting room, two side
+      rooms, one trolley in the corridor that I'm calling a chair to
+      keep the bed manager off my back. We're one HCA down because the
+      agency rang to cancel at 19:55, which is a personal best.
+
+      McGrath's in the staff room with the bad coffee. She's the
+      consultant, she'll be on the floor in ten. She'll want a
+      handover at the end of your shift — she's old-school like that.
+
+      Your board has a Mrs Patel in the waiting room and a Stan in
+      minors. I'll bring you their cards as you take them. The allergy
+      printer is broken again, so you'll be writing those out by hand
+      if you need them. Welcome to The Skitt.
+
+# Remaining positions 1-17: authored at M89 once the position-0 voice
+# is reviewer-approved. Schema is here; entries to follow.

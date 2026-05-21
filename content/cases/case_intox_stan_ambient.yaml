@@ -1,17 +1,26 @@
-# MILESTONE 8 — ambient board-pressure case.
+# MILESTONE 8 — board-pressure case. Reframed M88 as High Intensity
+# User (HIU) per RCEM Best Practice guidance — supersedes the older
+# "frequent flyer" framing which is pejorative and culturally
+# inappropriate. The repeated presentation pattern IS the teaching
+# point; HIU MDT case management is a recurring SAQ theme.
 #
-# Stan is a 58y/o frequent flyer brought in by paramedics, smelling of
-# alcohol, GCS 13. The temptation is to assume "the usual" and leave him
-# in a side room. The actual diagnoses: hypoglycaemia (BM 2.4) AND a small
-# forehead laceration with periorbital bruising from a fall — NICE NG232
-# CT-head territory if anticoagulated or any of the indications.
+# Stan is a 58y/o high intensity user brought in by paramedics,
+# smelling of alcohol, GCS 13. The temptation is to assume "the
+# usual" and leave him in a side room. The actual diagnoses:
+# hypoglycaemia (BM 2.4) AND a small forehead laceration with
+# periorbital bruising from a fall — NICE NG232 CT-head territory if
+# anticoagulated or any of the indications. The HIU framing reframes
+# the cognitive trap: this isn't a low-priority drunk; this is a
+# named patient with complex psychosocial need whom the system has
+# repeatedly failed to escalate.
 #
-# Sources: NICE NG232 (head injury), TREND-UK hypoglycaemia, RCEM Best
-# Practice — Alcohol Withdrawal, Oxford Handbook of EM 5e Ch 14.
+# Sources: NICE NG232 (head injury), TREND-UK hypoglycaemia, RCEM
+# Best Practice — Alcohol Withdrawal, RCEM HIU guidance, Oxford
+# Handbook of EM 5e Ch 14.
 
 schema_version: 1
 id: case_intox_stan_ambient
-title: 'Frequent flyer intoxicated — minors'
+title: 'High intensity user — intoxication + occult head injury'
 chief_complaint: '"Drunk again, the usual" — paramedics'
 topic_id: alcohol_withdrawal
 
@@ -440,7 +449,7 @@ pearls:
   - 'Reduced GCS in an intoxicated patient is not "just the drink" — check a BM and consider CT head per NICE NG232.'
   - 'Severe hypoglycaemia in an adult: 100 mL 20% glucose (or 200 mL 10%) IV; avoid 50%.'
   - 'In life-threatening hypo, glucose first — Pabrinex follows promptly (concurrent or immediately after) in malnourished / chronic-alcohol-misuse adults to mitigate Wernicke risk from the carbohydrate load (NICE CG100).'
-  - 'A frequent flyer is the highest-risk patient on the board — alarm fatigue is the trap.'
+  - 'A high intensity user is often the highest-risk patient on the board — alarm fatigue is the trap. RCEM Best Practice on HIU pathways emphasises MDT case management and named-patient escalation, not triage deprioritisation.'
 
 pitfalls:
   - 'Anchoring on alcohol and skipping the BM.'
@@ -470,7 +479,15 @@ sources:
     }
 
 author_notes: |
-  Ambient case for the hen-do shift. The mechanic is "frequent flyer
-  alarm fatigue" — the player must check a BM and request CT head
-  rather than assume alcohol. Stan deteriorates at T+10 from shift
-  start if BM not checked; arrests at T+15 if dextrose not given.
+  M88: Stan is the build's named high intensity user (HIU). He is the
+  focus case on the entry shift (ep_minors_day_entry) and the focus
+  case on the overnight safety-net shift; the hen-do ambient role
+  was dropped in the M88 recurrence audit. The teaching point is
+  HIU pattern recognition + the cognitive trap of assuming "drunk
+  again, the usual" — RCEM Best Practice on HIU pathways frames
+  these patients as MDT case-management problems, NOT triage
+  deprioritisations. The mechanic across his appearances is the
+  same: the player must check a BM, look for occult injury, and
+  request CT head per NICE NG232 indications rather than assume
+  alcohol. Stan deteriorates at T+10 from shift start if BM not
+  checked; arrests at T+15 if dextrose not given.

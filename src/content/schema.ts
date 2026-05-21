@@ -693,10 +693,39 @@ export const Episode = z.object({
   author_notes: z.string().optional(),
 });
 
+// ─── M88 narrative thread — Akin pre-shift handovers ───────────────────────
+
+/**
+ * Charge nurse handover at the start of a shift, indexed by rota
+ * position. Lives in `content/narrative/akin_handovers.yaml`. Rendered
+ * by the <PreShiftHandover /> component above the board on shift
+ * start. See Braintrust 10 round-2 synthesis for design intent —
+ * dual-register voice carrying both an NTS narrative thread and the
+ * slice-of-life comic relief the build needs to earn its Disco-
+ * influenced badge.
+ */
+export const AkinHandover = z.object({
+  /** Position in ROTA_ORDER (0-indexed). Authoring need not cover
+   *  every position — missing entries simply render nothing. */
+  rota_index: z.number().int().nonnegative(),
+  /** Optional in-fiction bed-state colour at the start of this shift.
+   *  Drives a subtle UI cue (border colour). */
+  bed_state: z.enum(['green', 'amber', 'red', 'black']).optional(),
+  /** The handover paragraph. Free-form prose; renders as-is. */
+  text: z.string().min(1),
+});
+
+export const AkinHandovers = z.object({
+  schema_version: z.literal(1),
+  handovers: z.array(AkinHandover),
+});
+
 // ─── Inferred types (re-exported for code that consumes the schemas) ────────
 
 export type CaseT = z.infer<typeof Case>;
 export type EpisodeT = z.infer<typeof Episode>;
+export type AkinHandoverT = z.infer<typeof AkinHandover>;
+export type AkinHandoversT = z.infer<typeof AkinHandovers>;
 export type VitalsValuesT = z.infer<typeof VitalsValues>;
 export type VitalsT = z.infer<typeof Vitals>;
 export type ArcT = z.infer<typeof Arc>;

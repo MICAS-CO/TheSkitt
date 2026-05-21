@@ -4170,6 +4170,88 @@ a {
   text-align: center;
 }
 
+/* M88 (Braintrust 10 round 2) — Charge nurse Akin's pre-shift handover.
+   Dual-register voice in a panel above the board. Bed-state colour cue
+   on the left border tracks the in-fiction acuity weather. */
+.akin-handover {
+  margin: 12px 0;
+  padding: 14px 18px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left-width: 3px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text);
+}
+.akin-handover--green {
+  border-left-color: var(--good, #5db075);
+}
+.akin-handover--amber {
+  border-left-color: var(--warn);
+}
+.akin-handover--red {
+  border-left-color: var(--danger, #c5524a);
+}
+.akin-handover--black {
+  border-left-color: #555;
+}
+.akin-handover__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.akin-handover__name {
+  color: var(--text);
+  letter-spacing: 0.08em;
+}
+.akin-handover__bed-state {
+  flex: 1;
+}
+.akin-handover__dismiss {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 4px;
+  line-height: 1;
+}
+.akin-handover__dismiss:hover {
+  color: var(--text);
+}
+.akin-handover__body p {
+  margin: 0 0 8px;
+}
+.akin-handover__body p:last-child {
+  margin-bottom: 0;
+}
+.akin-handover--collapsed {
+  display: block;
+  width: 100%;
+  margin: 12px 0;
+  padding: 8px 12px;
+  background: var(--bg);
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-align: left;
+  cursor: pointer;
+}
+.akin-handover--collapsed:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
 /* ── M82/M83 — Rota chrome on menu cards ───────────────────────── */
 
 .menu__card--locked {

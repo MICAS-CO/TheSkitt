@@ -45,6 +45,11 @@ export function ShiftView({ onExit, onReplay }: Props) {
   // time-critical (the player is actively running a resus), so the
   // reasoning-section pause must NOT apply while resus is active.
   const [resusByCaseId, setResusByCaseId] = useState<Record<string, boolean>>({});
+  // M88 (round 2 fix): Akin handover dismiss state lives here so it
+  // survives board ↔ encounter navigation. Round-1 reviewer caught
+  // that putting it inside PreShiftHandover or ShiftBoardScreen made
+  // the component remount and reset on every board re-entry.
+  const [handoverDismissed, setHandoverDismissed] = useState(false);
   const [mode, setMode] = useState<ShiftViewMode>('board');
   const [speedKey, setSpeedKey] = useState<SimSpeedKey>(() => loadSavedSpeed());
 
@@ -189,6 +194,8 @@ export function ShiftView({ onExit, onReplay }: Props) {
       onExit={onExit}
       speedKey={speedKey}
       onSpeedChange={setSpeedKey}
+      handoverDismissed={handoverDismissed}
+      onHandoverDismissChange={setHandoverDismissed}
     />
   );
 }

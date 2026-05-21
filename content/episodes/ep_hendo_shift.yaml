@@ -29,9 +29,13 @@ focus_cases:
   - case_anaphylaxis_adult_peanut
   - case_ectopic_minors_sarah
 
-ambient_cases:
-  - case_intox_stan_ambient
-  - case_chest_pain_patel_ambient
+# M88 (Braintrust 10 round-2 audit): the ambient_cases Patel + Stan
+# were dropped from this shift. Both have focused single-shift homes
+# in the rota (Patel at entry shift; Stan as the build's named HIU
+# across entry + safety_net). Repurposing them as ambients here was
+# content density without narrative weight, and the duplication
+# strained the build's clinical-realism claim.
+ambient_cases: []
 
 scheduled_events:
   # ─── Beth (focus) ────────────────────────────────────────────────────────
@@ -78,37 +82,12 @@ scheduled_events:
     required_action_ids: [mx_serum_bhcg, mx_call_gynae]
     new_state: deteriorating
 
-  # ─── Mrs Patel (ambient — STEMI in waiting room) ────────────────────────
-  - id: ev_patel_news2_t8
-    type: news2_escalation
-    t_min: 8
-    case_id: case_chest_pain_patel_ambient
-    new_news2: 6
-    if_no_action: true
-
-  # M86 (Braintrust 06 audit): the T+14 "Patel arrests from undetected
-  # STEMI" event was removed. NSTEMI / silent MI is time-critical for
-  # outcomes (door-to-balloon clock) but the clinical course does not
-  # support a 14-minute arrest from non-detection. The teaching point
-  # (look past the chief complaint, get an ECG, anchor on STEMI is
-  # wrong) is delivered by the case content, not by a wall-clock
-  # event. The case can still degrade through the normal deteriorating
-  # path if the player misses the must-do actions at debrief score.
-
-  # ─── Stan (ambient — frequent flyer, hypoglycaemic) ─────────────────────
-  - id: ev_stan_news2_t10
-    type: news2_escalation
-    t_min: 10
-    case_id: case_intox_stan_ambient
-    new_news2: 5
-    if_no_action: true
-
-  - id: ev_stan_arrest_t15
-    type: deterioration_if_not_x_by_t
-    t_min: 15
-    case_id: case_intox_stan_ambient
-    required_action_ids: [mx_check_bm, mx_iv_dextrose]
-    new_state: arrested
+  # M88 (Braintrust 10 audit): the ambient-Patel and ambient-Stan
+  # scheduled events (ev_patel_news2_t8, ev_stan_news2_t10,
+  # ev_stan_arrest_t15) were removed when those patients were dropped
+  # as ambients from this shift. Both have focused homes elsewhere
+  # in the rota; the M86 deterioration audit had already softened
+  # / removed the most aggressive of their ambient outcomes here.
 
   # ─── Department-level ───────────────────────────────────────────────────
   - id: ev_bed_pressure
