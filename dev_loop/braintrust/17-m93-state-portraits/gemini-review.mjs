@@ -19,11 +19,6 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { Agent, setGlobalDispatcher } from 'undici';
-
-setGlobalDispatcher(
-  new Agent({ headersTimeout: 600_000, bodyTimeout: 600_000 }),
-);
 
 const here = dirname(fileURLToPath(import.meta.url));
 const apiKey = process.env.GEMINI_API_KEY;
@@ -224,6 +219,10 @@ const res = await fetch(
         responseSchema,
       },
     }),
+    // 10-minute timeout — Gemini 3 Pro Preview can take 2-3 minutes
+    // on the larger multimodal payload, and Node's default fetch
+    // headers timeout (5 min) sometimes fires before completion.
+    signal: AbortSignal.timeout(600_000),
   },
 );
 const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
