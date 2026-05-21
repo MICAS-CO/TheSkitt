@@ -6,6 +6,7 @@ import { frameCountFor, spriteSvgFor } from '../../style/sprites';
 import { Monitor, VitalsStripFrame, type VitalReading } from '../../style/frames';
 import { FX_PARTICLES, fxFrameToSvg } from '../../style/fxSprites';
 import { bayLabelFor } from '../../game/layout';
+import { useKernelSelector } from '../../state/sim';
 import type { CaseStateT } from '../../content/schema';
 
 /**
@@ -14,19 +15,20 @@ import type { CaseStateT } from '../../content/schema';
  * patient evolve as time passes, deterioration clauses fire, or
  * interventions are taken.
  *
- * M93: the Monitor wrapper is now framed as a diegetic BAY MONITOR
- * feed. The optional `clockMin` prop drives the OSD chip overlay
- * showing which bay the patient occupies and how many minutes into
- * the shift the kernel is at. Falls back gracefully if either is
- * absent (e.g. asset library preview).
+ * M93: the Monitor wrapper is framed as a diegetic BAY MONITOR feed,
+ * with an OSD chip showing bay + simulated wall-clock time.
+ *
+ * M95: reads `clockMin` via `useKernelSelector` instead of taking it
+ * as a prop. The selector projects only the clockMin scalar from
+ * kernel state, so the panel only re-renders when the simulated
+ * minute actually advances — not on every kernel notify (which can
+ * fire several times per minute as the player takes actions). The
+ * heavy Monitor SVG chrome (bezel + scanlines) is memoized in
+ * frames.tsx so it doesn't re-render even on the legitimate per-
+ * minute updates either.
  */
-export function PatientPanel({
-  cs,
-  clockMin,
-}: {
-  cs: CaseRuntime;
-  clockMin?: number;
-}) {
+export function PatientPanel({ cs }: { cs: CaseRuntime }) {
+  const clockMin = useKernelSelector((ks) => ks.clockMin);
   const target = deriveVitals(cs.state, cs.data.vitals);
   // M41: interpolate displayed vitals toward the kernel target over a
   // wall-clock window so the player sees the patient deteriorate /

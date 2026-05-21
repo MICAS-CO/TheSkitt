@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { create } from 'zustand';
+import { useShallow } from 'zustand/react/shallow';
 import {
   SimKernel,
   type CaseRuntime,
@@ -38,6 +39,53 @@ export const useSim = create<SimStore>((set, get) => ({
     set({ kernel: null, unsub: null, tick: 0 });
   },
 }));
+
+/**
+ * Subscribe to a derived slice of the kernel state. Re-renders the
+ * consumer ONLY when the slice's return value changes (shallow
+ * equality on the projection), not on every kernel notify.
+ *
+ * BT 16 + BT 17 architectural finding: the `useSim((s) => s.tick)`
+ * pattern forces a full re-render of every subscriber on each tick.
+ * Most subscribers actually care about a narrow slice (clockMin, a
+ * single case's state, focus_cases membership) that changes far less
+ * frequently than the tick rate. `useKernelSelector` lets a view
+ * subscribe to exactly that slice via a selector, and zustand's
+ * shallow equality short-circuits the re-render when the projected
+ * value hasn't moved.
+ *
+ * Returns `undefined` if no kernel is initialised yet (e.g. menu
+ * screens that mount before the shift starts).
+ *
+ * Example
+ *   const clockMin = useKernelSelector((ks) => ks.clockMin);
+ *   const state = useKernelSelector((ks) => ks.cases.get(id)?.state);
+ *   const focus = useKernelSelector((ks) => ({
+ *     ids: ks.episode.focus_cases,
+ *     allDispositioned: ks.episode.focus_cases.every(
+ *       (i) => ks.cases.get(i)?.disposition !== null,
+ *     ),
+ *   }));
+ *
+ * Selectors that return Map/Set/large-array values fall back to a
+ * shallow check at the top level only — compose a primitive
+ * projection (id list, single state value, scalar) when you can.
+ */
+export function useKernelSelector<T>(
+  selector: (ks: KernelState) => T,
+): T | undefined {
+  return useSim(
+    useShallow((s) => {
+      // Reading tick is what keeps zustand subscribed to kernel
+      // notifications — without it, the selector wouldn't re-run on
+      // each tick. The shallow wrapper means we only re-render when
+      // the projection actually differs.
+      void s.tick;
+      if (!s.kernel) return undefined;
+      return selector(s.kernel.getState());
+    }),
+  );
+}
 
 /**
  * Sim speed presets. The kernel itself is speed-agnostic; this is purely

@@ -13,7 +13,7 @@
  * plus a positioned slot for content. Callers pass children for the slot.
  */
 
-import { useId } from 'react';
+import { memo, useId } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 
 // ─── Clipboard ──────────────────────────────────────────────────────────────
@@ -180,92 +180,21 @@ export function Monitor({
         ...style,
       }}
     >
-      {/* Layer 1 — bezel + screen fill + glass reflection + sticker
-          chrome + power LED. Renders FIRST so it sits behind the
-          patient content. The scanline/vignette CRT effects used to
-          live here too, but BT 17 round 2 flagged that the sprite
-          content rendered ON TOP and broke the diegetic illusion —
-          those effects now ship in Layer 3 below. */}
-      <svg
-        viewBox={`0 0 ${width} ${height}`}
-        width="100%"
-        height="100%"
-        preserveAspectRatio="none"
-        style={{ position: 'absolute', inset: 0 }}
-        aria-hidden
-      >
-        <defs>
-          <linearGradient id={`bezelGrad_${idSuffix}`} x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="#3a3a3a" />
-            <stop offset="0.5" stopColor="#1a1a1a" />
-            <stop offset="1" stopColor="#0a0a0a" />
-          </linearGradient>
-          <linearGradient id={`glassRefl_${idSuffix}`} x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0" stopColor="#ffffff" stopOpacity="0.08" />
-            <stop offset="0.4" stopColor="#ffffff" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <rect x="0" y="0" width={width} height={height} rx="6" fill={`url(#bezelGrad_${idSuffix})`} />
-        <rect
-          x="2"
-          y="2"
-          width={width - 4}
-          height={height - 4}
-          rx="4"
-          fill="none"
-          stroke="#000"
-          strokeWidth="1"
-        />
-        <rect
-          x="3"
-          y="3"
-          width={width - 6}
-          height={height - 6}
-          rx="3"
-          fill="none"
-          stroke="#3a3a3a"
-          strokeWidth="0.5"
-          opacity="0.7"
-        />
-        <rect
-          x={screenX}
-          y={screenY}
-          width={screenW}
-          height={screenH}
-          fill="#1A2A28"
-        />
-        <rect
-          x={screenX}
-          y={screenY}
-          width={screenW}
-          height={screenH / 2}
-          fill={`url(#glassRefl_${idSuffix})`}
-          pointerEvents="none"
-        />
-        <rect
-          x={width - 110}
-          y={height - 12}
-          width="100"
-          height="8"
-          rx="1"
-          fill="#1a1a1a"
-          stroke="#2a2a2a"
-          strokeWidth="0.5"
-        />
-        <text
-          x={width - 60}
-          y={height - 6}
-          fill="#5a5a5a"
-          fontSize="6"
-          fontFamily="JetBrains Mono"
-          textAnchor="middle"
-          letterSpacing="1"
-        >
-          {sticker}
-        </text>
-        <circle cx={bezel + 6} cy={height - 8} r="2" fill="#5BBF8F" />
-        <circle cx={bezel + 6} cy={height - 8} r="3.5" fill="#5BBF8F" opacity="0.3" />
-      </svg>
+      {/* Layer 1 — bezel chrome (static — memoized so it never
+          re-renders when only the OSD chip's label changes per
+          tick). BT 16+17 architectural concern: heavy SVG re-render
+          coupled to clockMin updates. */}
+      <MonitorBezel
+        width={width}
+        height={height}
+        idSuffix={idSuffix}
+        sticker={sticker}
+        bezel={bezel}
+        screenX={screenX}
+        screenY={screenY}
+        screenW={screenW}
+        screenH={screenH}
+      />
 
       {/* Layer 2 — patient content (sprite). Renders in DOM order
           between the bezel and the CRT effects so the scanlines and
@@ -287,44 +216,18 @@ export function Monitor({
 
       {/* Layer 3 — CRT effects (scanlines + corner vignette) on top
           of the sprite. pointer-events: none so click-through still
-          reaches the content underneath. */}
-      <svg
-        viewBox={`0 0 ${width} ${height}`}
-        width="100%"
-        height="100%"
-        preserveAspectRatio="none"
-        style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
-        aria-hidden
-      >
-        <defs>
-          <pattern
-            id={scanId}
-            patternUnits="userSpaceOnUse"
-            width="100"
-            height="3"
-          >
-            <rect x="0" y="0" width="100" height="1" fill="#000" opacity="0.06" />
-          </pattern>
-          <radialGradient id={vignetteId} cx="0.5" cy="0.5" r="0.75">
-            <stop offset="0.55" stopColor="#000" stopOpacity="0" />
-            <stop offset="1" stopColor="#000" stopOpacity="0.45" />
-          </radialGradient>
-        </defs>
-        <rect
-          x={screenX}
-          y={screenY}
-          width={screenW}
-          height={screenH}
-          fill={`url(#${scanId})`}
-        />
-        <rect
-          x={screenX}
-          y={screenY}
-          width={screenW}
-          height={screenH}
-          fill={`url(#${vignetteId})`}
-        />
-      </svg>
+          reaches the content underneath. Memoized — neither scanlines
+          nor vignette depend on tick-rate state. */}
+      <MonitorCRTEffects
+        width={width}
+        height={height}
+        scanId={scanId}
+        vignetteId={vignetteId}
+        screenX={screenX}
+        screenY={screenY}
+        screenW={screenW}
+        screenH={screenH}
+      />
 
       {/* Layer 4 — OSD chip on the very top so the patient sprite
           can't clip the bay/clock readout. */}
@@ -356,6 +259,152 @@ export function Monitor({
     </div>
   );
 }
+
+interface MonitorBezelProps {
+  width: number;
+  height: number;
+  idSuffix: string;
+  sticker: string;
+  bezel: number;
+  screenX: number;
+  screenY: number;
+  screenW: number;
+  screenH: number;
+}
+
+const MonitorBezel = memo(function MonitorBezel({
+  width,
+  height,
+  idSuffix,
+  sticker,
+  bezel,
+  screenX,
+  screenY,
+  screenW,
+  screenH,
+}: MonitorBezelProps) {
+  return (
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      width="100%"
+      height="100%"
+      preserveAspectRatio="none"
+      style={{ position: 'absolute', inset: 0 }}
+      aria-hidden
+    >
+      <defs>
+        <linearGradient id={`bezelGrad_${idSuffix}`} x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stopColor="#3a3a3a" />
+          <stop offset="0.5" stopColor="#1a1a1a" />
+          <stop offset="1" stopColor="#0a0a0a" />
+        </linearGradient>
+        <linearGradient id={`glassRefl_${idSuffix}`} x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" stopOpacity="0.08" />
+          <stop offset="0.4" stopColor="#ffffff" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width={width} height={height} rx="6" fill={`url(#bezelGrad_${idSuffix})`} />
+      <rect
+        x="2"
+        y="2"
+        width={width - 4}
+        height={height - 4}
+        rx="4"
+        fill="none"
+        stroke="#000"
+        strokeWidth="1"
+      />
+      <rect
+        x="3"
+        y="3"
+        width={width - 6}
+        height={height - 6}
+        rx="3"
+        fill="none"
+        stroke="#3a3a3a"
+        strokeWidth="0.5"
+        opacity="0.7"
+      />
+      <rect x={screenX} y={screenY} width={screenW} height={screenH} fill="#1A2A28" />
+      <rect
+        x={screenX}
+        y={screenY}
+        width={screenW}
+        height={screenH / 2}
+        fill={`url(#glassRefl_${idSuffix})`}
+        pointerEvents="none"
+      />
+      <rect
+        x={width - 110}
+        y={height - 12}
+        width="100"
+        height="8"
+        rx="1"
+        fill="#1a1a1a"
+        stroke="#2a2a2a"
+        strokeWidth="0.5"
+      />
+      <text
+        x={width - 60}
+        y={height - 6}
+        fill="#5a5a5a"
+        fontSize="6"
+        fontFamily="JetBrains Mono"
+        textAnchor="middle"
+        letterSpacing="1"
+      >
+        {sticker}
+      </text>
+      <circle cx={bezel + 6} cy={height - 8} r="2" fill="#5BBF8F" />
+      <circle cx={bezel + 6} cy={height - 8} r="3.5" fill="#5BBF8F" opacity="0.3" />
+    </svg>
+  );
+});
+
+interface MonitorCRTEffectsProps {
+  width: number;
+  height: number;
+  scanId: string;
+  vignetteId: string;
+  screenX: number;
+  screenY: number;
+  screenW: number;
+  screenH: number;
+}
+
+const MonitorCRTEffects = memo(function MonitorCRTEffects({
+  width,
+  height,
+  scanId,
+  vignetteId,
+  screenX,
+  screenY,
+  screenW,
+  screenH,
+}: MonitorCRTEffectsProps) {
+  return (
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      width="100%"
+      height="100%"
+      preserveAspectRatio="none"
+      style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
+      aria-hidden
+    >
+      <defs>
+        <pattern id={scanId} patternUnits="userSpaceOnUse" width="100" height="3">
+          <rect x="0" y="0" width="100" height="1" fill="#000" opacity="0.06" />
+        </pattern>
+        <radialGradient id={vignetteId} cx="0.5" cy="0.5" r="0.75">
+          <stop offset="0.55" stopColor="#000" stopOpacity="0" />
+          <stop offset="1" stopColor="#000" stopOpacity="0.45" />
+        </radialGradient>
+      </defs>
+      <rect x={screenX} y={screenY} width={screenW} height={screenH} fill={`url(#${scanId})`} />
+      <rect x={screenX} y={screenY} width={screenW} height={screenH} fill={`url(#${vignetteId})`} />
+    </svg>
+  );
+});
 
 // ─── VitalsStrip ───────────────────────────────────────────────────────────
 

@@ -164,7 +164,9 @@ export function EncounterScreen({
 
       <div className="enc__top">
         <VignetteCard cs={cs} />
-        <PatientPanel cs={cs} clockMin={ks.clockMin} />
+        {/* PatientPanel reads clockMin via useKernelSelector now —
+            M95 architectural cleanup, no need to thread it down. */}
+        <PatientPanel cs={cs} />
       </div>
 
       <DeteriorationTimers caseId={caseId} ks={ks} />
