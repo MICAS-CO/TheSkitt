@@ -384,6 +384,12 @@ export function VitalsStripFrame({
         width,
         height,
         fontFamily: 'JetBrains Mono, monospace',
+        // BT 17 deferred fix — make the strip a size container so the
+        // value cells can scale via cqi units below. Cell font shrinks
+        // when the strip itself is narrow (not when the viewport is
+        // narrow), which is what we actually want on the patient
+        // panel since the panel can be a 320px column on laptops.
+        containerType: 'inline-size',
         ...style,
       }}
     >
@@ -437,25 +443,76 @@ export function VitalsStripFrame({
           />
         ))}
       </svg>
+      {/* BT 17 deferred fix — was collapsing to a single illegible
+          run-on string at the panel's natural width. Cells now share
+          space via flex:1 + min-width:0, have a real CSS gap between
+          them, use tabular-nums so digits align column-wise, and the
+          value font clamps down on narrow widths so it doesn't
+          overflow into neighbour cells. */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-around',
+          gap: 6,
           padding: '0 10px',
+          fontVariantNumeric: 'tabular-nums',
         }}
       >
         {vitals.map((v) => (
-          <div key={v.label} style={{ textAlign: 'center', lineHeight: 1 }}>
-            <div style={{ fontSize: 9, color: '#6b5c3a', letterSpacing: 1, marginBottom: 4 }}>
+          <div
+            key={v.label}
+            style={{
+              flex: '1 1 0',
+              minWidth: 0,
+              textAlign: 'center',
+              lineHeight: 1,
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                fontSize: 9,
+                color: '#6b5c3a',
+                letterSpacing: 1,
+                marginBottom: 4,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
               {v.label.toUpperCase()}
             </div>
-            <div style={{ fontSize: 24, color: v.tone, fontWeight: 700, marginBottom: 2 }}>
+            <div
+              style={{
+                // cqi = % of container's inline (horizontal) size.
+                // At a 540px-wide strip → ~19px font (comfortable).
+                // At a 320px-wide strip → ~11px (just fits "132/82"
+                // BP). At wider strips, capped at 22px so it doesn't
+                // get cartoonishly large on huge screens.
+                fontSize: 'clamp(11px, 3.5cqi, 22px)',
+                color: v.tone,
+                fontWeight: 700,
+                marginBottom: 2,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
               {v.value}
             </div>
-            <div style={{ fontSize: 8, color: '#9c8d5c' }}>{v.unit}</div>
+            <div
+              style={{
+                fontSize: 8,
+                color: '#9c8d5c',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {v.unit}
+            </div>
           </div>
         ))}
       </div>
