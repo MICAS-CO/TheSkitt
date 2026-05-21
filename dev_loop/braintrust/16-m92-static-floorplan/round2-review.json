@@ -1,0 +1,54 @@
+{
+  "verdict": "request_changes",
+  "findings": [
+    {
+      "severity": "critical",
+      "verdict": "request_changes",
+      "title": "role=\"img\" suppresses interactive patient cards from accessibility tree",
+      "file": "src/ui/shift/EdFloorplan.tsx",
+      "body": "The root `<div className=\"ed-floorplan\" role=\"img\">` wraps the interactive HTML buttons. In major screen readers (like JAWS and NVDA), assigning `role=\"img\"` to a container instructs the parser to treat the entire node as a single flat graphic, stripping all of its descendants from the accessibility tree. This completely nullifies the stated a11y benefits of migrating from Phaser to DOM buttons.",
+      "recommendation": "Change the root div to `role=\"region\"` (keeping its current `aria-label`), and apply `aria-hidden=\"true\"` or `role=\"img\"` strictly to the underlying `<svg>` element so the overlay remains fully accessible."
+    },
+    {
+      "severity": "high",
+      "verdict": "request_changes",
+      "title": "Deceased state check hard-locks case entry, breaking M&M loop",
+      "file": "src/ui/shift/EdFloorplan.tsx",
+      "body": "The patient card explicitly blocks interaction via `if (!alive) return;`, which was not present in the original Phaser implementation. In the FRCEM simulation loop, when a patient dies, a clinician must still enter the case file to verify death, finalize notes, and apply the M&M folder sticker introduced in M91. This UI lock artificially prevents post-mortem case interactions.",
+      "recommendation": "Remove the `!alive` check blocking the `onClick` handler and drop the `aria-disabled` override. Allow players to enter deceased cases from the hub exactly as they would from the shift board."
+    },
+    {
+      "severity": "high",
+      "verdict": "request_changes",
+      "title": "Absolute Y-coordinate math causes card overlap on smaller viewports",
+      "file": "src/ui/shift/EdFloorplan.tsx",
+      "body": "The `top` offset for each card is calculated as a percentage of `GAME_HEIGHT` using a hardcoded 46px virtual step (`CARD_HEIGHT + CARD_GAP`). As the fluid container scales down, this percentage resolves to fewer physical pixels (e.g. a 23px step on small screens). Because the DOM cards have minimum pixel boundaries driven by font clamping and padding, they will outgrow the scaled gap and physically overlap.",
+      "recommendation": "Stop absolutely positioning individual cards. Instead, absolutely position a zone wrapper `<div>` matching the bay's bounding box, and render the cards inside it using standard `display: flex; flex-direction: column; gap: 6px;` to let the browser stack them safely."
+    },
+    {
+      "severity": "medium",
+      "verdict": "approve_with_note",
+      "title": "E2E test fails to capitalize on DOM visibility",
+      "file": "e2e/hub-flow.spec.ts",
+      "body": "The E2E test historically only checked that the Phaser root mounted because Playwright cannot see inside a canvas. Now that patient cards are real DOM buttons, the test is missing a massive opportunity to verify the core hub loop: navigating from a patient card directly into the Encounter Screen.",
+      "recommendation": "Add a step to the E2E test that clicks a patient card (e.g., `await page.getByRole('button', { name: /hen-do/i }).click()`) and asserts the Encounter Screen mounts correctly."
+    },
+    {
+      "severity": "low",
+      "verdict": "approve_with_note",
+      "title": "byBay map generation leaks into synchronous render path",
+      "file": "src/ui/shift/EdFloorplan.tsx",
+      "body": "The `EdFloorplan` component reconstructs the `byBay` grouping map via a loop on every single render. Because the simulation ticks regularly, recomputing spatial mapping arrays directly inside the component's render body is structurally sloppy, even if the array is small.",
+      "recommendation": "Wrap the map generation in a `useMemo(() => { ... }, [patients])` block to ensure it only rebuilds when the incoming patient payload changes."
+    },
+    {
+      "severity": "low",
+      "verdict": "approve_with_note",
+      "title": "aria-label overrides visible text, risking Voice Control failures",
+      "file": "src/ui/shift/EdFloorplan.tsx",
+      "body": "The `PatientCard` overrides its accessible name entirely using `aria-label`. Under WCAG 2.5.3 (Label in Name), speech-input users who see a truncated name on screen and say 'Click [visible text]' may fail if the assistive technology interprets the overriding `aria-label` differently.",
+      "recommendation": "Remove `aria-label` from the button. Instead, append an `.sr-only` visually hidden `<span>` inside the button containing the extra state and triage string, so the visible `shortTitle` remains natively part of the button's text node."
+    }
+  ],
+  "overall_take": "The decision to strip 1.5MB of Phaser for a static layout is mathematically and functionally correct—the live walk-around never earned its engine weight. However, the DOM transition introduces critical architecture gaps. Wrapping interactive buttons in `role=\"img\"` completely wipes them from the accessibility tree, defeating the primary UI benefit of the refactor. Furthermore, manually calculating Y-offsets via percentage drops the ball on fluid layout; cards will physically overlap on a 13-inch laptop. But if I could only have ONE thing change before the next playtest, it's removing the `!alive` lock on deceased patients. In the NHS, when a patient dies in the bay, you don't lose the ability to look at them; you're required to go in, verify death, and finish the paperwork. Fix the FRCEM simulation logic first, then fix the CSS overlap."
+}

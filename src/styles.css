@@ -165,8 +165,17 @@ a {
   position: absolute;
   inset: 0;
 }
-.ed-floorplan__card {
+/* BT 16 round 2: each bay gets an absolute-positioned wrapper sized to
+   its zone bbox; the patient cards flex-stack inside with a real CSS
+   gap so they never overlap when the container scales down. */
+.ed-floorplan__bay-stack {
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: hidden;
+}
+.ed-floorplan__card {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -182,7 +191,7 @@ a {
   transition: transform 80ms ease, box-shadow 80ms ease, border-color 80ms ease;
   overflow: hidden;
 }
-.ed-floorplan__card:hover:not([aria-disabled='true']),
+.ed-floorplan__card:hover,
 .ed-floorplan__card:focus-visible {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -191,9 +200,8 @@ a {
 .ed-floorplan__card:focus-visible {
   border-color: var(--text);
 }
-.ed-floorplan__card[aria-disabled='true'] {
-  cursor: default;
-  opacity: 0.55;
+.ed-floorplan__card--deceased {
+  opacity: 0.7;
 }
 .ed-floorplan__card-title {
   font-size: clamp(9px, 0.9vw, 11px);

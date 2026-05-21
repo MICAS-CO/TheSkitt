@@ -1,4 +1,4 @@
-import { CSSProperties } from 'react';
+import { CSSProperties, useMemo } from 'react';
 import { ED_ZONES, GAME_HEIGHT, GAME_WIDTH, PALETTE, type Zone } from '../../game/layout';
 
 export interface FloorplanPatient {
@@ -21,27 +21,42 @@ interface Props {
 
 /**
  * M92: replaces the Phaser department hub with a static SVG floorplan.
- * No walk-around, no avatar — bays are rendered as zones from `ED_ZONES`
- * and live patient cards are absolutely positioned inside their bay.
- * Cards are real HTML buttons so they keep keyboard focus and a11y for
- * free. The bay geometry comes from the same `ED_ZONES` table the
- * Phaser scene used, so `tests/layout.test.ts` still covers the
- * floorplan shape.
+ * No walk-around, no avatar. Bays are rendered as SVG zones from
+ * `ED_ZONES`; live patient cards are real HTML `<button>` elements
+ * stacked inside per-bay overlay wrappers so they keep keyboard focus
+ * and a11y for free. The bay geometry comes from the same `ED_ZONES`
+ * table the Phaser scene used, so `tests/layout.test.ts` still covers
+ * the floorplan shape.
+ *
+ * BT 16 round 2 hardening:
+ * - Root container uses `role="region"` (a labelled landmark), NOT
+ *   `role="img"` — the latter strips the interactive button subtree
+ *   from JAWS/NVDA's a11y tree.
+ * - Deceased patients are NOT click-blocked. Per the M91 NHS
+ *   workflow, the clinician must still enter the case to verify
+ *   death, finish notes, and sticker the M&M folder.
+ * - Cards are not individually absolute-positioned. Each bay gets an
+ *   absolute wrapper sized to the zone's bbox; cards flex-stack
+ *   inside with a real CSS gap. Stops them physically overlapping
+ *   when the container scales down.
  */
 export function EdFloorplan({ patients = [], clockLabel, onCaseClick }: Props) {
   const isLive = patients.length > 0;
-  const byBay = new Map<string, FloorplanPatient[]>();
-  for (const p of patients) {
-    const arr = byBay.get(p.bay) ?? [];
-    arr.push(p);
-    byBay.set(p.bay, arr);
-  }
+  const byBay = useMemo(() => {
+    const m = new Map<string, FloorplanPatient[]>();
+    for (const p of patients) {
+      const arr = m.get(p.bay) ?? [];
+      arr.push(p);
+      m.set(p.bay, arr);
+    }
+    return m;
+  }, [patients]);
 
   return (
     <div
       className="ed-floorplan"
       data-testid="ed-floorplan"
-      role="img"
+      role="region"
       aria-label={
         isLive
           ? `Department floorplan with ${patients.length} active patient${patients.length === 1 ? '' : 's'}`
@@ -52,6 +67,7 @@ export function EdFloorplan({ patients = [], clockLabel, onCaseClick }: Props) {
         className="ed-floorplan__svg"
         viewBox={`0 0 ${GAME_WIDTH} ${GAME_HEIGHT}`}
         preserveAspectRatio="xMidYMid meet"
+        role="img"
         aria-hidden="true"
       >
         <rect
@@ -113,69 +129,85 @@ export function EdFloorplan({ patients = [], clockLabel, onCaseClick }: Props) {
         {ED_ZONES.map((zone) => {
           const inZone = byBay.get(zone.id) ?? [];
           if (inZone.length === 0) return null;
-          return inZone.map((patient, i) => (
-            <PatientCard
-              key={patient.caseId}
-              patient={patient}
+          return (
+            <BayCardStack
+              key={zone.id}
               zone={zone}
-              index={i}
-              onClick={() => onCaseClick?.(patient.caseId)}
+              patients={inZone}
+              onCaseClick={onCaseClick}
             />
-          ));
+          );
         })}
       </div>
     </div>
   );
 }
 
+interface BayCardStackProps {
+  zone: Zone;
+  patients: FloorplanPatient[];
+  onCaseClick?: (caseId: string) => void;
+}
+
+const CARD_PAD = 10;
+
+function BayCardStack({ zone, patients, onCaseClick }: BayCardStackProps) {
+  // Position the wrapper as a percentage of the floorplan's coordinate
+  // space (matching the SVG viewBox) so it tracks the bay rect through
+  // any container scale. The cards inside flex-stack with a real CSS
+  // gap, so they never overlap regardless of viewport size.
+  const left = ((zone.x + CARD_PAD) / GAME_WIDTH) * 100;
+  const top = ((zone.y + 30) / GAME_HEIGHT) * 100;
+  const width = (Math.min(zone.w - 2 * CARD_PAD, 200) / GAME_WIDTH) * 100;
+  const height = ((zone.h - 40) / GAME_HEIGHT) * 100;
+
+  const style: CSSProperties = {
+    left: `${left}%`,
+    top: `${top}%`,
+    width: `${width}%`,
+    maxHeight: `${height}%`,
+  };
+
+  return (
+    <div className="ed-floorplan__bay-stack" style={style}>
+      {patients.map((patient) => (
+        <PatientCard
+          key={patient.caseId}
+          patient={patient}
+          zoneLabel={zone.label}
+          onClick={() => onCaseClick?.(patient.caseId)}
+        />
+      ))}
+    </div>
+  );
+}
+
 interface CardProps {
   patient: FloorplanPatient;
-  zone: Zone;
-  index: number;
+  zoneLabel: string;
   onClick: () => void;
 }
 
-const CARD_HEIGHT = 40;
-const CARD_GAP = 6;
-const CARD_PAD = 10;
-
-function PatientCard({ patient, zone, index, onClick }: CardProps) {
-  const cardX = zone.x + CARD_PAD;
-  const cardY = zone.y + 30 + index * (CARD_HEIGHT + CARD_GAP);
-  const cardWidth = Math.min(zone.w - 2 * CARD_PAD, 200);
-
-  // BT 16 round 1 finding: a hardcoded height percentage overflows on
-  // small viewports — 5.55% of a 450px-tall container is ~25px, but
-  // the clamped font + padding + gap need ~28-32px minimum. Anchor
-  // only the top coordinate; let content size the card vertically.
-  const style: CSSProperties = {
-    left: `${(cardX / GAME_WIDTH) * 100}%`,
-    top: `${(cardY / GAME_HEIGHT) * 100}%`,
-    width: `${(cardWidth / GAME_WIDTH) * 100}%`,
-  };
-
-  // BT 16 round 1 finding: HTML `disabled` removes the button from the
-  // a11y tree entirely. For deceased patients we want the card to stay
-  // focusable and announced (so screen-reader users can tell the bay
-  // is occupied by a deceased patient). aria-disabled + a no-op
-  // onClick handler keeps the element in the focus order.
-  const alive = patient.state !== 'deceased';
+function PatientCard({ patient, zoneLabel, onClick }: CardProps) {
+  // WCAG 2.5.3 (Label in Name): visible text must be part of the
+  // accessible name so voice-control users saying "click {visible}"
+  // succeed. Don't override with aria-label; instead append a
+  // visually-hidden span carrying the extra state / triage detail.
   return (
     <button
       type="button"
       className={`ed-floorplan__card ed-floorplan__card--${patient.state}`}
-      style={style}
-      onClick={() => {
-        if (!alive) return;
-        onClick();
-      }}
-      aria-disabled={!alive}
-      aria-label={`${patient.title} in ${zone.label}, ${patient.state}, triage category ${patient.triageCategory}${patient.isAmbient ? ', ambient' : ''}`}
+      onClick={onClick}
     >
       <span className="ed-floorplan__card-title">{shortTitle(patient.title)}</span>
-      <span className="ed-floorplan__card-meta">
+      <span className="ed-floorplan__card-meta" aria-hidden="true">
         {patient.state} · T{patient.triageCategory}
         {patient.isAmbient ? ' · ambient' : ''}
+      </span>
+      <span className="visually-hidden">
+        {' '}
+        in {zoneLabel}, {patient.state}, triage category {patient.triageCategory}
+        {patient.isAmbient ? ', ambient' : ''}
       </span>
     </button>
   );

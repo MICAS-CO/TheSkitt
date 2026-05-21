@@ -30,8 +30,13 @@ test('hen-do shift: board ↔ department view toggle', async ({ page }) => {
   await page.getByRole('button', { name: /department view/ }).click();
   // Hub header is visible
   await expect(page.getByText(/department view/)).toBeVisible();
-  // The static SVG floorplan mounts (div with data-testid="ed-floorplan")
-  await expect(page.getByTestId('ed-floorplan')).toBeVisible();
+
+  // BT 16 round 2 critical fix: the floorplan landmark must expose its
+  // interactive descendants to the a11y tree (the earlier role="img"
+  // wrapper would have wiped them). Locate by the region's accessible
+  // name to make sure assistive tech sees the labelled landmark.
+  const floorplan = page.getByRole('region', { name: /department floorplan/i });
+  await expect(floorplan).toBeVisible();
 
   // Switch back to the board
   await page.getByRole('button', { name: /board view/ }).click();
