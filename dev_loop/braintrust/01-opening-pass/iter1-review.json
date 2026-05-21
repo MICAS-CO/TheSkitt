@@ -1,0 +1,5 @@
+{
+  "verdict": "approve",
+  "findings": [],
+  "overall_take": "The `inaction_by` rewrite correctly uses `triagedAt` to measure elapsed time since triage, preserving backward compatibility for T=0 cases and gracefully handling pre-M80 snapshots by defaulting to 0. The `selectedClueIds` lift correctly replaces the Set reference to ensure React `useMemo` dependencies recompute, and the `endShiftEarly` integration safely halts the clock during the death modal without introducing race conditions."
+}

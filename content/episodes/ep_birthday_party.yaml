@@ -1,0 +1,53 @@
+# M88 (Braintrust 10 round-2 audit): Beth was culled from this shift to
+# fix the build's content-economy patient recurrence. Pre-M88 the shift
+# had Beth (adult) + Sam (paeds) as the parallel dose-band lesson, but
+# Beth was already in two other shifts (ep_anaphylaxis_solo,
+# ep_hendo_shift) and using the same case file three times wasn't
+# clinically defensible. The shift becomes Sam-only paediatric
+# anaphylaxis. The dose-band parallel teaching beat is lost; Sam's case
+# alone still teaches paediatric anaphylaxis well. arc_family_peanut_party
+# is retired (file kept for reference; not referenced by any episode).
+
+schema_version: 1
+id: ep_birthday_party
+title: 'Paediatric anaphylaxis — first presentation at the birthday party'
+learning_objectives:
+  - 'Run the Resus Council UK 2021 anaphylaxis algorithm in a child.'
+  - 'Correctly select the IM adrenaline dose by age band (6–12 y → 300 mcg).'
+  - 'Use a 10 mL/kg paeds fluid bolus rather than the adult volume.'
+  - 'Communicate with a frightened parent under time pressure — the FRCEM NTS shape.'
+
+curriculum_tags: [RP2, AP1, AP2, AC1, RP5, ResC1]
+difficulty_band: ST3
+shift_duration_min: 20
+
+focus_cases:
+  - case_anaphylaxis_paeds_sibling
+
+ambient_cases: []
+
+scheduled_events:
+  - id: ev_sam_deterioration
+    type: deterioration_if_not_x_by_t
+    t_min: 10
+    case_id: case_anaphylaxis_paeds_sibling
+    required_action_ids: [mx_adrenaline_paeds_im, mx_oxygen_paeds]
+    new_state: arrested
+
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 14
+    severity: firm
+
+# M88: arc_family_peanut_party retired (the family link existed only
+# when Beth co-appeared here). Sam comes in alone with his mother now.
+arcs: []
+
+author_notes: |
+  M88 reshape (Braintrust 10): single-case paediatric anaphylaxis.
+  Sam Cartwright, 8y/o, brought in by mum after eating peanut at a
+  friend's birthday party. The dose-band teaching point is still
+  here — give the 300 mcg paeds IM adrenaline, not 500 mcg adult.
+  The communication-under-pressure beat with a frightened parent is
+  the additional NTS shape this shift carries (M88 narrative-thread
+  work in progress).

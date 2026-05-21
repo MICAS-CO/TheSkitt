@@ -1,0 +1,890 @@
+# Acute cardiogenic pulmonary oedema in a "wet-and-warm" phenotype.
+# Mr Ahmed is 78, woken at 02:00 by suffocating dyspnoea after stopping
+# his diuretic for a knee operation 10 days ago. He's hypertensive,
+# pink and frothing, JVP up to the angle of his jaw, sats 86% on air.
+# The shift is the textbook wet-and-warm acute heart failure:
+# CPAP-first, GTN infusion, IV furosemide, sit-up, NIPPV ahead of
+# intubation. Trap-rich because the reflex shock-protocol (fluids,
+# morphine) is wrong here.
+#
+# Sources: NICE NG106 (Chronic heart failure 2018, **updated 3 Sept
+# 2025** introducing quadruple therapy as first-line for HFrEF —
+# ACEi/ARNI + β-blocker + MRA + SGLT2i), ESC 2021 acute and chronic
+# heart failure guideline (McDonagh et al., Eur Heart J) with **2023
+# Focused Update** (McDonagh Eur Heart J 2023), 3CPO trial (Gray NEJM
+# 2008 — CPAP in cardiogenic pulmonary oedema), BTS Emergency Oxygen
+# Guideline 2017, Peacock ADHERE Emerg Med J 2008 (primary morphine
+# harm signal), Iakobishvili Acute Cardiac Care 2011 (secondary
+# EuroHF signal).
+
+schema_version: 1
+id: case_acute_heart_failure_ahmed
+title: 'Acute heart failure — wet-and-warm cardiogenic pulmonary oedema'
+chief_complaint: 'Sudden onset breathlessness at night'
+topic_id: acute_heart_failure
+
+vignette: |
+  Resus bay 3. 02:38.
+
+  Mr Yusuf Ahmed, 78 y/o, brought in by ambulance after his wife
+  called 999 at 02:10. Woken at 02:00 by a "drowning" sensation,
+  sitting bolt upright at the side of the bed, gasping. Had been
+  walking three flights of stairs without difficulty until two
+  days ago.
+
+  Paramedics: "On scene at 02:18. Sitting upright, very distressed,
+  pink and sweating. Pink frothy sputum on the pillowcase. HR 118
+  AF on the strip, BP 192/108 right arm, sats 84% room air → 91% on
+  15 L NRB. RR 36. Bibasal crackles to mid-zones. Started a GTN
+  patch and CPAP en route (Boussignac mask, 7.5 cm H2O) — sats
+  improving."
+
+  As he is wheeled into resus he is sat bolt-upright on the trolley,
+  in a tripod, dripping sweat, fighting the mask. He has been off
+  his bumetanide for 10 days because the pre-op clinic anaesthetist
+  told him to stop the "water tablet" before the knee op next week.
+
+curriculum_tags: [CC4, CP2]
+slos: [1, 3]
+difficulty_band: ST3
+paeds: false
+
+demographics:
+  age_value: 78
+  age_unit: years
+  sex: male
+  weight_kg: 88
+  pmh:
+    - 'Chronic heart failure (HFrEF — EF 32% on last echo 2024)'
+    - 'Paroxysmal AF on bisoprolol + apixaban'
+    - 'Hypertension (long-standing, well-controlled until recently)'
+    - 'Type 2 diabetes (on metformin + gliclazide)'
+    - 'OA right knee — for arthroplasty next week (pre-op clinic stopped his bumetanide 10 days ago)'
+  medications:
+    - 'Bumetanide 1 mg OD (HELD 10 days by pre-op clinic — the case-precipitant)'
+    - 'Bisoprolol 5 mg OD'
+    - 'Apixaban 5 mg BD'
+    - 'Ramipril 5 mg OD'
+    - 'Spironolactone 25 mg OD'
+    - 'Metformin 1 g BD; gliclazide 80 mg BD'
+    - 'Atorvastatin 40 mg ON'
+  allergies: ['NKDA']
+  social: |
+    Lives with wife Aisha. Retired electrical engineer. Mobilises
+    independently around the home, walks 200 m on the flat. Pre-op
+    clinic 10 days ago for elective right TKA next Tuesday. Wife at
+    bedside.
+
+triage_category: 1
+initial_state: deteriorating
+bay: resus
+
+vitals:
+  baseline:
+    hr: 80
+    rr: 14
+    spo2: 96
+    bp_sys: 138
+    bp_dia: 82
+    gcs: 15
+    temp_c: 36.6
+  deteriorating:
+    hr: 118
+    rr: 32
+    spo2: 91
+    on_o2: true
+    bp_sys: 192
+    bp_dia: 108
+    gcs: 15
+    temp_c: 36.7
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
+# ─── History ──────────────────────────────────────────────────────────────
+history:
+  - id: hx_paramedic
+    source: paramedic
+    topic: 'Paramedic handover — timeline, prehospital interventions.'
+    response: |
+      "999 call 02:10, on scene 02:18. Patient sitting bolt-upright,
+      pink frothy sputum. HR 118 AF, BP 192/108, sats 84% RA. We
+      started a GTN patch and CPAP via Boussignac mask 7.5 cm H2O.
+      Sats came up to 91% on 15 L. He's been a bit short of breath
+      walking the last two days, swelling around the ankles last
+      week. No chest pain. No fever. ECG showed AF but no acute ST
+      change."
+
+  - id: hx_meds_stop
+    source: family
+    topic: 'Ask the wife about meds — has anything changed recently?'
+    prereq_history_ids: [hx_paramedic]
+    npc_voice: "His wife reaches into her bag for the medication list. Her hands are unsteady."
+    supports:
+      - 'Acute decompensated heart failure — wet-and-warm cardiogenic pulmonary oedema, precipitated by held diuretic'
+    branch_choices:
+      - id: compassionate
+        label: "I can see this has been a hard few weeks. Tell me what you've noticed."
+        npc_voice: "She lowers the list. Looks at her husband, then at you."
+        rapport_delta: 2
+        response: |
+          "The pre-op nurse said to stop his water tablets 10 days
+          before surgery — for his potassium to be 'normal' on the
+          day. I asked twice if that was right. They said yes. He's
+          been drinking the same amount. The ankles got worse and
+          worse and I kept saying we should ring someone. He didn't
+          want to. He said he'd be fine until the operation.
+          Last week he could do four flights of stairs. Tonight he
+          couldn't say a sentence."
+      - id: clinical
+        label: "Medication list please. Any recent changes?"
+        rapport_delta: 0
+        response: |
+          "Pre-op nurse stopped his diuretics 10 days before surgery.
+          Bisoprolol, ramipril, spironolactone continued. No new
+          drugs. Same fluid intake. Ankles worse, breathlessness
+          worse."
+      - id: dismissive
+        label: "Was he taking everything as prescribed?"
+        npc_voice: "Her jaw tightens. She straightens."
+        rapport_delta: -1
+        response: |
+          "He takes his tablets. Every day. The hospital told us to
+          stop the water tablets. So he stopped the water tablets.
+          He does what he's told, doctor."
+    response: |
+      Wife reports the pre-op nurse stopped his diuretics 10 days
+      ago to normalise potassium for surgery. Fluid intake unchanged.
+      Worsening peripheral oedema and exertional dyspnoea over the
+      last week.
+
+  - id: hx_chest_pain
+    source: patient
+    topic: 'Mr Ahmed — any chest pain, palpitations?'
+    response: |
+      (Between breaths.) "No. Pain. Just. Can't. Breathe."
+
+  - id: hx_recent_function
+    source: family
+    topic: 'Pre-morbid function — NYHA class and walking distance?'
+    prereq_history_ids: [hx_meds_stop]
+    supports:
+      - 'Acute decompensated heart failure — wet-and-warm cardiogenic pulmonary oedema, precipitated by held diuretic'
+    response: |
+      "He was NYHA II — comfortable walking on the flat, breathless
+      after one flight of stairs. Last week he was OK doing four
+      flights. The last two days he stopped at the top of the
+      garden steps. Last night he couldn't lie flat — slept in the
+      armchair."
+
+  - id: hx_recent_chest_event
+    source: gp_letter
+    topic: 'Recent cardiology / GP letters?'
+    npc_voice: "Three letters in the EHR. The latest is the pre-op clinic letter from 10 days ago. The cardiology letters are older."
+    branch_choices:
+      - id: phone_the_anaesthetist
+        label: "Read the pre-op letter — then phone the pre-op clinic to ask exactly what they told him about the bumetanide."
+        npc_voice: "The pre-op nurse who saw him picks up after two rings. She is mortified before you finish your sentence."
+        rapport_delta: 1
+        response: |
+          "Cardiology 2024: HFrEF, EF 32%, moderate functional MR.
+          Coronary angio 2022, single-vessel disease, medically
+          managed. AF rate-controlled, on apixaban (CHA2DS2-VASc 5).
+          (Then — the phone call to pre-op clinic.) Pre-op nurse:
+          'I told him to stop the bumetanide ten days before surgery
+          so his potassium would be in range. The anaesthetic
+          consultant signed off. I — we have a SOP. I didn't refer to
+          the heart-failure clinic. I should have. The SOP doesn't
+          have an exception for HFrEF. Doctor — please tell me he's
+          alive.' (You note the SOP gap. You note the apology. You
+          also note this is the third such case in your trust this
+          year. A datix is going in tomorrow.)"
+      - id: read_letters_only
+        label: "Read the letters as they stand."
+        rapport_delta: 0
+        response: |
+          "Cardiology 2024: HFrEF, EF 32%, moderate functional MR.
+          Coronary angio 2022, single-vessel disease, medically
+          managed. AF rate-controlled, on apixaban (CHA2DS2-VASc 5).
+          Pre-op letter 10 days ago: stop bumetanide pre-op, restart
+          post-op."
+      - id: skim_old_letters
+        label: "Skim the cardiology summary — I'll come back to the rest."
+        npc_voice: "You don't open the pre-op letter. You miss the line about stopping the bumetanide."
+        rapport_delta: -1
+        response: |
+          "Cardiology 2024: HFrEF, EF 32%. On apixaban + bisoprolol."
+          (The pre-op clinic letter that documents the diuretic
+          cessation 10 days ago is NOT opened. The player has the
+          chronic-HF context but not the precipitant.)
+    response: |
+      "Last echo 2024: HFrEF, EF 32%, moderate functional MR, no
+      regional wall-motion abnormality at rest. Coronary angio 2022
+      after a TWI episode — single-vessel disease, medically managed.
+      No new ischaemic events documented. AF rate-controlled on
+      bisoprolol; on apixaban for stroke risk (CHA2DS2-VASc 5).
+      Pre-op clinic letter 10 days ago: stop bumetanide pre-op,
+      restart post-op."
+
+  - id: hx_acp_status
+    source: gp_letter
+    topic: 'Advance care plan / ceiling of care?'
+    prereq_history_ids: [hx_recent_chest_event]
+    response: |
+      "No DNACPR. Advance care plan from cardiology 2023: 'patient
+      wishes active treatment of reversible illness including HDU
+      level support; would discuss ITU/intubation in the moment
+      with the family.' Wife is named LPA for health and welfare."
+
+# ─── Examination ──────────────────────────────────────────────────────────
+examination:
+  - system: general
+    findings:
+      - {
+          name: 'Appearance',
+          value: 'tripoding upright, profusely diaphoretic, fighting the CPAP mask',
+          present: true,
+          red_flag: true,
+        }
+      - {
+          name: 'Pink frothy sputum',
+          value: 'soaking the pillowcase and the front of the gown',
+          present: true,
+          red_flag: true,
+        }
+      - {
+          name: 'Peripheral oedema',
+          value: 'pitting to mid-shin bilaterally; sacrum boggy',
+          present: true,
+        }
+
+  - system: airway
+    findings:
+      - {
+          name: 'Airway',
+          value: 'patent, self-maintaining; CPAP tolerated though distressed',
+          present: true,
+        }
+
+  - system: breathing
+    findings:
+      - { name: 'Respiratory rate', value: '36/min', red_flag: true }
+      - {
+          name: 'SpO2',
+          value: '91% on CPAP 7.5 cm H2O via Boussignac (was 84% on air)',
+          red_flag: true,
+        }
+      - {
+          name: 'Chest auscultation',
+          value: 'fine inspiratory crackles to mid-zones bilaterally; wheeze on top of the crackles (cardiac wheeze)',
+          present: true,
+          red_flag: true,
+        }
+      - { name: 'Cough', value: 'productive pink frothy sputum every minute or so' }
+
+  - system: circulation
+    findings:
+      - { name: 'Heart rate', value: '118/min, irregularly irregular (AF)' }
+      - {
+          name: 'Blood pressure',
+          value: '188/104 mmHg (wet AND WARM phenotype — preserved perfusion + congestion)',
+          red_flag: true,
+        }
+      - {
+          name: 'JVP',
+          value: 'visible to the angle of the jaw (>8 cm above sternal angle)',
+          red_flag: true,
+        }
+      - {
+          name: 'Apex beat',
+          value: 'displaced laterally to anterior axillary line, 6th intercostal space',
+        }
+      - {
+          name: 'Heart sounds',
+          value: 'soft pansystolic murmur at apex (functional MR); audible third heart sound (S3 gallop)',
+          present: true,
+          red_flag: true,
+        }
+      - { name: 'Peripheries', value: 'warm, well-perfused — cap refill <2 s' }
+    manoeuvres:
+      - id: jvp_angle
+        label: 'Measure JVP angle precisely (45° head-up, neck flexed slightly, tangential light)'
+        findings:
+          - {
+              name: 'JVP 9 cm above the sternal angle',
+              value: 'biphasic waveform visible; corresponds to RA pressure ~14 mmHg — markedly elevated',
+              red_flag: true,
+              supports: ['Acute decompensated heart failure — wet-and-warm cardiogenic pulmonary oedema, precipitated by held diuretic'],
+            }
+          - {
+              name: 'hepatojugular reflux positive',
+              value: 'firm pressure on the right upper quadrant produces sustained JVP elevation >10 seconds',
+              red_flag: true,
+              supports: ['Acute decompensated heart failure — wet-and-warm cardiogenic pulmonary oedema, precipitated by held diuretic'],
+            }
+      - id: dependent_oedema_assessment
+        label: 'Map dependent oedema — fingertip pressure up the calf, sacrum if recumbent'
+        findings:
+          - {
+              name: 'pitting oedema to the mid-shin bilaterally',
+              value: 'fingertip indentation persists >15 s; subtle gaiter-distribution; skin shiny in patches',
+              red_flag: true,
+              supports: ['Acute decompensated heart failure — wet-and-warm cardiogenic pulmonary oedema, precipitated by held diuretic'],
+            }
+          - {
+              name: 'sacral oedema',
+              value: 'detectable on log-roll — confirms volume overload rather than venous insufficiency alone',
+              red_flag: true,
+            }
+
+  - system: disability
+    findings:
+      - { name: 'GCS', value: '15 — alert, agitated by air hunger' }
+      - { name: 'Glucose', value: '8.4 mmol/L' }
+
+  - system: abdomen
+    findings:
+      - {
+          name: 'Tender hepatomegaly',
+          value: 'liver edge 3 cm below the costal margin, mildly tender',
+          present: true,
+        }
+      - { name: 'Ascites', value: 'no shifting dullness, no fluid thrill', present: false }
+
+# ─── Investigations ───────────────────────────────────────────────────────
+investigations:
+  - id: ix_vbg
+    name: 'Venous blood gas (do NOT remove CPAP for ABG)'
+    category: gas
+    turnaround_min: 5
+    result_summary: |
+      **pH 7.31 · pCO2 6.2 kPa · HCO3 22 · BE -3 · Lactate 2.4 ·
+      K 4.6 · Na 138 · Glucose 8.4.** VBG pCO2 of 6.2 kPa typically
+      maps to an arterial pCO2 ~5.2-5.7 kPa (venous is 0.5-1 kPa
+      higher than arterial), so he is NOT yet in formal type-2
+      respiratory failure (T2RF threshold arterial pCO2 >6) but is
+      showing hypercapnic strain from work-of-breathing fatigue.
+      Escalate to BiPAP if serial VBG pCO2 climbs further. No need
+      to remove the mask for an ABG; serial VBG is adequate.
+    abnormal: true
+
+  - id: ix_ecg
+    name: '12-lead ECG'
+    category: ecg
+    turnaround_min: 2
+    essential: true
+    ecg_challenge_id: ecg_015_af_rvr_pulmonary_oedema
+    result_summary: |
+      **AF at 118/min, no acute ST elevation, no Q waves, T-wave
+      flattening anteriorly (chronic).** The pre-hospital strip is
+      consistent. AF is HIS baseline, not a primary arrhythmia
+      cause. No ECG indication for emergency rate-rhythm
+      intervention beyond his usual bisoprolol.
+
+  - id: ix_cxr
+    name: 'Portable upright chest X-ray'
+    category: imaging
+    turnaround_min: 8
+    essential: true
+    result_summary: |
+      **Cardiomegaly (CT ratio 0.65), upper-lobe diversion, perihilar
+      "bat-wing" alveolar opacification, Kerley B lines at the bases,
+      small bilateral pleural effusions.** No focal consolidation,
+      no pneumothorax. Classic acute cardiogenic pulmonary oedema.
+    abnormal: true
+
+  - id: ix_pocus_lung_cardiac
+    name: 'POCUS lung + cardiac (B-lines + IVC + LV function)'
+    category: bedside
+    turnaround_min: 4
+    result_summary: |
+      **Bilateral diffuse B-lines** (>3 per intercostal space) in
+      both anterior and lateral lung zones — "wet lung" pattern.
+      **IVC 2.4 cm, plethoric, no respirophasic variation** —
+      volume-overloaded. **LV global hypokinesis, EF visually
+      depressed** (qualitatively worse than the documented 32% from
+      2024; bedside visual EF carries ±10% inter-rater variability,
+      so the specific number is less reliable than the qualitative
+      worsening + the volume status). No pericardial effusion.
+      Septum normal (excludes RV-strain PE pattern).
+
+      POCUS is a rule-IN: wet lung + plethoric IVC + impaired LV
+      function = cardiogenic pulmonary oedema with high sensitivity
+      and specificity.
+    abnormal: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'Volpicelli G et al. International evidence-based recommendations for point-of-care lung ultrasound. Intensive Care Med 2012.',
+        }
+
+  - id: ix_bnp
+    name: 'NT-proBNP'
+    category: blood
+    turnaround_min: 60
+    essential: true
+    result_summary: |
+      **NT-proBNP 6480 pg/mL** (markedly elevated — confirms heart
+      failure as the dominant cause of dyspnoea). In the acute
+      setting NT-proBNP <400 pg/mL has high NPV for excluding AHF
+      (NICE NG106 rule-out cut-off); >2000 pg/mL is the
+      specialist-referral threshold per NG106 for chronic clinic
+      work-up.
+    abnormal: true
+    sources:
+      - { type: nice, id: 'NG106', ref: 'NICE NG106 — NT-proBNP thresholds in heart failure' }
+
+  - id: ix_troponin
+    name: 'High-sensitivity troponin (×2 at 0 + 3 h)'
+    category: blood
+    turnaround_min: 30
+    essential: true
+    result_summary: |
+      **hs-cTnI 38 ng/L (mildly elevated, just above upper limit
+      14 ng/L).** Repeat at 3 h: 42 ng/L — stable, no rise pattern.
+      Likely "type 2 troponinaemia" from demand ischaemia in heart
+      failure, NOT primary plaque-rupture MI. Stable repeat
+      reassures.
+    abnormal: true
+    sources:
+      - { type: esc, ref: 'ESC 2021 Heart Failure Guideline — troponin in AHF (type 2 MI common)' }
+
+  - id: ix_bloods
+    name: 'FBC, U&E, LFTs, coag, glucose, magnesium'
+    category: blood
+    turnaround_min: 45
+    result_summary: |
+      Hb 138 · Plt 220 · WCC 9.4 · INR 1.1 (on apixaban — irrelevant
+      number; INR/APTT do NOT measure DOAC) · Na 134 (mild dilutional
+      hyponatraemia from off-diuretic) · K 4.6 · Urea 11.2
+      (cardiorenal) · Creat 142 (eGFR 42 vs baseline 58 — AKI stage 1)
+      · Mg 0.74 · LFTs mildly deranged (hepatic congestion).
+    abnormal: true
+
+  - id: ix_advance_care_review
+    name: 'Advance care plan review + ceiling-of-care confirmation with wife'
+    category: bedside
+    turnaround_min: 5
+    result_summary: |
+      Wife (LPA) confirms: active treatment including NIPPV +
+      vasoactive infusions. ITU/intubation decision deferred to
+      shared decision-making with her present if he deteriorates.
+      No DNACPR. ACP from cardiology 2023 supports this trajectory.
+
+# ─── Differential ─────────────────────────────────────────────────────────
+differential:
+  - diagnosis: 'Acute decompensated heart failure — wet-and-warm cardiogenic pulmonary oedema, precipitated by held diuretic'
+    likelihood: top
+    discriminator: |
+      Known HFrEF (EF 32%), off bumetanide for 10 days, weight
+      gain + ankle oedema + orthopnoea + paroxysmal nocturnal
+      dyspnoea + pink frothy sputum + raised JVP + S3 gallop +
+      bibasal crackles + bilateral B-lines on POCUS + raised
+      NT-proBNP + CXR bat-wing pattern. Wet-and-warm phenotype
+      (preserved perfusion + congestion).
+
+  - diagnosis: 'Acute coronary syndrome (NSTEMI) precipitating heart failure'
+    likelihood: must_not_miss
+    discriminator: |
+      Troponin mildly raised — could fit. BUT: no chest pain, no
+      ST/T dynamic change, stable troponin repeat (no rise pattern),
+      and the heart failure features are dominant. Likely "type 2
+      troponinaemia" of demand ischaemia in pulmonary oedema, not
+      primary ACS. Serial troponins + cardiology review will
+      confirm.
+
+  - diagnosis: 'Massive pulmonary embolism'
+    likelihood: must_not_miss
+    discriminator: |
+      Sudden dyspnoea — but the JVP picture fits LV failure (raised
+      both sides not just right), POCUS shows LV global hypokinesis
+      not RV strain, no DVT signs, no S1Q3T3, no pleuritic pain.
+      Different phenotype.
+
+  - diagnosis: 'Pneumonia / sepsis with cardiogenic decompensation'
+    likelihood: worth_considering
+    discriminator: |
+      Bilateral crackles — but the CXR pattern is bat-wing
+      alveolar oedema not focal consolidation, no fever, WCC
+      mildly raised consistent with stress not infection, NT-proBNP
+      markedly elevated. Sepsis would be cold-and-clammy phenotype
+      not pink-warm.
+
+  - diagnosis: 'Acute aortic dissection with acute AR'
+    likelihood: unlikely
+    discriminator: |
+      Sudden dyspnoea + raised BP — but no tearing chest pain, no
+      BP differential, soft pansystolic murmur (MR, functional)
+      not the early diastolic murmur of acute AR, CXR no widened
+      mediastinum.
+
+# ─── Management ──────────────────────────────────────────────────────────
+working_diagnosis: |
+  Acute decompensated heart failure: wet-and-warm cardiogenic
+  pulmonary oedema, precipitated by held diuretic in the lead-up to
+  elective surgery. EF acutely down to ~25% on bedside echo.
+  Management: sit-up + CPAP + IV GTN + IV furosemide; preserved
+  perfusion so no vasopressor needed; HDU admission with cardiology
+  joint care. Restart bumetanide and discuss pre-op diuretic
+  strategy with anaesthetics + cardiology before any future surgery.
+
+management:
+  - id: mx_sit_up_a_to_e
+    category: monitoring
+    name: 'Sit the patient upright; ABCDE; large-bore IV; continuous monitoring'
+    detail: |
+      Sitting upright reduces preload and improves V/Q matching —
+      a free intervention with measurable effect. Continuous SpO2,
+      cardiac monitor, NIBP every 5 min. Senior + cardiology call
+      early.
+    must_do: true
+
+  - id: mx_cpap_first_line
+    category: procedure
+    name: 'CPAP (or BiPAP if hypercapnic) — escalate from 5 to 10 cm H2O'
+    detail: |
+      NIPPV is first-line in cardiogenic pulmonary oedema. Reduces
+      preload + afterload, recruits alveoli, lowers work of
+      breathing. 3CPO trial (Gray NEJM 2008): NIPPV reduces
+      intubation rate and short-term distress vs standard O2 alone;
+      subsequent meta-analyses support NIPPV as standard of care.
+      CPAP 5-10 cm H2O (start 5, titrate up to 10 as tolerated).
+      BiPAP if hypercapnic.
+
+      Continue from the prehospital Boussignac → ED CPAP circuit;
+      do not interrupt for radiographs / ABGs.
+    must_do: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'Gray A et al. 3CPO trial — Noninvasive ventilation in acute cardiogenic pulmonary edema. NEJM 2008.',
+        }
+      - {
+          type: esc,
+          ref: 'ESC 2021 Heart Failure Guideline — NIPPV first-line in acute pulmonary oedema',
+        }
+      - { type: nice, id: 'NG106', ref: 'NICE NG106 — acute heart failure pathway' }
+
+  - id: mx_iv_gtn_infusion
+    category: drug
+    name: 'IV GTN infusion 10-200 mcg/min — titrate to BP'
+    detail: |
+      Venous + arterial vasodilator. Reduces preload (acute) and
+      afterload at higher doses — the "second leg" of the wet-and-
+      warm bundle alongside CPAP. Start 10-20 mcg/min, double every
+      3-5 min, max ~200 mcg/min. STOP if systolic <100 mmHg or MAP
+      <65. Particularly effective in hypertensive AHF (his
+      BP 188/104 is the indication).
+    must_do: true
+    drug:
+      amount: 'GTN 10–200 mcg/min IV infusion'
+      route: IV
+      frequency: 'titrate every 3-5 min to systolic 110-140 mmHg (avoid <100)'
+    sources:
+      - { type: esc, ref: 'ESC 2021 — IV vasodilators in hypertensive acute heart failure' }
+      - {
+          type: nice,
+          id: 'NG106',
+          ref: 'NICE NG106 — IV vasodilator in acute decompensated heart failure',
+        }
+
+  - id: mx_iv_furosemide
+    category: drug
+    name: 'IV furosemide 40-80 mg STAT (start higher in chronic loop-diuretic users)'
+    detail: |
+      For diuretic-naive adults: 40 mg IV. For chronic users — like
+      Mr Ahmed — start at least equivalent to the usual oral 24-h
+      dose with a safety factor of 2-2.5 (bumetanide 1 mg ≈
+      furosemide 40 mg; ×2 = 80 mg). The 10-day washout does NOT
+      reset receptor-level diuretic resistance — under-dosing
+      delays decongestion. Reassess at 1 h; switch to 5-10 mg/h
+      infusion if oral-converted bolus dose is inadequate. Monitor
+      U&E + K+ closely.
+    must_do: true
+    drug:
+      amount: '40-80 mg IV STAT (chronic users start at the higher end); escalate to 5-10 mg/h infusion if response inadequate'
+      route: IV
+      frequency: 'STAT bolus; reassess at 1 h; do NOT anchor on a "diuretic-naive" dose for a chronic user'
+    sources:
+      - { type: nice, id: 'NG106', ref: 'NICE NG106 — IV loop diuretic in acute heart failure' }
+      - { type: esc, ref: 'ESC 2021 — IV furosemide dosing in AHF' }
+
+  - id: mx_oxygen_titrated
+    category: drug
+    name: 'Titrated oxygen — target SpO2 94-98% (NOT routine high-flow)'
+    detail: |
+      BTS Emergency Oxygen 2017: target SpO2 94-98% in adults
+      without COPD; 88-92% in those at risk of type 2 respiratory
+      failure. CPAP delivers FiO2 at the same time. Avoid
+      hyperoxia in cardiogenic pulmonary oedema — no clinical
+      benefit and theoretical vasoconstriction risk.
+    must_do: true
+    drug:
+      amount: 'O2 via CPAP circuit; titrate FiO2 to SpO2 94-98%'
+      route: other
+      frequency: 'continuous'
+    sources:
+      - { type: bts_sign, ref: 'BTS Guideline for the Emergency use of Oxygen in Adults 2017' }
+
+  - id: mx_admission_hdu_cardiology
+    category: disposition
+    name: 'Admit HDU / level-2 bed; cardiology + ITU joint care'
+    detail: |
+      Pulmonary oedema needing NIPPV + vasoactive infusion = HDU/
+      level 2 minimum. Cardiology accept post-stabilisation;
+      anaesthetics on standby in case NIPPV fails / intubation
+      needed.
+    must_do: true
+
+  - id: mx_restart_bumetanide_explain
+    category: communication
+    name: 'Restart bumetanide; flag NG106 2025 quadruple therapy + document pre-op-clinic teaching point'
+    detail: |
+      He decompensated because his chronic diuretic was held — flag
+      this with the surgical team for the next surgery (preoperative
+      diuretic withdrawal in chronic HF carries decompensation risk).
+
+      **NICE NG106 (3 Sept 2025) now lists quadruple therapy as
+      first-line for HFrEF**: ACEi/ARNI + β-blocker + MRA + SGLT2
+      inhibitor (e.g. dapagliflozin / empagliflozin). Mr Ahmed has
+      ramipril + bisoprolol + spironolactone but **NO SGLT2i** — at
+      EF 32% he should be on dapagliflozin 10 mg OD. Flag this for
+      the cardiology post-take and the discharge prescription.
+
+      Document the pre-op-clinic conversation in the discharge
+      summary for the next surgery.
+    must_do: true
+    sources:
+      - {
+          type: nice,
+          id: 'NG106',
+          ref: 'NICE NG106 — Chronic heart failure (updated 3 Sept 2025) — quadruple therapy (ACEi/ARNI + β-blocker + MRA + SGLT2i) as first-line for HFrEF.',
+        }
+      - {
+          type: esc,
+          ref: 'McDonagh TA et al. 2023 Focused Update of the 2021 ESC Heart Failure Guideline. Eur Heart J 2023;44:3627-3639 — endorses SGLT2i across the EF spectrum.',
+        }
+      - {
+          type: textbook,
+          ref: 'Royal College of Anaesthetists / AAGBI guidance — perioperative management of chronic diuretics',
+        }
+
+  - id: mx_apixaban_continue
+    category: drug
+    name: 'Continue apixaban (AF stroke prevention); apply SmPC dose-reduction rules'
+    detail: |
+      No bleed, no thrombotic event. Apixaban continues. For NVAF
+      the SmPC dose-reduction trigger (to 2.5 mg BD) is meeting
+      **≥2 of**: age ≥80, weight ≤60 kg, serum creatinine
+      ≥133 µmol/L. Mr Ahmed: age 78 (does NOT meet), weight 88 kg
+      (does NOT meet), creatinine 142 (DOES meet — 1 of 3). One
+      criterion only → continue **5 mg BD**. Apixaban is **not
+      recommended** below CrCl 15 mL/min per the UK SmPC (NOT a
+      formal "contraindication", and NOT a <30 cut-off — that's a
+      common confusion); his CrCl is well above this threshold.
+    must_do: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'Apixaban SmPC — UK EMC product information; dose reduction in NVAF requires ≥2 of {age ≥80, weight ≤60 kg, Cr ≥133 µmol/L}.',
+        }
+
+  # ─── Examiner traps ──────────────────────────────────────────────────
+  - id: mx_no_iv_fluid_bolus
+    category: fluid
+    name: 'IV crystalloid 1 L bolus for the "hypotension" / "fluid resus"'
+    detail: |
+      ❌ He is FLUID-OVERLOADED. Aggressive fluid in cardiogenic
+      pulmonary oedema is lethal. The wet-and-warm phenotype has
+      HIGH BP, not low. Confirm the BP reading on both arms before
+      reaching for fluid.
+    must_not_do: true
+    gated_by_history: [hx_paramedic]
+    sources:
+      - { type: esc, ref: 'ESC 2021 — fluid in wet-and-warm AHF is contraindicated' }
+
+  - id: mx_no_iv_morphine_routine
+    category: drug
+    name: 'IV morphine 5 mg routinely "for anxiety / breathlessness"'
+    detail: |
+      ❌ NICE NG106 explicitly removes routine opiates from AHF
+      management — opiate use is associated with WORSE outcomes.
+      The primary signal is from the ADHERE registry (Peacock,
+      Emerg Med J 2008); secondary support from the EuroHF survey
+      (Iakobishvili, Acute Cardiac Care 2011). Treat the pulmonary oedema;
+      do not sedate the breathlessness away.
+    must_not_do: true
+    sources:
+      - {
+          type: nice,
+          id: 'NG106',
+          ref: 'NICE NG106 — routine opiates NOT recommended in acute heart failure',
+        }
+      - {
+          type: textbook,
+          ref: 'Peacock WF et al. Morphine use in the ADHERE registry — associated with worse outcomes in acute decompensated heart failure. Emerg Med J 2008.',
+        }
+      - {
+          type: textbook,
+          ref: 'Iakobishvili Z et al. Use of intravenous morphine for acute decompensated heart failure (EuroHF survey, secondary analysis). Acute Cardiac Care 2011;13(2):76-80.',
+        }
+
+  - id: mx_no_beta_blocker_bolus
+    category: drug
+    name: 'IV metoprolol 5 mg STAT to rate-control the AF'
+    detail: |
+      ❌ AF here is a CONSEQUENCE of decompensation, not the cause.
+      An IV beta-blocker bolus in a decompensating LV will tip into
+      cardiogenic shock. Continue his oral bisoprolol if BP allows;
+      do not bolus.
+    must_not_do: true
+    gated_by_history: [hx_paramedic]
+    sources:
+      - {
+          type: esc,
+          ref: 'ESC 2021 Heart Failure Guideline — avoid IV beta-blockade in acute decompensation',
+        }
+
+  - id: mx_no_routine_intubation
+    category: procedure
+    name: 'RSI immediately on arrival because "he looks tired"'
+    detail: |
+      ❌ NIPPV is the first-line intervention (3CPO + ESC 2021).
+      Intubating cardiogenic pulmonary oedema before a CPAP trial
+      misses the cheapest, most effective intervention and exposes
+      the LV to positive-pressure venous-return effects abruptly.
+      Reserve intubation for CPAP failure or true exhaustion.
+    must_not_do: true
+    sources:
+      - { type: textbook, ref: 'Gray A et al. 3CPO trial — NEJM 2008' }
+
+  - id: mx_no_aggressive_bp_lower
+    category: drug
+    name: 'IV labetalol bolus to aggressively lower BP to <120 systolic'
+    detail: |
+      ❌ The hypertension here is preload-driven; once GTN +
+      diuretic + CPAP take effect, the BP falls. An aggressive
+      beta-blocker drops the cardiac output before the lungs
+      improve. Titrate GTN to BP 110-140 — not below.
+    must_not_do: true
+
+# ─── Disposition ─────────────────────────────────────────────────────────
+disposition_options:
+  - label: 'Admit HDU/CCU level 2; continue CPAP + GTN + furosemide; cardiology + ITU joint care'
+    criteria: |
+      Acute heart failure requiring NIPPV + vasoactive infusion =
+      level-2 monitoring at minimum. Cardiology own the discharge
+      pathway; ITU on standby in case of NIPPV failure.
+    appropriate: true
+    epilogue: "Aisha follows the trolley to the lift. She doesn't put her hand down until the door closes. Cardiology meets you on level 4 — they already know."
+  - label: 'Admit cardiology ward on oral diuretic only; stop CPAP at discharge from ED'
+    criteria: |
+      Inadequate — he is on NIPPV + IV vasodilator + IV diuretic.
+      A standard cardiology ward without level-2 monitoring will
+      not catch deterioration in the first 12-24 h.
+    appropriate: false
+    epilogue: "Off CPAP at the ward door, his sats drift back to 84%. The CCU registrar is paged at 04:12. Aisha asks the staff nurse why the mask was taken off."
+  - label: 'Discharge with restarted oral diuretic + GP follow-up'
+    criteria: |
+      Unsafe — actively decompensated wet-and-warm AHF on NIPPV
+      cannot be discharged. Resolution of pulmonary oedema before
+      discharge is the threshold, plus stable on oral therapy for
+      24 h.
+    appropriate: false
+    epilogue: "He is back through the door at 09:40 the next morning. The night staff have written 'returned with worsening dyspnoea' in red biro on the front of his notes."
+
+# ─── State machine ──────────────────────────────────────────────────────
+state_machine:
+  states: [deteriorating, stable, arrested, admitted]
+  transitions:
+    - from: deteriorating
+      to: stable
+      trigger:
+        on: action
+        action_id: mx_cpap_first_line
+        note: 'CPAP + GTN + furosemide bundle initiated — sats and work of breathing improve within ~20 min.'
+    - from: deteriorating
+      to: arrested
+      trigger:
+        on: inaction_by
+        min: 18
+        required_actions: [mx_cpap_first_line, mx_iv_gtn_infusion, mx_iv_furosemide]
+        note: 'Without the CPAP + GTN + furosemide trio by T+18, the work-of-breathing fatigue progresses to respiratory arrest.'
+    - from: stable
+      to: admitted
+      trigger:
+        on: action
+        action_id: mx_admission_hdu_cardiology
+        note: 'HDU bed found; CPAP + GTN + furosemide handed over to cardiology + level-2 team.'
+
+# ─── Pearls + pitfalls ──────────────────────────────────────────────────
+pearls:
+  - 'Wet-and-warm AHF = preserved perfusion + congestion (high BP, JVP up, S3, B-lines, oedema). Treatment: NIPPV + GTN + furosemide; NO fluid, NO morphine, NO beta-blocker bolus.'
+  - 'Forrester / Stevenson 2×2: warm-dry / warm-wet / cold-dry / cold-wet. Wet+cold is cardiogenic shock — different management (inotropes, less aggressive vasodilator).'
+  - 'NIPPV (CPAP for hypoxia, BiPAP for hypercapnia) is first-line per 3CPO trial (NEJM 2008) and ESC 2021. Reduces intubation rate. CPAP 5–10 cm H2O.'
+  - 'Diuretic dosing: chronic loop-diuretic users need at least their usual 24-h oral dose converted to IV; bumetanide 1 mg ≈ furosemide 40 mg.'
+  - 'Routine IV morphine is NOT recommended in AHF (NICE NG106). The reflex "settle the air-hunger" is associated with worse outcomes — treat the oedema instead.'
+  - 'Stop-the-diuretic pre-op is a recurring decompensation cause. Liaise with anaesthetics + cardiology BEFORE elective surgery in chronic HF patients.'
+  - 'Bedside POCUS: bilateral B-lines + plethoric IVC + impaired LV is rule-IN for cardiogenic pulmonary oedema. Differentiates from PE (RV strain) and pneumonia (focal pattern).'
+
+pitfalls:
+  - 'IV fluid bolus in cardiogenic pulmonary oedema (wet-and-warm).'
+  - 'Routine IV morphine for "air hunger".'
+  - 'IV beta-blocker bolus to "rate-control the AF" in acute decompensation.'
+  - 'Premature intubation without a CPAP trial.'
+  - 'Aggressive BP-lowering with labetalol — the BP responds to GTN + diuresis + preload reduction once started.'
+  - 'Missing the pre-op-clinic diuretic-hold as the precipitant — recurring problem in shared-care patients.'
+
+sources:
+  - {
+      type: nice,
+      id: 'NG106',
+      ref: 'NICE NG106 — Chronic heart failure in adults: diagnosis and management (2018; covers acute decompensation)',
+    }
+  - {
+      type: esc,
+      ref: 'McDonagh TA et al. 2021 ESC Guidelines for the diagnosis and treatment of acute and chronic heart failure. Eur Heart J 2021.',
+    }
+  - {
+      type: textbook,
+      ref: 'Gray A et al. Noninvasive ventilation in acute cardiogenic pulmonary edema (3CPO trial). NEJM 2008.',
+    }
+  - {
+      type: textbook,
+      ref: 'Iakobishvili Z et al. Use of intravenous morphine for acute decompensated heart failure (EuroHF survey). Acute Cardiac Care 2011;13(2):76-80.',
+    }
+  - {
+      type: textbook,
+      ref: 'Volpicelli G et al. International evidence-based recommendations for point-of-care lung ultrasound. Intensive Care Med 2012.',
+    }
+  - { type: bts_sign, ref: 'BTS Guideline for the Emergency use of Oxygen in Adults 2017' }
+  - {
+      type: textbook,
+      ref: 'Oxford Handbook of Emergency Medicine 5e — Ch 4 Cardiovascular emergencies (heart failure section)',
+    }
+
+author_notes: |
+  Designed as the SAQ-classic wet-and-warm decompensated heart
+  failure. The pre-op-clinic diuretic-hold precipitant is a recurring
+  cause that trainees should learn to suspect and document.
+
+  Three teaching pivots:
+  1. Wet-and-warm = NIPPV + vasodilator + diuretic. No fluid. No
+     morphine.
+  2. Diuretic dosing for chronic users = at least the usual oral
+     24-h dose converted IV.
+  3. Stop-the-diuretic-before-surgery is the audit-bait that gets
+     these patients into the ED.
+
+  Pairs naturally with case_chest_pain_patel_ambient (STEMI) and
+  case_aortic_dissection_okafor (AD) as a "shortness of breath +
+  chest pressure" differential — three different mechanisms behind
+  the same presenting symptom.
+
+  Inspiration: TheCase.Report S1E10 (Acute HF + Syncope) and S1E11
+  (Prof Amal Mattu bonus). Player-facing citations remain NICE
+  NG106 + ESC 2021 + 3CPO NEJM 2008 + BTS Oxygen 2017.

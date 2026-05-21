@@ -1,0 +1,10 @@
+node_modules
+dist
+coverage
+playwright-report
+test-results
+*.pdf
+sources-local
+
+# Upstream prompt — preserve original formatting
+the-skitt-claude-code-prompt.md

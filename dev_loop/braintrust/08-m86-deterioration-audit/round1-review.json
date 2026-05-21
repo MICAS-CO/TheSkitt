@@ -1,0 +1,20 @@
+{
+  "verdict": "request_changes",
+  "findings": [
+    {
+      "severity": "medium",
+      "title": "Marcus DKA episode event is a no-op and should be removed",
+      "file": "content/episodes/ep_overnight_metabolic.yaml",
+      "body": "The `ev_dka_deterioration` event was softened to `new_state: deteriorating`. However, the corresponding removed case transition in `case_dka_marcus.yaml` was `from: deteriorating to: arrested` at min 15. Because the case transition originated from `deteriorating`, Marcus must already be in the `deteriorating` state by min 15. Therefore, an episode event that fires at min 15 to set his state to `deteriorating` is a no-op. It should be removed entirely, matching the cleanup done for Patel and Chloe.",
+      "recommendation": "Remove the `ev_dka_deterioration` event from `ep_overnight_metabolic.yaml` entirely."
+    },
+    {
+      "severity": "low",
+      "title": "Two sources of truth for deterioration logic",
+      "file": "multiple",
+      "body": "Deterioration logic currently lives in both episode `scheduled_events` and case `state_machine.transitions`. As seen in this audit, it's easy to update one and forget the other, leading to broken tests or inconsistent behavior.",
+      "recommendation": "For M87 (polish iteration), add a content-side test that asserts every episode's `deterioration_if_not_x_by_t` event exactly matches an `inaction_by` transition on the same case, minute, and required actions to prevent future drift."
+    }
+  ],
+  "overall_take": "The clinical calibration of the audit is excellent, correctly keeping true time-critical emergencies while softening or removing spurious wall-clock punishments. However, the softening of Marcus's episode event creates a dead no-op event that should be fully removed, and the dual-source-of-truth architecture needs a test to prevent future drift."
+}

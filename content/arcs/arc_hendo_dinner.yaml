@@ -1,0 +1,69 @@
+# MILESTONE 5 — first intersecting narrative arc.
+#
+# Beth (case_anaphylaxis_adult_peanut) and Sarah (case_ectopic_minors_sarah)
+# came in the same ambulance from the same hen-do dinner. They are friends:
+# Sarah is the bride-to-be, Beth the maid of honour. Beth is in resus with
+# anaphylaxis. Sarah was waiting in the relatives' room and was triaged
+# separately when she mentioned cramping abdo pain.
+#
+# Arc design intent (per build prompt § "intersecting arcs"):
+#   - Reveal is gated on (a) the player asking Beth's partner-history
+#     question (hx_partner), OR (b) clock fallback at T+9.
+#   - Effect: Sarah's case unlocks two history items that change the
+#     clinical picture — "yes that's Beth, she made me come back today"
+#     and "actually I've had this pain for two days, didn't want to
+#     ruin the hen-do".
+#
+# The player who triangulates between cases gets a richer history and
+# avoids the trap of treating Sarah as an isolated minors presentation.
+
+schema_version: 1
+id: arc_hendo_dinner
+type: shared_incident
+title: 'The hen-do dinner — Beth and Sarah'
+internal_summary: |
+  Two patients from the same dinner arrive in the same ambulance.
+  Beth (resus, anaphylaxis) and Sarah (minors, ?ectopic) are friends.
+  Recognising the link lets the player draw out a longer pain history
+  from Sarah and brief both teams sooner.
+
+cases:
+  - case_anaphylaxis_adult_peanut
+  - case_ectopic_minors_sarah
+
+reveals:
+  # Primary path: asking Beth about her partner reveals the hen-do
+  # context and Sarah's existence (Tom mentions Sarah came in the
+  # ambulance and went to triage).
+  - id: reveal_via_beth_partner_history
+    on: history_asked
+    history_id: hx_partner
+    in_case_id: case_anaphylaxis_adult_peanut
+
+  # Backup path: asking Sarah about her friend in resus also reveals
+  # the arc (but this hx item is itself gated by the arc — so this is
+  # a fail-safe rather than a normal path).
+  - id: reveal_via_sarah_friend_history
+    on: history_asked
+    history_id: hx_friend_in_resus
+    in_case_id: case_ectopic_minors_sarah
+
+  # Final fallback: at T+9 the arc reveals automatically — the
+  # ambulance documentation makes the link obvious.
+  - id: reveal_via_clock_fallback
+    on: clock_time
+    t_min: 9
+
+effects:
+  - on_case_id: case_ectopic_minors_sarah
+    unlocks_history_id: hx_friend_in_resus
+    note: 'Player can now ask Sarah directly about the friend in resus.'
+  - on_case_id: case_ectopic_minors_sarah
+    unlocks_history_id: hx_pain_started_earlier
+    note: |
+      Once the connection is clear, Sarah admits she has had the pain
+      for two days but did not want to disrupt the hen-do plans.
+  - on_case_id: case_anaphylaxis_adult_peanut
+    note: |
+      No mechanical unlock on Beth's side — the hen-do context is
+      already in her vignette. Logged for the debrief.

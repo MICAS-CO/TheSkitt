@@ -1,0 +1,620 @@
+# MILESTONE 5 — second case of deliberately different shape.
+#
+# Sarah came in the ambulance with her friend Beth (case_anaphylaxis_adult_peanut)
+# from the hen-do dinner. While Beth was being resuscitated, Sarah was sitting
+# in the relatives' room. She mentions cramping abdominal pain to a triage
+# nurse — turns out she's 7 weeks pregnant with PV spotting.
+#
+# DIFFERENT SHAPE from Beth: looks well at triage (cat 3), obstetric system,
+# time-critical despite low-acuity appearance. The deceptively-stable
+# minors patient who is actually one ruptured tube away from arrest.
+#
+# Authored against NICE NG126 (Ectopic pregnancy and miscarriage, 2019;
+# updated 2023), RCOG Green-top 21 (Tubal Ectopic Pregnancy, 2016), and
+# Oxford Handbook of EM 5e Ch 13.
+
+schema_version: 1
+id: case_ectopic_minors_sarah
+title: 'Pelvic pain in early pregnancy — minors'
+chief_complaint: 'Pelvic pain + PV spotting'
+topic_id: ectopic_pregnancy
+
+vignette: |
+  Triage at 19:20.
+
+  Sarah Mendez, 30 y/o, was sitting in the relatives' room when she
+  asked the triage nurse if she could be seen. "It's probably nothing —
+  I came in with my friend who's in resus — but I've been having this
+  cramping pain in my belly all afternoon, and I had some bleeding this
+  morning."
+
+  She is talking in full sentences, walking unassisted. Last menstrual
+  period was 7 weeks ago. Home pregnancy test positive last week.
+
+  Triage nurse hands you the card: "cat 3 — abdo pain, ?early
+  pregnancy. PV spot."
+
+curriculum_tags: [ObC4, ObP1, ObP2, ObP3]
+slos: [1, 3]
+difficulty_band: ST3
+paeds: false
+
+demographics:
+  age_value: 30
+  age_unit: years
+  sex: female
+  weight_kg: 64
+  gestation_weeks: 7
+  pmh: ['previous chlamydia infection age 22 — treated']
+  medications: ['folic acid 400 mcg daily since the positive test']
+  allergies: ['NKDA']
+  social: |
+    Lives with partner Jamie. Software engineer. Non-smoker. Stopped
+    alcohol after the positive pregnancy test last week. Bride-to-be —
+    this is her hen-do dinner.
+
+triage_category: 3
+initial_state: unseen
+bay: minors
+
+vitals:
+  baseline:
+    hr: 78
+    rr: 14
+    spo2: 99
+    bp_sys: 118
+    bp_dia: 72
+    gcs: 15
+    temp_c: 36.6
+  deteriorating:
+    hr: 124
+    rr: 24
+    spo2: 96
+    on_o2: true
+    bp_sys: 88
+    bp_dia: 52
+    gcs: 15
+    temp_c: 36.5
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
+history:
+  - id: hx_pain
+    source: patient
+    topic: 'Tell me about the pain.'
+    supports:
+      - 'Right tubal ectopic pregnancy with probable rupture'
+      - 'Pelvic inflammatory disease (PID)'
+      - 'Appendicitis'
+    response: |
+      "It started this morning, around 7 — kind of crampy, low down on
+      the left side. It comes and goes. I thought it was a bad period
+      starting, then I remembered I'm pregnant. It's been getting a bit
+      worse through the day, sharper now."
+
+  - id: hx_bleeding
+    source: patient
+    topic: 'And the bleeding?'
+    response: |
+      "Just spotting — dark brown, not bright red. Two pads since this
+      morning. I haven't been to the loo, but I felt a bit faint when I
+      stood up earlier."
+
+  - id: hx_pregnancy
+    source: patient
+    topic: 'Tell me about the pregnancy — dates, scans, anything?'
+    prereq_history_ids: [hx_pain]
+    supports:
+      - 'Right tubal ectopic pregnancy with probable rupture'
+      - 'Threatened miscarriage with corpus luteum cyst'
+    branch_choices:
+      - id: compassionate
+        label: "(quietly, leaning in) Whatever you tell me about the pregnancy stays between us and the team caring for you. Take your time."
+        npc_voice: "Sarah's eyes fill. She blinks them clear and looks at you properly for the first time."
+        rapport_delta: 2
+        response: |
+          "Thank you. (Pause.) Last period seven weeks ago tomorrow. We
+          were trying. Tested positive last Wednesday — home kit, two
+          lines. The hen-do was Beth's idea — she'd planned it for a
+          year. I didn't tell anyone. Not even Beth. I'm — was — going
+          to tell her tonight, before the wedding. I'm scared, doctor.
+          I keep thinking I've already lost it."
+      - id: clinical
+        label: "LMP, scans, any antenatal contact yet?"
+        rapport_delta: 0
+        response: |
+          "LMP seven weeks ago tomorrow. Test positive last Wednesday,
+          home kit. No scans yet. GP booked the 12-week. No antenatal
+          appointments."
+      - id: dismissive
+        label: "I need a quick history. Have you been booked into antenatal services yet?"
+        npc_voice: "Sarah looks down at her hands."
+        rapport_delta: -1
+        response: |
+          "No. I haven't. Sorry. I should have, I know. (Pause.) Last
+          period seven weeks ago tomorrow."
+    response: |
+      Last menstrual period seven weeks ago. Home pregnancy test
+      positive Wednesday. No scans yet; 12-week booking with GP.
+      No antenatal appointments.
+
+  - id: hx_risk_factors
+    source: patient
+    topic: 'Any risk factors — previous infections, surgery, IVF, IUCD?'
+    prereq_history_ids: [hx_pregnancy]
+    supports: ['Right tubal ectopic pregnancy with probable rupture']
+    response: |
+      "I had chlamydia when I was 22, got treated. No surgery. We
+      conceived naturally. Never had a coil. No previous miscarriage
+      or ectopic. First pregnancy."
+
+  - id: hx_systems
+    source: patient
+    topic: 'Any other symptoms — shoulder tip pain, dizziness, fainting?'
+    supports: ['Ruptured ectopic with active intra-abdominal haemorrhage']
+    response: |
+      "I felt light-headed twice today. No shoulder pain. No fever.
+      Bowels normal. I haven't been able to eat — feels a bit nauseous."
+
+  - id: hx_anti_d
+    source: records
+    topic: 'Check the blood group — anti-D status if RhD negative.'
+    response: |
+      "Records show: A RhD positive from previous blood donations. Anti-D
+      prophylaxis not required."
+
+  # ─── Gated by arc reveal: arc_hendo_dinner ──────────────────────────────
+  # These items are hidden until the arc reveals (via Beth's hx_partner
+  # being asked, or a clock-time fallback). The unlock teaches the player
+  # to triangulate across cases.
+
+  - id: hx_friend_in_resus
+    source: patient
+    topic: 'Is the friend you came in with the same one in resus?'
+    npc_voice: "Sarah's eyes fill. 'Is Beth — my friend — okay?'"
+    response: |
+      "Yes — Beth, my maid of honour. She had something at the restaurant —
+      a reaction. We came in the same ambulance. Is she okay? She knew
+      I wasn't feeling great today; she made me come back with her."
+
+  - id: hx_pain_started_earlier
+    source: patient
+    topic: 'Looking back, when did the pain really start?'
+    supports: ['Ruptured ectopic with active intra-abdominal haemorrhage']
+    response: |
+      "Honestly… two days ago. I didn't want to ruin the hen-do, so I
+      took paracetamol and a hot water bottle. Today it got worse. I'm
+      sorry I didn't say earlier."
+
+examination:
+  - system: general
+    findings:
+      - { name: 'looks well at rest', value: 'talking in sentences', present: true }
+      - { name: 'pallor', value: 'mild — conjunctival pallor', present: true }
+      - { name: 'diaphoresis', present: false, pertinent_negative: true }
+  - system: airway
+    findings:
+      - { name: 'patent, talking', present: true }
+  - system: breathing
+    findings:
+      - { name: 'respiratory rate', value: '18/min' }
+      - { name: 'SpO2', value: '99% on air' }
+      - { name: 'chest', value: 'clear' }
+  - system: circulation
+    findings:
+      - { name: 'heart rate', value: '102/min, sinus (subtle tachycardia for her)' }
+      - {
+          name: 'blood pressure',
+          value: '108/64 mmHg sitting; 92/58 mmHg standing (postural drop)',
+        }
+      - { name: 'capillary refill', value: '<2 s' }
+      - { name: 'peripheries', value: 'cool to mid-forearm — early shock' }
+  - system: disability
+    findings:
+      - { name: 'GCS', value: '15' }
+      - { name: 'glucose', value: '4.8 mmol/L' }
+  - system: abdomen
+    findings:
+      - { name: 'inspection', value: 'soft, not distended' }
+      - { name: 'palpation', value: 'tender L iliac fossa with voluntary guarding; mild rebound' }
+      - { name: 'percussion', value: 'no obvious shifting dullness yet' }
+      - { name: 'McBurney point tenderness', present: false, pertinent_negative: true }
+      - { name: 'cervical motion tenderness', value: 'examination deferred to gynae' }
+  - system: obstetric
+    findings:
+      - { name: 'gestation by LMP', value: '7+0 weeks' }
+      - { name: 'fundus', value: 'not yet palpable abdominally' }
+      - { name: 'speculum / bimanual', value: 'deferred to gynae — not routinely required in ED' }
+    manoeuvres:
+      - id: bedside_uss_fast
+        label: 'Bedside abdominal USS (FAST view, Morison''s pouch + pouch of Douglas)'
+        findings:
+          - {
+              name: 'free fluid in Morison''s pouch',
+              value: 'moderate anechoic fluid; the most sensitive view for haemoperitoneum',
+              red_flag: true,
+              supports: ['Right tubal ectopic pregnancy with probable rupture'],
+            }
+          - {
+              name: 'no intrauterine sac visualised',
+              value: 'consistent with very early gestation OR ectopic location',
+              red_flag: true,
+              supports: ['Right tubal ectopic pregnancy with probable rupture'],
+            }
+      - id: pelvic_exam
+        label: 'Pelvic exam (with chaperone and explicit verbal consent)'
+        findings:
+          - {
+              name: 'dark blood at the external os',
+              value: 'small volume, cervix closed; not active brisk bleeding',
+              supports:
+                [
+                  'Right tubal ectopic pregnancy with probable rupture',
+                  'Threatened miscarriage with corpus luteum cyst',
+                ],
+            }
+          - {
+              name: 'cervical motion tenderness',
+              value: 'marked on right-sided motion; reproducibly tender',
+              red_flag: true,
+              supports: ['Right tubal ectopic pregnancy with probable rupture'],
+            }
+          - {
+              name: 'right adnexal fullness',
+              value: 'subtle on bimanual; patient guards heavily',
+              supports: ['Right tubal ectopic pregnancy with probable rupture'],
+            }
+
+investigations:
+  - id: ix_urine_bhcg
+    name: 'Urine βhCG'
+    category: urine
+    turnaround_min: 2
+    result_summary: |
+      POSITIVE. (NICE NG126 §1.4: any woman of reproductive age with
+      abdo pain and/or PV bleeding needs urine βhCG as the first ED
+      investigation.)
+    sources:
+      - { type: nice, id: 'NG126', ref: 'Ectopic pregnancy and miscarriage — diagnosis' }
+    abnormal: true
+
+  - id: ix_serum_bhcg
+    name: 'Serum βhCG (quantitative)'
+    category: blood
+    turnaround_min: 30
+    essential: true
+    result_summary: |
+      4280 IU/L. Empty uterus on TVUSS with serum βhCG >1500 IU/L
+      raises ectopic strongly (RCOG GTG 21, 2016) — though current
+      practice emphasises TVUSS-based diagnosis over serum-βhCG
+      "discriminatory zone" alone, which has been largely deprecated
+      as a stand-alone criterion. Here the imaging plus this hCG —
+      empty uterus on TVUSS with this level is ectopic until proven
+      otherwise.
+    abnormal: true
+    sources:
+      - { type: rcog, ref: 'RCOG GTG 21 — Tubal Ectopic Pregnancy, βhCG and discriminatory zone' }
+
+  - id: ix_fbc
+    name: 'FBC, U&E, CRP, group + cross-match (2 units)'
+    category: blood
+    turnaround_min: 30
+    essential: true
+    result_summary: |
+      Hb 102 g/L (down from 134 at GP last year — significant interval
+      drop) · WCC 11.4 · Plt 268 · Na 137 K 4.2 Urea 4.8 Creat 68
+      (eGFR >90) · CRP 8. Group A RhD+. 2 units cross-matched.
+
+  - id: ix_vbg
+    name: 'Venous blood gas + lactate'
+    category: gas
+    turnaround_min: 5
+    result_summary: |
+      pH 7.36 · pCO2 4.1 kPa · HCO3 22 mmol/L · BE -2 · Lactate 2.6 ·
+      Hb 102. Early compensated metabolic acidosis with a borderline
+      lactate — concerning for occult haemorrhage.
+    abnormal: true
+
+  - id: ix_tvuss
+    name: 'Transvaginal ultrasound (TVUSS) — urgent EPAU/gynae'
+    category: imaging
+    turnaround_min: 40
+    essential: true
+    result_summary: |
+      Empty uterus, no intrauterine gestational sac. Right adnexal
+      complex mass containing a yolk sac, no fetal pole/cardiac
+      activity. Moderate free fluid in the pouch of Douglas. Findings
+      diagnostic of right tubal ectopic pregnancy with probable
+      haemorrhage.
+    abnormal: true
+    sources:
+      - { type: nice, id: 'NG126', ref: 'TVUSS first-line in suspected ectopic' }
+
+  - id: ix_ecg
+    name: '12-lead ECG'
+    category: ecg
+    turnaround_min: 2
+    result_summary: |
+      Sinus tachycardia at 102/min. No ST/T changes. No QT prolongation.
+
+differential:
+  - diagnosis: 'Right tubal ectopic pregnancy with probable rupture'
+    likelihood: top
+    discriminator: |
+      Pregnant + unilateral pelvic pain + PV spotting + postural BP drop
+      + interval Hb fall + βhCG >1500 with empty uterus on TVUSS = NICE
+      NG126 diagnostic picture.
+
+  - diagnosis: 'Ruptured ectopic with active intra-abdominal haemorrhage'
+    likelihood: must_not_miss
+    discriminator: |
+      Postural BP drop + tachycardia + lactate trend + free fluid in
+      pouch of Douglas. Discharge OR delay = catastrophe.
+
+  - diagnosis: 'Threatened miscarriage with corpus luteum cyst'
+    likelihood: worth_considering
+    discriminator: |
+      Misses if βhCG >1500 and no intrauterine sac on TVUSS. Doesn't
+      explain the postural drop or lactate.
+
+  - diagnosis: 'Pelvic inflammatory disease (PID)'
+    likelihood: worth_considering
+    discriminator: |
+      Chlamydia history is a risk factor for BOTH ectopic and PID;
+      pregnancy + adnexal mass + free fluid pattern fits ectopic better.
+
+  - diagnosis: 'Appendicitis'
+    likelihood: worth_considering
+    discriminator: |
+      Right-sided pain — must rule out, but McBurney negative and the
+      adnexal mass + positive βhCG point obstetric.
+
+  - diagnosis: 'UTI / pyelonephritis'
+    likelihood: unlikely
+    discriminator: 'No dysuria, no flank pain, urine βhCG positive but rest of urinalysis non-contributory.'
+
+  - diagnosis: 'Ovarian torsion'
+    likelihood: unlikely
+    discriminator: 'Possible but the empty uterus with adnexal mass + yolk sac is diagnostic of ectopic, not torsion.'
+
+working_diagnosis: 'Right tubal ectopic pregnancy, probable rupture'
+
+management:
+  - id: mx_a_to_e
+    category: monitoring
+    name: 'ABCDE assessment; continuous monitoring; obs every 15 min'
+    detail: |
+      She looks well NOW but is one ruptured tube from arrest. Continuous
+      monitoring. Recheck postural obs.
+    must_do: true
+
+  - id: mx_iv_access
+    category: procedure
+    name: 'Two large-bore (≥16G) IV cannulae'
+    detail: |
+      Both antecubital. Take bloods at insertion: FBC, U&E, group +
+      cross-match 2 units, serum βhCG.
+    must_do: true
+
+  - id: mx_serum_bhcg
+    category: monitoring
+    name: 'Send serum βhCG urgently'
+    detail: |
+      Quantitative βhCG is the single most useful ED investigation when
+      combined with TVUSS. Do NOT wait for the βhCG to call gynae if
+      the picture is suggestive.
+    must_do: true
+    sources:
+      - { type: nice, id: 'NG126', ref: 'Serum βhCG and TVUSS combined' }
+
+  - id: mx_iv_fluids
+    category: fluid
+    name: 'IV crystalloid 500 mL bolus, reassess BP'
+    detail: |
+      For the postural drop. Hartmann's or 0.9% saline. Repeat if no
+      response. Permissive hypotension principles apply if torrential
+      bleed suspected, but here resuscitate to perfusion.
+    must_do: true
+
+  - id: mx_nbm
+    category: observation
+    name: 'NBM — keep nil by mouth pending decision on surgery'
+    detail: 'Methotrexate criteria not met (βhCG >1500, possible rupture). Surgery likely.'
+    must_do: true
+
+  - id: mx_call_gynae
+    category: referral
+    name: 'Urgent gynaecology referral / EPAU activation'
+    detail: |
+      Pick up the phone now — do not wait for βhCG or USS. Gynae will
+      perform their own bedside USS, consent for laparoscopy.
+    must_do: true
+    sources:
+      - { type: rcog, ref: 'RCOG GTG 21 — early gynae involvement' }
+
+  - id: mx_analgesia
+    category: drug
+    name: 'IV paracetamol 1 g + IV morphine titrate'
+    detail: 'Avoid NSAIDs (impair platelet function and theoretical fetal risk).'
+    drug:
+      amount: 'Paracetamol 1 g + morphine 1–2 mg titrated'
+      route: IV
+      frequency: 'STAT then PRN'
+    must_do: true
+
+  - id: mx_communicate_partner
+    category: communication
+    name: 'Contact the partner (Jamie) and brief them'
+    detail: |
+      Sarah may need surgery in the next hour. Partner not yet aware she
+      is in ED.
+    must_do: true
+
+  # ─── Trap actions ──────────────────────────────────────────────────────────
+  - id: mx_no_methotrexate
+    category: drug
+    name: 'Give methotrexate in ED for medical management'
+    detail: |
+      ❌ Wrong on multiple grounds:
+      • Methotrexate is given by gynae/EPAU, NOT in ED.
+      • NICE NG126 tiered criteria: offer MTX if βhCG <1500 IU/L;
+        between 1500–5000 IU/L offer choice of MTX or surgery; above
+        5000 IU/L surgery is preferred.
+      • Sarah's βhCG 4280 sits in the "offer choice" band BUT
+        surgery is preferred because of likely rupture / free fluid
+        / haemodynamic compromise — NOT because the hCG alone
+        disqualifies MTX.
+      • Other MTX criteria: unruptured ectopic, adnexal mass <35 mm,
+        no fetal cardiac activity, willing/able to attend follow-up.
+    must_not_do: true
+    gated_by_history: [hx_pregnancy]
+    sources:
+      - {
+          type: nice,
+          id: 'NG126',
+          ref: 'NICE NG126 §1.6.5-6 — tiered methotrexate criteria by βhCG (<1500 offer / 1500-5000 choice / >5000 surgery preferred).',
+        }
+
+  - id: mx_no_discharge
+    category: disposition
+    name: 'Discharge with safety-net to return if worse'
+    detail: |
+      ❌ "She looks well" is the trap. Postural BP drop + βhCG +
+      interval Hb fall = admit and refer. Cannot-miss diagnosis.
+    must_not_do: true
+
+  - id: mx_no_pelvic_exam
+    category: procedure
+    name: 'Perform a bimanual pelvic exam in ED'
+    detail: |
+      ❌ Pelvic examination is not routinely required in ED for
+      suspected ectopic — low diagnostic yield, risk of disturbing a
+      tubal pregnancy, and gynae will repeat it. NICE NG126 and RCOG
+      GTG 21 both advise against routine ED bimanual.
+    must_not_do: true
+    sources:
+      - { type: rcog, ref: 'RCOG GTG 21 — ED pelvic exam not routinely required' }
+
+  - id: mx_no_nsaid
+    category: drug
+    name: 'Give diclofenac or ibuprofen for pain'
+    detail: |
+      ❌ NSAIDs are avoided in early pregnancy (fetal risk) and impair
+      platelet function in a patient who may be bleeding. Use
+      paracetamol + opioid.
+    must_not_do: true
+    gated_by_history: [hx_pregnancy]
+
+disposition_options:
+  - label: 'Admit gynae for emergency laparoscopy (probable salpingectomy)'
+    criteria: |
+      Haemodynamically borderline + free fluid + likely rupture →
+      surgical. Most appropriate.
+    appropriate: true
+    epilogue: "Theatre 4 is opened at 20:08. The salpingectomy is at 20:42. Beth is two bays over completing post-anaphylaxis discharge planning."
+  - label: 'Admit EPAU for medical management with methotrexate'
+    criteria: |
+      Methotrexate criteria NOT met (βhCG too high, likely ruptured).
+      Inappropriate.
+    appropriate: false
+    epilogue: "The EPAU consultant calls at 20:14. 'She's haemodynamically unstable. This is surgical, not medical.'"
+  - label: 'Refer EPAU for outpatient follow-up tomorrow'
+    criteria: |
+      Symptomatic + postural BP drop + interval Hb fall → cannot
+      manage as outpatient.
+    appropriate: false
+    epilogue: "Sarah collapses in the toilets at 19:48 — five minutes after the decision is documented."
+  - label: 'Discharge home with PR antiemetic and gynae letter'
+    criteria: |
+      Inappropriate — would be a sentinel-event-grade discharge.
+    appropriate: false
+    epilogue: "Three minutes into the toilets she calls for help. Beth's partner Tom hears her from the relatives' room."
+
+state_machine:
+  states: [unseen, triaged, stable, deteriorating, arrested, admitted]
+  transitions:
+    - from: triaged
+      to: stable
+      trigger:
+        on: action
+        action_id: mx_call_gynae
+        note: 'Gynae aware — borderline stable while awaiting team.'
+    # M86 (Braintrust 06 audit): softened from arrested → deteriorating
+    # to match the episode-event softening in ep_hendo_shift. Ruptured
+    # ectopic is genuinely time-critical but a 16-min arrest from
+    # undetection is more aggressive than the clinical course allows.
+    - from: triaged
+      to: deteriorating
+      trigger:
+        on: inaction_by
+        min: 16
+        required_actions: [mx_serum_bhcg, mx_call_gynae]
+        note: |
+          Ruptured ectopic with hypotension and tachycardia — perfusion
+          falling without diagnosis or escalation by 16 min into the
+          shift. Recoverable, but only with iv_fluids + gynae call.
+    - from: stable
+      to: deteriorating
+      trigger:
+        on: inaction_by
+        min: 18
+        required_actions: [mx_iv_fluids]
+        note: 'Persistent hypotension without resuscitation.'
+    - from: deteriorating
+      to: stable
+      trigger:
+        on: action
+        action_id: mx_iv_fluids
+        note: 'Crystalloid resus restores perfusion as gynae mobilise.'
+    - from: stable
+      to: admitted
+      trigger:
+        on: action
+        action_id: mx_call_gynae
+        note: 'Gynae accept and transfer her to theatre / GAU — case closes from ED.'
+
+pearls:
+  - 'Any woman of reproductive age with abdo pain or PV bleeding gets urine βhCG as the FIRST ED investigation (NICE NG126).'
+  - 'Empty uterus on TVUSS with serum βhCG >1500 IU/L raises ectopic strongly (RCOG GTG 21), but TVUSS findings drive the diagnosis — the term "discriminatory zone" has been largely deprecated as a stand-alone criterion in favour of serial hCG + TVUSS correlation.'
+  - "Ectopic patients can look deceptively well right up until they don't — postural BP drop, mild tachycardia, and an interval Hb fall are the early signs."
+  - 'Methotrexate criteria (NICE NG126 tiered by βhCG): <1500 = offer MTX; 1500–5000 = offer choice MTX or surgery; >5000 = surgery preferred. Plus: clinically stable, no rupture, adnexal mass <35 mm, no fetal cardiac activity, willing/able to attend follow-up. Decision by gynae, not ED.'
+  - 'Bimanual pelvic exam is NOT routinely required in ED for suspected ectopic — low yield, theoretical disturbance risk, gynae will repeat.'
+  - 'Anti-D in early-pregnancy events (UK May 2026): the **NICE NG126 update (May 2026)** recommends AGAINST routine anti-D prophylaxis for ectopic or miscarriage at <12 weeks gestation, regardless of management. This supersedes the older 12-week surgical-management threshold. Check current local protocol; document clearly.'
+
+pitfalls:
+  - 'Anchoring on UTI, gastro, or threatened miscarriage and not sending serum βhCG.'
+  - 'Discharging a "well-looking" patient with abdo pain and a positive pregnancy test.'
+  - 'Waiting for βhCG and TVUSS before referring — phone gynae early.'
+  - 'NSAIDs in a bleeding pregnant patient.'
+  - "Forgetting heterotopic pregnancy in IVF or assisted-conception cohorts (intrauterine PLUS ectopic concurrent — βhCG and intrauterine sac don't rule out ectopic)."
+
+sources:
+  - {
+      type: nice,
+      id: 'NG126',
+      ref: 'NICE NG126 — Ectopic pregnancy and miscarriage: diagnosis and initial management (2019, updated June 2025; anti-D update May 2026).',
+      url: 'https://www.nice.org.uk/guidance/ng126',
+    }
+  - {
+      type: rcog,
+      ref: 'RCOG Green-top Guideline 21 — Tubal Ectopic Pregnancy (2016)',
+      url: 'https://www.rcog.org.uk/guidance/browse-all-guidance/green-top-guidelines/diagnosis-and-management-of-ectopic-pregnancy-green-top-guideline-no-21/',
+    }
+  - {
+      type: textbook,
+      ref: 'Wyatt JP, Taylor RG, de Wit K, Hotton EJ. Oxford Handbook of Emergency Medicine, 5e (OUP, 2020).',
+      chapter: '13',
+      page: 'pp.594–598',
+    }
+  - { type: rcem, ref: 'RCEM Best Practice — Bleeding in Early Pregnancy' }
+
+author_notes: |
+  Milestone 5 second case. Different shape from Beth: low-acuity
+  presentation, obstetric, time-critical despite looking well. Gated
+  history items hx_friend_in_resus and hx_pain_started_earlier are
+  unlocked by arc_hendo_dinner — see the arc YAML.

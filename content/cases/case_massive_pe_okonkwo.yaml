@@ -1,0 +1,832 @@
+# Massive (high-risk) pulmonary embolism with haemodynamic instability
+# requiring thrombolysis decision. Ms Okonkwo is 39, day-12 post-
+# laparoscopic hysterectomy, on the COCP (restarted at her day-7
+# post-op visit by a locum GP who didn't see the recent operation
+# note; the discharge LMWH stopped the same day per the discharge
+# letter). She presents in resus with shock-state vitals, syncope on
+# standing, RV-strain ECG, dilated RV on POCUS, and a bedside Wells
+# of 9. The shift is the textbook massive-PE decision:
+# CTPA vs immediate bedside thrombolysis when the patient is too
+# unstable for the scanner.
+#
+# Sources: NICE NG158 (Venous thromboembolic diseases), 2019 ESC
+# Guidelines for the management of acute PE (Konstantinides et al.),
+# PESI / sPESI for mortality stratification, BTS 2018 outpatient
+# PE guideline (low-risk pathway), Oxford Handbook of EM 5e.
+
+schema_version: 1
+id: case_massive_pe_okonkwo
+title: 'Massive PE — post-op syncope and right heart strain'
+chief_complaint: 'Acute dyspnoea and syncope'
+topic_id: pe
+
+vignette: |
+  Resus bay 1. 14:24.
+
+  Ms Adaeze Okonkwo, 39 y/o, brought in by ambulance after collapsing
+  in the supermarket carpark 20 minutes ago. Day 12 post-laparoscopic
+  hysterectomy for fibroids. The witness — her sister — says
+  Ms Okonkwo "went grey and crumpled" walking back to the car. Brief
+  LOC <30 s, no jerks, no tongue bite, came round on the floor.
+
+  Paramedics: "On scene she was sitting up, sweating, breathing fast.
+  HR 124 sinus, BP 84/52 — improved to 92/58 with 250 mL saline
+  bolus. Sats 86% on air, came up to 92% on 15 L NRB. Complaining of
+  left-sided pleuritic chest pain. ECG shows sinus tach with S1Q3T3
+  pattern and TWI in V1-V3."
+
+  As you arrive she is anxious, tripoding on the trolley, RR 32,
+  pulse oximeter still reading 92% on NRB, BP cuff redoing — 86/54.
+  Her sister is at the bedside, on the phone to their mother.
+
+curriculum_tags: [ResC10, CP2]
+slos: [1, 3]
+difficulty_band: ST3
+paeds: false
+
+demographics:
+  age_value: 39
+  age_unit: years
+  sex: female
+  weight_kg: 78
+  pmh:
+    - 'Heavy menstrual bleeding from fibroids — laparoscopic hysterectomy 12 days ago (uncomplicated)'
+    - 'Hypertension (well-controlled on ramipril)'
+    - 'BMI 31'
+  medications:
+    - 'Ramipril 5 mg OD'
+    - 'COCP (microgynon) — restarted at day-7 post-op GP review (5 days ago, locum GP, not aware she had recent surgery)'
+    - 'Enoxaparin 40 mg SC OD for 7 days post-op (stopped at day 7 per discharge letter — discharge thromboprophylaxis duration is the SAQ teaching point)'
+    - 'Paracetamol PRN for post-op'
+  allergies: ['NKDA']
+  social: |
+    Lives with husband and two children. Office worker — sedentary
+    desk job. Non-smoker. Sister on scene. Two children at school,
+    husband at work but called.
+
+triage_category: 1
+initial_state: deteriorating
+bay: resus
+resus_protocol: als_adult
+
+vitals:
+  baseline:
+    hr: 78
+    rr: 14
+    spo2: 98
+    bp_sys: 122
+    bp_dia: 74
+    gcs: 15
+    temp_c: 36.6
+  deteriorating:
+    hr: 124
+    rr: 28
+    spo2: 92
+    on_o2: true
+    bp_sys: 84
+    bp_dia: 52
+    gcs: 15
+    temp_c: 36.7
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
+# ─── History ──────────────────────────────────────────────────────────────
+history:
+  - id: hx_onset
+    source: patient
+    topic: 'Describe what happened — when did you feel breathless?'
+    npc_voice: "She speaks in short bursts, the nasal cannula hissing. 'I just… can't… catch it.'"
+    supports: ['High-risk (massive) bilateral pulmonary embolism — post-operative + COCP risk factors']
+    response: |
+      "Yesterday I had to stop on the stairs to catch my breath, but
+      I thought I was just unfit after surgery. Today my left chest
+      hurt when I breathed in — like a stitch but sharper. Then I
+      stood up at the car and the world went sideways. Next thing my
+      sister was holding my head off the tarmac."
+
+  - id: hx_post_op
+    source: patient
+    topic: 'Post-operative course — mobilisation, leg pain, swelling?'
+    prereq_history_ids: [hx_onset]
+    supports:
+      - 'High-risk (massive) bilateral pulmonary embolism — post-operative + COCP risk factors'
+      - 'Post-operative haemorrhage (concealed)'
+    npc_voice: "She is short of breath after every two words. She still tries to answer in full sentences."
+    branch_choices:
+      - id: compassionate
+        label: "(slow down the room a moment) Talk to me about the last twelve days, in your own time — anything you noticed at all, even if it felt small."
+        npc_voice: "She closes her eyes for a count of three. When she opens them she is more present."
+        rapport_delta: 2
+        response: |
+          "Surgery — twelve days. Keyhole. Three port sites. Home
+          next day. (Breath.) Told to walk every couple of hours.
+          I tried. (Breath.) The first week — I was tired. I
+          stayed on the sofa, Netflix. (Breath.) Right calf — bit
+          achy by day five. I thought — shifted on the couch. (Pause.)
+          Last week — short of breath going up the stairs. I
+          thought — deconditioning. (Pause.) This morning — getting
+          dressed. Couldn't catch it. (Breath.) I should have rung
+          the surgical team. I didn't want to bother them."
+      - id: clinical
+        label: "Surgery date, mobilisation, leg symptoms?"
+        rapport_delta: 0
+        response: |
+          "Surgery 12 days ago. Keyhole. Home next day. Sat on sofa
+          most of week one. Right calf ache from day five. SOB
+          on stairs week two."
+      - id: reassuring_wrong
+        label: "Probably deconditioning + a muscle strain. Let's check things over to be safe."
+        npc_voice: "She nods. She stops talking about the calf. She stops mentioning the stairs."
+        rapport_delta: -2
+        response: |
+          "Right. Yeah. Probably. (Pause.) Yeah. Just a strain."
+          (The day-5 calf ache and the second-week dyspnoea-on-
+          stairs are NOT volunteered. The player anchored on
+          'strain' loses the post-op DVT progression.)
+    response: |
+      "Surgery 12 days ago — keyhole, three port sites. Discharged
+      next day. They said walk every couple of hours. I tried but I
+      was tired so I spent most of week one on the sofa with
+      Netflix. Right calf has been a bit achy — I thought I'd just
+      pulled it shifting on the couch. No obvious swelling I
+      noticed."
+
+  - id: hx_cocp
+    source: gp_letter
+    topic: 'Hormonal contraception — when was the COCP restarted?'
+    prereq_history_ids: [hx_post_op]
+    supports: ['High-risk (massive) bilateral pulmonary embolism — post-operative + COCP risk factors']
+    response: |
+      "GP letter (locum) 5 days ago, one-week post-op review at
+      day 7: 'Patient requests recommencement of combined oral
+      contraception. No contraindications elicited.' She had been
+      off the COCP for the perimenopause work-up that led to the
+      hysterectomy. The locum GP did not have access to the
+      operation note and did not document the recent surgery."
+
+  - id: hx_family
+    source: family
+    topic: 'Family history — thrombosis, sudden death, clotting disorders?'
+    response: |
+      "Our mother had a DVT when she was 50 — they said it was the
+      flight. Our aunt died at 47, they always said 'heart attack'
+      but there was a post-mortem and I never got to see it. No-one
+      ever talked about it. Should I be worried?"
+
+  - id: hx_paramedics
+    source: paramedic
+    topic: 'Full paramedic handover and prehospital ECG findings.'
+    response: |
+      "Dispatch 14:00 for 'collapsed in carpark'. Sister called. On
+      scene 14:08. Pale, sweaty, sitting up. HR 124 sinus on the
+      strip — S1Q3T3 pattern, TWI in V1-V3. BP 84/52, gave 250 mL
+      0.9% saline — came up to 92/58. Sats 86% room air → 92% on
+      15 L NRB. Pleuritic L chest pain. We did not pre-alert any
+      specific team because the differential was open."
+
+  - id: hx_anticoag_screen
+    source: patient
+    topic: 'Any blood thinners, herbal supplements, prior VTE?'
+    prereq_history_ids: [hx_onset]
+    response: |
+      "No blood thinners now. No supplements. I've never had a clot.
+      I had enoxaparin injections for a week after surgery — they
+      said it was the routine. I stopped them at day 7 like the
+      discharge letter said. Have been on the COCP since the GP
+      review on day 7."
+
+# ─── Examination ──────────────────────────────────────────────────────────
+examination:
+  - system: general
+    findings:
+      - {
+          name: 'Appearance',
+          value: 'pale, diaphoretic, anxious; tripoding on trolley',
+          present: true,
+          red_flag: true,
+        }
+      - {
+          name: 'Speech',
+          value: 'speaking in 3-word sentences interrupted by breaths',
+          present: true,
+          red_flag: true,
+        }
+
+  - system: airway
+    findings:
+      - { name: 'Airway', value: 'patent, self-maintaining', present: true }
+
+  - system: breathing
+    findings:
+      - { name: 'Respiratory rate', value: '32/min', red_flag: true }
+      - { name: 'SpO2', value: '92% on 15 L NRB (was 86% on air)', red_flag: true }
+      - {
+          name: 'Chest auscultation',
+          value: 'clear bilaterally; no wheeze, no crackles, no friction rub',
+        }
+      - { name: 'Trachea', value: 'central; no deviation', present: false }
+
+  - system: circulation
+    findings:
+      - { name: 'Heart rate', value: '124/min, sinus, regular' }
+      - { name: 'Blood pressure', value: '86/54 mmHg after 250 mL bolus', red_flag: true }
+      - { name: 'JVP', value: 'raised 5 cm above the sternal angle', red_flag: true }
+      - {
+          name: 'Loud P2',
+          value: 'palpable + audible second heart sound — pulmonary hypertension',
+          present: true,
+          red_flag: true,
+        }
+      - {
+          name: 'Right parasternal heave',
+          value: 'present — RV strain',
+          present: true,
+          red_flag: true,
+        }
+      - { name: 'Capillary refill', value: '4 s peripherally; central <2 s' }
+    manoeuvres:
+      - id: wells_clinical_exam
+        label: 'Targeted DVT screen — calf circumference (both legs, 10 cm below tibial tuberosity)'
+        findings:
+          - {
+              name: 'right calf 4 cm larger than left at 10 cm below tibial tuberosity',
+              value: '38 cm vs 34 cm; warm; non-pitting; mild dorsiflexion discomfort',
+              red_flag: true,
+              supports: ['High-risk (massive) bilateral pulmonary embolism — post-operative + COCP risk factors'],
+            }
+          - {
+              name: 'no visible varicosities or chronic venous changes',
+              present: false,
+              pertinent_negative: true,
+              value: 'argues against chronic venous insufficiency as the source of the swelling',
+            }
+      - id: pre_syncope_test
+        label: 'Sit-to-stand (if she can) — checks haemodynamic reserve in suspected high-risk PE'
+        findings:
+          - {
+              name: 'pre-syncope at 15 seconds standing',
+              value: 'BP drops 86/54 → 70/40, she becomes dusky around the lips, you sit her straight back down',
+              red_flag: true,
+              supports: ['High-risk (massive) bilateral pulmonary embolism — post-operative + COCP risk factors'],
+            }
+          - {
+              name: 'no chest pain on exertion',
+              present: false,
+              pertinent_negative: true,
+              value: 'the dyspnoea is the dominant symptom — argues against an MI overlap',
+            }
+
+  - system: disability
+    findings:
+      - { name: 'GCS', value: '15, anxious, alert' }
+      - { name: 'Glucose', value: '5.8 mmol/L' }
+
+  - system: msk
+    findings:
+      - {
+          name: 'Right calf',
+          value: 'mildly tender; diameter 2 cm greater than left; the asymmetry is real',
+          present: true,
+          red_flag: true,
+        }
+      - { name: 'Left calf', value: 'normal' }
+
+  - system: exposure
+    findings:
+      - { name: 'Temperature', value: '37.4°C (mildly raised)' }
+      - {
+          name: 'Surgical sites',
+          value: 'three healed laparoscopic port-site scars — no infection, no haematoma',
+        }
+
+# ─── Investigations ───────────────────────────────────────────────────────
+investigations:
+  - id: ix_wells
+    name: 'Wells score for PE'
+    category: bedside
+    turnaround_min: 1
+    essential: true
+    result_summary: |
+      **Wells = 9 (PE likely)**:
+      • Clinical signs of DVT (right calf asymmetric tenderness/swelling): +3
+      • PE is the most likely diagnosis: +3
+      • Tachycardia >100 bpm: +1.5
+      • Recent surgery / immobilisation in last 4 weeks: +1.5
+      • No haemoptysis (+0), no previous DVT/PE (+0), no malignancy (+0).
+
+      **NICE NG158 two-tier Wells: >4 = "PE likely" → CTPA without
+      D-dimer.** (The legacy three-tier system also classifies
+      Wells >6 as "high probability".) Either way: D-dimer cannot
+      rule out at this pretest probability — proceed directly to
+      CTPA, or to bedside echo + DVT scan if she is too unstable to
+      leave resus.
+    abnormal: true
+    sources:
+      - { type: nice, id: 'NG158', ref: 'NICE NG158 — Wells score in suspected PE' }
+
+  - id: ix_perc
+    name: 'PERC rule (not applicable — high pretest probability)'
+    category: bedside
+    turnaround_min: 1
+    result_summary: |
+      PERC is for LOW pretest probability patients (Wells ≤4 OR
+      clinical gestalt low) to AVOID D-dimer testing. With Wells 8
+      and shock, PERC does not apply — she's high-risk and needs
+      CTPA (or empirical anticoagulation + immediate echo if too
+      unstable to scan).
+    sources:
+      - {
+          type: textbook,
+          ref: 'Kline JA et al. PERC rule for ruling out PE in low pretest probability. JTH 2008.',
+        }
+
+  - id: ix_d_dimer
+    name: 'D-dimer (NOT indicated here — high pretest probability)'
+    category: blood
+    turnaround_min: 30
+    essential: true
+    result_summary: |
+      D-dimer is NOT indicated when Wells is high. A positive D-dimer
+      does not rule in; a "negative" D-dimer at high pretest
+      probability does not rule out (the test simply isn't fit for
+      purpose at this end of the Bayesian spectrum). For low-
+      probability patients only — and even then, use the age-adjusted
+      cutoff (age × 10 ng/mL for >50 y/o; here she is 39 so the
+      standard 500 ng/mL cutoff applies).
+    sources:
+      - {
+          type: textbook,
+          ref: 'Righini M et al. Age-adjusted D-dimer cutoff levels to rule out pulmonary embolism (ADJUST-PE). JAMA 2014.',
+        }
+
+  - id: ix_ecg
+    name: '12-lead ECG'
+    category: ecg
+    turnaround_min: 2
+    ecg_challenge_id: ecg_005_pe_pattern
+    result_summary: |
+      Sinus tachycardia 124/min. **S1Q3T3** pattern present (S in I,
+      Q in III, inverted T in III). **TWI in V1-V3** — anterior
+      leads suggesting RV strain. No ST elevation, no significant
+      QRS prolongation, no RBBB. These are markers of RV pressure
+      overload — NOT diagnostic of PE on their own, but in this
+      pretest context they support the diagnosis and the
+      haemodynamic severity.
+    abnormal: true
+
+  - id: ix_pocus
+    name: 'Bedside POCUS (RV-focused echo + DVT scan)'
+    category: bedside
+    turnaround_min: 5
+    result_summary: |
+      **RV : LV diameter ratio > 1** in apical 4-chamber view.
+      **McConnell''s sign**: RV free-wall akinesis with apical
+      sparing — relatively PE-specific. Septal flattening / "D-sign"
+      on parasternal short axis. Small pericardial effusion (<5 mm).
+
+      Compression ultrasound of the right popliteal vein: **non-
+      compressible thrombus** — confirms DVT.
+
+      The bedside scan is **a rule-IN**: dilated RV + septal
+      flattening + femoral/popliteal DVT in a shocked patient lets
+      you make the diagnosis at the bedside without leaving resus.
+      It does NOT rule out PE if negative.
+    abnormal: true
+    sources:
+      - {
+          type: esc,
+          ref: 'ESC 2019 PE Guideline — bedside echo in haemodynamically unstable patients',
+        }
+      - {
+          type: textbook,
+          ref: 'McConnell MV et al. Regional right ventricular dysfunction detected by echocardiography in acute PE. Am J Cardiol 1996.',
+        }
+
+  - id: ix_ctpa
+    name: 'CT pulmonary angiogram (CTPA)'
+    category: imaging
+    turnaround_min: 25
+    essential: true
+    result_summary: |
+      **Bilateral saddle PE** with significant clot burden in both
+      main pulmonary arteries extending into lobar branches. RV : LV
+      ratio 1.4 confirming RV strain. No pulmonary infarction yet.
+
+      Decision pivot: in a HAEMODYNAMICALLY UNSTABLE patient,
+      bedside echo + DVT scan is enough to start thrombolysis
+      without the CTPA round-trip if transfer to scanner is unsafe.
+      Always weigh the cost of leaving the resuscitation room.
+    abnormal: true
+    sources:
+      - {
+          type: nice,
+          id: 'NG158',
+          ref: 'NICE NG158 — CTPA as the first-line imaging in suspected PE',
+        }
+      - { type: esc, ref: 'ESC 2019 — CTPA vs bedside echo in unstable patients' }
+
+  - id: ix_bloods_trop_bnp
+    name: 'FBC, U&E, LFTs, coag, troponin, BNP, fibrinogen, lactate'
+    category: blood
+    turnaround_min: 30
+    result_summary: |
+      Hb 124 · Plt 220 · WCC 11.4 · INR 1.0 · APTT 28 ·
+      Na 138 · K 4.2 · Urea 6.8 · Creat 88 (baseline) ·
+      **hs-cTnI 84 ng/L (elevated)** — RV strain biomarker.
+      **NT-proBNP 1840 pg/mL (elevated)** — RV pressure overload.
+      Lactate 3.4 mmol/L — shock-driven.
+      Fibrinogen 3.8 (normal — no DIC).
+
+      Trop + BNP both raised → **ESC 2019 intermediate-HIGH risk**
+      by biomarker + RV-dysfunction criteria (NOT a PESI category —
+      sPESI is binary; the four-tier intermediate-low/intermediate-
+      high/high naming is the ESC stratification). Combined with
+      shock she escalates to **ESC HIGH-RISK (massive) PE** — the
+      reperfusion-mandate category.
+    abnormal: true
+
+  - id: ix_pesi
+    name: 'PESI / sPESI (mortality risk score)'
+    category: bedside
+    turnaround_min: 2
+    result_summary: |
+      **sPESI = 2 (high risk: HR ≥110 +1, SpO2 <90% +1)**. She is
+      39 (no age points), no cancer, no chronic cardiopulmonary
+      disease. With shock + RV strain biomarkers, her ESC class is
+      **HIGH RISK** — 30-day mortality 25-50% without reperfusion.
+    abnormal: true
+    sources:
+      - { type: esc, ref: 'ESC 2019 PE Guideline — sPESI + ESC risk stratification' }
+
+# ─── Differential ─────────────────────────────────────────────────────────
+differential:
+  - diagnosis: 'High-risk (massive) bilateral pulmonary embolism — post-operative + COCP risk factors'
+    likelihood: top
+    discriminator: |
+      Wells 8 + post-op + COCP + DVT signs + S1Q3T3 + TWI V1-V3 +
+      McConnell + DVT on compression US + raised trop + raised BNP
+      + shock. The clinical and radiological picture is internally
+      consistent. Reperfusion therapy is the question.
+
+  - diagnosis: 'Acute coronary syndrome (RV infarction)'
+    likelihood: must_not_miss
+    discriminator: |
+      Inferior STEMI with RV involvement can mimic — but the ECG
+      shows S1Q3T3 + anterior TWI, NOT inferior ST elevation, and
+      the calf findings + recent surgery + COCP context point to
+      PE. Troponin alone cannot distinguish.
+
+  - diagnosis: 'Cardiogenic shock from de-novo cardiomyopathy'
+    likelihood: worth_considering
+    discriminator: |
+      Would not explain pleuritic pain or unilateral calf findings
+      or the post-op context. Bedside echo shows RV strain, not
+      global LV dysfunction.
+
+  - diagnosis: 'Post-operative haemorrhage (concealed)'
+    likelihood: must_not_miss
+    discriminator: |
+      A serious post-op consideration BUT the haemodynamics here are
+      driven by obstructive shock (raised JVP, RV strain, normal Hb
+      124) not blood loss (would expect dropping Hb, abdominal
+      tenderness, low JVP). The two shocks have opposite JVP
+      findings — a cheap discriminator.
+
+  - diagnosis: 'Aortic dissection'
+    likelihood: unlikely
+    discriminator: |
+      Pleuritic pain + raised JVP + RV strain on echo are the wrong
+      pattern. No BP differential, no widened mediastinum on CXR.
+
+# ─── Management ──────────────────────────────────────────────────────────
+working_diagnosis: |
+  High-risk (massive) bilateral PE with obstructive shock, RV strain
+  on echo, and confirmed DVT. Reperfusion is required — systemic
+  thrombolysis (alteplase) is first-line in haemodynamically unstable
+  PE unless contraindicated. Concurrent supportive care: cautious
+  fluid (avoid worsening RV preload), norepinephrine for refractory
+  hypotension, high-flow O2, anaesthetics on standby.
+
+management:
+  - id: mx_a_to_e_monitoring
+    category: monitoring
+    resus_letter: A
+    name: 'ABCDE; large-bore IV ×2; arterial line; full monitoring; anaesthetics on standby'
+    detail: |
+      RSI in massive PE is fraught — induction-related drop in
+      preload can precipitate arrest. If intubation needed, use
+      ketamine + low-dose neuromuscular blocker, maintain venous
+      return, and have noradrenaline running first.
+    must_do: true
+
+  - id: mx_high_flow_o2
+    category: drug
+    resus_letter: B
+    name: 'High-flow O2; target SpO2 ≥94%'
+    detail: |
+      15 L non-rebreather initially; HFNO if available. Hypoxaemia
+      exacerbates pulmonary vasoconstriction → worsens RV afterload.
+    must_do: true
+    drug:
+      amount: '15 L/min via non-rebreather initially'
+      route: other
+      frequency: 'continuous; titrate to SpO2 ≥94%'
+    sources:
+      - { type: bts_sign, ref: 'BTS Guideline for Emergency Oxygen 2017' }
+
+  - id: mx_cautious_fluid
+    category: fluid
+    resus_letter: C
+    name: 'Cautious IV crystalloid 250-500 mL bolus only — avoid over-resus'
+    detail: |
+      Counterintuitive: aggressive fluids worsen RV distension and
+      septal bowing, REDUCING LV preload. Use 250-500 mL crystalloid
+      and reassess; switch to vasopressor early. ESC 2019: avoid
+      volumes >500-1000 mL in RV-strain PE.
+    must_do: true
+    sources:
+      - { type: esc, ref: 'ESC 2019 PE Guideline — restrictive fluid strategy in RV-strain PE' }
+
+  - id: mx_norepinephrine
+    category: drug
+    resus_letter: C
+    name: 'IV noradrenaline infusion — first-line vasopressor'
+    detail: |
+      Maintains coronary perfusion pressure and right-ventricular
+      function. Peripheral pressor while central access is being
+      placed; titrate to MAP ≥65 mmHg. Start at 0.05 mcg/kg/min,
+      titrate.
+    must_do: true
+    drug:
+      amount: '0.05-0.5 mcg/kg/min IV infusion'
+      route: IV
+      frequency: 'titrate to MAP ≥65 mmHg'
+    sources:
+      - {
+          type: esc,
+          ref: 'ESC 2019 PE Guideline — noradrenaline first-line vasopressor in PE shock',
+        }
+
+  - id: mx_systemic_thrombolysis
+    category: drug
+    resus_letter: C
+    name: 'IV alteplase 100 mg over 2 h (systemic thrombolysis)'
+    detail: |
+      The headline intervention in high-risk (massive) PE without
+      absolute contraindication. ESC 2019 / NICE NG158: 100 mg
+      over 2 h is the standard regimen. Half-dose (50 mg) regimens
+      exist but are not preferred in true high-risk PE.
+
+      Recent major surgery (within 3 weeks) is a RELATIVE
+      contraindication — Ms Okonkwo had laparoscopic hysterectomy
+      12 days ago, so this is the conversation: balance shock
+      mortality (25-50% without reperfusion) against bleed risk.
+    must_do: true
+    drug:
+      amount: 'Alteplase 100 mg IV total: 10 mg bolus + 90 mg infusion over 2 h'
+      route: IV
+      frequency: 'single course over 2 h'
+    sources:
+      - {
+          type: nice,
+          id: 'NG158',
+          ref: 'NICE NG158 — thrombolysis in haemodynamically unstable PE',
+        }
+      - { type: esc, ref: 'ESC 2019 PE Guideline — alteplase 100 mg IV over 2 h in high-risk PE' }
+
+  - id: mx_anticoagulation
+    category: drug
+    name: 'IV unfractionated heparin (alongside / after thrombolysis)'
+    detail: |
+      Therapeutic anticoagulation is essential — start immediately if
+      not thrombolysing, or continue infusion after alteplase. UFH
+      preferred over LMWH when thrombolysis being considered (easily
+      reversed, easily titrated). Bolus 80 units/kg then infusion
+      18 units/kg/h, target APTT 1.5-2.5× control.
+    must_do: true
+    drug:
+      amount: 'UFH 80 units/kg IV bolus then 18 units/kg/h infusion'
+      route: IV
+      frequency: 'continuous, APTT-guided'
+    sources:
+      - { type: nice, id: 'NG158', ref: 'NICE NG158 — anticoagulation in confirmed PE' }
+
+  - id: mx_cardio_itu_pert_referral
+    category: referral
+    name: 'Cardiology + ITU + interventional radiology referral (catheter-directed thrombolysis if available)'
+    detail: |
+      If absolute contraindication to systemic thrombolysis, the
+      backup is catheter-directed thrombolysis (lower dose) or
+      surgical embolectomy. Many UK centres have dedicated PE-
+      response teams (PERT). Activate the local pathway.
+    must_do: true
+    sources:
+      - { type: esc, ref: 'ESC 2019 PE Guideline — catheter-directed thrombolysis as alternative' }
+
+  - id: mx_stop_cocp_document
+    category: communication
+    name: 'Stop COCP permanently; document hormone-provoked VTE; family-history screen'
+    detail: |
+      COCP is to be stopped immediately and not restarted. Family
+      history is suggestive of inherited thrombophilia (mother DVT,
+      aunt sudden death) — refer for thrombophilia screen at
+      6 months (acute screens are confounded by the active clot
+      and by anticoagulation).
+    must_do: true
+    sources:
+      - {
+          type: nice,
+          id: 'NG89',
+          ref: 'NICE NG89 — Venous thromboembolism in over 16s: reducing the risk of hospital-acquired DVT or PE; covers post-gynae-surgery prophylaxis (7-28 d depending on risk).',
+        }
+
+  - id: mx_thrombolysis_consent
+    category: communication
+    name: 'Capacity assessment + risk-benefit explanation with patient (and sister at bedside)'
+    detail: |
+      She is alert, GCS 15. Even shocked, she retains capacity for
+      the thrombolysis decision. Explain: 30-day mortality 25-50%
+      without reperfusion; alteplase in PE carries roughly **10%
+      major bleeding** and **~2% intracranial haemorrhage** risk
+      (MAPPET / PEITHO / ESC 2019); recent surgery raises the
+      bleed risk further. Document the conversation, the sister as
+      witness, and the time of consent.
+    must_do: true
+
+  # ─── Examiner traps ──────────────────────────────────────────────────
+  - id: mx_no_d_dimer_first
+    category: monitoring
+    name: 'Send D-dimer to "rule out" before CTPA'
+    detail: |
+      ❌ Wells 8 = high pretest probability. D-dimer cannot rule out
+      PE here — go directly to CTPA (or bedside echo if too unstable
+      to scan).
+    must_not_do: true
+    sources:
+      - { type: nice, id: 'NG158', ref: 'NICE NG158 — D-dimer for low-probability patients only' }
+
+  - id: mx_no_aggressive_fluid
+    category: fluid
+    name: 'IV crystalloid 2 L bolus per shock protocol'
+    detail: |
+      ❌ Massive PE = obstructive shock, NOT hypovolaemic. Aggressive
+      fluid worsens RV distension + septal bowing + reduces LV
+      preload. Cap at 500 mL; vasopressor early.
+    must_not_do: true
+
+  - id: mx_no_intubation_without_pressor
+    category: procedure
+    name: 'RSI without pre-induction vasopressor'
+    detail: |
+      ❌ Induction agents drop preload. In massive PE this can
+      precipitate arrest. If RSI needed: noradrenaline running
+      first, ketamine induction, minimise PEEP, watch for the
+      "intubation arrest" pattern.
+    must_not_do: true
+
+  - id: mx_no_lmwh_when_thrombolysing
+    category: drug
+    name: 'IV/SC enoxaparin therapeutic dose (instead of UFH) when thrombolysis on the table'
+    detail: |
+      ❌ LMWH is harder to reverse and harder to titrate during
+      thrombolysis. UFH is preferred when thrombolysis is under
+      consideration. LMWH is fine for confirmed PE on a low-risk
+      pathway with no thrombolysis.
+    must_not_do: true
+
+  - id: mx_no_restart_cocp_post_discharge
+    category: communication
+    name: 'Restart COCP "once clot resolves" / dismiss the family history'
+    detail: |
+      ❌ Oestrogen-containing contraception is permanently
+      contraindicated after a hormone-provoked unprovoked VTE.
+      Discuss IUD or progestogen-only options at the time of
+      discharge planning; thrombophilia screen at 6 months.
+    must_not_do: true
+
+# ─── Disposition ─────────────────────────────────────────────────────────
+disposition_options:
+  - label: 'Admit ITU post-thrombolysis; UFH infusion; cardiology + haematology joint care'
+    criteria: |
+      High-risk PE post-thrombolysis needs ICU-level monitoring for
+      ~24 h minimum. Watch for bleeding, recovery of RV function,
+      and the inevitable hypoxaemia. Cardiology for echo follow-up;
+      haematology for thrombophilia plan.
+    appropriate: true
+    epilogue: "The thrombolysis runs over two hours. His BP comes up. ITU take him at 16:48; his sister arrives at 17:00."
+  - label: 'Admit CCU on a UFH infusion (no thrombolysis given)'
+    criteria: |
+      Suboptimal — high-risk PE without contraindication should
+      have systemic thrombolysis. Withholding it in this presentation
+      misses the indication.
+    appropriate: false
+    epilogue: "He arrests on the unit at 17:32 with PEA. The reversal-of-shock window has closed."
+  - label: 'Discharge on apixaban with outpatient haematology follow-up'
+    criteria: |
+      Unsafe — high-risk PE with shock is not an outpatient
+      diagnosis. The BTS 2018 outpatient pathway is for sPESI-0
+      low-risk patients; shock excludes it.
+    appropriate: false
+    epilogue: "He re-presents at 22:00 with cardiac arrest in the ambulance bay."
+
+# ─── State machine ──────────────────────────────────────────────────────
+state_machine:
+  states: [deteriorating, stable, arrested, admitted]
+  transitions:
+    - from: deteriorating
+      to: stable
+      trigger:
+        on: action
+        action_id: mx_systemic_thrombolysis
+        note: 'Alteplase initiated; RV function recovers in the hours after; the haemodynamic crisis abates.'
+    - from: deteriorating
+      to: arrested
+      trigger:
+        on: inaction_by
+        min: 15
+        required_actions: [mx_norepinephrine, mx_systemic_thrombolysis, mx_anticoagulation]
+        note: 'Without vasopressor + thrombolysis + anticoagulation by T+15, RV failure progresses to cardiac arrest — PEA pattern.'
+    - from: stable
+      to: admitted
+      trigger:
+        on: action
+        action_id: mx_cardio_itu_pert_referral
+        note: 'Cardiology + ITU accept; transferred from ED to a monitored bed.'
+
+# ─── Pearls + pitfalls ──────────────────────────────────────────────────
+pearls:
+  - 'NICE NG158 uses the two-tier Wells: >4 = "PE likely" → CTPA without D-dimer. (Legacy three-tier: >6 = "high probability".) Either way: at high pretest probability the D-dimer cannot rule out.'
+  - 'PERC rule: 8 criteria for excluding PE in low-probability + clinical-gestalt-low patients. ALL must be negative to "perc out". Not applicable at high pretest probability.'
+  - 'Age-adjusted D-dimer (ADJUST-PE, JAMA 2014): use age × 10 ng/mL as the cutoff for patients >50 y/o — improves specificity in elderly without compromising NPV.'
+  - 'High-risk (massive) PE = haemodynamic instability (sustained hypotension, shock, syncope, or arrest). Mortality 25-50% at 30 days without reperfusion.'
+  - 'Intermediate-high risk PE = RV dysfunction (echo / CT) + raised cardiac biomarkers (trop / BNP) — admission, monitoring, consider rescue thrombolysis if deteriorating.'
+  - 'Massive PE = obstructive shock. AVOID large-volume fluid (>500-1000 mL) — worsens RV distension. Vasopressor (noradrenaline) before / instead of more fluid.'
+  - 'RSI in massive PE is high-risk: pre-induction noradrenaline, ketamine, minimise PEEP. Intubation-related arrest is a recognised complication.'
+  - 'COCP-associated VTE is a permanent contraindication to oestrogen-containing contraception (and HRT). Discuss alternatives at discharge.'
+
+pitfalls:
+  - "Sending a D-dimer at high pretest probability — wastes 30 min and doesn't change management."
+  - 'Aggressive fluid resuscitation in obstructive shock from massive PE.'
+  - 'Intubating without a vasopressor running — "intubation arrest" pattern.'
+  - 'Choosing LMWH over UFH when thrombolysis is on the table.'
+  - 'Forgetting to stop the COCP permanently (and document the conversation).'
+  - 'Missing the family-history thrombophilia clue.'
+
+sources:
+  - {
+      type: nice,
+      id: 'NG158',
+      ref: 'NICE NG158 — Venous thromboembolic diseases: diagnosis, management and thrombophilia testing',
+    }
+  - {
+      type: esc,
+      ref: 'Konstantinides SV et al. 2019 ESC Guidelines for the diagnosis and management of acute pulmonary embolism. Eur Heart J 2019.',
+    }
+  - {
+      type: textbook,
+      ref: 'Righini M et al. Age-adjusted D-dimer cutoff levels to rule out pulmonary embolism (ADJUST-PE). JAMA 2014.',
+    }
+  - {
+      type: textbook,
+      ref: 'Kline JA et al. PERC rule for ruling out PE in low pretest probability. Journal of Thrombosis and Haemostasis 2008.',
+    }
+  - {
+      type: textbook,
+      ref: 'McConnell MV et al. Regional right ventricular dysfunction detected by echocardiography in acute PE. Am J Cardiol 1996.',
+    }
+  - {
+      type: bts_sign,
+      ref: 'BTS 2018 Guideline for the initial outpatient management of pulmonary embolism',
+    }
+  - {
+      type: rcog,
+      ref: 'NICE NG89 — Venous thromboembolism in over 16s: reducing the risk of hospital-acquired VTE (covers post-gynae-surgery prophylaxis). RCOG Green-top 37b separately covers thromboprophylaxis in pregnancy and the puerperium.',
+    }
+  - {
+      type: textbook,
+      ref: 'Oxford Handbook of Emergency Medicine 5e — Ch 4 Cardiovascular emergencies',
+    }
+
+author_notes: |
+  Designed as the SAQ-classic shock-state high-risk PE with a clean
+  thrombolysis decision pivot. Demographics chosen to surface the
+  COCP + post-op + family-history risk-factor stack that trainees
+  must learn to triangulate.
+
+  The locum-GP COCP detail is deliberately plausible and clinically
+  rich — flags the need for record-linking + medication
+  reconciliation in post-op patients.
+
+  Pairs naturally with case_aortic_dissection_okafor in a future
+  "chest pain + shock differential" double-bill: same presenting
+  symptoms (chest pain + shock + raised troponin), opposite
+  management (thrombolysis vs aortic-flap control).
+
+  Inspiration: TheCase.Report S3E1 — VTE | PE in Pregnancy and
+  COVID-19 | VTE Prophylaxis. Player-facing citations remain NICE
+  NG158 + ESC 2019 + ADJUST-PE + PERC + McConnell + BTS 2018.

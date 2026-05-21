@@ -1,0 +1,20 @@
+{
+  "promptTokenCount": 17650,
+  "candidatesTokenCount": 635,
+  "totalTokenCount": 27067,
+  "cachedContentTokenCount": 16037,
+  "promptTokensDetails": [
+    {
+      "modality": "TEXT",
+      "tokenCount": 17650
+    }
+  ],
+  "cacheTokensDetails": [
+    {
+      "modality": "TEXT",
+      "tokenCount": 16037
+    }
+  ],
+  "thoughtsTokenCount": 8782,
+  "serviceTier": "standard"
+}

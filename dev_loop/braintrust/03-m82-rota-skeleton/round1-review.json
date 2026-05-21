@@ -1,0 +1,41 @@
+{
+  "verdict": "request_changes",
+  "findings": [
+    {
+      "severity": "high",
+      "title": "Migration drops out-of-order completions from e-portfolio log",
+      "file": "src/state/shiftRota.ts",
+      "body": "In `migrateRotaFromCompletedCases`, the loop `break`s at the first incomplete shift. This means any fully completed shifts *after* that index are not added to `completedShifts`. Since `completedShifts` is the append-only log for the M83 e-portfolio, players will permanently lose their e-portfolio records for those out-of-order shifts (e.g., a player who completed the hen-do shift but not the entry shift).",
+      "recommendation": "Remove the `break`. Continue iterating through `rotaOrder` to populate `completedShifts` for all completed shifts, but only update `currentShiftIndex` if no incomplete shift has been encountered yet."
+    },
+    {
+      "severity": "medium",
+      "title": "Silent failure masks scoring errors",
+      "file": "src/App.tsx",
+      "body": "The `try/catch` in `exitShift` swallows all errors with the comment `// never block menu return on a rota-write failure`. However, this also catches errors from `scoreEpisode(k.getState())`. If scoring fails due to malformed state, the player is returned to the menu without the rota advancing and with no error logged, making it impossible to debug why their shift didn't count.",
+      "recommendation": "Add `console.error(e)` inside the catch block so scoring and write failures are at least visible in the console."
+    },
+    {
+      "severity": "medium",
+      "title": "MenuView prop removal likely breaks tests",
+      "file": "src/App.tsx",
+      "body": "`onShowPractice` was removed from the `MenuView` component signature, but there are no corresponding updates to test files in the diff. If `MenuView` is mounted in any unit tests, this will cause a TypeScript compilation failure.",
+      "recommendation": "Search for and remove `onShowPractice` from any `MenuView` instantiations in the test suite."
+    },
+    {
+      "severity": "low",
+      "title": "ROTA_ORDER inline duplication risks drift",
+      "file": "src/App.tsx",
+      "body": "The `focusCaseIds` in `ROTA_ORDER` duplicate the canonical `focus_cases` from the episode YAMLs. If a YAML is updated but `ROTA_ORDER` is not, the migration logic will behave incorrectly.",
+      "recommendation": "Add a unit test that parses all 18 episode YAMLs and asserts that the `focusCaseIds` in `ROTA_ORDER` exactly match the YAML definitions."
+    },
+    {
+      "severity": "low",
+      "title": "Missing loadRota edge case tests",
+      "file": "tests/shiftRota.test.ts",
+      "body": "The test suite does not cover `loadRota`'s defensive parsing. There are no tests for loading malformed JSON, loading state where `v !== 1`, or verifying that `isCompletedShift` correctly filters out invalid entries in the `completedShifts` array.",
+      "recommendation": "Add tests for these `loadRota` failure modes to ensure it safely falls back to `null` or filters bad data."
+    }
+  ],
+  "overall_take": "The structural shift to a linear rota is well-executed and the replay guards are solid, but the migration logic will cause data loss for the upcoming e-portfolio by dropping out-of-order completions."
+}

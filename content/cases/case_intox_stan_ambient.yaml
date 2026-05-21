@@ -1,0 +1,493 @@
+# MILESTONE 8 — board-pressure case. Reframed M88 as High Intensity
+# User (HIU) per RCEM Best Practice guidance — supersedes the older
+# "frequent flyer" framing which is pejorative and culturally
+# inappropriate. The repeated presentation pattern IS the teaching
+# point; HIU MDT case management is a recurring SAQ theme.
+#
+# Stan is a 58y/o high intensity user brought in by paramedics,
+# smelling of alcohol, GCS 13. The temptation is to assume "the
+# usual" and leave him in a side room. The actual diagnoses:
+# hypoglycaemia (BM 2.4) AND a small forehead laceration with
+# periorbital bruising from a fall — NICE NG232 CT-head territory if
+# anticoagulated or any of the indications. The HIU framing reframes
+# the cognitive trap: this isn't a low-priority drunk; this is a
+# named patient with complex psychosocial need whom the system has
+# repeatedly failed to escalate.
+#
+# Sources: NICE NG232 (head injury), TREND-UK hypoglycaemia, RCEM
+# Best Practice — Alcohol Withdrawal, RCEM HIU guidance, Oxford
+# Handbook of EM 5e Ch 14.
+
+schema_version: 1
+id: case_intox_stan_ambient
+title: 'High intensity user — intoxication + occult head injury'
+chief_complaint: '"Drunk again, the usual" — paramedics'
+topic_id: alcohol_withdrawal
+
+vignette: |
+  Akin catches you on the way past the desk. "Side room in minors.
+  Stan. Paramedics signed him over five minutes ago — 'drunk again,
+  the usual,' their words. I didn't write that on the card." She
+  doesn't editorialise. She leaves the file on the trolley. McGrath
+  is still in the coffee queue. You're it.
+
+  Side room in minors. 19:18.
+
+  Stan Williams, 58 y/o, brought in by paramedics from outside a city-
+  centre pub. Smells strongly of alcohol. GCS 13 — opens eyes to voice,
+  confused speech, obeys commands. Paramedics: "Stan again. Found him
+  on the pavement. Said he'd had a few. Said his head hurt but you
+  know what he's like." A small graze sits above his left eyebrow.
+
+curriculum_tags: [GC1, MHC1, NeuP1, TP1]
+slos: [1, 7]
+difficulty_band: ST3
+paeds: false
+
+demographics:
+  age_value: 58
+  age_unit: years
+  sex: male
+  weight_kg: 78
+  pmh: ['alcohol-use disorder', 'previous head injury 2023', 'no formal diagnosis of dementia']
+  medications: ['no regular prescribed meds documented']
+  allergies: ['NKDA']
+  social: |
+    Rough-sleeping. Frequent ED attendances for intoxication. No
+    next-of-kin documented. Triage nurse recognises him.
+
+triage_category: 3
+initial_state: stable
+bay: minors
+
+vitals:
+  baseline:
+    hr: 88
+    rr: 14
+    spo2: 97
+    bp_sys: 130
+    bp_dia: 80
+    gcs: 15
+    temp_c: 36.6
+    bm: 4.8
+  deteriorating:
+    hr: 102
+    rr: 12
+    spo2: 92
+    bp_sys: 110
+    bp_dia: 68
+    gcs: 11
+    temp_c: 36.4
+    bm: 2.4
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
+history:
+  - id: hx_paramedics
+    source: paramedic
+    topic: 'Anything on the way in?'
+    supports:
+      - 'Hypoglycaemia (BM 2.4) on a background of intoxication'
+      - 'Acute intracranial haemorrhage from witnessed fall'
+    branch_choices:
+      - id: probing
+        label: "Take me through it slowly. 'A few' meaning what — and the head — was it witnessed?"
+        npc_voice: "The paramedic looks up from his tablet. He didn't expect to be asked."
+        rapport_delta: 1
+        response: |
+          "Right — sorry, doc. So: 'a few' is what he told us, but
+          the publican said five pints minimum before he got kicked
+          out at half-six. Found him seated on the pavement outside
+          the Crown. Eye-witness — a courier, sober, said he'd
+          stand up to it — said Stan stood up, took two steps, and
+          went down. Hit the back of his head on the kerb. He
+          couldn't remember after — but he never can. No seizure
+          seen. Sats 96% room air. We didn't check a BM. Sorry, doc.
+          Should we have? He didn't smell like a hypo to us."
+      - id: routine
+        label: "Standard handover please."
+        rapport_delta: 0
+        response: |
+          "Found seated on the pavement outside the Crown. Eye-witness
+          said he stood up, took two steps, and went down. Hit his
+          head on the kerb. He couldn't remember after — but he never
+          can. No seizure seen. Sats 96% room air, BM not checked."
+      - id: dismissive
+        label: "Stan again. The usual, then. Let me know if anything new came up — otherwise I've got it."
+        npc_voice: "The paramedic nods. He doesn't add the witnessed-fall detail. Or the missing BM."
+        rapport_delta: -2
+        response: |
+          "Yeah. The usual. He's all yours, doc."
+    response: |
+      "Found seated on the pavement outside the Crown. Eye-witness said
+      he stood up, took two steps, and went down. Hit his head on the
+      kerb. He couldn't remember after — but he never can. No seizure
+      seen. Sats 96% room air, BM not checked."
+
+  - id: hx_history
+    source: records
+    topic: 'Pull the records.'
+    prereq_history_ids: [hx_paramedics]
+    response: |
+      "Last attendance 9 days ago: intoxication, discharged. 3 months
+      ago: blood test showed normal LFTs. No anticoagulant or DOAC
+      prescribed."
+
+  - id: hx_stan_speech
+    source: patient
+    topic: 'Ask Stan directly.'
+    prereq_history_ids: [hx_paramedics]
+    npc_voice: "Stan blinks slowly. Pupils tight as pinpricks."
+    branch_choices:
+      - id: compassionate
+        label: "Stan. I'm Dr [you]. I'm not here to tell you off. How are you actually doing, between the drinks?"
+        npc_voice: "Stan looks at you. Properly. His eyes water but he doesn't break the gaze."
+        rapport_delta: 2
+        response: |
+          "Not… not well, doc. It's been a hard year. Two years. I can't
+          sleep without it now. Lost my Maggie. Place is empty. I just
+          don't want to be there alone. (Pause.) Don't tell my daughter
+          I said that."
+      - id: clinical
+        label: "Just need a quick history — last drink, regular drinks, any falls, any seizures?"
+        rapport_delta: 0
+        response: |
+          "Yeah. Last drink hour ago, maybe two. Usual. Couple bottles
+          of wine plus what was in the cupboard. No fits. Falls,
+          sometimes. Yeah."
+      - id: dismissive
+        label: "Stan, this is the third time this month. We can't keep doing this."
+        npc_voice: "Stan closes his eyes. Turns his face away."
+        rapport_delta: -2
+        response: |
+          "Sorry, doc. I'll go in a bit. Just let me sleep."
+    response: |
+      "Hello. Yeah. Just had a couple. No, three. My… my head hurts.
+      Sleepy. Don't take me to the ward, I just need to sleep it off."
+      (Mumbling, dropping off mid-sentence.)
+
+  - id: hx_stan_maggies_birthday
+    source: patient
+    topic: '(later, sitting beside the trolley) Anything coming up this week, Stan?'
+    prereq_history_ids: [hx_stan_speech]
+    min_rapport: 2
+    npc_voice: "Stan goes very still. He doesn't answer for a long time. Then he speaks without looking up."
+    supports: ['Pure alcohol intoxication']
+    response: |
+      "Friday's her birthday. Maggie's. (Pause.) Sixty-two she'd
+      have been. I bought a card. It's on the side. I keep
+      thinking I'll write it. (Pause.) I'm not going to be on my
+      own Friday, am I, doc? I don't think I should be on my own
+      on Friday."
+
+  - id: hx_fall_mechanism
+    source: paramedic
+    topic: 'Was the fall witnessed?'
+    prereq_history_ids: [hx_paramedics]
+    supports: ['Acute intracranial haemorrhage from witnessed fall']
+    response: |
+      "Yes — eye-witness says he just dropped. No warning. No fitting.
+      Could've been a syncope, could've been the drink. We weren't
+      there for the fall itself."
+
+  # ─── Hidden (arc-unlocked) — overnight safety-net arc only ─────────────
+  - id: hx_stan_prior_mh
+    source: records
+    topic: 'Deeper records pull — historical mental health flags.'
+    npc_voice: "The clerk's note: 'flagged for liaison psych in 2024, no engagement after first visit.'"
+    response: |
+      "Wife died 2023. Three ED attendances in the six months following:
+      'low mood + intoxication' (Mar 2024), 'falls + alcohol' (Jul 2024),
+      'self-neglect, lives alone' (Oct 2024). Each discharged with
+      'signposted to community alcohol team' — no liaison-psych
+      contact documented. Two missed GP follow-up letters. He has not
+      been seen by mental health services formally."
+
+examination:
+  - system: general
+    findings:
+      - { name: 'GCS', value: '13 (E3 V4 M6)' }
+      - { name: 'smells of alcohol', present: true }
+      - { name: 'thin, unkempt', present: true }
+  - system: airway
+    findings:
+      - { name: 'patent, swallowing own secretions', present: true }
+  - system: breathing
+    findings:
+      - { name: 'RR', value: '14/min' }
+      - { name: 'SpO2', value: '96% on air' }
+  - system: circulation
+    findings:
+      - { name: 'HR', value: '78/min, sinus' }
+      - { name: 'BP', value: '128/76 mmHg' }
+      - { name: 'capillary refill', value: '<2 s' }
+  - system: disability
+    findings:
+      - { name: 'pupils', value: 'equal and reactive' }
+      - { name: 'glucose', value: 'NOT YET CHECKED — paramedics did not document a BM' }
+      - { name: 'lateralising signs', present: false, pertinent_negative: true }
+  - system: exposure
+    findings:
+      - { name: 'forehead laceration', value: '~2 cm, left eyebrow, mild oozing' }
+      - { name: 'left periorbital bruising', present: true }
+      - { name: 'temperature', value: '36.4°C' }
+    manoeuvres:
+      - id: log_roll
+        label: 'Log-roll (with assistance, c-spine controlled)'
+        findings:
+          - {
+              name: 'occipital scalp laceration with boggy haematoma',
+              value: '~4 cm, posterior parietal, palpable bone movement under it',
+              red_flag: true,
+              supports: ['Acute intracranial haemorrhage from witnessed fall'],
+            }
+          - { name: 'no thoraco-lumbar step or tenderness', present: false, pertinent_negative: true }
+          - { name: 'soiling of incontinence pad', present: true }
+
+investigations:
+  - id: ix_bm
+    name: 'Capillary blood glucose (BM)'
+    category: bedside
+    turnaround_min: 1
+    essential: true
+    result_summary: |
+      **2.4 mmol/L** — hypoglycaemia. (TREND-UK threshold for "severe"
+      hypoglycaemia is <3.0 mmol/L; treat immediately.)
+    abnormal: true
+    sources:
+      - { type: trend_uk, ref: 'TREND-UK hypoglycaemia guidance — threshold and treatment' }
+
+  - id: ix_vbg
+    name: 'Venous blood gas + lactate + ethanol'
+    category: gas
+    turnaround_min: 5
+    essential: true
+    result_summary: |
+      pH 7.36 · lactate 2.0 · ethanol 215 mg/dL (significantly elevated)
+      · K+ 3.5 · Na 138. No acidosis or AKI.
+    abnormal: true
+
+  - id: ix_ct_head
+    name: 'CT head'
+    category: imaging
+    turnaround_min: 35
+    essential: true
+    result_summary: |
+      No intracranial haemorrhage, no skull fracture. Periorbital soft
+      tissue swelling correlates with the laceration. (Indication per
+      NICE NG232: GCS <13 within 1 h of injury → CT within 1 h.)
+    sources:
+      - {
+          type: nice,
+          id: 'NG232',
+          ref: 'NICE NG232 head injury, CT indications — GCS <13 within 1 h',
+        }
+
+  - id: ix_ecg
+    name: '12-lead ECG'
+    category: ecg
+    turnaround_min: 2
+    result_summary: 'Sinus rhythm 78/min. No ischaemic change. QTc 420 ms.'
+
+differential:
+  - diagnosis: 'Hypoglycaemia (BM 2.4) on a background of intoxication'
+    likelihood: top
+    discriminator: 'BM result alone is diagnostic; explains drop in conscious level beyond what alcohol alone would predict.'
+  - diagnosis: 'Acute intracranial haemorrhage from witnessed fall'
+    likelihood: must_not_miss
+    discriminator: 'Periorbital bruising + witnessed fall + GCS 13 → NICE NG232 CT head required.'
+  - diagnosis: 'Wernicke encephalopathy'
+    likelihood: worth_considering
+    discriminator: 'Chronic alcohol misuse + confusion → give IV Pabrinex; gait and eye signs would help (cannot test reliably here).'
+  - diagnosis: 'Pure alcohol intoxication'
+    likelihood: unlikely
+    discriminator: 'Convenient but excludes the BM 2.4 and the head injury indication. Anchoring trap.'
+
+working_diagnosis: 'Hypoglycaemia + head injury requiring CT, on a background of acute alcohol intoxication'
+
+management:
+  - id: mx_check_bm
+    category: monitoring
+    name: 'Check capillary blood glucose'
+    detail: |
+      Anyone with a reduced level of consciousness gets a BM — it is the
+      cheapest, fastest investigation in the department.
+    must_do: true
+    sources:
+      - { type: rcem, ref: 'RCEM Best Practice — confused patient in the ED' }
+
+  - id: mx_iv_dextrose
+    category: drug
+    name: 'IV 10% dextrose 200 mL stat'
+    detail: |
+      Severe hypoglycaemia in adults: 100 mL of 20% glucose (or 200 mL of
+      10%) IV over 10–15 min, then recheck. Avoid 50% glucose (vein
+      damage).
+    must_do: true
+    drug:
+      amount: '200 mL of 10% dextrose'
+      route: IV
+      frequency: 'stat; recheck BM at 10 min'
+    sources:
+      - { type: trend_uk, ref: 'TREND-UK hypoglycaemia — severe adult treatment' }
+
+  - id: mx_pabrinex
+    category: drug
+    name: 'IV Pabrinex — empirical treatment for suspected Wernicke'
+    detail: |
+      Life-threatening hypoglycaemia is treated FIRST — do not delay
+      IV glucose to give thiamine. Pabrinex follows promptly
+      (concurrent or immediately after) in malnourished /
+      chronic-alcohol-misuse adults.
+
+      **NICE CG100 dosing** distinguishes two contexts:
+      - **Suspected / established Wernicke** (confusion + chronic
+        alcohol misuse — Stan qualifies; gait/eye signs cannot be
+        reliably tested in his agitated state): **Pabrinex 2 pairs
+        IV TDS for 3 days**, then 1 pair OD until oral thiamine
+        tolerated.
+      - **Prophylaxis only** in at-risk drinker without Wernicke
+        features: 1 pair IV OD for 3–5 days.
+
+      Stan's confusion + chronic misuse meets the treatment-dose
+      indication.
+    must_do: true
+    drug:
+      amount: 'Pabrinex 2 pairs IV (treatment-dose for suspected Wernicke)'
+      route: IV
+      frequency: 'TDS for 3 days, then 1 pair OD until oral thiamine tolerated'
+    sources:
+      - {
+          type: nice,
+          id: 'CG100',
+          ref: 'NICE CG100 — alcohol-use disorders, physical complications: Pabrinex 2 pairs IV TDS for suspected/established Wernicke (1 pair OD for prophylaxis only).',
+        }
+      - {
+          type: textbook,
+          ref: 'SPS (Specialist Pharmacy Service) — Using and prescribing thiamine in alcohol dependence (current UK guidance).',
+        }
+
+  - id: mx_ct_head
+    category: monitoring
+    name: 'Request urgent CT head'
+    detail: 'NICE NG232 indication — GCS <13 within 1 h of injury.'
+    must_do: true
+
+  - id: mx_position_observe
+    category: monitoring
+    name: 'Recovery position; continuous NEWS2; reassess in 10 min'
+    must_do: true
+
+  - id: mx_no_assume_alcohol
+    category: observation
+    name: 'Leave Stan in the side room to "sleep it off"'
+    detail: |
+      ❌ Anchoring trap. NICE NG232 explicitly warns against assuming
+      reduced consciousness in an intoxicated patient is due to alcohol
+      alone. BM and CT head are both indicated here.
+    must_not_do: true
+    sources:
+      - { type: nice, id: 'NG232', ref: 'NICE NG232 — do not assume alcohol explains reduced GCS' }
+
+  - id: mx_no_oral_glucose
+    category: drug
+    name: 'Give oral glucose gel'
+    detail: |
+      ❌ Wrong route. GCS 13 with confused speech — aspiration risk; IV
+      route is required for severe adult hypoglycaemia per TREND-UK.
+    must_not_do: true
+
+disposition_options:
+  - label: 'Admit to acute medical unit with hourly BMs and observation'
+    criteria: 'Appropriate — BM correction needs follow-on monitoring; head injury workup may dictate admission.'
+    appropriate: true
+    epilogue: "Stan eats toast at 06:00. Maggie's birthday is in 32 hours. The liaison psych team see him at 09:30."
+  - label: 'Discharge to safer-sleeping team once CT is clear and BM stable'
+    criteria: 'Possible if all reassuring after observation; coordinate with safer-sleeping outreach.'
+    appropriate: true
+    epilogue: "The safer-sleeping team take him from the front entrance at 11:42. He has the card for Maggie in his coat pocket."
+  - label: 'Discharge home now, advise to come back if worse'
+    criteria: 'Inappropriate — confused, intoxicated, head injured, no fixed address.'
+    appropriate: false
+    epilogue: "Stan is found on the same pavement at 04:18. The forehead lac has reopened. The publican of the Crown calls for an ambulance again."
+
+state_machine:
+  states: [stable, deteriorating, arrested, admitted, discharged]
+  transitions:
+    - from: stable
+      to: deteriorating
+      trigger:
+        on: inaction_by
+        min: 10
+        required_actions: [mx_check_bm]
+        note: |
+          Hypoglycaemia worsens — drowsy, becoming unresponsive. NEWS2
+          rises. Needs immediate IV dextrose.
+    - from: deteriorating
+      to: stable
+      trigger: { on: action, action_id: mx_iv_dextrose, note: 'BM corrects post-dextrose.' }
+    - from: deteriorating
+      to: arrested
+      trigger:
+        on: inaction_by
+        min: 15
+        required_actions: [mx_iv_dextrose]
+        note: 'Severe hypoglycaemic seizure → arrest if untreated.'
+    - from: stable
+      to: admitted
+      trigger:
+        on: action
+        action_id: mx_ct_head
+        note: 'CT head excluded acute bleed; admit AMU on a sliding-scale glucose + Pabrinex + alcohol-team referral.'
+
+pearls:
+  - 'Reduced GCS in an intoxicated patient is not "just the drink" — check a BM and consider CT head per NICE NG232.'
+  - 'Severe hypoglycaemia in an adult: 100 mL 20% glucose (or 200 mL 10%) IV; avoid 50%.'
+  - 'In life-threatening hypo, glucose first — Pabrinex follows promptly (concurrent or immediately after) in malnourished / chronic-alcohol-misuse adults to mitigate Wernicke risk from the carbohydrate load (NICE CG100).'
+  - 'A high intensity user is often the highest-risk patient on the board — alarm fatigue is the trap. RCEM Best Practice on HIU pathways emphasises MDT case management and named-patient escalation, not triage deprioritisation.'
+
+pitfalls:
+  - 'Anchoring on alcohol and skipping the BM.'
+  - 'Oral glucose in a confused patient (aspiration risk).'
+  - 'Missing the head injury indication for CT (NICE NG232).'
+  - 'Leaving the patient in a side room without continuous monitoring.'
+
+sources:
+  - {
+      type: nice,
+      id: 'NG232',
+      ref: 'Head injury: assessment and early management (NICE 2023)',
+      url: 'https://www.nice.org.uk/guidance/ng232',
+    }
+  - {
+      type: nice,
+      id: 'CG100',
+      ref: 'Alcohol-use disorders: physical complications (NICE 2010, updated)',
+    }
+  - { type: trend_uk, ref: 'TREND-UK — Management of Hypoglycaemia in Adults with Diabetes' }
+  - { type: rcem, ref: 'RCEM Best Practice — Confused / Intoxicated Patient in the ED' }
+  - {
+      type: textbook,
+      ref: 'Wyatt JP et al. Oxford Handbook of Emergency Medicine 5e (OUP, 2020).',
+      chapter: '14',
+      page: 'pp.620–625',
+    }
+
+author_notes: |
+  M88: Stan is the build's named high intensity user (HIU). He is the
+  focus case on the entry shift (ep_minors_day_entry) and the focus
+  case on the overnight safety-net shift; the hen-do ambient role
+  was dropped in the M88 recurrence audit. The teaching point is
+  HIU pattern recognition + the cognitive trap of assuming "drunk
+  again, the usual" — RCEM Best Practice on HIU pathways frames
+  these patients as MDT case-management problems, NOT triage
+  deprioritisations. The mechanic across his appearances is the
+  same: the player must check a BM, look for occult injury, and
+  request CT head per NICE NG232 indications rather than assume
+  alcohol. Stan deteriorates at T+10 from shift start if BM not
+  checked; arrests at T+15 if dextrose not given.

@@ -1,0 +1,615 @@
+# Authored from a scripts/new-case.ts skeleton (dka_adult topic).
+#
+# Marcus is a 19y/o student presenting with new-onset DKA — vomiting,
+# weight loss, polyuria, breathing fast, ketones on the urine dip. First
+# presentation of T1DM. JBDS-IP 2023 dictates the timing of every
+# intervention: insulin within 1 hour, K+ replacement once K+ <5.5, fluid
+# regimen by weight band, cerebral oedema watch in younger patients.
+#
+# Sources: JBDS-IP Adult DKA 2023, NICE NG17, RCEM Best Practice — DKA,
+# Oxford Handbook of EM 5e Ch 3.
+
+schema_version: 1
+id: case_dka_marcus
+title: 'New-onset DKA — resus'
+chief_complaint: 'Vomiting and breathing fast'
+topic_id: dka_adult
+
+vignette: |
+  Resus bay 3. 03:42.
+
+  Marcus Lin, 19 y/o engineering student, brought in by his housemate
+  Joe. Three days of vomiting and feeling "drained". Lost about 4 kg
+  over the past three weeks. Last night he started breathing fast and
+  smelling "sweet" — Joe couldn't wake him at 03:00 and dialled 999.
+
+  GCS 13, breathing deeply and rapidly (Kussmaul). Paramedics: "BM
+  high — meter reads HI. Hands shaky. Sats 99 on air."
+
+  No previous diabetes documented. Joe says Marcus has been drinking
+  litres of squash and getting up to wee every couple of hours.
+
+bay: resus
+curriculum_tags: [EnP2, EnC2, NepP1, GP9]
+slos: [1, 3]
+difficulty_band: CT2
+paeds: false
+
+demographics:
+  age_value: 19
+  age_unit: years
+  sex: male
+  weight_kg: 68
+  pmh:
+    - 'No prior medical history; recent URTI 2 weeks ago.'
+  medications: []
+  allergies: ['NKDA']
+  social: |
+    Second-year engineering student. Lives with three housemates. Drinks
+    socially. Mother has Hashimoto thyroiditis (autoimmune family
+    history). Joe is in the relatives' room.
+
+triage_category: 2
+initial_state: deteriorating
+
+vitals:
+  baseline:
+    hr: 76
+    rr: 14
+    spo2: 99
+    bp_sys: 124
+    bp_dia: 76
+    gcs: 15
+    temp_c: 36.6
+    bm: 5.4
+  deteriorating:
+    hr: 124
+    rr: 32
+    spo2: 99
+    bp_sys: 96
+    bp_dia: 58
+    gcs: 13
+    temp_c: 36.6
+    bm: 34.0
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
+history:
+  - id: hx_paramedics
+    source: paramedic
+    topic: 'Paramedic handover.'
+    response: |
+      "Joe — the housemate — couldn't wake him at 03:00. GCS was 11 at
+      home, opened eyes en route to 13. Glucose meter reads HI; we
+      didn't have ketones strips on the truck. He's drinking water
+      himself. RR was 32, sats 99 on air. We started a litre of saline
+      en route, 200 mL in. No insulin given."
+
+  - id: hx_symptoms
+    source: patient
+    topic: 'Marcus, when did you start feeling unwell?'
+    supports: ['Severe diabetic ketoacidosis — first presentation of type 1 diabetes mellitus']
+    response: |
+      "I dunno — a couple of weeks? I've been so thirsty. Up to the loo
+      five or six times a night. Lost weight — my trousers don't fit.
+      I thought it was that virus going round. Then yesterday I
+      couldn't keep anything down. Sorry."
+
+  - id: hx_family_pmh
+    source: family
+    topic: 'Speak to Joe — any past medical history Marcus has forgotten?'
+    npc_voice: "Joe is hunched in the corner chair. He hasn't taken his coat off."
+    branch_choices:
+      - id: compassionate
+        label: "Joe — you got him here. He's alive because you didn't wait. Tell me what you've noticed."
+        npc_voice: "Joe's face crumples for a moment, then steadies."
+        rapport_delta: 2
+        response: |
+          "He's been losing weight all term and I thought it was just
+          finals stress. Drinks pints of squash. Up to the toilet five
+          times a night — I share a wall with him. (Pause.) His mum
+          has thyroid issues — autoimmune something. No diabetes
+          that anyone's ever mentioned. He was eating less, just
+          sleeping after lectures. I should have made him come in
+          two weeks ago. I keep thinking — what if I'd just made him."
+      - id: clinical
+        label: "Family PMH? Any diabetes, thyroid, autoimmune?"
+        rapport_delta: 0
+        response: |
+          "Mum has autoimmune thyroid. No diabetes in the family
+          that anyone knows of. He's been polyuric, polydipsic,
+          losing weight, two weeks at least."
+      - id: dismissive
+        label: "I'm taking history from Marcus directly. We'll come back to you."
+        npc_voice: "Joe nods. He doesn't speak again."
+        rapport_delta: -2
+        response: |
+          "Right. Yeah. I'll be here."
+    response: |
+      Joe (housemate) reports a 2-week prodrome of polyuria,
+      polydipsia, weight loss and lethargy. Maternal family history
+      of autoimmune thyroid disease. No known family diabetes.
+
+  - id: hx_drug_history
+    source: patient
+    topic: 'Any drugs, supplements, recreational substances?'
+    prereq_history_ids: [hx_symptoms]
+    npc_voice: 'Marcus glances at Joe in the corner, then back at you.'
+    response: |
+      "Just paracetamol last night. No protein powder, no steroids, no
+      drugs. I don't really drink — I'm trying to save for next term."
+
+  - id: hx_marcus_mum
+    source: patient
+    topic: '(quiet, while the FRII is running) Marcus — is there anyone we should call for you?'
+    prereq_history_ids: [hx_family_pmh]
+    min_rapport: 2
+    npc_voice: "Marcus closes his eyes. He doesn't open them again for a while."
+    supports: ['Severe diabetic ketoacidosis — first presentation of type 1 diabetes mellitus']
+    response: |
+      "My mum. (Pause.) Don't ring her yet. She's at work, she's a
+      ward sister at Princess Royal, she'll come straight here and
+      she shouldn't drive in this state. (Pause.) Doc — when do I
+      tell her? I haven't said the word out loud. 'Diabetes'. I
+      haven't even said it to myself, properly. She'll know what
+      this means. She'll know exactly what this means for the rest
+      of my life. I can't be the one who has to tell her. Will you
+      be there? When she gets here? I don't want to do it alone."
+
+  - id: hx_infection_screen
+    source: patient
+    topic: 'Any cough, urinary symptoms, sore throat, foot wounds?'
+    prereq_history_ids: [hx_symptoms]
+    supports:
+      - 'Sepsis with metabolic acidosis'
+      - 'Severe diabetic ketoacidosis — first presentation of type 1 diabetes mellitus'
+    response: |
+      "I had a sore throat two weeks ago — thought it was flu, took
+      paracetamol and slept it off. No cough. Wee burns a bit since
+      yesterday but I assumed because I'm dehydrated."
+
+examination:
+  - system: general
+    findings:
+      - { name: 'appearance', value: 'thin, dry, tired-looking', present: true }
+      - { name: 'breath odour', value: 'fruity / pear-drop (ketotic)', present: true }
+      - { name: 'mucous membranes', value: 'dry; capillary refill 3 s' }
+  - system: airway
+    findings:
+      - { name: 'patent, talking', present: true }
+  - system: breathing
+    findings:
+      - { name: 'respiratory rate', value: '32/min — deep sighing (Kussmaul)', red_flag: true }
+      - { name: 'SpO2', value: '99% on room air' }
+      - { name: 'auscultation', value: 'clear chest' }
+  - system: circulation
+    findings:
+      - { name: 'heart rate', value: '124/min, sinus', red_flag: true }
+      - {
+          name: 'blood pressure',
+          value: '102/68 mmHg sitting; 88/52 mmHg standing — postural drop',
+          red_flag: true,
+        }
+      - { name: 'capillary refill', value: '3 s' }
+      - { name: 'peripheries', value: 'cool, dry' }
+    manoeuvres:
+      - id: hydration_status
+        label: 'Assess hydration — JVP, skin turgor, mucous membranes, eyeballs'
+        findings:
+          - {
+              name: 'JVP not visible at 30°',
+              value: 'underfilled — reduced central volume',
+              red_flag: true,
+              supports: ['Severe diabetic ketoacidosis — first presentation of type 1 diabetes mellitus'],
+            }
+          - {
+              name: 'tongue and buccal mucosa dry',
+              value: 'tongue furrowed, no saliva pooling under tongue',
+              red_flag: true,
+              supports: ['Severe diabetic ketoacidosis — first presentation of type 1 diabetes mellitus'],
+            }
+          - {
+              name: 'skin turgor reduced',
+              value: 'pinched fold on the back of the hand persists ~3 s',
+              supports: ['Severe diabetic ketoacidosis — first presentation of type 1 diabetes mellitus'],
+            }
+          - {
+              name: 'eyes appear sunken',
+              value: 'subtle but present — Joe says he noticed this morning',
+              supports: ['Severe diabetic ketoacidosis — first presentation of type 1 diabetes mellitus'],
+            }
+      - id: ketone_smell
+        label: 'Smell his breath at the bedside (pear-drops / acetone)'
+        findings:
+          - {
+              name: 'fruity acetone smell on breath',
+              value: 'classic ketone smell; sensitivity poor but specificity high if present',
+              red_flag: true,
+              supports: ['Severe diabetic ketoacidosis — first presentation of type 1 diabetes mellitus'],
+            }
+  - system: disability
+    findings:
+      - { name: 'GCS', value: '13 (E3 V4 M6) — drowsy when not stimulated', red_flag: true }
+      - { name: 'glucose', value: 'meter "HI" (>33 mmol/L)', red_flag: true }
+      - { name: 'pupils', value: 'equal, reactive' }
+  - system: abdomen
+    findings:
+      - { name: 'soft, mildly tender epigastrium', present: true }
+      - { name: 'no peritonism', present: false, pertinent_negative: true }
+      - { name: 'bowel sounds normal', present: true }
+
+investigations:
+  - id: ix_cap_glucose_ketones
+    name: 'Capillary glucose + capillary ketones'
+    category: bedside
+    turnaround_min: 2
+    essential: true
+    result_summary: |
+      **Glucose 38.4 mmol/L · Capillary ketones 5.6 mmol/L.** Both
+      exceed the JBDS-IP 2023 thresholds for severe DKA (glucose
+      >11 + ketones ≥3 + acidosis required to confirm).
+    abnormal: true
+    sources:
+      - { type: jbds, ref: 'JBDS-IP Adult DKA 2023 — diagnostic criteria' }
+
+  - id: ix_vbg
+    name: 'Venous blood gas'
+    category: gas
+    turnaround_min: 5
+    essential: true
+    result_summary: |
+      **pH 7.04 · HCO3 7 mmol/L · pCO2 1.9 kPa · BE -25 ·
+      K+ 5.9 mmol/L · Na 134 mmol/L · Lactate 1.8 · Glucose 38.4.**
+      K+ is elevated as expected in severe acidosis (extracellular
+      shift) despite total-body K depletion — anticipate a rapid
+      fall once insulin/fluid replacement is underway.
+      JBDS-IP 2023 severity criteria (ANY of): pH <7.0, HCO3 <5,
+      ketones >6, K+ <3.5, GCS <12, sats <92, systolic <90, HR <60
+      or >100, anion gap >16. **Marcus meets severity by HR 124
+      (>100) AND anion gap 23 (>16)** — his pH 7.04 and HCO3 7 are
+      borderline-severe but don't independently qualify. He needs
+      HDU regardless.
+    abnormal: true
+    sources:
+      - { type: jbds, ref: 'JBDS-IP Adult DKA 2023 — severity criteria' }
+
+  - id: ix_bloods
+    name: 'FBC, U&E, CRP, blood ketones (formal), HbA1c, blood cultures'
+    category: blood
+    turnaround_min: 45
+    essential: true
+    result_summary: |
+      WCC 14.2 (stress demargination) · Plt 290 · Hb 142 ·
+      Na 134 · K 4.8 · Urea 11.4 · Creat 124 (AKI) · CRP 18 ·
+      Lab ketones 5.4 · HbA1c 113 mmol/mol (≈12.5%, severe). Anion
+      gap calculated 23 (raised).
+
+  - id: ix_urinalysis
+    name: 'Urine dip + send MC&S'
+    category: urine
+    turnaround_min: 5
+    result_summary: |
+      Glucose +++, ketones ++++, nitrites +, leucs +, blood neg.
+      Urine ketones grossly positive. Mild WCC raise — possible
+      UTI as precipitant.
+    abnormal: true
+
+  - id: ix_ecg
+    name: '12-lead ECG'
+    category: ecg
+    turnaround_min: 2
+    ecg_challenge_id: ecg_004_hyperkalaemia
+    result_summary: |
+      Sinus tachycardia 118/min. **Tall, tented T waves V2–V5 with
+      narrow base.** PR 168 ms, QRS 88 ms, QTc 408 ms. No ST
+      elevation. Peaked T-pattern consistent with hyperkalaemia
+      (VBG K 5.9 mmol/L) on a background of DKA.
+
+  - id: ix_cxr
+    name: 'Erect portable chest X-ray'
+    category: imaging
+    turnaround_min: 20
+    result_summary: 'Clear lung fields. No focal consolidation. No pneumothorax.'
+
+differential:
+  - diagnosis: 'Severe diabetic ketoacidosis — first presentation of type 1 diabetes mellitus'
+    likelihood: top
+    discriminator: |
+      Hyperglycaemia (>11) + ketosis (>3) + acidosis (pH <7.30) =
+      DKA. Severity criteria met (HR >100, anion gap >16 per JBDS-IP
+      2023). Maternal autoimmune history + new presentation in a
+      young adult fits T1DM.
+
+  - diagnosis: 'Hyperosmolar hyperglycaemic state (HHS)'
+    likelihood: worth_considering
+    discriminator: |
+      HHS is the older / T2DM pattern: minimal ketosis, severe
+      hyperosmolar hyperglycaemia, gradual. Marcus has high
+      ketones and an acidotic pH — DKA fits, HHS does not.
+
+  - diagnosis: 'Lactic acidosis'
+    likelihood: unlikely
+    discriminator: 'Lactate 1.8 — not the driver of the acidosis here.'
+
+  - diagnosis: 'Salicylate or methanol/ethylene glycol toxicity'
+    likelihood: must_not_miss
+    discriminator: |
+      Wide-anion-gap acidosis differential. Drug history, paracetamol
+      level, salicylate level, osmolar gap if pH stays unexplained
+      after fluids and insulin.
+
+  - diagnosis: 'Sepsis with metabolic acidosis'
+    likelihood: must_not_miss
+    discriminator: |
+      The mild urinary leucs raise UTI as a precipitant — but the
+      acidosis is driven by ketones, not lactate. Treat the precipitant
+      alongside the DKA.
+
+working_diagnosis: 'Severe DKA, new T1DM, probable UTI as precipitant'
+
+management:
+  - id: mx_a_to_e
+    category: monitoring
+    name: 'ABCDE; continuous monitoring; hourly NEWS2; cardiac monitoring for K+ shifts'
+    detail: |
+      Severe DKA needs HDU-level observation. Cardiac monitor on for the
+      potassium shifts that follow insulin administration.
+    must_do: true
+
+  - id: mx_iv_access
+    category: procedure
+    name: 'Two large-bore IV cannulae; venous blood gas + bloods'
+    must_do: true
+
+  - id: mx_fluid_first
+    category: fluid
+    name: 'IV 0.9% saline 1000 mL over 60 min (first bag) — adjust if systolic <90'
+    detail: |
+      JBDS-IP 2023: a 60–70 kg adult gets 1 L over the first hour.
+      If systolic <90 mmHg, give a 500 mL bolus over 10–15 min and
+      reassess before the slow bag.
+    drug:
+      amount: '1000 mL 0.9% saline'
+      route: IV
+      frequency: 'over 60 min (or 500 mL/10–15 min if systolic <90 then reassess)'
+    must_do: true
+    sources:
+      - { type: jbds, ref: 'JBDS-IP Adult DKA 2023 — fluid regimen' }
+
+  - id: mx_fixed_rate_insulin
+    category: drug
+    name: 'Fixed-rate IV insulin infusion (FRII) 0.1 unit/kg/h'
+    detail: |
+      Actrapid 50 units in 50 mL 0.9% saline, started at 0.1
+      units/kg/h (about 7 units/h for Marcus). Do NOT bolus.
+      Do not stop the patient's basal insulin if they have one.
+      In NEW T1DM (no basal yet), continue FRII until ketones
+      <0.6 mmol/L AND pH/HCO3 normalised.
+    drug:
+      amount: '0.1 unit/kg/h'
+      route: IV
+      frequency: 'continuous infusion'
+    must_do: true
+    sources:
+      - { type: jbds, ref: 'JBDS-IP Adult DKA 2023 — fixed-rate insulin infusion' }
+
+  - id: mx_k_replacement
+    category: drug
+    name: 'Add potassium to subsequent fluid bags per K+ on VBG'
+    detail: |
+      JBDS-IP K+ replacement (per litre, after first hour bolus):
+        K+ >5.5 mmol/L  → no K+ in bag
+        K+ 3.5–5.5      → 40 mmol/L
+        K+ <3.5         → senior input, potentially central access
+                          for higher concentrations.
+      Marcus is **5.9 → NO K+ in the first replacement bag.**
+      He will shift back to the 3.5–5.5 band rapidly once insulin
+      and saline are running — recheck VBG hourly and add K+ to
+      bag 2 if he has dropped below 5.5.
+    must_do: true
+    sources:
+      - { type: jbds, ref: 'JBDS-IP Adult DKA 2023 — K+ replacement schedule' }
+
+  - id: mx_dextrose_when_glucose_falls
+    category: fluid
+    name: 'Add 10% dextrose AND consider reducing FRII to 0.05 unit/kg/h when glucose <14 mmol/L'
+    detail: |
+      Run dextrose alongside the saline (not instead of it). 10%
+      dextrose 125 mL/h with continued FRII to keep ketones falling.
+      **JBDS-IP 2022/2023 update**: consider stepping the FRII down
+      from 0.1 unit/kg/h to **0.05 unit/kg/h** once glucose <14 to
+      reduce hypoglycaemia and hypokalaemia risk, particularly in
+      young adults (cerebral-oedema risk cohort like Marcus). The
+      target is still ketone clearance, but the insulin demand
+      drops once euglycaemia is reached.
+    sources:
+      - {
+          type: jbds,
+          ref: 'JBDS-IP Adult DKA 2023 — concurrent dextrose + FRII step-down to 0.05 unit/kg/h at glucose <14 mmol/L (introduced in 2022 update).',
+        }
+      - {
+          type: textbook,
+          ref: 'Dhatariya KK et al. The management of diabetic ketoacidosis in adults — JBDS update. Diabetic Medicine 2022.',
+        }
+
+  - id: mx_treat_precipitant
+    category: drug
+    name: 'Empirical UTI cover after blood cultures (e.g. nitrofurantoin or local first-line)'
+    detail: 'Urinalysis shows leucs/nitrites — culture-directed once back. Avoid nephrotoxic agents.'
+
+  - id: mx_diabetes_team_refer
+    category: referral
+    name: 'Refer diabetes specialist team early'
+    detail: |
+      New T1DM with severe DKA needs early diabetes team involvement
+      for education, basal-bolus regimen, follow-up, psychological
+      support, and ongoing risk-of-DKA counselling.
+    must_do: true
+
+  - id: mx_critcare_referral
+    category: escalation
+    name: 'Critical care review for HDU bed'
+    detail: |
+      Severe DKA per JBDS-IP criteria — needs HDU-level monitoring
+      for the first 12–24 h (cardiac monitor, hourly bloods,
+      cerebral oedema watch).
+    must_do: true
+
+  - id: mx_thromboprophylaxis
+    category: drug
+    name: 'Mechanical VTE prophylaxis; pharmacological per local risk score once stable'
+    detail: 'DKA + hyperosmolar state = prothrombotic. Apixaban / LMWH per local protocol.'
+
+  # ─── Trap actions ──────────────────────────────────────────────────────────
+  - id: mx_no_insulin_bolus
+    category: drug
+    name: 'Give an IV insulin bolus before starting the FRII'
+    detail: |
+      ❌ JBDS-IP 2023 explicitly recommends AGAINST an insulin
+      bolus in adult DKA — straight to the fixed-rate infusion. A
+      bolus risks precipitous hypokalaemia and cerebral oedema with
+      no clinical benefit.
+    must_not_do: true
+    gated_by_history: [hx_paramedics]
+    sources:
+      - { type: jbds, ref: 'JBDS-IP Adult DKA 2023 — no insulin bolus' }
+
+  - id: mx_no_bicarb
+    category: drug
+    name: 'Give IV sodium bicarbonate to "correct" the acidosis'
+    detail: |
+      ❌ Routine bicarbonate is not recommended in adult DKA per
+      JBDS-IP. It paradoxically worsens intracellular acidosis,
+      shifts potassium dangerously, and may increase cerebral
+      oedema risk. Only consider in a senior-led peri-arrest
+      decision with pH <6.9 and ongoing compromise.
+    must_not_do: true
+    sources:
+      - { type: jbds, ref: 'JBDS-IP Adult DKA 2023 — bicarbonate not routine' }
+
+  - id: mx_no_stop_insulin_when_glucose_falls
+    category: drug
+    name: 'Stop the FRII when glucose falls below 14'
+    detail: |
+      ❌ Wrong move — stopping insulin while ketones are still rising
+      perpetuates the DKA. Instead add 10% dextrose to keep glucose
+      up and ketones falling. FRII continues until ketones <0.6
+      AND pH/HCO3 normalised.
+    must_not_do: true
+
+  - id: mx_no_oral_rehydrate
+    category: fluid
+    name: 'Encourage oral rehydration only'
+    detail: |
+      ❌ He is vomiting, GCS 13, severely dehydrated. PO route is
+      unsafe and inadequate. IV crystalloid is required.
+    must_not_do: true
+
+  - id: mx_no_potassium_first_hour
+    category: drug
+    name: 'Add 40 mmol/L K+ to the FIRST resuscitation bag without knowing K+'
+    detail: |
+      ❌ First bag (1 L over 1 h) should NOT contain potassium until
+      you have a K+ value to dose against — risk of dangerous
+      hyperkalaemia if K+ already raised by the acidosis-induced
+      shift.
+    must_not_do: true
+    sources:
+      - { type: jbds, ref: 'JBDS-IP Adult DKA 2023 — no K+ in first bag' }
+
+disposition_options:
+  - label: 'Admit HDU for severe DKA pathway; diabetes team in the morning'
+    criteria: |
+      Meets JBDS-IP 2023 severity criteria (HR >100 + anion gap >16).
+      Cerebral oedema watch + hourly bloods + cardiac monitoring.
+    appropriate: true
+    epilogue: "Marcus's mum arrives at 04:48 in scrubs. She has driven from the Princess Royal. She sits on the chair, does not unlock her phone."
+  - label: 'Admit AMU for IV fluids and FRII'
+    criteria: |
+      Acceptable only if MILD/moderate DKA — Marcus is severe and
+      needs HDU.
+    appropriate: false
+    epilogue: "The AMU registrar reviews him at 07:00 and escalates him to HDU. She makes the conversation about your initial decision short and polite."
+  - label: 'Discharge with GP follow-up for diabetes diagnosis'
+    criteria: |
+      Not even close. DKA is a medical emergency.
+    appropriate: false
+    epilogue: "Marcus arrests at home at 11:20 the same morning. Joe finds him on the bathroom floor."
+  - label: 'Admit ITU for invasive ventilation'
+    criteria: |
+      Premature unless airway compromise or peri-arrest. HDU is
+      the right step for severe DKA without airway/circulation
+      collapse.
+    appropriate: false
+    epilogue: "The ITU consultant declines. 'He's not for tube. He's for fluid and insulin and a diabetes nurse.'"
+
+state_machine:
+  states: [deteriorating, stable, arrested, admitted, deceased]
+  transitions:
+    - from: deteriorating
+      to: stable
+      trigger:
+        on: action
+        action_id: mx_fixed_rate_insulin
+        note: |
+          Fixed-rate insulin started + fluids running — ketones will
+          fall over the next 4–6 h, glucose first. Needs ongoing
+          HDU-level care.
+    # M86 (Braintrust 06 audit): the deteriorating → arrested at min 15
+    # transition was removed. Adult DKA has a real time-critical bundle
+    # (JBDS-IP fluids-first, fixed-rate insulin) but the catastrophe
+    # is over hours, not minutes. The case stays in deteriorating and
+    # remains recoverable via the deteriorating → stable transition
+    # (mx_fixed_rate_insulin) — patient doesn't crash to arrest from
+    # 15-minute undertreatment.
+    - from: stable
+      to: admitted
+      trigger: { on: action, action_id: mx_critcare_referral }
+
+pearls:
+  - 'JBDS-IP 2023: DKA = (glucose >11 OR known diabetes) + (ketones ≥3 capillary or ≥2+ urine) + (pH <7.30 or HCO3 <15).'
+  - 'No insulin bolus in adult DKA — straight to fixed-rate infusion at 0.1 unit/kg/h.'
+  - 'First fluid bag is K+ free; add K+ from bag 2 onwards based on K+ on VBG (40 mmol/L if K+ 3.5–5.5; nil if >5.5; senior input if <3.5).'
+  - 'Add 10% dextrose alongside saline when capillary glucose <14 — keeps insulin running until ketones <0.6 AND pH/HCO3 normalised.'
+  - 'Bicarbonate is NOT routine in adult DKA — it risks worsening intracellular acidosis, hypokalaemia, and cerebral oedema.'
+  - 'Cerebral oedema is most feared in children and young adults — watch for headache, irritability, falling GCS during the first 12 h of treatment.'
+  - 'Always look for the precipitant — infection, missed insulin, MI, pancreatitis, drug (e.g. SGLT2 inhibitors → euglycaemic DKA).'
+
+pitfalls:
+  - 'Giving an insulin bolus before the FRII.'
+  - 'Putting potassium in the first resuscitation bag.'
+  - 'Stopping insulin when glucose falls instead of adding dextrose.'
+  - 'Using bicarbonate to "correct" the acidosis.'
+  - 'Missing a UTI / pneumonia / SGLT2 inhibitor as the precipitant.'
+  - 'Anchoring on T1DM and missing the (rarer) euglycaemic DKA in SGLT2-inhibitor users.'
+
+sources:
+  - {
+      type: jbds,
+      ref: 'Joint British Diabetes Societies Inpatient Care Group. Management of Diabetic Ketoacidosis in Adults, 2023 update.',
+      url: 'https://abcd.care/joint-british-diabetes-societies-jbds-inpatient-care-group',
+    }
+  - {
+      type: nice,
+      id: 'NG17',
+      ref: 'Type 1 diabetes in adults: diagnosis and management (NICE 2015, updated 2022)',
+      url: 'https://www.nice.org.uk/guidance/ng17',
+    }
+  - { type: rcem, ref: 'RCEM Best Practice — Diabetic Ketoacidosis in Adults' }
+  - {
+      type: textbook,
+      ref: 'Wyatt JP et al. Oxford Handbook of Emergency Medicine 5e (OUP, 2020).',
+      chapter: '3',
+      page: 'pp.150–158',
+    }
+
+author_notes: |
+  Authored from a scripts/new-case.ts skeleton. Designed to test a
+  protocolised time-critical bundle (fluids + insulin + K+ dosing) in a
+  single resus encounter. Ideal as a second focus case alongside the
+  sepsis case in a future "Overnight metabolic" episode.
