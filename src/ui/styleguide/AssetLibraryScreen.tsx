@@ -13,7 +13,7 @@
 
 import { PALETTE_RAMPS } from '../../style/palette';
 import { IconCitation, IconCountdown, IconMustDo, IconNewInfo, IconRedFlag, IconTrap, IconTrendDown, IconTrendUp } from '../../style/icons';
-import { PATIENT_SPRITES, spriteSvgFor } from '../../style/sprites';
+import { CASE_TO_DROP_ID, PATIENT_SPRITES, spriteSvgFor } from '../../style/sprites';
 import { NPC_SPRITES, npcFrameToSvg } from '../../style/npcSprites';
 import { PROP_SPRITES, propFrameToSvg } from '../../style/propSprites';
 import { WORLD_TILES, worldFrameToSvg } from '../../style/worldSprites';
@@ -108,10 +108,18 @@ function IconsSection() {
 
 function PatientSpritesSection() {
   const states: CaseStateT[] = ['stable', 'triaged', 'deteriorating', 'arrested'];
+  // Show ALL cases that resolve to a sprite — both the hand-authored
+  // entries in PATIENT_SPRITES and the drop-catalogue cases routed via
+  // CASE_TO_DROP_ID. The drop-mapped ones were previously invisible
+  // in this gallery, making it impossible to QA the deteriorating
+  // recipes for Marcus / Leo / Ruby / Joan etc.
+  const allCases = Array.from(
+    new Set([...Object.keys(PATIENT_SPRITES), ...Object.keys(CASE_TO_DROP_ID)]),
+  ).sort();
   return (
     <section className="asset-lib__section" id="patients">
-      <h2>Patient sprites ({Object.keys(PATIENT_SPRITES).length} cases)</h2>
-      {Object.keys(PATIENT_SPRITES).map((caseId) => (
+      <h2>Patient sprites ({allCases.length} cases)</h2>
+      {allCases.map((caseId) => (
         <div key={caseId} className="asset-lib__patient">
           <h3>{caseId}</h3>
           <div className="asset-lib__grid">

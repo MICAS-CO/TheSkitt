@@ -1078,9 +1078,33 @@ export const DROP_PATIENT_SPRITES: Record<string, PatientSpriteBlueprint> = {
         diffs: [{ row: 21, col: 9, ch: 'S' }, { row: 21, col: 10, ch: 'L' }, { row: 22, col: 9, ch: 'S' }, { row: 22, col: 10, ch: 'L' }, { row: 8, col: 11, ch: 'k' }, { row: 8, col: 16, ch: 'k' }],
       },
       deteriorating: {
+        // BT 17 R3 deferred-finding-1 — Marcus's deteriorating recipe
+        // was carrying pallor + leg marks but no facial cue, so a
+        // severe-DKA Marcus looked the same as a triaged Marcus apart
+        // from skin tone. Replicating Leo's drowsy/Kussmaul pattern
+        // (closed eyes at the eye row, open-mouth dark gap at the
+        // mouth row) — both are textbook signs of advanced DKA in an
+        // adult presentation.
         base: 'upright',
         skinMap: {"s": "C", "S": "c", "L": "d", "l": "D"},
-        diffs: [{ row: 20, col: 8, ch: 'z' }, { row: 20, col: 9, ch: 'z' }, { row: 20, col: 10, ch: 'z' }, { row: 20, col: 11, ch: 'z' }, { row: 20, col: 12, ch: 'z' }, { row: 21, col: 8, ch: 'z' }, { row: 21, col: 9, ch: 'z' }, { row: 21, col: 10, ch: 'z' }, { row: 21, col: 11, ch: 'z' }, { row: 21, col: 12, ch: 'z' }, { row: 21, col: 13, ch: 'z' }, { row: 22, col: 9, ch: 'z' }, { row: 22, col: 10, ch: 'z' }, { row: 22, col: 11, ch: 'z' }, { row: 22, col: 12, ch: 'z' }, { row: 22, col: 13, ch: 'z' }, { row: 23, col: 10, ch: 'z' }, { row: 24, col: 9, ch: 'z' }, { row: 25, col: 8, ch: 'z' }, { row: 26, col: 7, ch: 'z' }, { row: 27, col: 8, ch: 'z' }, { row: 28, col: 9, ch: 'z' }, { row: 12, col: 11, ch: 'd' }, { row: 12, col: 12, ch: 'd' }, { row: 12, col: 13, ch: 'd' }, { row: 12, col: 14, ch: 'd' }],
+        diffs: [
+          // existing pallor / leg z-marks preserved (artist intent)
+          { row: 20, col: 8, ch: 'z' }, { row: 20, col: 9, ch: 'z' }, { row: 20, col: 10, ch: 'z' }, { row: 20, col: 11, ch: 'z' }, { row: 20, col: 12, ch: 'z' },
+          { row: 21, col: 8, ch: 'z' }, { row: 21, col: 9, ch: 'z' }, { row: 21, col: 10, ch: 'z' }, { row: 21, col: 11, ch: 'z' }, { row: 21, col: 12, ch: 'z' }, { row: 21, col: 13, ch: 'z' },
+          { row: 22, col: 9, ch: 'z' }, { row: 22, col: 10, ch: 'z' }, { row: 22, col: 11, ch: 'z' }, { row: 22, col: 12, ch: 'z' }, { row: 22, col: 13, ch: 'z' },
+          { row: 23, col: 10, ch: 'z' }, { row: 24, col: 9, ch: 'z' }, { row: 25, col: 8, ch: 'z' }, { row: 26, col: 7, ch: 'z' }, { row: 27, col: 8, ch: 'z' }, { row: 28, col: 9, ch: 'z' },
+          // new: drowsy closed eyes — row 8 cols 12 & 14 are the
+          // pupils in `wewew`. Replacing the black `e` with the
+          // skin-toned `S` (which the skinMap above remaps to `c`)
+          // produces closed eyelids on top of pale skin.
+          { row: 8, col: 12, ch: 'S' }, { row: 8, col: 14, ch: 'S' },
+          // new: open mouth Kussmaul — row 12 cols 12-15 are the
+          // mouth `OOOO`. Pale lips (`d`) plus a darker `o` gap in
+          // the middle reads as parted, breathing-heavily mouth.
+          { row: 12, col: 11, ch: 'd' }, { row: 12, col: 12, ch: 'd' },
+          { row: 12, col: 13, ch: 'o' }, { row: 12, col: 14, ch: 'o' },
+          { row: 12, col: 15, ch: 'd' },
+        ],
       },
       arrested: {
         base: 'supine',

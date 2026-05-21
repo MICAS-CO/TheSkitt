@@ -1011,7 +1011,7 @@ export function frameCountFor(caseId: string, state: CaseStateT): number {
  * Stan, Patel) and stay served from PATIENT_SPRITES. The 12 above are
  * served from dropPatientSprites.ts. Total sprite coverage: 17 / 17.
  */
-const CASE_TO_DROP_ID: Record<string, string> = {
+export const CASE_TO_DROP_ID: Record<string, string> = {
   case_sepsis_uti_morrison: 'doherty',
   case_ugib_variceal_kowalski: 'tom',
   case_ectopic_minors_sarah: 'sarah',
