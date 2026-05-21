@@ -294,33 +294,40 @@ export function Monitor({
         </text>
         <circle cx={bezel + 6} cy={height - 8} r="2" fill="#5BBF8F" />
         <circle cx={bezel + 6} cy={height - 8} r="3.5" fill="#5BBF8F" opacity="0.3" />
-        {cornerLabel && (
-          <g pointerEvents="none">
-            {/* M93 bay-monitor OSD chip — small dark rect with mono-
-                phosphor-tinted text sat inside the top-left corner
-                of the screen area. */}
-            <rect
-              x={screenX + 4}
-              y={screenY + 4}
-              width={Math.min(screenW - 8, Math.max(110, cornerLabel.length * 4.4 + 10))}
-              height="12"
-              rx="2"
-              fill="#000"
-              opacity="0.45"
-            />
-            <text
-              x={screenX + 9}
-              y={screenY + 12}
-              fill="#86E0B5"
-              fontSize="7"
-              fontFamily="JetBrains Mono"
-              letterSpacing="0.5"
-            >
-              {cornerLabel}
-            </text>
-          </g>
-        )}
       </svg>
+      {cornerLabel && (
+        // BT 17 round 1 — three findings on one block all solve with
+        // the same move: render the OSD chip as an HTML overlay
+        // outside the SVG. That fixes (1) top-left occluding the
+        // patient face by repositioning to bottom-left above the
+        // sticker, (2) the brittle SVG-width magic number by letting
+        // CSS padding flow naturally with text, and (3) the WCAG
+        // contrast regression by using a solid 85%-opacity dark
+        // backdrop. pointerEvents: none keeps the chip from catching
+        // clicks meant for content underneath.
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            left: bezel + 6,
+            bottom: bezel + 12,
+            padding: '2px 6px',
+            background: 'rgba(0, 0, 0, 0.85)',
+            color: '#86E0B5',
+            fontFamily: 'JetBrains Mono, monospace',
+            fontSize: 9,
+            letterSpacing: 0.5,
+            borderRadius: 2,
+            pointerEvents: 'none',
+            maxWidth: `calc(100% - ${bezel * 2 + 12}px)`,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {cornerLabel}
+        </div>
+      )}
       <div
         style={{
           position: 'absolute',
