@@ -695,10 +695,19 @@ function MenuView({
 
   const consultantMemo = useMemo(() => loadLastShiftMemo(), []);
   const character = useMemo(() => loadCharacter(), []);
-  const consultantMessage = useMemo(
-    () => (consultantMemo ? composeConsultantMessage(consultantMemo, character?.firstName) : null),
-    [consultantMemo, character],
-  );
+  // M89: pass the rota index of the JUST-COMPLETED shift so McGrath's
+  // voice can pick up the rota-position tone. The memo's episodeId
+  // points at the shift she's commenting on; that's the position
+  // whose tone she carries.
+  const consultantMessage = useMemo(() => {
+    if (!consultantMemo) return null;
+    const ridx = ROTA_ORDER_IDS.indexOf(consultantMemo.episodeId);
+    return composeConsultantMessage(
+      consultantMemo,
+      character?.firstName,
+      ridx >= 0 ? ridx : undefined,
+    );
+  }, [consultantMemo, character]);
   const tier = character ? TIERS[character.role] : null;
   return (
     <div className="menu">

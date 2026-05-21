@@ -1,6 +1,6 @@
-# M88 (Braintrust 10 round-2) — Charge Nurse Adesuwa Akin's pre-shift
-# handover lines, one per rota position. Rendered above the shift
-# board on shift start by the <PreShiftHandover /> component.
+# M88/M89 (Braintrust 10 round-2) — Charge Nurse Adesuwa Akin's
+# pre-shift handover lines, one per rota position. Rendered above the
+# shift board on shift start by the <PreShiftHandover /> component.
 #
 # Voice: dual register. Each entry pairs clinical handover content
 # (the bed state, the staffing situation, the floor's current weather)
@@ -9,28 +9,35 @@
 # character in the same paragraph — that's how Disco does it, and
 # that's the texture the build is trying to earn.
 #
-# This is also where the M88 narrative thread seeds. Block 1 (positions
-# 0-4) is innocuous frictions: missing handover sheets, sarcastic
-# comments about bed management, a printer that won't print the
-# allergy list. Block 2 (positions 5-10) escalates: a near-miss, a
-# nursing handover that breaks down. Block 3 (positions 11-17) the
-# latent failures surface as the conditions for the missed dissection
-# at the keystone. The pedagogy is non-technical-skills (NTS) — RCEM
-# curriculum-relevant.
+# Narrative arc across the rota (NTS / human factors thread):
+#   Block 1 (positions 0-4): Akin watching you. Small frictions
+#     surface — a slow surgical SpR, a bed manager game, an imaging
+#     pathway having a rocky week. Innocuous.
+#   Block 2 (positions 5-10): frictions accumulate. Akin notes
+#     patterns. A psych liaison overstretched, a blood bank that's
+#     gone slow, a paeds reg who needs supervising. Near-miss
+#     potential builds toward the block-2 keystone.
+#   Block 3 (positions 11-16): crescendo. The accumulated NTS strain
+#     surfaces in clinical consequence at the final dissection
+#     keystone. McGrath's memos take a different tone. The
+#     safeguarding pattern around Stan and Chloe lands as the
+#     pedagogical NTS payoff — the patients the system has been
+#     failing all along.
 #
-# M88 ships ONE handover (position 0, entry shift) to prove the voice.
-# Phased expansion at M89: author the remaining 17.
+# All authored M89. The thread is content; the rendering layer is
+# M88. The kernel knows nothing of this thread — it's all NPC voice
+# on top of the existing rota state.
 
 schema_version: 1
 
 handovers:
-  # ─── Block 1 ────────────────────────────────────────────────────────────
+  # ─── Block 1 — settling in, frictions visible but not actioned ──────────
   - rota_index: 0
     bed_state: amber
-    # Position 0: entry shift. The voice is established here. Watching-
-    # you, brisk, a little tired, finds the world mildly absurd. The
-    # comedy beat is the printer / IT system — a deeply universal NHS
-    # gallows-humour staple. The clinical content is real handover.
+    # Entry shift. Voice is established here. Watching-you, brisk, a
+    # little tired, finds the world mildly absurd. Allergy printer is
+    # the recurring motif — small system breakage played for dry
+    # humour but also planting the seed that the system is fraying.
     text: |
       Akin, charge nurse. The bed state's amber, which means we're not
       drowning but we are damp. Two in the waiting room, two side
@@ -47,5 +54,305 @@ handovers:
       printer is broken again, so you'll be writing those out by hand
       if you need them. Welcome to The Skitt.
 
-# Remaining positions 1-17: authored at M89 once the position-0 voice
-# is reviewer-approved. Schema is here; entries to follow.
+  - rota_index: 1
+    bed_state: amber
+    # Anaphylaxis solo. Akin establishes resus pre-prep. NTS seed:
+    # the surgical reg "moves slowly today" — a beat that will
+    # foreshadow referral friction across block 2.
+    text: |
+      Bay 2 is yours. I've got the IM adrenaline drawn and on the
+      trolley — pen, vial, a 23g — because if you need it you'll
+      need it now, not in the time it takes me to walk to the drug
+      cupboard. The IV set's primed.
+
+      Heads-up: the surgical SpR on tonight is the one who moves
+      slowly. If you end up calling him, ring twice. He'll claim he
+      missed it the first time. McGrath knows.
+
+  - rota_index: 2
+    bed_state: amber
+    # AHF solo. Bed-manager politics introduced. Akin's flow-political
+    # voice gets a clear example — drying-this-floor-vs-flowing-into-AMU
+    # is a real-world EM friction.
+    text: |
+      Mr Ahmed in resus, 78, in pulmonary oedema. I've got the GTN
+      infusion ready and the BiPAP machine wheeled across, which is
+      pointed because the bed manager has emailed for the third time
+      to ask if we'd consider transferring an outlier from medics. I
+      am going to consider it after Mr Ahmed is not drowning.
+
+      McGrath's around. She's signed the BiPAP prescription pre-
+      emptively because she trusts you to pick the right pressure.
+
+  - rota_index: 3
+    bed_state: amber
+    # HTN emergency solo. Escalation friction introduced — the medical
+    # SpR is in a strategic meeting. NTS beat: who do you escalate to
+    # when the on-call is unavailable?
+    text: |
+      Mrs Oduya, 58. BP 226/132 on triage. The medical SpR is in a
+      "strategic meeting" upstairs, which I do not know how to
+      interpret. She'll be free in ninety minutes if you can keep
+      Mrs Oduya alive on labetalol until then.
+
+      I'd suggest a serious phone call to the on-call medical
+      consultant if the BP doesn't move. McGrath will back you on
+      that. She's seen the meeting list. It is a long meeting list.
+
+  - rota_index: 4
+    bed_state: red
+    # Block 1 KEYSTONE — Williams LVO stroke. The stroke pathway has
+    # been "rocky" — imaging delays. NTS beat: the player needs the
+    # stroke team called early, knowing the pathway has been slow.
+    # Longer handover because it's a keystone.
+    text: |
+      Mr Williams, 72. Anterior LMCA stroke onset thirty-five
+      minutes ago, partner with him, on apixaban. He's in resus 1.
+      The stroke team has had a rocky week — radiology is short, the
+      stroke registrar on tonight is good but the porter rota is
+      thin and a CT head can sit for twenty minutes between request
+      and image if you don't push.
+
+      Last weekend we had a thrombolysis window close on us because
+      the team called the pathway in the standard order. McGrath did
+      a Schwartz round about it on Thursday. I'd push the door-to-
+      CT, push hard, and write what you actually did down — the
+      audit will want it.
+
+      Push the porter. Push the pathway. Push the imaging. McGrath's
+      on the floor, she'll cover the others.
+
+  # ─── Block 2 — frictions accumulate; Akin starts naming patterns ────────
+  - rota_index: 5
+    bed_state: amber
+    # Overnight sepsis. Night shift, consultant cover thinner. Akin
+    # references the new sepsis protocol — landed two weeks ago,
+    # plausibly testable curriculum.
+    text: |
+      Night shift. McGrath went home at 19:00, on-call consultant
+      tonight is Dr Hassan — good, fast on the phone, will come in
+      for resus calls. You're senior on the floor until 03:00.
+
+      Mrs Morrison, 84, urosepsis from a nursing home. NEWS2 was 6
+      at triage. The new Sepsis Six pathway landed two weeks ago —
+      antibiotics within the hour, source control, fluids by
+      protocol; the audit tool is on the resus desk if you want it
+      open while you work.
+
+      The medical SHO on overnight is keen but new to the rotation.
+      If you need them to do the cultures, tell them which set
+      first. Saves time.
+
+  - rota_index: 6
+    bed_state: amber
+    # UGIB. Blood bank issues. Gastroenterologist with form for delays.
+    # NTS: the player has to predict service constraints.
+    text: |
+      Mr Kowalski in resus, vomiting blood for the third time tonight
+      according to his wife. Cirrhotic. Blood bank is running slow —
+      half the porter cohort is at handover. I've activated the major
+      haemorrhage protocol on my own initiative so the O-neg is on
+      its way down, but cross-match will take longer than the audit
+      wants.
+
+      The on-call gastroenterologist has form for taking forty
+      minutes to ring back. Ring early. Document the time you rang.
+
+  - rota_index: 7
+    bed_state: amber
+    # Paracetamol solo, Chloe FIRST. NTS pattern beat — Akin's first
+    # mention of "patterns this week." Foreshadows the safeguarding
+    # crescendo in block 3.
+    text: |
+      Chloe Davies in minors. Staggered paracetamol, came in by herself
+      this time, 19. Bloods are running. NAC nomogram for the staggered
+      ingestion — you know the line.
+
+      Psych liaison is two patients behind on referrals tonight; the
+      consultant overnight is good but slow to come down. Worth a
+      brief phone to flag her early so she's not last on the list.
+
+      This is the third young person we've had in for an OD this
+      week. McGrath has noticed. She doesn't like the pattern.
+
+  - rota_index: 8
+    bed_state: amber
+    # Paeds DKA. Paeds reg is new tonight. APLS-recency beat — the
+    # player gets implicitly checked-on for paeds competence.
+    text: |
+      Amir Khan, 8, paeds DKA, mum at the bedside, dad on his way
+      from a night shift. The paeds reg on overnight is new this
+      rotation — keen but on her first paeds DKA. She'll be at the
+      bedside if you want her, and you can co-manage.
+
+      I'd ask: when did you last do APLS? Not a quiz, just a useful
+      thing to know if you're about to step in on a paediatric resus
+      and need to remember the fluid-bolus algorithm. The paeds team
+      is on its way; ten minutes maybe.
+
+      Mum is keeping it together. Dad won't.
+
+  - rota_index: 9
+    bed_state: amber
+    # Birthday party (Sam, paeds anaphylaxis). Akin pulls you aside on
+    # parental communication. NTS: how do you talk to a frightened
+    # parent? Quietly, slowly, without minimising.
+    text: |
+      Sam Cartwright, 8, anaphylaxis at a friend's birthday party.
+      Mum brought him in. She has the cetirizine bottle and the
+      leftover sandwich in a Tupperware. She is keeping it together.
+      She will stop keeping it together about thirty seconds after
+      you tell her her son is going to be fine, which he will, but
+      the bit where she falls apart matters as much as the bit
+      where you give the adrenaline.
+
+      Tell her what you're doing as you do it. She knows the
+      cetirizine didn't work. Don't tell her she did the right thing
+      bringing him in unless you really mean it; she'll know.
+
+  - rota_index: 10
+    bed_state: red
+    # Block 2 KEYSTONE — Priya, refractory status in pregnancy.
+    # System pressure at full visible volume. Obstetrics + anaesthetics
+    # both overstretched. NTS: the accumulated frictions surface.
+    # Longer handover. Voice harder, terser.
+    text: |
+      Priya Sharma, 28, twenty-eight weeks pregnant, in status
+      epilepticus for fifteen minutes already, paramedics in resus 1.
+      First lorazepam went in en route, second is yours if she's
+      still seizing. Anaesthetics is in theatre on a section.
+      Obstetrics is on the labour ward managing two PPHs. The
+      neurosurg reg I do not yet have answering the bleep.
+
+      McGrath is in resus already, she's prepped the levetiracetam.
+      If this rolls to anaesthetic she'll lead the airway, you call
+      the second-line, you tell obstetrics they need to come down
+      and stop pretending they're busy. I have a foetal Doppler
+      next to the bed; please use it when there's a free hand.
+
+      This is the kind of shift the audit gets written about. Don't
+      worry about the audit. Worry about Priya.
+
+  # ─── Block 3 — accumulated NTS strain surfaces; latent failures land ────
+  - rota_index: 11
+    bed_state: red
+    # Hendo shift. Weekend night, alcohol-fuelled. Akin handing Sarah
+    # as "the friend who came in with the anaphylaxis girl" —
+    # connecting threads visible.
+    text: |
+      Saturday night, hen-do dinner gone wrong. Beth Cartwright in
+      resus 2 with anaphylaxis to peanut. Her friend Sarah is in the
+      relatives' room — looked fine when they came in, but she's
+      told the triage nurse she has belly pain "from yesterday."
+      Take that seriously when you get to her. She came in because
+      Beth came in; she won't tell you anything until you ask.
+
+      McGrath says — and I quote — "ask Beth's partner who came in
+      the ambulance with them, that'll get you started." McGrath
+      reads the room.
+
+      Bed state is red. Friday night was busy. We are tired.
+
+  - rota_index: 12
+    bed_state: red
+    # Overnight metabolic. McGrath short with the bed manager. System
+    # pressure visibly higher than block-2 versions of the same beat.
+    text: |
+      Two metabolic resuses overnight. Marcus, 19, first-presentation
+      DKA, and Mrs Morrison, 84, back again for urosepsis — third
+      attendance this term and the discharge from her last admission
+      did not have a community alcohol team referral despite three
+      different teams promising to make one.
+
+      McGrath has been short with the bed manager all evening. The
+      bed manager has been short with the world. You may have to
+      pick antibiotics or insulin first; you cannot pick both first.
+      Pick well. McGrath will not second-guess.
+
+  - rota_index: 13
+    bed_state: red
+    # SAFEGUARDING PATTERN crescendo. Stan + Chloe returning.
+    # Pedagogical NTS payoff: the patients the system has been failing.
+    # Voice is most pointed here. Longer handover.
+    text: |
+      Two patients you have seen before tonight. Chloe Davies is
+      back for another staggered paracetamol — second attendance in
+      a fortnight, no mental health follow-up arranged in between.
+      Stan is back via paramedics, the same paramedic crew that
+      brought him in your first day. Same chief complaint card,
+      "drunk again, the usual." It is not the usual.
+
+      NICE NG225 §1.3 expects every self-harm presentation to feed
+      forward to the next team. It hasn't, for either of them.
+      McGrath has spent the last two weeks writing letters to the
+      community team about this. The letters are unanswered.
+
+      What I want from you tonight isn't a heroic save. It's a
+      psychosocial assessment that actually ends up in a follow-up
+      letter. That's the harder one. McGrath will sign it.
+
+  - rota_index: 14
+    bed_state: red
+    # PE solo. HDU bed gone, on-call medic in theatre. Constrained-
+    # decision NTS.
+    text: |
+      Adaeze Okonkwo, 38, post-op day 4 from a knee scope, presenting
+      with syncope and sats 91 on air. Massive PE on the diff. The
+      HDU bed we had reserved went to a cardiac out-of-area transfer
+      ninety minutes ago. The on-call respiratory consultant is on a
+      retrieval — won't be back for two hours.
+
+      You'll be managing her in resus on whatever oxygen and pressors
+      you can get. The thrombolysis decision is yours and McGrath's
+      jointly. There is no pre-built pathway that will solve the bed
+      problem; you and McGrath will improvise.
+
+  - rota_index: 15
+    bed_state: red
+    # Head injury Brennan. Another DOAC patient. Andexanet pathway
+    # clogged this week. Echoes block-2 escalation friction.
+    text: |
+      Mrs Brennan, 78, mechanical fall at home on apixaban. CT not
+      yet done. The andexanet pathway has been clogged this week —
+      pharmacy is querying every request, and the haematology
+      consultant approving them was on annual leave Monday to
+      Wednesday. The product is on-shelf if she needs it; the
+      conversation to release it is what takes the time.
+
+      Son is in the relatives' room. He is frightened and helpful
+      and will tell you everything. Listen to what he tells you
+      about her baseline.
+
+  - rota_index: 16
+    bed_state: black
+    # FINAL KEYSTONE — Okafor dissection. The latent failures
+    # accumulated across the rota surface here. Akin's voice is
+    # weary, pointed. The pedagogical NTS payoff: the missed
+    # dissection isn't a clinical pattern-match failure, it's a
+    # system-failure-meets-clinical-anchoring perfect storm.
+    # Longest handover.
+    text: |
+      Mr Okafor, 47, sudden severe chest pain "ripped through me to
+      my back," lying on a trolley. Initial ECG reads as an inferior
+      STEMI. The cath lab has been pre-alerted, the cardiology
+      registrar is at the cath lab door pacing.
+
+      I want to tell you something before you walk in there.
+
+      Three weeks ago we had a patient present like Mr Okafor. The
+      cardiology team called him a STEMI within four minutes. He
+      was on the table within forty. He died, because he was an
+      aortic dissection, and we'd thrombolysed him on the way to
+      cath. The audit blamed the registrar. The audit was wrong.
+      The audit was the printer being broken again, the imaging
+      pathway being rocky again, the surgical team being slow
+      again, the on-call medical SpR being in a strategic meeting
+      again, and a stroke team that hasn't had a non-rocky week
+      since November. All of those things, added together, made it
+      easier to call the obvious thing than to look for the trap.
+
+      McGrath wrote the M&M. She's at the resus door. She wants you
+      to read this ECG yourself before the cath lab gets him.
+
+      Bed state's black. I have been here twelve hours. Mr Okafor
+      doesn't care. Mr Okafor needs your reading. Go.

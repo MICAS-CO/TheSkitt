@@ -10,6 +10,7 @@ import type {
 import { ClockBar } from '../shift/ClockBar';
 import { PatientPanel } from './PatientPanel';
 import { ResusMode } from './ResusMode';
+import { RotaClosingNote } from './RotaClosingNote';
 import { IconCitation, IconCountdown, IconNewInfo } from '../../style/icons';
 import { NPC_SPRITES, npcFrameToSvg, npcSpriteIdForSource } from '../../style/npcSprites';
 import { FX_EMOTES, fxFrameToSvg } from '../../style/fxSprites';
@@ -1268,6 +1269,13 @@ function DebriefPhase({ cs }: { cs: CaseRuntime }) {
           frame; round-1 reviewer flagged the prior above-score
           placement as obscuring the primary outcome. */}
       <ReasoningRead score={score} />
+
+      {/* M90 (Braintrust 10 round-2) — final-keystone NTS-narrative
+          closing note from McGrath. Renders only when the player has
+          just completed the dissection shift (Mr Okafor). Lands the
+          rota-arc thread that Akin's handovers and McGrath's memos
+          have seeded across all 17 shifts. */}
+      <RotaClosingNote caseId={cs.caseId} score={score} />
 
       {cs.reasons.length > 0 && (
         <>

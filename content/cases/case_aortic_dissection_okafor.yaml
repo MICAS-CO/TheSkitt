@@ -726,6 +726,13 @@ pearls:
   - 'Coronary-ostium dissection (RCA in ~30% of Type A) mimics inferior STEMI. Tearing pain + BP differential + pulse deficit + new AR murmur ALL outweigh the ECG. Anchoring on STEMI kills.'
   - 'Antiplatelets and anticoagulants are CONTRAINDICATED in suspected AD. If aspirin was given before suspicion was raised, do not escalate.'
   - 'Cell salvage + 4–6 unit crossmatch in parallel with the surgical call — the operative blood requirement is substantial.'
+  # M90 — NTS / human-factors pearls (Braintrust 10 round-2 narrative
+  # thread crescendo). The missed-dissection failure mode is almost
+  # always a combination of clinical anchoring + the latent system
+  # failures the player has been encountering across the rota.
+  - 'Crew Resource Management (CRM): when the cardiology team has already labelled this a STEMI before you walk in, the cognitive trap is steeper than for a fresh ECG. Speak up. "Can we hold the cath lab for sixty seconds while I check ADD-RS?" is the line FRCEM tests want you to be able to deliver across hierarchies.'
+  - 'James Reason swiss-cheese: missed AD in practice is rarely one error. The published M&Ms all describe a chain — busy department, anchored team, imaging delay, slow surgical referral. Recognise that you are operating inside that chain on this shift; the audit will hold the team accountable for noticing it.'
+  - 'Just Culture (RCEM-recommended): the candidate who calls a missed dissection on themselves in retrospective debrief AND names the system contributions scores higher on the workplace assessment than the candidate who reaches for a personal-failure explanation.'
 
 pitfalls:
   - 'Anchoring on the STEMI ECG and missing the tearing pain + BP differential.'
@@ -734,6 +741,9 @@ pitfalls:
   - 'Vasodilator before beta-blockade — reflex tachycardia, dissection propagation.'
   - 'Femoral access (line or art line) in a patient with potential iliac extension.'
   - "Anchoring on AD when it isn't — the must-not-miss alternative is genuinely an MI; pretest probability and ADD-RS guide the call."
+  # M90 — NTS pitfalls.
+  - 'Deferring to the team that owns the ECG-read (cardiology, in this case) when their reasoning carries the upstream label. The dissection trap closes precisely when the calling team commits to STEMI before you arrive.'
+  - 'Treating the missed dissection as a personal cognitive failure rather than a system / NTS failure in the debrief — both are partially true; only the second leads to durable change.'
 
 sources:
   - {

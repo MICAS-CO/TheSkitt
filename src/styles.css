@@ -3380,6 +3380,48 @@ a {
   border-left-color: rgba(120, 160, 220, 0.7);
 }
 
+/* M90 (Braintrust 10 round-2) — McGrath's NTS-narrative closing note
+   at the final keystone (Mr Okafor dissection). Heavier visual
+   weight than the ReasoningRead — this is the landing place for the
+   rota-arc thread. Three tone variants matching the keystone band. */
+.rota-closing-note {
+  margin: 16px 0;
+  padding: 16px 20px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  position: relative;
+}
+.rota-closing-note--cleared {
+  border-left-color: var(--accent);
+  background: linear-gradient(180deg, rgba(120, 160, 220, 0.04), var(--panel));
+}
+.rota-closing-note--borderline {
+  border-left-color: var(--warn);
+  background: linear-gradient(180deg, rgba(224, 168, 46, 0.04), var(--panel));
+}
+.rota-closing-note--failed {
+  border-left-color: var(--danger, #c5524a);
+  background: linear-gradient(180deg, rgba(197, 82, 74, 0.04), var(--panel));
+}
+.rota-closing-note__head {
+  margin-bottom: 8px;
+}
+.rota-closing-note__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.rota-closing-note__body {
+  margin: 0;
+}
+
 /* Results-back envelope hero (M19) — pops over investigations when ≥1 result back. */
 .enc__results-hero {
   display: flex;

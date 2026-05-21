@@ -222,3 +222,78 @@ describe('M37 — consultant memo + composer', () => {
     expect(yesterday.greeting).toMatch(/last shift/);
   });
 });
+
+describe('M89 — rota-position aware voice', () => {
+  const baseMemo: ShiftMemo = {
+    episodeId: 'ep_test',
+    episodeTitle: 'Test',
+    band: 'good',
+    livesSaved: 0,
+    livesLost: 0,
+    casesAttended: 1,
+    topTags: [],
+    highlightCaseTitle: null,
+    rapportBucket: null,
+    whenIso: new Date().toISOString(),
+  };
+
+  it('no rotaIndex: body is unchanged from base composition', () => {
+    const a = composeConsultantMessage(baseMemo);
+    const b = composeConsultantMessage(baseMemo, undefined, undefined);
+    expect(a.body).toBe(b.body);
+  });
+
+  it('rotaIndex 0 (entry shift): voice mentions "first shift on the floor"', () => {
+    const msg = composeConsultantMessage(baseMemo, undefined, 0);
+    expect(msg.body.toLowerCase()).toContain('first shift on the floor');
+  });
+
+  it('rotaIndex 4 (block 1 keystone): voice mentions "block 1 cleared"', () => {
+    const msg = composeConsultantMessage(baseMemo, undefined, 4);
+    expect(msg.body.toLowerCase()).toContain('block 1');
+  });
+
+  it('rotaIndex 4 + unsafe band: no block-1-cleared celebration', () => {
+    const unsafe: ShiftMemo = { ...baseMemo, band: 'unsafe', livesLost: 1 };
+    const msg = composeConsultantMessage(unsafe, undefined, 4);
+    expect(msg.body.toLowerCase()).not.toContain('block 1 cleared');
+  });
+
+  it('rotaIndex 10 (block 2 keystone): voice mentions "halfway"', () => {
+    const msg = composeConsultantMessage(baseMemo, undefined, 10);
+    expect(msg.body.toLowerCase()).toContain('halfway');
+  });
+
+  it('rotaIndex 13 (Chloe + Stan safeguarding crescendo): voice names the pattern', () => {
+    const msg = composeConsultantMessage(baseMemo, undefined, 13);
+    expect(msg.body.toLowerCase()).toContain('stan and chloe pattern');
+  });
+
+  it('rotaIndex 16 (final keystone, dissection): voice marks the rota ending', () => {
+    const msg = composeConsultantMessage(baseMemo, undefined, 16);
+    expect(msg.body.toLowerCase()).toContain('end of the rota');
+  });
+
+  it('rotaIndex 16 + unsafe: voice references Mr Okafor and frames as system failure', () => {
+    const unsafe: ShiftMemo = { ...baseMemo, band: 'unsafe', livesLost: 1 };
+    const msg = composeConsultantMessage(unsafe, undefined, 16);
+    expect(msg.body.toLowerCase()).toContain('okafor');
+    expect(msg.body.toLowerCase()).toContain('system failure');
+  });
+
+  it('intermediate block-2 position (e.g. 7): voice mentions "muscle memory" beat', () => {
+    const msg = composeConsultantMessage(baseMemo, undefined, 7);
+    expect(msg.body.toLowerCase()).toContain('muscle memory');
+  });
+
+  it('intermediate block-3 position (e.g. 14): voice mentions "pattern" theme', () => {
+    const msg = composeConsultantMessage(baseMemo, undefined, 14);
+    expect(msg.body.toLowerCase()).toContain('pattern');
+  });
+
+  it('out-of-bounds rotaIndex (negative): no position note appended', () => {
+    const a = composeConsultantMessage(baseMemo, undefined, undefined);
+    const b = composeConsultantMessage(baseMemo, undefined, -1);
+    expect(a.body).toBe(b.body);
+  });
+});

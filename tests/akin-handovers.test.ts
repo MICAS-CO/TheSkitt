@@ -64,4 +64,32 @@ describe('M88 — Akin handovers content', () => {
       expect(h.text.trim().length).toBeGreaterThan(40);
     }
   });
+
+  it('M89 ships full coverage — every rota position has an authored handover', () => {
+    const authored = new Set(parsed.handovers.map((h) => h.rota_index));
+    for (let i = 0; i < ROTA_ORDER.length; i++) {
+      expect(authored.has(i), `rota position ${i} (${ROTA_ORDER[i]!.episodeId}) is missing a handover`).toBe(true);
+    }
+  });
+
+  it('keystone handovers (positions 4, 10, 16) are longer than other positions', () => {
+    // The keystones get the heaviest pedagogical weight in the NTS
+    // arc. Their handovers should be more substantial than the
+    // intermediate position-1-3 / 5-9 / 11-15 atmospheric beats.
+    const keystoneIndices = [4, 10, 16];
+    const keystoneLengths = keystoneIndices.map(
+      (i) => parsed.handovers.find((h) => h.rota_index === i)!.text.length,
+    );
+    for (const len of keystoneLengths) {
+      expect(len).toBeGreaterThan(400);
+    }
+  });
+
+  it('final keystone (position 16) references the dissection patient', () => {
+    // The block-3 final keystone is the NTS-thread crescendo. Akin's
+    // voice should reference Mr Okafor specifically — that's the
+    // landed beat that connects the latent failures across the rota.
+    const final = parsed.handovers.find((h) => h.rota_index === 16)!;
+    expect(final.text.toLowerCase()).toContain('okafor');
+  });
 });

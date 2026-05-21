@@ -98,13 +98,67 @@ export interface ConsultantMessage {
 }
 
 /**
+ * M89 (Braintrust 10 round-2) — McGrath's voice evolves across the
+ * rota. The same band of performance reads differently depending on
+ * where the player is in the year-of-training the rota represents.
+ * This helper appends a short, position-aware sentence to the band
+ * body — never replacing it, just adding tone.
+ *
+ * Distinct beats at landmark positions (entry, block-1 keystone,
+ * block-2 keystone, block-3 mid, block-3 final). Subtler atmospheric
+ * beats at intermediate positions.
+ */
+function rotaPositionNote(rotaIndex: number | undefined, band: ShiftMemo['band']): string {
+  if (rotaIndex === undefined || rotaIndex < 0) return '';
+  // Landmark positions get specific beats. The unsafe band gets its
+  // own specific tone; the others lean toward observation.
+  if (rotaIndex === 0) {
+    return band === 'unsafe'
+      ? ' First shift on the floor. We start where we start. Come back in.'
+      : ' First shift on the floor. The hardest one to read is yourself.';
+  }
+  if (rotaIndex === 4 && band !== 'unsafe') {
+    return ' Block 1 cleared. The mileage starts to mean something from here.';
+  }
+  if (rotaIndex === 10 && band !== 'unsafe') {
+    return " Halfway through what this rota was always going to teach you. Block 2 done.";
+  }
+  if (rotaIndex === 13) {
+    // M89 round-1 reviewer flagged: safeguarding pattern misses
+    // trigger Datix / safeguarding review, NOT a clinical M&M
+    // (which is for morbidity / mortality). Corrected the
+    // governance pathway names.
+    return band === 'unsafe'
+      ? " The Stan and Chloe pattern is the case the safeguarding review will write about, not the resus you missed."
+      : " The Stan and Chloe pattern this week wasn't accidental. Read the safeguarding review when it lands.";
+  }
+  if (rotaIndex === 16) {
+    return band === 'unsafe'
+      ? " End of the rota. Mr Okafor was a system failure, not a personal one. We'll sit with this one."
+      : " End of the rota. Sit a minute. You came in green; you leave knowing this floor.";
+  }
+  // Intermediate beats — block-aware atmospheric tone.
+  if (rotaIndex >= 11) {
+    return " You've been on the floor a while now. The pattern in this week's shifts isn't accidental.";
+  }
+  if (rotaIndex >= 5) {
+    return ' Mid-rota. You should be feeling the workflow as muscle memory by now.';
+  }
+  return '';
+}
+
+/**
  * Compose a short consultant message keyed off the last shift memo.
  * Deterministic per memo — same input always renders the same lines,
  * so re-renders on the menu stay stable.
+ *
+ * M89: optional `rotaIndex` parameter shifts the tone of the body
+ * based on where the player is in the rota's narrative arc.
  */
 export function composeConsultantMessage(
   memo: ShiftMemo,
   playerFirstName?: string,
+  rotaIndex?: number,
 ): ConsultantMessage {
   const sinceHours = hoursSince(memo.whenIso);
   const recency = sinceHours < 6 ? 'just now' : sinceHours < 24 ? 'earlier' : 'last shift';
@@ -121,6 +175,8 @@ export function composeConsultantMessage(
       : memo.rapportBucket === 'cold'
         ? ' Word from the nursing notes: the patients felt rushed. Worth a thought next round.'
         : '';
+  // M89: rota-position tone shift.
+  const positionNote = rotaPositionNote(rotaIndex, memo.band);
 
   let body: string;
   switch (memo.band) {
@@ -130,17 +186,17 @@ export function composeConsultantMessage(
           memo.livesSaved > 0
             ? `You saved ${memo.livesSaved} clearly.`
             : 'Clean reasoning across the board.'
-        }${tagBlurb} Keep that exam discipline up.${rapportLine}`;
+        }${tagBlurb} Keep that exam discipline up.${rapportLine}${positionNote}`;
       break;
     case 'good':
       body =
         `Solid shift${focus}. The bones were right;` +
-        ` one or two cases want sharpening if you replay them.${tagBlurb}${rapportLine}`;
+        ` one or two cases want sharpening if you replay them.${tagBlurb}${rapportLine}${positionNote}`;
       break;
     case 'borderline':
       body =
         `That was a bumpy one${focus}. Worth a re-run when you've got 20 minutes —` +
-        ` the sequencing on a couple of cases tripped you up.${tagBlurb}${rapportLine}`;
+        ` the sequencing on a couple of cases tripped you up.${tagBlurb}${rapportLine}${positionNote}`;
       break;
     case 'unsafe':
       body =
@@ -148,7 +204,7 @@ export function composeConsultantMessage(
           memo.livesLost > 0
             ? `${memo.livesLost} patient${memo.livesLost === 1 ? '' : 's'} arrested or worse — `
             : 'There were safety calls that landed badly — '
-        }let's walk through what we'd do differently next time.${tagBlurb}${rapportLine}`;
+        }let's walk through what we'd do differently next time.${tagBlurb}${rapportLine}${positionNote}`;
       break;
   }
 

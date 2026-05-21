@@ -52,7 +52,18 @@ export const ROTA_ORDER: ReadonlyArray<RotaShiftRef> = [
   { episodeId: 'ep_hendo_shift', focusCaseIds: ['case_anaphylaxis_adult_peanut', 'case_ectopic_minors_sarah'], blockIndex: 3, isKeystone: false },
   { episodeId: 'ep_overnight_metabolic', focusCaseIds: ['case_dka_marcus', 'case_sepsis_uti_morrison'], blockIndex: 3, isKeystone: false },
   { episodeId: 'ep_overnight_safety_net', focusCaseIds: ['case_paracetamol_od_chloe', 'case_intox_stan_ambient'], blockIndex: 3, isKeystone: false },
-  { episodeId: 'ep_doac_double', focusCaseIds: ['case_stroke_acute_williams', 'case_head_injury_doac_brennan'], blockIndex: 3, isKeystone: false },
+  // M88b (Braintrust 10 audit, deferred from M88): ep_doac_double was
+  // dropped from the rota. Its dual-DOAC parallel teaching beat
+  // (reperfusion vs reversal under time pressure) was valuable but
+  // both constituent cases — Williams (LVO stroke) and Brennan (SDH
+  // on apixaban) — already have solo homes in the rota
+  // (ep_stroke_solo, ep_head_injury_doac), and using both in a third
+  // dual-bill shift was the worst recurrence offender in the build.
+  // The episode YAML, case files, and SHIFT_DEFS entry stay in place
+  // — they're not deleted, just unreferenced from the rota — so a
+  // future iteration with newly-authored stroke-on-DOAC + new SDH
+  // case files can reintroduce the dual-bill without the recurrence
+  // debt. See content/cases/AUDIT.md for the rule.
   { episodeId: 'ep_pe_solo', focusCaseIds: ['case_massive_pe_okonkwo'], blockIndex: 3, isKeystone: false },
   { episodeId: 'ep_head_injury_doac', focusCaseIds: ['case_head_injury_doac_brennan'], blockIndex: 3, isKeystone: false },
   { episodeId: 'ep_dissection_solo', focusCaseIds: ['case_aortic_dissection_okafor'], blockIndex: 3, isKeystone: true },
