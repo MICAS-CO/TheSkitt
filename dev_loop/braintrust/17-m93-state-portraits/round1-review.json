@@ -1,0 +1,46 @@
+{
+  "verdict": "request_changes",
+  "findings": [
+    {
+      "severity": "high",
+      "verdict": "request_changes",
+      "title": "OSD chip positioning occludes primary clinical payload",
+      "file": "src/style/frames.tsx",
+      "body": "The OSD chip is hardcoded to screenX + 4, screenY + 4 (top-left). The entire purpose of M93 is pedagogy via state-responsive sprites, requiring the player to spot visual clinical signs like sweating, pallor, or facial droop. The fixed top-left placement risks permanently occluding the faces of taller or off-center patient sprites.",
+      "recommendation": "Move the OSD chip to the bottom-left of the screen area (e.g., screenY + screenH - 20) where it sits safely above the CardioVis sticker, keeping the upper-center frame clear for the clinical portrait."
+    },
+    {
+      "severity": "medium",
+      "verdict": "request_changes",
+      "title": "Fragile magic-number heuristic for OSD background width",
+      "file": "src/style/frames.tsx",
+      "body": "The OSD background rect width is calculated using a magic multiplier: cornerLabel.length * 4.4 + 10. While this roughly approximates JetBrains Mono at 7px with 0.5 letter-spacing, OS-level font renderers behave differently. This heuristic will inevitably cause text clipping or awkward overhangs on different devices, breaking the high-quality visual bar M93 aims for.",
+      "recommendation": "Remove the magic-number SVG math. The safest and most accessible architectural move is to extract the OSD text out of the SVG entirely and render it as an absolute-positioned HTML <div> layered over the monitor, leveraging native DOM text-flow and padding."
+    },
+    {
+      "severity": "high",
+      "verdict": "request_changes",
+      "title": "OSD text background introduces WCAG contrast regression",
+      "file": "src/style/frames.tsx",
+      "body": "The OSD background uses #000 at 0.45 opacity over an already dark #1A2A28 baseline. With phosphor-green #86E0B5 text at a tiny fontSize=7, this risks failing WCAG 2.1 contrast ratios, especially when rendering over lighter areas of patient sprites. M92 explicitly addressed WCAG danger cues, and M93 is regressing that baseline.",
+      "recommendation": "Increase the OSD rect opacity to at least 0.85, or use a solid #111 fill, to guarantee text contrast and legibility regardless of the sprite rendered behind it."
+    },
+    {
+      "severity": "low",
+      "verdict": "approve_with_note",
+      "title": "Tautological state-responsiveness tests",
+      "file": "tests/sprites.test.ts",
+      "body": "The test expect(deterioratingSvg).not.toBe(triagedSvg) only proves that the SVG strings differ by at least one byte. It does not verify that the clinical change is actually present or pedagogically legible. A change in a random seed or layout pixel would pass this test without actually shifting the clinical visual state.",
+      "recommendation": "For the next testing milestone, consider adding semantic data-attributes to the sprite engine's SVG output (e.g., data-clinical-sign=\"cyanosis\") so tests can assert the actual presence of the clinical sign, not just string inequality."
+    },
+    {
+      "severity": "low",
+      "verdict": "approve_with_note",
+      "title": "Unnecessary re-renders tied to kernel clock tick",
+      "file": "src/ui/encounter/PatientPanel.tsx",
+      "body": "PatientPanel threads ks.clockMin directly into the Monitor prop to render a static string. Assuming clockMin updates every in-game or real-time minute, this forces React to re-render the entire heavy Monitor SVG structure (including gradients and scanlines). It is poor view-state architecture to couple a static decorative SVG frame to a high-frequency kernel tick.",
+      "recommendation": "Isolate the OSD text in its own small memoized component that overlays the Monitor, keeping the heavy SVG frame pure and static across clock updates."
+    }
+  ],
+  "overall_take": "M93 successfully hits the visual bar requested by Braintrust 15, beautifully bridging the 'pixel-art' identity with the 'clinical cockpit' UI. However, the exact mechanism used to render the new OSD chip (magic-number SVG width calculations and fixed top-left placement) introduces severe layout fragility and directly risks occluding the state-responsive facial cues that justify the portrait's existence. Before the next playtest, extract the OSD text from the SVG into a native HTML DOM overlay to instantly solve the width calculations, fix the contrast accessibility, and allow flexible repositioning away from the patient's face."
+}

@@ -1,0 +1,79 @@
+# Two-case 20-minute overnight metabolic shift.
+#
+# Marcus (DKA, resus, T+0, deteriorates at T+15 if no insulin AND no
+# fluids) and Mrs Morrison (urosepsis, resus, T+0, deteriorates at T+10
+# if no antibiotics AND no fluids). The point is the player choosing
+# which time-critical bundle to run first.
+#
+# No arc — these are two unrelated patients sharing a tough overnight
+# shift. The competing time pressures are the puzzle.
+
+schema_version: 1
+id: ep_overnight_metabolic
+title: 'Overnight metabolic — two resus patients'
+learning_objectives:
+  - 'Run the JBDS-IP DKA bundle: fluids first, fixed-rate insulin, K+ scheduling, no bolus, no bicarbonate.'
+  - 'Run the Sepsis Six within the first hour (NICE NG51).'
+  - 'Prioritise across two time-critical resus patients on one clock.'
+
+curriculum_tags: [EnP2, EnC2, RP6, IP3, NeuP1, ElP1]
+difficulty_band: ST3
+shift_duration_min: 20
+
+focus_cases:
+  - case_dka_marcus
+  - case_sepsis_uti_morrison
+
+ambient_cases: []
+
+scheduled_events:
+  - id: ev_sepsis_deterioration
+    type: deterioration_if_not_x_by_t
+    t_min: 10
+    case_id: case_sepsis_uti_morrison
+    required_action_ids:
+      - mx_iv_abx_within_1h
+      - mx_fluid_resus
+    new_state: arrested
+
+  # M86 (Braintrust 06 audit): the `ev_dka_deterioration` event was
+  # removed entirely. Adult DKA has a real time-critical bundle
+  # (JBDS-IP fluid-first, then fixed-rate insulin) but the catastrophe
+  # is over hours, not minutes. The earlier softening (arrested →
+  # deteriorating) left a no-op event — Marcus starts in `deteriorating`
+  # (initial_state) so a T+15 event setting him to `deteriorating` was
+  # redundant with the case state machine. Round-1 reviewer caught
+  # this. The case state machine retains its deteriorating → stable
+  # rescue path via mx_fixed_rate_insulin.
+
+  - id: ev_sepsis_family
+    type: family_arrival
+    t_min: 13
+    case_id: case_sepsis_uti_morrison
+    npc: Helen (Mrs Morrison's daughter)
+
+  - id: ev_dka_results
+    type: results_back
+    t_min: 6
+    case_id: case_dka_marcus
+    investigation_id: ix_vbg
+
+  - id: ev_sepsis_results
+    type: results_back
+    t_min: 7
+    case_id: case_sepsis_uti_morrison
+    investigation_id: ix_vbg_lactate
+
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 14
+    severity: firm
+
+arcs: []
+
+author_notes: |
+  Designed to feel like a 3 a.m. resus with two simultaneously
+  decompensating metabolic patients. The player who tries to do
+  both bundles strictly in parallel will struggle; the right move
+  is to start fluids on both, then insulin on Marcus and antibiotics
+  on Morrison, in that order.

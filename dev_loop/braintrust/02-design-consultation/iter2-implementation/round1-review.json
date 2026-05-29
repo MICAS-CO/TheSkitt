@@ -1,0 +1,34 @@
+{
+  "verdict": "request_changes",
+  "findings": [
+    {
+      "severity": "high",
+      "title": "Diagnosis leaks on lab result envelopes",
+      "file": "src/ui/encounter/phases/InvestigationsPhase.tsx",
+      "body": "The author claims every player-facing `cs.data.title` was replaced, but missed `InvestigationsPhase.tsx:39`. A real UK lab envelope's 'Re:' field would contain the patient's name, hospital number, or chief complaint, not the final diagnosis. Leaving `re={cs.data.title}` on the `ResultsEnvelope` will spoil the diagnosis as soon as the player opens a lab result.",
+      "recommendation": "Update `InvestigationsPhase.tsx` to pass `cs.data.chief_complaint` to the `ResultsEnvelope`'s `re` prop."
+    },
+    {
+      "severity": "medium",
+      "title": "Correct/wrong styling completely removed from differential cards",
+      "file": "src/ui/encounter/EncounterScreen.tsx",
+      "body": "In `pickCardClass`, the `enc__card--correct` and `enc__card--wrong` classes were removed entirely, and `isCorrect` is now ignored. While hiding the answer at lock-in is correct for M81, completely removing the styling means the cards never show green/red, even during the debrief phase. Retaining `isCorrect` for 'API compatibility' in a local React helper is also an anti-pattern.",
+      "recommendation": "Either drop the `isCorrect` parameter entirely if cards are never meant to be colored again, or add a phase check (e.g., `isDebrief`) to `pickCardClass` so the correct/wrong classes can be applied when the player reaches the debrief."
+    },
+    {
+      "severity": "low",
+      "title": "Unknown role migration defaults to hardest difficulty",
+      "file": "src/state/character.ts",
+      "body": "In `normaliseRole()`, unknown or corrupted roles now default to `'Registrar'`. Previously, the fallback was `'F1'` (the easiest tier). Upgrading a corrupted save to the hardest difficulty tier (Registrar) is a harsh regression for affected players.",
+      "recommendation": "Change the fallback in `normaliseRole()` to `'Intern'` to match the leniency of the previous `'F1'` default."
+    },
+    {
+      "severity": "low",
+      "title": "McGrath dialogue lost some natural flavor",
+      "file": "src/state/consultantInterrupts.ts",
+      "body": "Replacing the specific case name with 'Your patient' and 'this one' makes McGrath sound a bit more generic. 'Your patient is arresting' is slightly stiff for a high-stress bedside interruption compared to the old 'Brennan is arresting'.",
+      "recommendation": "Consider using 'They are arresting' or 'This one is arresting' to maintain her brisk, informal-but-authoritative tone, or eventually wire in the patient's actual surname (e.g., 'Mr Brennan is arresting') in a future iteration."
+    }
+  ],
+  "overall_take": "The structural shift from title to chief_complaint is well-executed and correctly defuses the spoiler issue across the board, hub, and encounter header. Okafor's 'query STEMI' is a great triage trap primer. However, there is a critical missed surface in the investigations phase, a regression in the save migration fallback, and incomplete handling of the differential card styling that need to be addressed before landing."
+}

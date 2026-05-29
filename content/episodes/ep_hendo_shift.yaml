@@ -1,0 +1,105 @@
+# MILESTONE 5 + 8 — two-case shift with intersecting arc + ambient
+# board pressure.
+#
+# 20-minute shift containing:
+#   FOCUS:
+#     - Beth (anaphylaxis, resus, T+0, deteriorates at T+5 if no adrenaline)
+#     - Sarah (ectopic, minors, triaged at T+5, arrests at T+16 if neglected)
+#   AMBIENT (Milestone 8):
+#     - Stan (frequent flyer intox, minors, T+0, hypoglycaemic + head injury)
+#     - Mrs Patel (chest pain in waiting room, T+0, anterior STEMI)
+#
+# Connected by arc_hendo_dinner between Beth and Sarah.
+
+schema_version: 1
+id: ep_hendo_shift
+title: 'Shift: the hen-do'
+learning_objectives:
+  - 'Manage anaphylaxis per Resus Council UK 2021 against a real shift clock.'
+  - 'Recognise that a deceptively-well minors patient with abdo pain + positive βhCG is an ectopic until proven otherwise (NICE NG126).'
+  - 'Triangulate across cases — asking the right history question in one bay unlocks history in another.'
+  - 'Hold the whole board: a frequent flyer in a side room and a stoic woman in the waiting room are two of the most dangerous patients in the department.'
+  - 'Prioritise time-critical decisions across competing patients.'
+
+curriculum_tags: [RP2, AP1, AP2, AC1, ObC4, ObP1, ObP2, GC1, MHC1, CP1, CC1, TP1]
+difficulty_band: ST3
+shift_duration_min: 20
+
+focus_cases:
+  - case_anaphylaxis_adult_peanut
+  - case_ectopic_minors_sarah
+
+# M88 (Braintrust 10 round-2 audit): the ambient_cases Patel + Stan
+# were dropped from this shift. Both have focused single-shift homes
+# in the rota (Patel at entry shift; Stan as the build's named HIU
+# across entry + safety_net). Repurposing them as ambients here was
+# content density without narrative weight, and the duplication
+# strained the build's clinical-realism claim.
+ambient_cases: []
+
+scheduled_events:
+  # ─── Beth (focus) ────────────────────────────────────────────────────────
+  - id: ev_beth_deterioration
+    type: deterioration_if_not_x_by_t
+    t_min: 5
+    case_id: case_anaphylaxis_adult_peanut
+    required_action_ids: [mx_adrenaline_im]
+    new_state: arrested
+
+  - id: ev_family_arrival
+    type: family_arrival
+    t_min: 8
+    case_id: case_anaphylaxis_adult_peanut
+    npc: Tom (Beth's partner)
+
+  - id: ev_tryptase_back
+    type: results_back
+    t_min: 10
+    case_id: case_anaphylaxis_adult_peanut
+    investigation_id: ix_tryptase
+
+  # ─── Sarah (focus) ───────────────────────────────────────────────────────
+  - id: ev_sarah_arrival
+    type: new_arrival
+    t_min: 5
+    case_id: case_ectopic_minors_sarah
+
+  # M86 (Braintrust 06 audit): softened from arrested → deteriorating
+  # (was originally `new_state: arrested`). Ruptured ectopic is time-
+  # critical but 16-min arrest from undetection is more aggressive
+  # than the clinical course allows. Kept (not removed) because
+  # this event uses ABSOLUTE clock time while the case state machine's
+  # `inaction_by` trigger uses SINCE-TRIAGE time — Sarah triages at
+  # T+5 (via ev_sarah_arrival), so her state-machine min:16 fires at
+  # T+21, past the 20-min shift end. Without this episode event there
+  # is no in-shift deterioration coverage for Sarah at all. Round-2
+  # reviewer flagged this as a no-op assuming the two sources matched;
+  # they don't, on multi-arrival shifts.
+  - id: ev_sarah_rupture
+    type: deterioration_if_not_x_by_t
+    t_min: 16
+    case_id: case_ectopic_minors_sarah
+    required_action_ids: [mx_serum_bhcg, mx_call_gynae]
+    new_state: deteriorating
+
+  # M88 (Braintrust 10 audit): the ambient-Patel and ambient-Stan
+  # scheduled events (ev_patel_news2_t8, ev_stan_news2_t10,
+  # ev_stan_arrest_t15) were removed when those patients were dropped
+  # as ambients from this shift. Both have focused homes elsewhere
+  # in the rota; the M86 deterioration audit had already softened
+  # / removed the most aggressive of their ambient outcomes here.
+
+  # ─── Department-level ───────────────────────────────────────────────────
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 12
+    severity: firm
+
+arcs:
+  - arc_hendo_dinner
+
+author_notes: |
+  Four patients on the board at once — two focus, two ambient. The
+  ambient cases each have a "you missed it" trap: Stan needs a BM
+  check by T+10 and dextrose by T+15; Mrs Patel needs an ECG by
+  T+8 and aspirin by T+14. The clock is the antagonist.

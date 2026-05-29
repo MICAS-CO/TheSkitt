@@ -1,0 +1,98 @@
+# 20-min single-case shift built around Mr Kowalski's variceal UGIB.
+# The defining tension: he's exsanguinating in front of you while
+# also being a Child-Pugh C cirrhotic, encephalopathic, hypothermic-
+# trending, and due to start alcohol withdrawal within hours. Two
+# different bundles ("variceal bleed" + "decompensated cirrhosis")
+# need to fire in parallel.
+
+schema_version: 1
+id: ep_ugib_solo
+title: 'Variceal UGIB — Sepsis Six of the liver'
+
+learning_objectives:
+  - 'Apply the variceal UGIB bundle (NICE CG141 + BSG 2015): empirical terlipressin + ceftriaxone within 1 h, restrictive Hb 7-8 target, OGD within 12-24 h.'
+  - 'Recognise that liberal transfusion worsens variceal bleeding (Villanueva NEJM 2013) and that TXA does NOT help in UGIB (HALT-IT 2020).'
+  - 'Treat coagulopathy by deficit (FFP / platelets / cryo) not by reflex vitamin K — cirrhotic INR is synthetic failure not vitamin-K deficiency.'
+  - 'Coordinate parallel pathways: variceal bleed + hepatic encephalopathy + Wernicke prevention + impending alcohol withdrawal.'
+  - 'Avoid the traps: pre-OGD PPI bolus, routine NG aspiration, vitamin K for cirrhotic INR.'
+
+curriculum_tags: [GP4, GC2]
+difficulty_band: ST3
+shift_duration_min: 20
+
+focus_cases:
+  - case_ugib_variceal_kowalski
+
+ambient_cases: []
+
+scheduled_events:
+  # T+2 — Glasgow-Blatchford comes back from the nurse's calc.
+  - id: ev_kowalski_gbs_back
+    type: results_back
+    t_min: 2
+    case_id: case_ugib_variceal_kowalski
+    investigation_id: ix_gbs
+
+  # T+4 — VBG back with the metabolic picture
+  - id: ev_kowalski_vbg_back
+    type: results_back
+    t_min: 4
+    case_id: case_ugib_variceal_kowalski
+    investigation_id: ix_vbg
+
+  # T+8 — housemate brings the GP letters and prior endoscopy report
+  - id: ev_kowalski_housemate
+    type: family_arrival
+    t_min: 8
+    case_id: case_ugib_variceal_kowalski
+    npc: 'Housemate Daniel — brings GP letters confirming Child-Pugh C, variceal banding history, propranolol non-compliance.'
+
+  # T+10 — repeat haematemesis (the second-bleed beat)
+  - id: ev_kowalski_rebleed
+    type: news2_escalation
+    t_min: 10
+    case_id: case_ugib_variceal_kowalski
+    new_news2: 9
+    if_no_action: true
+
+  # T+12 — bloods back
+  - id: ev_kowalski_bloods_back
+    type: results_back
+    t_min: 12
+    case_id: case_ugib_variceal_kowalski
+    investigation_id: ix_bloods
+
+  # T+15 — endoscopist phones for handover (if endoscopy call done)
+  - id: ev_kowalski_endo_call
+    type: lab_callback
+    t_min: 15
+    case_id: case_ugib_variceal_kowalski
+    investigation_id: ix_bloods
+    urgent_finding: "Endoscopy SpR: 'We've cleared a slot for him. Bring him up after RSI. Has he had terlipressin and ceftriaxone?'"
+
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 14
+    severity: gentle
+
+arcs: []
+
+author_notes: |
+  Solo Tier-1 shift. Pacing:
+
+  - T+0: paramedic handover; ongoing haematemesis on arrival.
+  - T+2: GBS = 16 confirms top-of-spectrum risk.
+  - T+4: VBG shows haemorrhagic shock with raised lactate.
+  - T+8: housemate brings confirmatory history of cirrhosis +
+    propranolol non-compliance — locks variceal as the working dx.
+  - T+10: rebleed beat — NEWS2 jumps to 9.
+  - T+12: bloods confirm Hb 76 + coagulopathy + AST:ALT 2:1.
+  - T+15: endoscopist phones — tests whether the player has
+    activated the bundle in time.
+  - T+18: deterioration deadline (case-level inaction_by).
+
+  The Child-Pugh C substrate makes the case feel different from a
+  pure trauma haemorrhage even though the haemodynamics look similar
+  — restrictive transfusion is the key counterintuitive call.
+
+  Inspiration: TheCase.Report S1E3 (Upper GI Bleed + SALAD).

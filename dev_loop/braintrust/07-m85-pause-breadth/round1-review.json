@@ -1,0 +1,20 @@
+{
+  "verdict": "request_changes",
+  "findings": [
+    {
+      "severity": "high",
+      "title": "Resus mode clock incorrectly paused in reasoning sections",
+      "file": "src/ui/shift/ShiftView.tsx",
+      "body": "The `useEffect` in `ShiftView` sets `autoPaused` based purely on `REASONING_SECTIONS.has(focusedSection)`. However, `EncounterScreen` has a `resusActive` mode which is fundamentally time-critical. If a player is in a reasoning section (e.g., 'investigations') and toggles resus mode on, `autoPaused` remains `true`, shielding the player from real-time pressure during a resuscitation.",
+      "recommendation": "Lift the `resusActive` state so `ShiftView` can read it (or have `EncounterScreen` manage `autoPaused`), and ensure `autoPaused` is forced to `false` when resus mode is active."
+    },
+    {
+      "severity": "medium",
+      "title": "Workup parsimony counts are dead-ended in the debrief UI",
+      "file": "src/ui/encounter/EncounterScreen.tsx",
+      "body": "By hardcoding `workupPenalty = 0` in `scoreCase`, the debrief UI likely no longer displays the extra investigations count (assuming the UI previously conditioned the display on `penaltyPercent > 0`, which is standard for penalty line items). The pedagogical intent was to remove the score penalty but retain the feedback, but the diff does not add a dedicated line in `DebriefPhase` to surface `score.workup.extraIxOrdered`.",
+      "recommendation": "Add a line in `DebriefPhase` to explicitly display `score.workup.extraIxOrdered` when it is > 0, e.g., `<li>Extra investigations ordered: {score.workup.extraIxOrdered} (no penalty)</li>`."
+    }
+  ],
+  "overall_take": "The core logic for differential breadth and auto-pausing is solid (and correctly handles the string splitting for exam findings with colons), but the auto-pause mechanism conflicts with the time-critical nature of resus mode, and the workup parsimony feedback is inadvertently hidden from the UI."
+}

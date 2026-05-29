@@ -1,0 +1,46 @@
+{
+  "verdict": "request_changes",
+  "findings": [
+    {
+      "severity": "high",
+      "verdict": "request_changes",
+      "title": "React render-cycle thrashing on sim tick",
+      "file": "src/ui/shift/ShiftHubScreen.tsx",
+      "body": "[ARCHITECTURE] ShiftHubScreen forces a full React re-render of the SVG and all HTML buttons on every kernel tick by deliberately reading useSim((s) => s.tick). In a sim with a high-frequency tick rate, this destroys performance and drains battery by rebuilding the DOM tree even when patient states are identical. The view layer is polling the kernel instead of subscribing to state diffs.",
+      "recommendation": "Remove the tick dependency. Expose a memoized selector from useSim that only updates when the focus_cases list or a case's bay/state materially changes, or debounce the floorplan update to 1Hz."
+    },
+    {
+      "severity": "medium",
+      "verdict": "request_changes",
+      "title": "Reduced-motion accessibility wipes clinical state",
+      "file": "src/styles.css",
+      "body": "[CLINICAL / ACCESSIBILITY] The CSS disables animations entirely for prefers-reduced-motion, stripping the warning pulse from deteriorating and arrested cards. Because the border color is the only other differentiator, this violates WCAG 1.4.1 (use of color) and strips critical clinical danger cues for accessibility users.",
+      "recommendation": "When setting animation: none, replace it with a static fallback visual indicator of danger (e.g., changing border-style to dashed, or injecting a warning icon pseudo-element) so the state remains clinically distinct."
+    },
+    {
+      "severity": "low",
+      "verdict": "request_changes",
+      "title": "Mixed interaction signaling on Deceased patients",
+      "file": "src/styles.css",
+      "body": "[GAMEPLAY] The component notes deceased patients must still be clicked to complete the NHS M&M folder workflow, but applies opacity: 0.7 to them. In modern web UI, dimmed opacity universally signals a disabled or non-interactive state. You are demanding interaction while visually discouraging it.",
+      "recommendation": "Remove opacity: 0.7 from .ed-floorplan__card--deceased. Use a high-contrast, static desaturation (like a solid gray border) that still looks like an active, clickable button."
+    },
+    {
+      "severity": "low",
+      "verdict": "approve_with_note",
+      "title": "Hardcoded string truncation destroys clinical disambiguation",
+      "file": "src/ui/shift/EdFloorplan.tsx",
+      "body": "[CLINICAL] shortTitle aggressively truncates the patient title at 26 characters using JS string slicing. In a clinical context, '72M - RIF pain - ruling a...' and '72M - RIF pain - ruling o...' become identical, risking wrong-patient selection in a busy ED. JS truncation ignores available CSS flex space.",
+      "recommendation": "Remove the JS shortTitle function. Rely on CSS text-overflow: ellipsis combined with -webkit-line-clamp to maximize the visible clinical context based on the actual rendered container width."
+    },
+    {
+      "severity": "low",
+      "verdict": "approve_with_note",
+      "title": "E2E test landmark selection is fragile",
+      "file": "e2e/hub-flow.spec.ts",
+      "body": "[ARCHITECTURE] The E2E test asserts on page.getByRole('region', { name: /department floorplan/i }). This clever regex works for now, but couples the test deeply to the component's dynamic English string implementation (which changes based on live patient count). If copy changes, the test silently breaks.",
+      "recommendation": "Use page.getByTestId('ed-floorplan') to assert the structural mount, reserving role/name assertions specifically for dedicated accessibility tests."
+    }
+  ],
+  "overall_take": "The removal of the Phaser dependency is a massive win for bundle size and architectural simplicity, but wiring the new SVG floorplan to the raw unthrottled sim tick completely defeats the performance benefits. If you only fix one thing before the next playtest, decouple ShiftHubScreen from the game tick. A web UI should be reactive to state changes, not polling at 60fps; fixing this will stop the app from melting laptop batteries and ensure the UI feels as crisp as the clinical rigor it represents."
+}

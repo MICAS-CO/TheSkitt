@@ -1,0 +1,57 @@
+# Single-case 20-min stroke shift.
+#
+# Mr Williams arrives in resus 37 min into onset. CT within 25 min,
+# thrombolysis-or-thrombectomy decision by T+10, HASU referral by
+# T+12. The DOAC-alteplase contraindication is the headline learning.
+
+schema_version: 1
+id: ep_stroke_solo
+title: 'Stroke onset — thrombolysis window'
+learning_objectives:
+  - 'Run the NICE NG128 hyperacute stroke pathway against the clock: BM, CT within 25 min, stroke team activated.'
+  - 'Recognise the DOAC-alteplase contraindication and prefer mechanical thrombectomy for anticoagulated large-vessel occlusion.'
+  - 'Avoid the BP-aggression and early-aspirin traps that worsen outcomes.'
+
+curriculum_tags: [NeuC12, NeuP5, NeuP4, NeuP1]
+difficulty_band: CT2
+shift_duration_min: 20
+
+focus_cases:
+  - case_stroke_acute_williams
+
+ambient_cases: []
+
+scheduled_events:
+  - id: ev_stroke_deterioration
+    type: deterioration_if_not_x_by_t
+    t_min: 12
+    case_id: case_stroke_acute_williams
+    required_action_ids:
+      - mx_ct_within_1h
+      - mx_call_stroke_team
+    new_state: arrested
+
+  - id: ev_ct_results
+    type: results_back
+    t_min: 8
+    case_id: case_stroke_acute_williams
+    investigation_id: ix_ct_head
+
+  - id: ev_cta_results
+    type: results_back
+    t_min: 11
+    case_id: case_stroke_acute_williams
+    investigation_id: ix_cta
+
+  - id: ev_family_arrival
+    type: family_arrival
+    t_min: 5
+    case_id: case_stroke_acute_williams
+    npc: Carol (Mr Williams's wife)
+
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 14
+    severity: firm
+
+arcs: []

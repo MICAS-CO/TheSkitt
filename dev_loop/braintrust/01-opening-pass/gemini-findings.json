@@ -1,0 +1,59 @@
+{
+  "overall_take": "The project has successfully proven its core loop, but its ambition to be a 'Dwarf Fortress' simulation is currently an illusion held together by heavily choreographed, hardcoded timelines. If you change ONE thing before the next playtest, it must be decoupling patient deterioration from absolute shift-minutes. Right now, the multi-patient board is a ticking time bomb of colliding scripts rather than a systemic simulation. Fixing the temporal architecture will immediately unlock the ambient pressure you are trying to build.",
+  "findings": [
+    {
+      "title": "Absolute time triggers break concurrent gameplay",
+      "dimension": "gameplay",
+      "severity": "critical",
+      "file_or_case": "src/sim/kernel.ts / case_ectopic_minors_sarah.yaml",
+      "body": "The `inaction_by` state transition evaluates against absolute shift time (`this.state.clockMin >= trigger.min`). In a multi-patient shift, if the player spends 17 minutes resuscitating Beth, Sarah (whose `inaction_by` is set to 16) will arrest off-screen before the player even opens her case. The simulation is choreographed for a single linear path, not systemic concurrency.",
+      "recommendation": "Migrate `inaction_by` to evaluate against `elapsed_min` since triage or `enteredAt`, allowing ambient cases to degrade based on the duration of player neglect rather than a hardcoded minute on the global clock.",
+      "evidence": "In `case_ectopic_minors_sarah.yaml`, the transition to `arrested` fires at `min: 16`. In `kernel.ts`, `triggerMatches` evaluates `inaction_by` using `this.state.clockMin >= trigger.min`."
+    },
+    {
+      "title": "Zero clinical friction for investigations",
+      "dimension": "clinical",
+      "severity": "high",
+      "file_or_case": "src/sim/kernel.ts / src/ui/encounter/EncounterScreen.tsx",
+      "body": "Ordering a CTPA or transferring a patient to the scanner currently has no physical cost in the simulation. The player clicks 'Order', the patient remains in the resus bay, and the player can continue examining them while the timer ticks. This fails the FRCEM/Dwarf Fortress bar for resource and stability management.",
+      "recommendation": "Introduce a `location` state to `CaseRuntime`. Ordering advanced imaging should move the patient to `scanner` for X minutes, locking out the History, Examination, and Management phases, forcing the player to decide if the patient is stable enough to leave the bay.",
+      "evidence": "`orderInvestigation` in `kernel.ts` merely sets a map entry. `InvestigationsPhase.tsx` and `EncounterScreen.tsx` do not lock the patient state during the `turnaround_min`."
+    },
+    {
+      "title": "View-state leakage into the simulation kernel",
+      "dimension": "architecture",
+      "severity": "high",
+      "file_or_case": "src/sim/kernel.ts",
+      "body": "The `SimKernel` is managing React UI modal states (`pendingInterrupt` and `pendingDeathNotice`). Because these are transient view states living inside the domain model, they break the snapshot/restore contract (they are explicitly excluded from serialization) and tightly couple the engine to the UI layer.",
+      "recommendation": "Extract transient UI events to an event-emitter pattern or a separate Zustand UI store. The kernel should emit a `ConsultantInterruptEvent` and forget about it, leaving the UI to manage the modal lifecycle and dismissal.",
+      "evidence": "Lines defining `pendingInterrupt` and `pendingDeathNotice` in `KernelState`, and the `dismissConsultantInterrupt` / `dismissDeathNotice` methods in `SimKernel`."
+    },
+    {
+      "title": "Transactional dialogue economy",
+      "dimension": "voice",
+      "severity": "medium",
+      "file_or_case": "case_paracetamol_od_chloe.yaml",
+      "body": "The 'Disco Elysium' bar requires psychological friction, but rapport currently functions as a vending machine coin. Picking the 'compassionate' branch yields a massive, multi-paragraph exposition dump (e.g., Chloe's intent disclosure). It reads like a tutorial reward rather than a human conversation.",
+      "recommendation": "Break exposition dumps into multi-step, pull-driven nodes. Use the `reveals` array to open new, specific follow-up questions rather than dumping the whole backstory in one `response` block. Make the patient hesitate even when rapport is high.",
+      "evidence": "The `compassionate` branch of `hx_chloe_intent` in Chloe's case delivers intent, planning, and regret in a single 40-word block."
+    },
+    {
+      "title": "God-component architecture in EncounterScreen",
+      "dimension": "architecture",
+      "severity": "medium",
+      "file_or_case": "src/ui/encounter/EncounterScreen.tsx",
+      "body": "At ~1300 LOC, `EncounterScreen.tsx` mixes layout, simulation subscription, and heavy domain logic (like `collectClues` and `computeBadge`). It violates the kernel boundary by directly calling `kernel.recordAsk` and `kernel.toggleAction` deep inside nested render functions.",
+      "recommendation": "Extract `collectClues` and `computeBadge` to pure utility files. Move the inline components (`HistoryPhase`, `DifferentialPhase`, `DebriefPhase`) into their own files in `src/ui/encounter/phases/`. Pass a bounded `dispatch` function rather than the whole kernel instance.",
+      "evidence": "The presence of `DifferentialPhase`, `DebriefPhase`, `collectClues`, and `computeBadge` all residing in `EncounterScreen.tsx`."
+    },
+    {
+      "title": "Death modal escape hatch fails to terminate shift",
+      "dimension": "gameplay",
+      "severity": "medium",
+      "file_or_case": "src/ui/encounter/EncounterScreen.tsx",
+      "body": "When a patient dies mid-shift, the `PatientDeathModal` offers a 'debrief now' button. However, clicking this only changes the UI section to 'debrief'. The kernel's `isRunning` state remains true, meaning ambient patients will continue to deteriorate and trigger events while the player is reading the debrief.",
+      "recommendation": "Add an `endShiftEarly()` method to `SimKernel` that sets `isShiftOver = true` and `isRunning = false`. Call this method in the `onDebrief` callback of the `PatientDeathModal`.",
+      "evidence": "In `EncounterScreen.tsx`, `onDebrief={() => { kernel.dismissDeathNotice(); onSectionChange('debrief'); }}`. `kernel.ts` lacks an early termination method."
+    }
+  ]
+}

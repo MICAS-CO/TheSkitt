@@ -1,0 +1,84 @@
+# Single-case 20-min shift built around Mrs Brennan's well-looking but
+# anticoagulated head injury. The whole shift is about not falling for
+# the GCS-15 false reassurance — NICE NG232 mandates CT within 8 h on
+# anticoagulant regardless. The CT result at T+12 forces the player to
+# pivot from "safety-net home" to "reverse + admit".
+
+schema_version: 1
+id: ep_head_injury_doac
+title: 'Head injury — DOAC reasoning'
+
+learning_objectives:
+  - 'Apply the NICE NG232 anticoagulant + head-injury rule: CT within 8 hours regardless of GCS, even if the patient looks well.'
+  - 'Choose the correct DOAC reversal pathway: andexanet alfa (NICE TA697) for apixaban / rivaroxaban; idarucizumab for dabigatran; 4-factor PCC as pragmatic alternative. NOT vitamin K + FFP.'
+  - 'Recognise that INR / PT / APTT do NOT reliably measure apixaban — use anti-Xa activity (calibrated for the specific DOAC).'
+  - 'Apply Canadian C-spine high-risk criteria (age ≥65, dangerous mechanism, paraesthesia) — any positive feature mandates imaging.'
+
+curriculum_tags: [TP1, NeuC11]
+difficulty_band: CT2
+shift_duration_min: 20
+
+focus_cases:
+  - case_head_injury_doac_brennan
+
+ambient_cases: []
+
+scheduled_events:
+  # T+5 — son re-asks "can we go home now?" — bed pressure narrative beat.
+  - id: ev_brennan_son_pressure
+    type: family_arrival
+    t_min: 5
+    case_id: case_head_injury_doac_brennan
+    npc: 'Son: "Can she just go home? The grandkids are coming at 5."'
+
+  # T+8 — bloods return (anti-Xa not yet)
+  - id: ev_brennan_bloods_back
+    type: results_back
+    t_min: 8
+    case_id: case_head_injury_doac_brennan
+    investigation_id: ix_bloods
+
+  # T+10 — lying-standing BP done by HCA, returns to inform falls bundle.
+  - id: ev_brennan_lying_standing_back
+    type: results_back
+    t_min: 10
+    case_id: case_head_injury_doac_brennan
+    investigation_id: ix_lying_standing_bp
+
+  # T+12 — CT head + C-spine results return together. SDH on imaging.
+  - id: ev_brennan_ct_back
+    type: results_back
+    t_min: 12
+    case_id: case_head_injury_doac_brennan
+    investigation_id: ix_ct_head
+
+  - id: ev_brennan_ct_cspine_back
+    type: results_back
+    t_min: 12
+    case_id: case_head_injury_doac_brennan
+    investigation_id: ix_ct_cspine
+
+  # T+13 — anti-Xa back (confirms therapeutic apixaban, supports reversal call).
+  - id: ev_brennan_anti_xa_back
+    type: results_back
+    t_min: 13
+    case_id: case_head_injury_doac_brennan
+    investigation_id: ix_anti_xa
+
+  # T+18 — bed manager firm pressure for disposition decision.
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 18
+    severity: firm
+
+arcs: []
+
+author_notes: |
+  Solo Tier-1 shift. The narrative pressure point is the son's "can we
+  go home" — the player must NOT cave to the disposition pressure
+  before CT comes back.
+
+  Pairs thematically with ep_stroke_solo (Williams, ischaemic LVO on
+  apixaban) — both cases use NICE TA697 and the BSH 2024 DOAC reversal
+  guideline. Could be authored later as a 2-case shift if a longer
+  DOAC double-bill is desired.

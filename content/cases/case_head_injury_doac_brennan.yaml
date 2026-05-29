@@ -1,0 +1,757 @@
+# Head injury in an anticoagulated patient — NICE NG232 CT-head
+# decision rules with the DOAC nuance. The instructive twist: the
+# patient looks deceptively well on arrival (GCS 15, no focal signs),
+# but anticoagulation alone mandates CT within 8 hours regardless.
+
+schema_version: 1
+id: case_head_injury_doac_brennan
+title: 'Head injury — mechanical fall on apixaban'
+chief_complaint: 'Fall at home, knock to the head, on apixaban'
+topic_id: head_injury
+
+vignette: |
+  Majors, 14:48. Triage handover.
+
+  Mrs Brennan, 78 y/o, brought in by son. Mechanical fall at home
+  ~90 minutes ago — slipped on the rug, struck the right side of her
+  forehead on the corner of the dresser. No LOC witnessed; her son
+  found her sitting on the floor "a couple of minutes later" looking
+  startled but talking.
+
+  No vomiting. No seizure. She walked out to the car. On apixaban
+  5 mg BD for paroxysmal AF.
+
+  On arrival GCS 15, no focal neurology grossly. Small forehead
+  haematoma. She is mildly anxious. BP 148/82, HR 88 sinus, sats 98%
+  on air, temp afebrile.
+
+  "She seems fine, doctor. Do we really need to wait around?"
+
+curriculum_tags: [TP1, NeuC11]
+slos: [1, 3, 4, 5]
+difficulty_band: CT2
+paeds: false
+
+demographics:
+  age_value: 78
+  age_unit: years
+  sex: female
+  weight_kg: 64
+  pmh:
+    - 'Paroxysmal atrial fibrillation (CHA2DS2-VASc 4)'
+    - 'Hypertension'
+    - 'Type 2 diabetes — diet-controlled'
+    - 'Bilateral cataract surgery 2024'
+  medications:
+    - 'Apixaban 5 mg BD'
+    - 'Bisoprolol 2.5 mg OD'
+    - 'Ramipril 5 mg OD'
+    - 'Atorvastatin 40 mg OD'
+  allergies: ['NKDA']
+  social: 'Widowed; lives alone in a bungalow; son visits daily; independent in ADLs; uses a walking stick outdoors only.'
+
+triage_category: 3
+initial_state: stable
+bay: majors
+
+vitals:
+  baseline:
+    hr: 88
+    rr: 16
+    spo2: 98
+    bp_sys: 148
+    bp_dia: 82
+    gcs: 15
+    temp_c: 36.6
+  deteriorating:
+    hr: 48
+    rr: 22
+    spo2: 96
+    bp_sys: 178
+    bp_dia: 92
+    gcs: 12
+    temp_c: 36.7
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
+# ─── History ──────────────────────────────────────────────────────────────
+history:
+  - id: hx_mechanism
+    source: patient
+    topic: 'What exactly happened — mechanism and timing?'
+    response: |
+      "I was carrying the kettle from the kitchen. I caught the corner
+      of the rug. The dresser caught me right here above the eye. I
+      remember sitting up. My son came in five minutes later. The
+      kettle's still on the floor by the dresser."
+
+  - id: hx_loc_amnesia
+    source: family
+    topic: 'Loss of consciousness, post-traumatic amnesia, witnessed events?'
+    response: |
+      "I didn't see it — I was in the garden. By the time I came in
+      she was sitting up looking at the kettle. She knew where she
+      was, said hello. She thought she'd been there about a minute.
+      She doesn't remember actually hitting her head, just the
+      tripping bit."
+
+  - id: hx_anticoagulant
+    source: gp_letter
+    topic: 'Anticoagulant — agent, dose, time of last dose, renal function.'
+    prereq_history_ids: [hx_mechanism]
+    supports: ['Mild traumatic brain injury with traumatic subdural haematoma on anticoagulation']
+    response: |
+      "Apixaban 5 mg BD. Last dose 07:30 this morning per her dosette.
+      Started 2023 for PAF. CHA2DS2-VASc 4 (age, sex, HTN, DM).
+      Last U&E 6 weeks ago — eGFR 58, creatinine 92."
+
+  - id: hx_other_drugs
+    source: patient
+    topic: 'Any antiplatelets, NSAIDs, alcohol, or herbal medicines?'
+    prereq_history_ids: [hx_anticoagulant]
+    supports: ['Mild traumatic brain injury with traumatic subdural haematoma on anticoagulation']
+    branch_choices:
+      - id: compassionate
+        label: "(gently) And the apixaban — I know that one's a fiddle. Honest answer: have you been getting it down twice a day?"
+        npc_voice: "She looks at her hands. Then she looks at her son, who is staring at the floor."
+        rapport_delta: 2
+        response: |
+          "Mostly. I — most mornings. The evening one I forget more
+          than I should. Especially Tuesdays and Thursdays when I do
+          the bingo. (Pause.) Sometimes Wednesday morning I'll take
+          both, you know, to catch up. Is that — should I not have
+          done that? Nobody told me not to. Paracetamol for my knees,
+          two in the morning. No aspirin, no ibuprofen. I don't drink.
+          The pharmacist said no St John's Wort."
+      - id: clinical
+        label: "Antiplatelets, NSAIDs, alcohol, herbals?"
+        rapport_delta: 0
+        response: |
+          "Paracetamol 2 tablets mornings for my knees. No aspirin,
+          no ibuprofen. I don't drink. No St John's Wort because of
+          the apixaban — the pharmacist told me."
+      - id: dismissive
+        label: "Compliance with apixaban — yes or no?"
+        npc_voice: "Her chin lifts. Her son shifts in his chair."
+        rapport_delta: -2
+        response: |
+          "Yes."
+    response: |
+      Reports paracetamol 2 tablets in the morning for chronic knee
+      pain. No aspirin, no NSAIDs, no alcohol. Pharmacist-advised
+      avoidance of St John's Wort with apixaban. Adherence not
+      independently verified.
+
+  - id: hx_pmh_falls
+    source: gp_letter
+    topic: 'Previous falls or near-falls?'
+    response: |
+      "Two near-falls in the last 6 months — one over the rug,
+      one in the bathroom. Mobility clinic referral 4 weeks ago,
+      waiting for appointment. Falls bundle from the GP includes
+      ramipril dose-titration and home OT review (not yet done)."
+
+  - id: hx_post_fall
+    source: patient
+    topic: 'How have you felt since the fall?'
+    supports: ['Mild traumatic brain injury with traumatic subdural haematoma on anticoagulation']
+    response: |
+      "Bit of a sore head. Some neck stiffness when I look up.
+      My eyesight feels OK. I haven't been sick. No double
+      vision. I felt a bit shaky right after, settled by the
+      time my son arrived."
+
+  - id: hx_son
+    source: family
+    topic: 'Speak to the son — concerns, what he saw, advance care plans.'
+    prereq_history_ids: [hx_mechanism]
+    npc_voice: "Her son arrives in damp coat, eyes immediately on the bandage. 'How bad?'"
+    branch_choices:
+      # Non-tonal fork (M60) — disclosure timing. The audit's #3 asked
+      # for a second non-tonal branch to demonstrate the pattern is
+      # repeatable. This trilemma trades information-completeness,
+      # the son's emotional readiness, and the mother's consent /
+      # autonomy in different proportions. There is no clean 'right'
+      # answer; each option pays a different cost.
+      - id: now_outside
+        label: "Liam — step outside with me for a minute. I'd rather speak to you before we go further."
+        npc_voice: "Liam walks with you to the corridor. He keeps glancing back through the curtain. He has not put his coat down."
+        rapport_delta: 0
+        response: |
+          "Right. (Pause.) Don't fluff it, doc. Give it me straight.
+          (You explain: CT pending, anti-Xa pending, on apixaban,
+          fall + possible bleed.) She's just keen to get home — my
+          daughter's bringing the grandkids round at five. She's
+          been getting more forgetful in the last year but no formal
+          dementia diagnosis. No advance care plan documented.
+          She'd want everything done. (Pause.) Thank you for telling
+          me out here. I needed to get my face together before I
+          go back in. Five minutes. Then I'll be ready."
+      - id: wait_for_results
+        label: "Hold on, Liam — let me get the CT result first, then I'll have something concrete to tell you."
+        npc_voice: "He nods slowly. He sits in the relatives' room. He will sit there for fifty minutes."
+        rapport_delta: 0
+        response: |
+          "Yeah. OK. (Pause.) I'll wait. (He waits.) (When you
+          come back at the 50-minute mark with the bleed
+          confirmation, his face is grey. He has spent the
+          waiting time alone with the worst-case scenario.
+          'Could've told me earlier, doc.' He still has not put
+          his coat down.)"
+      - id: in_bay_together
+        label: "Liam — come in. Mrs Brennan, this is the conversation about what we've found, with Liam here too."
+        npc_voice: "Both faces turn to you. Brennan is alert enough to track the conversation. Liam stands at the foot of the bed."
+        rapport_delta: 0
+        response: |
+          (You deliver the disclosure in front of both of them. The
+          son hears the news at the same moment as his mother.) Liam:
+          'Mum, listen to him. I'm here.' Brennan: '(quiet) Liam, I'm
+          alright. (To you:) I'd like to know everything, doctor.
+          Don't soften it because he's here.' (You note for the chart:
+          patient retains capacity. She asks for the full information.
+          Liam steadies as she steadies; the family unit holds.) The
+          information is delivered once, to both of them, together.
+          The son does not have to repeat it later.
+    response: |
+      "She's just keen to get home — my daughter's bringing
+      the grandkids round at five. She's been getting more
+      forgetful in the last year but no formal dementia
+      diagnosis. No advance care plan documented. She'd want
+      everything done."
+
+  - id: hx_brennan_alone
+    source: patient
+    topic: '(after the CT decision, sitting beside the trolley) Mrs Brennan — what are you most worried about?'
+    prereq_history_ids: [hx_other_drugs]
+    min_rapport: 1
+    npc_voice: "She looks toward the curtain, then back at you. Her voice drops."
+    supports: ['Mild traumatic brain injury with traumatic subdural haematoma on anticoagulation']
+    response: |
+      "It's the falls, isn't it. They'll move me to the nursing
+      home now. (Pause.) Liam — my son — he hates the home. He
+      thinks I'm fine because I act fine. I don't want him to
+      think I lied. (Beat.) Doctor — if it turns out I've had a
+      bleed, can you tell him? Not me. Not first. Tell him alone.
+      He'll need a minute to get his face together before he
+      comes back in to me. He's a soft lad. He'll think I knew
+      and didn't say."
+
+# ─── Examination ──────────────────────────────────────────────────────────
+examination:
+  - system: general
+    findings:
+      - { name: 'Alert and orientated', value: 'time/place/person all 3/3', present: true }
+      - {
+          name: 'Forehead haematoma (right frontal)',
+          value: '3 cm diameter, no scalp laceration',
+          present: true,
+        }
+      - {
+          name: 'No periorbital ecchymosis (battle sign / racoon eyes)',
+          value: 'absent',
+          present: false,
+        }
+      - { name: 'No CSF rhinorrhoea / otorrhoea', value: 'absent', present: false }
+
+  - system: airway
+    findings:
+      - {
+          name: 'Airway',
+          value: 'patent, self-maintained, speaking in full sentences',
+          present: true,
+        }
+
+  - system: breathing
+    findings:
+      - { name: 'RR', value: '14, equal air entry', present: true }
+      - { name: 'SpO2', value: '98% on air', present: true }
+
+  - system: circulation
+    findings:
+      - { name: 'HR', value: '88 sinus on monitor', present: true }
+      - { name: 'BP', value: '148/82 (her usual)', present: true }
+      - { name: 'Capillary refill', value: '<2 s', present: true }
+
+  - system: disability
+    findings:
+      - { name: 'GCS', value: 'E4 V5 M6 = 15', present: true }
+      - {
+          name: 'Pupils',
+          value: '4 mm equal, reactive bilaterally (post-cataract surgery)',
+          present: true,
+        }
+      - {
+          name: 'Cranial nerves',
+          value: 'no focal deficit; visual fields full; speech intact; tongue midline',
+          present: true,
+        }
+      - { name: 'Power and tone', value: '5/5 throughout; symmetric', present: true }
+      - { name: 'Sensation', value: 'intact to light touch in all 4 limbs', present: true }
+      - {
+          name: 'Coordination',
+          value: 'finger-to-nose without dysmetria; gait not yet tested',
+          present: true,
+        }
+      - { name: 'Capillary glucose (BM)', value: '6.8 mmol/L', present: true }
+    manoeuvres:
+      - id: pronator_drift
+        label: 'Test pronator drift (eyes closed, arms outstretched, 30s)'
+        findings:
+          - {
+              name: 'subtle right pronator drift at 25 s',
+              value: 'right arm pronates and drops ~3 cm; reproducible on re-test',
+              red_flag: true,
+              supports: ['Mild traumatic brain injury with traumatic subdural haematoma on anticoagulation'],
+            }
+          - {
+              name: 'Romberg',
+              value: 'positive — slight backward sway with eyes closed',
+              present: true,
+            }
+      - id: cn_screen
+        label: 'Cranial nerves II–XII (full screen)'
+        findings:
+          - {
+              name: 'subtle right-sided facial droop on smile (CN VII)',
+              value: 'asymmetry mild; obscures without smile test',
+              red_flag: true,
+              supports: ['Mild traumatic brain injury with traumatic subdural haematoma on anticoagulation'],
+            }
+          - { name: 'extraocular movements full', present: true, pertinent_negative: true }
+
+  - system: msk
+    findings:
+      - {
+          name: 'C-spine tenderness',
+          value: 'mild midline tenderness at C4-C6; no step; no swelling',
+          present: true,
+          red_flag: true,
+        }
+      - {
+          name: 'Range of movement',
+          value: 'not tested — collar on per Canadian C-spine triage',
+          present: true,
+        }
+
+  - system: exposure
+    findings:
+      - { name: 'Temperature', value: '36.4°C', present: true }
+      - {
+          name: 'No other injury',
+          value: 'no rib tenderness; no limb fracture; no pelvic instability',
+          present: false,
+        }
+
+# ─── Investigations ───────────────────────────────────────────────────────
+investigations:
+  - id: ix_ct_head
+    name: 'CT head (non-contrast) — within 8 h per NICE NG232'
+    category: imaging
+    turnaround_min: 30
+    essential: true
+    result_summary: |
+      **Small acute right frontal subdural haematoma** — 5 mm thick,
+      no midline shift, no mass effect. Coup-contrecoup pattern with
+      a tiny contusion at the left occipital pole. No skull fracture.
+      Ventricles normal-sized.
+
+      Findings: surgical opinion required for SDH-on-anticoagulant
+      decision; reversal considered (NICE NG232: discuss with
+      haematology + neurosurgery).
+    abnormal: true
+    sources:
+      - {
+          type: nice,
+          id: 'NG232',
+          ref: 'NICE NG232 — CT head within 8 hours in any adult on anticoagulant after head injury, even if otherwise asymptomatic',
+        }
+
+  - id: ix_ct_cspine
+    name: 'CT cervical spine (after head)'
+    category: imaging
+    turnaround_min: 35
+    result_summary: |
+      **No fracture. Mild degenerative change C4-C6 (her age).**
+      Cleared for collar removal once awake patient confirms no
+      midline tenderness on re-examination. Canadian C-spine rule
+      mandates imaging here: age ≥65 + dangerous mechanism (fall
+      ≥1 m / stairs) — meets criterion even with low risk features.
+    sources:
+      - {
+          type: textbook,
+          ref: 'Canadian C-spine Rule (Stiell 2001) — high-risk: age ≥65; dangerous mechanism; paraesthesia.',
+        }
+      - { type: nice, id: 'NG232', ref: 'NICE NG232 — adjunctive C-spine imaging in head injury' }
+
+  - id: ix_bloods
+    name: 'FBC, U&E, LFTs, coag, INR if on warfarin, group + save'
+    category: blood
+    turnaround_min: 45
+    result_summary: |
+      WCC 8.4 · Hb 132 · Plt 224 · Na 138 · K 4.2 · Urea 7.1 ·
+      Creat 92 (eGFR 58 — same as 6 weeks ago) · LFTs normal ·
+      **APTT 42 / PT 12 — apixaban is FXa inhibitor; INR / PT /
+      APTT do NOT reliably measure apixaban effect.** Anti-Xa
+      activity (anti-Xa apixaban-calibrated) sent — turnaround
+      30–60 min depending on lab.
+    abnormal: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'British Society for Haematology — Reversal of DOACs (2024): anti-Xa for apixaban / rivaroxaban; dTT for dabigatran.',
+        }
+
+  - id: ix_anti_xa
+    name: 'Apixaban-calibrated anti-Xa activity'
+    category: blood
+    turnaround_min: 45
+    essential: true
+    result_summary: |
+      **Apixaban-calibrated anti-Xa 184 ng/mL** (therapeutic peak
+      range ~100–200 ng/mL — within expected window 6.5 h post-dose).
+      Confirms therapeutic anticoagulation; reversal is on the table
+      if neurosurgery deem ongoing bleed risk.
+
+  - id: ix_ecg
+    name: '12-lead ECG'
+    category: ecg
+    turnaround_min: 5
+    result_summary: |
+      Sinus rhythm 88 bpm. No acute ischaemic change. QTc 410 ms.
+      No prolonged PR.
+
+  - id: ix_lying_standing_bp
+    name: 'Lying/standing BP'
+    category: bedside
+    turnaround_min: 5
+    result_summary: |
+      Lying 148/82 · Standing (3 min) 122/72 — drop of 26/10.
+      Postural hypotension contributing to falls risk; ramipril
+      titration overdue. Inpatient falls bundle to include MDT
+      OT review now that imaging is sorted.
+
+# ─── Differential ─────────────────────────────────────────────────────────
+differential:
+  - diagnosis: 'Mild traumatic brain injury with traumatic subdural haematoma on anticoagulation'
+    likelihood: top
+    discriminator: |
+      Mechanism (low-impact fall with anti-coagulation) + GCS 15 with
+      a positive CT head. NICE NG232 mandates CT within 8 h regardless
+      of clinical findings in anyone on anticoagulant after a head
+      injury.
+
+  - diagnosis: 'Subarachnoid haemorrhage'
+    likelihood: worth_considering
+    discriminator: |
+      Coup-contrecoup pattern with a tiny occipital contusion is more
+      typical of traumatic SDH. SAH would more often produce thunderclap
+      headache, signs of meningism, or a Hunt-Hess severity grade. CT
+      rules in SDH not SAH.
+
+  - diagnosis: 'Mechanical fall — no intracranial injury (best case)'
+    likelihood: must_not_miss
+    discriminator: |
+      Would have been the working diagnosis pre-CT. The DOAC mandate
+      is exactly this trap: she looks well, she wants to go home,
+      and she would have an unrecognised SDH that progresses
+      overnight without scan.
+
+  - diagnosis: 'Cervical spine injury'
+    likelihood: worth_considering
+    discriminator: |
+      Canadian C-spine high-risk (age ≥65 + ≥1 m fall) — CT C-spine
+      mandated. CT excludes fracture; collar can come off if no
+      midline tenderness on re-assessment.
+
+# ─── Management ──────────────────────────────────────────────────────────
+working_diagnosis: |
+  Anticoagulant-associated traumatic subdural haematoma. Decision tree:
+  reverse apixaban (4-factor PCC 25-50 IU/kg per BSH 2024 — andexanet
+  alfa is NOT NICE-recommended for intracranial haemorrhage since
+  TA1029 terminated the appraisal in Jan 2025; ANNEXa-I (NEJM 2024)
+  showed haemostatic benefit but no mortality/disability benefit),
+  admit for neuro obs, neurosurgical opinion. Re-evaluate apixaban
+  resumption on day 2-3 in MDT setting (stroke risk vs bleed risk).
+
+management:
+  - id: mx_a_to_e_and_collar
+    category: monitoring
+    name: 'A-G assessment + cervical collar in situ until C-spine cleared'
+    must_do: true
+    sources:
+      - { type: nice, id: 'NG232', ref: 'NICE NG232 — initial assessment + C-spine immobilisation' }
+
+  - id: mx_ct_head_within_8h
+    category: monitoring
+    name: 'CT head within 8 h (DOAC mandate)'
+    detail: |
+      NICE NG232 (§1.5.13, 2023) says **consider** CT within 8 hours
+      in any adult on anticoagulant therapy after head injury — a
+      softening from the prior CG176 "must" mandate. In a recurrent
+      faller, age 78, lives alone, with a forehead haematoma, the
+      clinical judgement here is unambiguously to scan; the
+      guideline framing is "should consider", not absolute. Document
+      the reasoning either way.
+    must_do: true
+    sources:
+      - {
+          type: nice,
+          id: 'NG232',
+          ref: 'NICE NG232 §1.5.13 — consider CT within 8 h in adults on anticoagulant after head injury (softened from CG176 mandate)',
+        }
+
+  - id: mx_ct_cspine
+    category: monitoring
+    name: 'CT C-spine (Canadian C-spine high-risk)'
+    detail: |
+      Age ≥65 OR dangerous mechanism OR paraesthesia → imaging
+      mandated. She is 78 — meets criterion. Use the same CT pass.
+    must_do: true
+    sources:
+      - { type: nice, id: 'NG232', ref: 'NICE NG232 — C-spine imaging adjunct' }
+
+  - id: mx_neuro_obs
+    category: monitoring
+    name: 'Neuro observations — half-hourly initially'
+    detail: |
+      NICE NG232: half-hourly observations until GCS 15 sustained for
+      2 h, then hourly for 4 h, then 2-hourly. Earlier deterioration
+      → immediate senior review + repeat imaging.
+    must_do: true
+    sources:
+      - { type: nice, id: 'NG232', ref: 'NICE NG232 — neuro observations after head injury' }
+
+  - id: mx_apixaban_hold
+    category: drug
+    name: 'Hold apixaban; document last dose time and indication'
+    detail: |
+      Apixaban must be paused. Document last dose (07:30 today),
+      indication (CHA2DS2-VASc 4 PAF), and stroke risk. The
+      resumption decision is for the MDT, not today's ED.
+    must_do: true
+
+  - id: mx_haem_neurosurg_discuss
+    category: referral
+    name: 'Discuss with haematology + neurosurgery — reversal vs observation'
+    detail: |
+      DOAC reversal decision: **4-factor PCC 25–50 IU/kg** is the
+      UK standard for ICH on apixaban/rivaroxaban per BSH 2024.
+      Andexanet alfa is **NOT NICE-recommended for ICH** as of
+      January 2025 (TA1029 terminated the appraisal — ANNEXa-I
+      NEJM 2024 showed haemostatic benefit but no mortality /
+      disability benefit; manufacturer declined to submit further
+      evidence). For GI bleeding the original TA697 recommendation
+      still applies in some pathways. Discussion balances bleed
+      extent, neurosurgical view, and reversal-related thrombotic
+      risk.
+    must_do: true
+    sources:
+      - {
+          type: textbook,
+          ref: 'British Society for Haematology — Guidance for use of factor concentrates in DOAC-associated bleeding (2024): 4-factor PCC 25-50 IU/kg first-line for ICH.',
+        }
+      - {
+          type: textbook,
+          ref: 'Connolly SJ et al. ANNEXa-I — andexanet for anticoagulant-associated ICH. NEJM 2024 (haemostasis improved but no mortality/disability benefit; led to TA1029 termination Jan 2025).',
+        }
+      - {
+          type: nice,
+          id: 'TA697',
+          ref: 'NICE TA697 — Andexanet alfa (remains active for GI bleed; ICH indication superseded by TA1029 termination Jan 2025).',
+        }
+
+  - id: mx_admission_observe
+    category: disposition
+    name: 'Admit for neuro observation regardless of CT result'
+    detail: |
+      Even with a negative scan, NICE NG232 advises admission for
+      observation in anticoagulated patients after head injury.
+      With a positive SDH, this is mandatory.
+    must_do: true
+    sources:
+      - { type: nice, id: 'NG232', ref: 'NICE NG232 — admission criteria' }
+
+  - id: mx_safety_net_only
+    category: safety_net
+    name: 'Discharge with head injury advice leaflet only'
+    detail: |
+      ❌ Anticoagulant + abnormal CT + age 78 + lives alone =
+      cannot be safety-netted home. This is the audit-trail trap
+      — a paper leaflet does not substitute for inpatient
+      observation in this patient cohort.
+    must_not_do: true
+    sources:
+      - {
+          type: nice,
+          id: 'NG232',
+          ref: 'NICE NG232 — discharge criteria explicitly exclude anticoagulated patients with abnormal CT',
+        }
+
+  - id: mx_no_ct
+    category: monitoring
+    name: 'Skip CT — GCS 15 and "looks well"'
+    detail: |
+      ❌ The DOAC mandate over-rides GCS-based gating. The reason
+      NG232 added the anticoagulant criterion is exactly this case
+      — well-looking patients with occult SDH.
+    must_not_do: true
+    sources:
+      - { type: nice, id: 'NG232', ref: 'NICE NG232 §1.5.13' }
+
+  - id: mx_warfarin_reversal_in_doac
+    category: drug
+    name: 'Vitamin K + FFP as DOAC reversal'
+    detail: |
+      ❌ Vitamin K reverses WARFARIN (vitamin-K-dependent factors),
+      not apixaban. FFP is ineffective for DOAC reversal — too
+      little factor per unit volume to overcome the direct Xa
+      inhibitor. **4-factor PCC 25–50 IU/kg** is the UK first-line
+      for DOAC-associated ICH (BSH 2024); andexanet alfa is NOT
+      NICE-recommended for ICH since TA1029 terminated Jan 2025
+      (ANNEXa-I NEJM 2024).
+    must_not_do: true
+    gated_by_history: [hx_anticoagulant]
+    sources:
+      - {
+          type: textbook,
+          ref: 'British Society for Haematology — DOAC-associated bleeding guidance (2024): 4-factor PCC 25-50 IU/kg for ICH; NOT vitamin K, NOT FFP.',
+        }
+
+  - id: mx_no_aspirin_for_falls
+    category: drug
+    name: 'Add aspirin "to cover the AF" while apixaban is held'
+    detail: |
+      ❌ Adding aspirin during a held-DOAC period for head injury
+      compounds bleed risk without meaningful stroke prevention.
+      Anti-platelet bridging in stopped-DOAC AF is not supported
+      by guidance and is a known examiner trap.
+    must_not_do: true
+    gated_by_history: [hx_anticoagulant]
+    sources:
+      - {
+          type: textbook,
+          ref: 'British Society for Haematology — peri-procedural / peri-bleed DOAC management 2024',
+        }
+
+  - id: mx_no_lying_only
+    category: monitoring
+    name: 'Skip the lying-standing BP'
+    detail: |
+      ❌ Cause-of-fall workup is a NICE NG232 admission criterion.
+      A 78-year-old with two prior falls and unaddressed postural
+      hypotension is in the same fall-pattern again without
+      ramipril titration / OT review.
+    must_not_do: true
+
+# ─── Disposition ─────────────────────────────────────────────────────────
+disposition_options:
+  - label: 'Admit acute frailty / neuro obs ward; reversal + neurosurg liaison; falls MDT'
+    criteria: |
+      SDH on anticoagulation + age 78 + lives alone + recurrent
+      falls. Inpatient is the only safe disposition. Reversal
+      decision in parallel with neurosurg view.
+    appropriate: true
+    epilogue: "Andexanet alfa runs over 30 minutes. Liam is at her bedside. He sits where she can see his face when she wakes up."
+  - label: 'Discharge with head injury leaflet and "see GP if worsens"'
+    criteria: |
+      Unsafe — anticoagulant + abnormal CT + recurrent faller +
+      lives alone. Even a normal CT would mandate admission per
+      NICE NG232 in this cohort.
+    appropriate: false
+    epilogue: "She is found unresponsive at home at 21:30 by Liam. By 22:00 her GCS is 5."
+  - label: 'Admit AMU on bed rest only (no reversal decision today)'
+    criteria: |
+      Partial — admission is correct, but the haematology /
+      neurosurgical reversal decision should be initiated in ED
+      while the bed is found, not deferred to the post-take ward
+      round.
+    appropriate: false
+    epilogue: "At 17:40 the bleed expands by 4 mm on a re-scan. The neurosurg conversation now is harder, because it's late."
+
+# ─── State machine ──────────────────────────────────────────────────────
+state_machine:
+  states: [stable, deteriorating, arrested, admitted]
+  transitions:
+    - from: stable
+      to: deteriorating
+      trigger:
+        on: inaction_by
+        min: 25
+        required_actions: [mx_ct_head_within_8h, mx_apixaban_hold]
+        note: 'Anticoagulant on board + untreated SDH → expanding haematoma; if no CT and no apixaban-hold by T+25 the bleed enlarges silently — case deteriorates.'
+    - from: deteriorating
+      to: stable
+      trigger:
+        on: action
+        action_id: mx_haem_neurosurg_discuss
+        note: 'Haematology + neurosurgery engaged — reversal decision underway; haematoma expansion controlled.'
+    - from: stable
+      to: admitted
+      trigger:
+        on: action
+        action_id: mx_admission_observe
+        note: 'Decision to admit triggers transfer; case closes from ED perspective.'
+
+# ─── Pearls + pitfalls ──────────────────────────────────────────────────
+pearls:
+  - 'NICE NG232: ANY adult on anticoagulant + head injury = CT within 8 hours, regardless of GCS or symptoms.'
+  - 'Canadian C-spine high-risk criteria: age ≥65, dangerous mechanism (fall ≥1 m / stairs / RTC), paraesthesia. Any positive = imaging.'
+  - 'INR / PT / APTT do NOT measure apixaban / rivaroxaban effect — use anti-Xa activity calibrated for the specific DOAC.'
+  - '**DOAC reversal for ICH (UK May 2026)**: 4-factor PCC 25-50 IU/kg per BSH 2024. Andexanet alfa is **NOT NICE-recommended for ICH** since TA1029 terminated Jan 2025 (ANNEXa-I NEJM 2024 — haemostasis improved but no mortality/disability benefit). Idarucizumab remains the specific reversal agent for dabigatran. TA697 remains active for GI bleeding.'
+  - 'Vitamin K + FFP reverse WARFARIN, not DOACs. Easy examiner trap.'
+  - 'Admission criteria after head injury include "on anticoagulant with abnormal CT" — admission is not a clinical-gestalt decision.'
+
+pitfalls:
+  - 'Skipping CT in the well-looking anticoagulated patient.'
+  - 'Discharging home with a head injury leaflet.'
+  - 'Using vitamin K + FFP for DOAC reversal.'
+  - 'Bridging held-DOAC AF with aspirin (compounds bleed; no stroke prevention).'
+  - 'Forgetting the cause-of-fall workup (postural BP, medication review, OT referral).'
+  - 'Reading INR/APTT as "DOAC level".'
+
+sources:
+  - {
+      type: nice,
+      id: 'NG232',
+      ref: 'NICE NG232 — Head injury: assessment and early management (2023)',
+    }
+  - {
+      type: nice,
+      id: 'TA697',
+      ref: 'NICE TA697 — Andexanet alfa (still active for GI bleed; ICH indication superseded by TA1029 terminated Jan 2025)',
+    }
+  - {
+      type: textbook,
+      ref: 'British Society for Haematology — Reversal of direct oral anticoagulants (2024)',
+    }
+  - {
+      type: textbook,
+      ref: 'Stiell IG et al. Canadian C-spine Rule for radiography in alert and stable trauma patients. JAMA 2001.',
+    }
+  - {
+      type: textbook,
+      ref: 'Oxford Handbook of Emergency Medicine 5e — Ch 7 Head injury and Ch 9 Cervical spine',
+    }
+
+author_notes: |
+  Designed as the SAQ-classic "well-looking anticoagulated patient with
+  head injury" — the headline NICE NG232 rule lives or dies on
+  recognising that GCS 15 is not the gating criterion when a DOAC is
+  on board.
+
+  Pairs naturally with case_stroke_acute_williams (also DOAC-on-board)
+  for a "DOAC reasoning" mini-series: ischaemic LVO on apixaban
+  (alteplase contraindicated; thrombectomy preferred) vs
+  haemorrhagic SDH on apixaban (reverse; admit; do not safety-net).
+
+  Author against NICE NG232 (2023, §1.5.13 — "consider" CT in DOAC
+  patients, softened from CG176 mandate), BSH DOAC bleeding 2024
+  (4F-PCC 25-50 IU/kg for ICH), ANNEXa-I NEJM 2024 (TA697 ICH
+  indication superseded by TA1029 termination Jan 2025), TA697 (now
+  GI-bleed-only), BSH
+  DOAC reversal 2024, Canadian C-spine Rule (Stiell 2001).

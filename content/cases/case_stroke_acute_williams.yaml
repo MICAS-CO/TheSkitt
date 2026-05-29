@@ -1,0 +1,644 @@
+# Authored from a scripts/new-case.ts skeleton (stroke_tia topic).
+#
+# Mr Williams, 67y/o, right-sided weakness and dysphasia 35 min ago.
+# Witnessed onset by wife. NIHSS 14. Within the 4.5-hour thrombolysis
+# window — first hyperacute treatment decision is the time-of-onset
+# confirmation, then BM/CT, then alteplase decision.
+#
+# Sources: NICE NG128, RCP National Clinical Guideline for Stroke 2023,
+# Oxford Handbook of EM 5e Ch 3.
+
+schema_version: 1
+id: case_stroke_acute_williams
+title: 'Acute stroke — left MCA syndrome (right-sided weakness)'
+chief_complaint: 'Sudden right-sided weakness and slurred speech'
+topic_id: stroke_tia
+
+vignette: |
+  Resus bay 1. 08:42.
+
+  Mr David Williams, 67 y/o, brought in by his wife Carol after she
+  saw him "go odd" at the breakfast table at 08:05. Right arm fell
+  to his side, face drooped on the right, speech became slurred and
+  hard to understand. She drove him straight in — 8 minutes from
+  home.
+
+  Triage nurse: "FAST positive, ROSIER score 4 — thrombolysis
+  pathway activated. CT scanner cleared. He's still in the window."
+
+  Onset clearly witnessed at 08:05 — 37 minutes ago. He last ate
+  yesterday evening. He cannot answer your questions — his speech
+  is non-fluent.
+
+bay: resus
+curriculum_tags: [NeuC12, NeuP5, NeuP4, NeuP1]
+slos: [1, 3]
+difficulty_band: CT2
+paeds: false
+
+demographics:
+  age_value: 67
+  age_unit: years
+  sex: male
+  weight_kg: 84
+  pmh:
+    - 'Hypertension (amlodipine + ramipril)'
+    - 'Type 2 diabetes (metformin)'
+    - 'Hypercholesterolaemia (atorvastatin)'
+    - 'AF — paroxysmal, on apixaban 5 mg BD (last dose ~20:00 yesterday)'
+  medications:
+    - 'amlodipine 10 mg OD'
+    - 'ramipril 10 mg OD'
+    - 'metformin 1 g BD'
+    - 'atorvastatin 40 mg ON'
+    - 'apixaban 5 mg BD'
+  allergies: ['NKDA']
+  social: |
+    Retired accountant. Lives with wife Carol. Independent, walks 3
+    miles a day. Drinks 12 units/week. Ex-smoker (stopped 10 years
+    ago). No previous TIA or CVA.
+
+triage_category: 1
+initial_state: deteriorating
+
+vitals:
+  baseline:
+    hr: 70
+    rr: 14
+    spo2: 98
+    bp_sys: 130
+    bp_dia: 78
+    gcs: 15
+    temp_c: 36.6
+    bm: 9.4
+  deteriorating:
+    # M97 deteriorating-vitals audit: was producing NEWS2=4 (GREEN band)
+    # which doesn't reflect an acutely deteriorating ischaemic stroke
+    # (possible haemorrhagic conversion, aspiration, raised ICP).
+    # Adjusted to NEWS2=7 (RED): RR up to 22 (aspiration / Cheyne-
+    # Stokes), SpO2 down to 93 (early aspiration), GCS down to 12
+    # (drowsier). BP stays elevated (hypertensive stroke response).
+    hr: 92
+    rr: 22
+    spo2: 93
+    bp_sys: 172
+    bp_dia: 96
+    gcs: 12
+    temp_c: 36.6
+    bm: 9.4
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
+history:
+  - id: hx_carol
+    source: family
+    topic: 'Speak to Carol — exact time of onset?'
+    npc_voice: 'Carol grips her phone with both hands. She speaks fast.'
+    supports:
+      - 'Acute ischaemic stroke — left MCA territory (LVO)'
+      - "Seizure with Todd's palsy"
+    branch_choices:
+      - id: compassionate
+        label: "Carol — before anything else: you got him here within the hour. That matters. Now tell me exactly what you saw."
+        npc_voice: "She breathes out for the first time since she walked in."
+        rapport_delta: 2
+        response: |
+          "08:05. The kettle had just clicked off and I was looking at
+          the kitchen clock. He was drinking his tea. He went quiet,
+          his right arm dropped, then his mouth pulled down on the
+          same side. I asked if he was OK and he tried to say
+          something but it came out wrong. I got him in the car —
+          we live 8 minutes away. (Pause.) Is he going to come back
+          the same? I just need to know. I won't hold you to it,
+          doctor, I just — please. Just tell me what you're thinking."
+      - id: clinical
+        label: "Exact time of onset and the first three things you noticed?"
+        rapport_delta: 0
+        response: |
+          "08:05. Right arm dropped, face pulled down on the right,
+          speech came out wrong. Drove him in — 8 minutes from home."
+      - id: dismissive
+        label: "I need the time of onset first. Other questions later."
+        npc_voice: "Carol nods quickly. She doesn't sit."
+        rapport_delta: -1
+        response: |
+          "08:05. (Pause.) Sorry. I'll wait."
+    response: |
+      Carol reports witnessed onset at 08:05, right arm drop with
+      contralateral facial droop and expressive speech disturbance.
+      8-minute private-car drive into the department.
+
+  - id: hx_anticoagulation
+    source: family
+    topic: 'When did he last take the apixaban?'
+    prereq_history_ids: [hx_carol]
+    supports: ['Intracranial haemorrhage']
+    response: |
+      "Yesterday evening, around eight. He takes it with dinner.
+      Hasn't had this morning's dose."
+
+  - id: hx_recent_changes
+    source: family
+    topic: 'Anything in the last 24 hours — headache, fall, recent surgery?'
+    response: |
+      "Nothing. He was completely well yesterday. No headache, no fall,
+      no surgery. Last GP visit was in March for the blood pressure
+      check."
+
+  - id: hx_drug_history
+    source: records
+    topic: 'Confirm anticoagulation and contraindications to thrombolysis.'
+    prereq_history_ids: [hx_anticoagulation]
+    response: |
+      "Apixaban 5 mg BD started 2022 for paroxysmal AF (CHA2DS2-VASc 5).
+      No documented intracranial haemorrhage history. No GI bleed. No
+      recent surgery or trauma. No platelet count <100 documented in
+      the last year."
+
+  - id: hx_pre_morbid
+    source: family
+    topic: 'Pre-morbid function — any disability before this?'
+    response: |
+      "Completely independent. He drives, does the garden, manages all
+      the household paperwork. Modified Rankin Score zero — fully
+      functional."
+
+  - id: hx_mimics
+    source: records
+    topic: 'Screen for mimics — recent seizure, migraine, hypoglycaemia?'
+    prereq_history_ids: [hx_carol]
+    response: |
+      "No prior seizures. Migraine with aura noted in his 30s, none
+      for two decades. BM at home was checked by Carol — meter read
+      9.4. Glucose now to be confirmed in ED."
+
+examination:
+  - system: general
+    findings:
+      - { name: 'appearance', value: 'sat upright, looking right-gaze-deviated', present: true }
+      - { name: 'right-sided facial droop', present: true, red_flag: true }
+      - {
+          name: 'speech',
+          value: 'non-fluent dysphasia — words effortful, telegrams',
+          red_flag: true,
+        }
+  - system: airway
+    findings:
+      - { name: 'patent, swallowing', present: true }
+      - { name: 'risk of aspiration with feeding pre-swallow assessment', present: true }
+  - system: breathing
+    findings:
+      - { name: 'respiratory rate', value: '18/min' }
+      - { name: 'SpO2', value: '97% on air' }
+      - { name: 'chest', value: 'clear' }
+  - system: circulation
+    findings:
+      - { name: 'heart rate', value: '92/min, irregularly irregular (AF)' }
+      - { name: 'blood pressure', value: '172/96 mmHg' }
+      - { name: 'capillary refill', value: '<2 s' }
+  - system: disability
+    findings:
+      - { name: 'GCS', value: '14 — E4 V4 M6 (V4 from dysphasia, not drowsiness)' }
+      - { name: 'glucose', value: '9.4 mmol/L (BM in ED) — excludes hypoglycaemic stroke mimic' }
+      - { name: 'pupils', value: '3 mm, equal, reactive' }
+      - { name: 'right arm power', value: 'MRC 2/5 (drift to bed within 5 s)', red_flag: true }
+      - { name: 'right leg power', value: 'MRC 3/5', red_flag: true }
+      - { name: 'right face', value: 'lower-face droop, forehead spared (UMN pattern)' }
+      - { name: 'gaze', value: 'conjugate deviation to the left (away from the weakness)' }
+      - { name: 'NIHSS', value: '14 — moderate-severe stroke', red_flag: true }
+    manoeuvres:
+      - id: nihss_focused
+        label: 'NIHSS-focused screen — language, visual fields, sensory, neglect'
+        findings:
+          - {
+              name: 'expressive aphasia',
+              value: "non-fluent; correctly names 'pen', 'watch'; cannot construct a sentence; understands simple commands; reads single words; can't read a sentence",
+              red_flag: true,
+              supports: ['Acute ischaemic stroke — left MCA territory (LVO)'],
+            }
+          - {
+              name: 'right homonymous hemianopia',
+              value: 'misses fingers in the right visual fields bilaterally on confrontation testing',
+              red_flag: true,
+              supports: ['Acute ischaemic stroke — left MCA territory (LVO)'],
+            }
+          - {
+              name: 'right-sided sensory inattention',
+              value: 'detects light touch on the right side in isolation but misses it on simultaneous bilateral testing — neglect',
+              red_flag: true,
+              supports: ['Acute ischaemic stroke — left MCA territory (LVO)'],
+            }
+      - id: gait_if_safe
+        label: 'Test gait if safe — sit-to-stand at the edge of the trolley (assisted)'
+        findings:
+          - {
+              name: 'unable to bear weight on the right',
+              value: "right leg buckles immediately; truncal ataxia on the supported attempt",
+              red_flag: true,
+              supports: ['Acute ischaemic stroke — left MCA territory (LVO)'],
+            }
+          - {
+              name: 'no resting tremor',
+              present: false,
+              pertinent_negative: true,
+              value: 'argues against acute Parkinsonian crisis as a mimic',
+            }
+  - system: neuro
+    findings:
+      - { name: 'plantar response right', value: 'upgoing (Babinski)' }
+      - { name: 'plantar response left', value: 'downgoing (normal)' }
+      - {
+          name: 'sensation right',
+          value: 'reduced fine touch in the arm; difficult to fully assess with dysphasia',
+        }
+
+investigations:
+  - id: ix_bm
+    name: 'Capillary blood glucose (BM)'
+    category: bedside
+    turnaround_min: 1
+    essential: true
+    result_summary: |
+      9.4 mmol/L — excludes hypoglycaemia as a stroke mimic. NICE NG128
+      mandates a BM in every suspected stroke before thrombolysis.
+    sources:
+      - { type: nice, id: 'NG128', ref: 'NICE NG128 — BM mandatory in suspected stroke' }
+
+  - id: ix_ct_head
+    name: 'Urgent non-contrast CT head'
+    category: imaging
+    turnaround_min: 8
+    essential: true
+    result_summary: |
+      No acute haemorrhage. Subtle loss of grey-white differentiation
+      in the left MCA territory (hyperdense MCA sign on the left).
+      ASPECTS 8. Findings consistent with acute left MCA ischaemic
+      stroke — proceed to thrombolysis if eligible AND consider
+      thrombectomy referral (large vessel occlusion likely).
+    abnormal: true
+    sources:
+      - { type: nice, id: 'NG128', ref: 'NICE NG128 — CT head within 1 h, before thrombolysis' }
+
+  - id: ix_ecg
+    name: '12-lead ECG'
+    category: ecg
+    turnaround_min: 2
+    ecg_challenge_id: ecg_016_paroxysmal_af_stroke
+    result_summary: |
+      AF at ~92/min (irregularly irregular). No acute ischaemic change.
+      Likely cardioembolic source given history of paroxysmal AF.
+    abnormal: true
+
+  - id: ix_bloods_coag
+    name: 'FBC, U&E, glucose, coag (urgent INR + APTT + anti-Xa if available)'
+    category: blood
+    turnaround_min: 30
+    essential: true
+    result_summary: |
+      Hb 138 · Plt 240 · INR 1.1 (on apixaban — note INR is not
+      reliable for DOAC effect; anti-Xa level requested but takes
+      longer). APTT normal. Na 138 · K 4.2 · Urea 6.4 · Creat 92
+      (eGFR ~75) · Glucose 9.4.
+    abnormal: true
+
+  - id: ix_cta
+    name: 'CT angiogram (head + neck) for thrombectomy decision'
+    category: imaging
+    turnaround_min: 20
+    result_summary: |
+      Left M1 MCA occlusion. Carotids patent. Large vessel
+      occlusion confirmed — meets thrombectomy criteria
+      (NIHSS ≥6 + ASPECTS ≥6 + onset <6 h, extended to 24 h with
+      perfusion imaging).
+    abnormal: true
+    sources:
+      - { type: nice, id: 'NG128', ref: 'NICE NG128 — thrombectomy referral criteria' }
+
+differential:
+  - diagnosis: 'Acute ischaemic stroke — left MCA territory (LVO)'
+    likelihood: top
+    discriminator: |
+      Witnessed sudden onset + FAST positive + ROSIER 4 + NIHSS 14
+      + CT showing hyperdense MCA + CTA confirming M1 occlusion. The
+      cardioembolic source (AF) is the likely cause.
+
+  - diagnosis: 'Intracranial haemorrhage'
+    likelihood: must_not_miss
+    discriminator: |
+      Cannot give thrombolysis without imaging — NICE NG128 mandates
+      CT before alteplase. CT here excludes haemorrhage. Always
+      mandatory.
+
+  - diagnosis: 'Hypoglycaemic stroke mimic'
+    likelihood: must_not_miss
+    discriminator: |
+      BM 9.4 — excluded. ALWAYS check the BM before treating "stroke"
+      — the classic SAQ trap.
+
+  - diagnosis: "Seizure with Todd's palsy"
+    likelihood: worth_considering
+    discriminator: |
+      No witnessed seizure activity, no post-ictal drowsiness, sudden
+      not gradual onset. Lower likelihood but kept on the list.
+
+  - diagnosis: 'Migraine with aura'
+    likelihood: unlikely
+    discriminator: |
+      Has historical migraine but none for 20 years; no headache
+      reported; sudden focal deficit not typical of migraine pattern.
+
+  - diagnosis: 'Functional neurological disorder'
+    likelihood: unlikely
+    discriminator: |
+      Witnessed organic deficit with positive Babinski + UMN facial
+      pattern + AF + DOAC nonsense — not functional.
+
+working_diagnosis: 'Acute ischaemic stroke (LMCA, large vessel occlusion) — cardioembolic'
+
+management:
+  - id: mx_a_to_e
+    category: monitoring
+    name: 'ABCDE + continuous monitoring + nil by mouth pending swallow'
+    detail: |
+      Stroke patients are aspiration risks until a bedside swallow
+      screen passes. NBM, head of bed 30°, continuous SpO2 and BP.
+    must_do: true
+
+  - id: mx_iv_access
+    category: procedure
+    name: 'Two large-bore IV cannulae + bloods including coag'
+    must_do: true
+
+  - id: mx_bm_first
+    category: monitoring
+    name: 'Check capillary blood glucose BEFORE thrombolysis'
+    detail: 'NICE NG128 mandates excluding hypoglycaemia first.'
+    must_do: true
+    sources:
+      - { type: nice, id: 'NG128', ref: 'NICE NG128 — BM before thrombolysis' }
+
+  - id: mx_ct_within_1h
+    category: monitoring
+    name: 'CT head within 1 hour of arrival (door-to-CT)'
+    detail: |
+      NICE NG128 — CT must precede thrombolysis to exclude haemorrhage,
+      with imaging "immediately, within 1 hour". The aspirational
+      ≤25-min door-to-CT and ≤60-min door-to-needle targets are
+      RCP / SSNAP audit standards.
+    must_do: true
+    sources:
+      - { type: nice, id: 'NG128', ref: 'NICE NG128 — CT immediately, within 1 hour' }
+      - {
+          type: textbook,
+          ref: 'RCP National Clinical Guideline for Stroke 2023 — door-to-CT 25 min, door-to-needle 60 min',
+        }
+
+  - id: mx_call_stroke_team
+    category: referral
+    name: 'Activate stroke team / HASU; consider thrombectomy centre'
+    detail: |
+      Onset <4.5 h + age <80 (he is 67) + NIHSS in range = thrombolysis
+      candidate. LVO on CTA = thrombectomy candidate. Refer to the
+      regional thrombectomy centre in parallel with thrombolysis
+      decision.
+    must_do: true
+    sources:
+      - { type: nice, id: 'NG128', ref: 'NICE NG128 — HASU + thrombectomy referral' }
+
+  - id: mx_bp_target
+    category: drug
+    name: 'BP management — target <185/110 before thrombolysis'
+    detail: |
+      Pre-thrombolysis NICE NG128 + RCP guideline: lower BP to
+      <185/110 mmHg with IV labetalol or GTN; do NOT aggressively
+      lower otherwise (risk of penumbra hypoperfusion). His BP
+      172/96 is within range; recheck before alteplase.
+    sources:
+      - { type: nice, id: 'NG128', ref: 'NICE NG128 — BP target <185/110 before alteplase' }
+
+  - id: mx_thrombolysis_decision
+    category: drug
+    name: 'IV thrombolysis — alteplase 0.9 mg/kg OR tenecteplase 0.25 mg/kg single bolus'
+    detail: |
+      **Thrombolytic choice (UK May 2026):**
+      - **Tenecteplase 0.25 mg/kg single bolus (max 25 mg)** is
+        NICE-recommended (TA990, July 2024) and the RCP National
+        Clinical Guideline for Stroke 2023 endorses it as an
+        alternative to alteplase. Non-inferiority data from AcT
+        (Menon Lancet 2022), ATTEST-2 and TRACE-2.
+      - **Alteplase 0.9 mg/kg (max 90 mg)** — 10% bolus, 90% over
+        1 h — remains the alternative.
+
+      ELIGIBILITY in this patient:
+        ✓ Onset <4.5 h (35 min)
+        ✓ Age <80 (67)
+        ✓ NIHSS in range (14)
+        ✓ No haemorrhage on CT
+        ✓ BP <185/110 (172/96 — recheck)
+        ⚠ ON APIXABAN — relative contraindication unless apixaban-
+          calibrated **anti-Xa <50 ng/mL** (per RCP 2023 / ESO 2021)
+          OR last dose >48 h ago with preserved renal function. Last
+          dose ~12 h ago → thrombolysis generally not given; discuss
+          with stroke consultant — thrombectomy is the preferred
+          option for anticoagulated patients with LVO.
+    drug:
+      amount: 'Tenecteplase 0.25 mg/kg single bolus (max 25 mg) — OR alteplase 0.9 mg/kg (max 90 mg), 10% bolus + 90% over 1 h'
+      route: IV
+      frequency: 'tenecteplase: single bolus over 10 s; alteplase: bolus then 1 h infusion'
+    sources:
+      - {
+          type: nice,
+          id: 'TA990',
+          ref: 'NICE TA990 (July 2024) — Tenecteplase for treating acute ischaemic stroke.',
+        }
+      - {
+          type: nice,
+          id: 'NG128',
+          ref: 'NICE NG128 — thrombolysis pathway in acute ischaemic stroke',
+        }
+      - {
+          type: textbook,
+          ref: 'RCP National Clinical Guideline for Stroke 2023 — endorses tenecteplase as alternative; anti-Xa <50 ng/mL threshold for thrombolysis on DOAC.',
+        }
+      - {
+          type: textbook,
+          ref: 'Menon BK et al. AcT trial — Intravenous tenecteplase compared with alteplase for acute ischaemic stroke. Lancet 2022 (non-inferior).',
+        }
+
+  - id: mx_thrombectomy_referral
+    category: referral
+    name: 'Refer for mechanical thrombectomy (preferred in anticoagulated LVO)'
+    detail: |
+      Anticoagulated patient + LVO on CTA + NIHSS ≥6 + ASPECTS ≥6 =
+      mechanical thrombectomy is the preferred intervention. Time
+      window extends to 6 h (DAWN/DEFUSE-3 extends with perfusion
+      imaging to 24 h).
+    must_do: true
+    sources:
+      - { type: nice, id: 'NG128', ref: 'NICE NG128 — thrombectomy referral for LVO' }
+
+  - id: mx_admit_hasu
+    category: disposition
+    name: 'Admit to Hyperacute Stroke Unit (HASU) post-intervention'
+    must_do: true
+
+  - id: mx_swallow_screen
+    category: monitoring
+    name: 'Bedside swallow screen by trained nurse before any oral intake'
+    detail: 'Aspiration is the leading cause of preventable death post-stroke.'
+    must_do: true
+
+  # ─── Trap actions ──────────────────────────────────────────────────────────
+  - id: mx_no_thrombolysis_on_doac
+    category: drug
+    name: 'Give IV thrombolysis (alteplase or tenecteplase) without checking DOAC timing'
+    detail: |
+      ❌ Apixaban within 48 h is a contraindication to thrombolysis
+      unless apixaban-calibrated **anti-Xa <50 ng/mL** (RCP 2023 /
+      ESO 2021) OR specific antidote considered. Bleeding risk is
+      high. Thrombectomy is the safer pathway in this patient.
+    must_not_do: true
+    gated_by_history: [hx_anticoagulation]
+    sources:
+      - { type: nice, id: 'NG128', ref: 'NICE NG128 — DOAC + alteplase contraindication' }
+
+  - id: mx_no_aggressive_bp
+    category: drug
+    name: 'Lower BP aggressively to <140/90 before reperfusion'
+    detail: |
+      ❌ Aggressive lowering risks penumbra hypoperfusion. NICE
+      NG128 target is <185/110 mmHg before alteplase. After
+      successful reperfusion, target <140/90 over 24 h.
+    must_not_do: true
+
+  - id: mx_no_aspirin_now
+    category: drug
+    name: 'Give 300 mg aspirin immediately (before CT/thrombolysis decision)'
+    detail: |
+      ❌ Aspirin within 24 h of thrombolysis is contraindicated.
+      Aspirin 300 mg comes AFTER haemorrhage excluded AND after
+      thrombolysis decision is made (or 24 h post-thrombolysis).
+    must_not_do: true
+    sources:
+      - { type: nice, id: 'NG128', ref: 'NICE NG128 — aspirin timing' }
+
+  - id: mx_no_oral_meds
+    category: drug
+    name: 'Resume his usual apixaban dose this morning'
+    detail: |
+      ❌ NBM until swallow screen passes; do NOT give further
+      anticoagulant until imaging clear AND stroke team has decided
+      on the reperfusion pathway.
+    must_not_do: true
+
+  - id: mx_no_anaesthesia_before_ct
+    category: drug
+    name: 'Sedate / intubate to facilitate transfer to CT'
+    detail: |
+      ❌ Pre-CT sedation masks the neurological exam, removes the
+      ability to assess thrombolysis eligibility (NIHSS), and is
+      almost never indicated unless the patient cannot protect their
+      airway. He is GCS 14, swallowing.
+    must_not_do: true
+
+disposition_options:
+  - label: 'Transfer to thrombectomy centre for mechanical thrombectomy'
+    criteria: |
+      LVO on CTA + ASPECTS 8 + NIHSS 14 + on apixaban (alteplase
+      contraindicated) → thrombectomy is the right reperfusion
+      pathway. Refer in parallel with the stroke consultant.
+    appropriate: true
+    epilogue: "He is on the table at 09:32. The clot comes out at 09:51. Carol is in the family room at the receiving centre by 10:15."
+  - label: 'Give alteplase here, then transfer'
+    criteria: |
+      Inappropriate — on apixaban within 48 h. Alteplase
+      contraindicated unless antidote given.
+    appropriate: false
+    epilogue: "He bleeds at 09:48 — the apixaban anti-Xa was 78 ng/mL. The MDT review is the next morning's grand round case."
+  - label: 'Admit AMU under stroke team for observation'
+    criteria: |
+      Inappropriate — this is reperfusion territory. AMU is the
+      wrong disposition.
+    appropriate: false
+    epilogue: "He is dense left-MCA by 11:00. The thrombectomy window has closed."
+  - label: 'Discharge with outpatient TIA clinic referral'
+    criteria: |
+      Not even close. Persistent focal deficit + CT change = stroke,
+      not TIA.
+    appropriate: false
+    epilogue: "Re-presents at 13:00 with completed left MCA. NIHSS 22."
+
+state_machine:
+  states: [deteriorating, stable, arrested, admitted, deceased]
+  transitions:
+    - from: deteriorating
+      to: stable
+      trigger:
+        on: action
+        action_id: mx_thrombectomy_referral
+        note: |
+          Thrombectomy team accept transfer; bridging care started while
+          waiting for the retrieval team. Trajectory stabilised on the
+          pathway.
+    - from: deteriorating
+      to: arrested
+      trigger:
+        on: inaction_by
+        min: 12
+        required_actions: [mx_ct_within_1h, mx_call_stroke_team]
+        note: 'Penumbra infarcts → malignant MCA syndrome with herniation by T+12 if no CT/no stroke team.'
+    - from: stable
+      to: admitted
+      trigger: { on: action, action_id: mx_admit_hasu }
+
+pearls:
+  - 'NICE NG128 says CT immediately, within 1 h; the ≤25-min door-to-CT and ≤60-min door-to-needle targets are RCP/SSNAP audit standards. Door-to-thrombectomy is a separate parallel pathway.'
+  - 'BM before thrombolysis — hypoglycaemia is the canonical stroke mimic and the cheapest fix.'
+  - 'DOAC + thrombolysis (UK May 2026): apixaban/rivaroxaban within 48 h is a relative contraindication unless apixaban-calibrated **anti-Xa <50 ng/mL** (RCP 2023, ESO 2021). Tenecteplase 0.25 mg/kg (NICE TA990 July 2024) is an alternative to alteplase 0.9 mg/kg — non-inferior per AcT (Menon Lancet 2022).'
+  - 'Pre-thrombolysis BP target <185/110 mmHg. Do NOT lower aggressively before reperfusion — penumbra hypoperfusion.'
+  - 'Large vessel occlusion + NIHSS ≥6 + ASPECTS ≥6 = thrombectomy candidate. Window: 0-6 h standard; 6-16 h with perfusion mismatch (DEFUSE-3, Albers NEJM 2018); 6-24 h with clinical-imaging mismatch (DAWN, Nogueira NEJM 2018).'
+  - 'Anticoagulated patient with LVO → thrombectomy is the preferred reperfusion path; alteplase is the alternative only if DOAC effect is excluded.'
+  - 'Always speak to the witness. Time of onset is the single most consequential data point in the whole encounter.'
+  - 'This is an anterior (LMCA) stroke and FAST is positive. **FAST misses up to ~50% of posterior circulation strokes** (vertigo, truncal ataxia, headache, isolated cranial-nerve signs). For posterior-circulation suspicion in acute vestibular syndrome use HINTS (Head Impulse, Nystagmus, Test of Skew) — performed by appropriately trained clinicians.'
+
+pitfalls:
+  - 'Giving alteplase without confirming DOAC timing.'
+  - 'Failing to check the BM before treating "stroke".'
+  - 'Aggressively lowering BP pre-reperfusion.'
+  - 'Giving 300 mg aspirin before CT and before the thrombolysis/thrombectomy decision.'
+  - 'Sedating to facilitate transfer to CT.'
+  - 'Anchoring on "TIA" when there is persistent neurological deficit.'
+
+sources:
+  - {
+      type: nice,
+      id: 'NG128',
+      ref: 'Stroke and transient ischaemic attack in over 16s: diagnosis and initial management (NICE 2019, updated 2022)',
+      url: 'https://www.nice.org.uk/guidance/ng128',
+    }
+  - {
+      type: rcp,
+      ref: 'Royal College of Physicians. National Clinical Guideline for Stroke (2023, 6th edition).',
+      url: 'https://www.strokeguideline.org',
+    }
+  - {
+      type: textbook,
+      ref: 'Wyatt JP et al. Oxford Handbook of Emergency Medicine 5e (OUP, 2020).',
+      chapter: '3',
+      page: 'pp.108–116',
+    }
+  - {
+      type: other,
+      ref: 'Nogueira RG et al. DAWN trial — thrombectomy 6-24 h with mismatch. NEJM 2018; Albers GW et al. DEFUSE-3 — thrombectomy 6-16 h with perfusion mismatch. NEJM 2018.',
+    }
+
+author_notes: |
+  Authored from a scripts/new-case.ts skeleton. The headline learning
+  is the DOAC-alteplase contraindication and the thrombectomy
+  alternative for anticoagulated LVO patients — material that has
+  evolved post-2019 and is a common SAQ vignette.

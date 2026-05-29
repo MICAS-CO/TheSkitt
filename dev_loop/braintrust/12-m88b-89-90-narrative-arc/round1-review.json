@@ -1,0 +1,13 @@
+{
+  "verdict": "request_changes",
+  "findings": [
+    {
+      "severity": "high",
+      "title": "Factual/pedagogical error: Charge Nurse writing clinical M&M, and safeguarding misses triggering M&M",
+      "file": "multiple",
+      "body": "In `src/ui/encounter/RotaClosingNote.tsx`, McGrath tells the player to \"Read Akin's M&M write-up\". In the NHS, a Charge Nurse (Akin) does not write the formal clinical Morbidity and Mortality (M&M) report for a missed aortic dissection; this is a medical governance task typically authored by a consultant or senior registrar. This also contradicts Akin's own handover at position 16, which correctly notes \"McGrath wrote the M&M\" for the previous patient.\n\nAdditionally, in `src/state/consultant.ts` (rotaIndex 13), McGrath says of the Stan and Chloe safeguarding pattern: \"Read the M&M when it lands.\" Safeguarding and psychosocial follow-up failures do not trigger an M&M (which is reserved for significant clinical morbidity/mortality); they trigger a safeguarding review, Datix, or MDT case review.",
+      "recommendation": "1. In `RotaClosingNote.tsx`, change \"Read Akin's M&M write-up\" to \"Read my M&M write-up\" or \"Read Akin's Datix\".\n2. In `src/state/consultant.ts` (index 13), change \"Read the M&M when it lands\" to \"Read the safeguarding review when it lands\" or \"Read the incident report\"."
+    }
+  ],
+  "overall_take": "The narrative arc and dual-register voice are exceptionally well-crafted and land the NTS pedagogy beautifully, but there are NHS governance factual errors regarding who writes an M&M and what triggers one that need correcting."
+}

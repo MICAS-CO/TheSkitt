@@ -1,0 +1,707 @@
+# Authored against TOXBASE Paracetamol monograph (May 2026), MHRA Drug
+# Safety Update Sep 2012 (single-/staggered- overdose NAC rules), NICE
+# NG225 Self-harm: assessment, management and preventing recurrence
+# (Sep 2022), and RCEM Best Practice Paracetamol Overdose.
+#
+# Chloe Davies — 19 y/o student, staggered paracetamol overdose over
+# 5 hours, found by housemate at 03:00. The teaching pattern is the
+# staggered-vs-acute trap:
+#  - acute single ingestion → 4-hour paracetamol level → Rumack-Matthew
+#    nomogram → NAC if above the treatment line
+#  - staggered → paracetamol level CANNOT be plotted; treat with NAC
+#    regardless of level
+#
+# Secondary themes:
+#  - safeguarding / mental health (NICE NG225 — every self-harm
+#    presentation gets a psychosocial assessment before medical
+#    discharge)
+#  - hepatology referral threshold (King's College Hospital criteria)
+#  - the "she's well, can she go home?" temptation at H+4
+
+schema_version: 1
+id: case_paracetamol_od_chloe
+title: 'Paracetamol overdose — staggered, university student'
+chief_complaint: 'Self-harm ingestion · staggered, university student'
+topic_id: paracetamol_od
+
+vignette: |
+  Majors bed 6. 03:42.
+
+  Chloe Davies, 19 y/o, brought in by ambulance from her university
+  halls. Housemate woke at 02:50 to find her sitting on the bathroom
+  floor next to empty paracetamol blister packs and an open bottle of
+  wine. Chloe is alert, mildly drowsy. Paramedics: "She says she took
+  some last night and more 'a bit ago'. We've put a line in. No
+  vomiting witnessed. No co-ingestants found in the room."
+
+  Her housemate Mira is in the relatives' room, shaky, holding three
+  blister sleeves with all 32 tablets popped out.
+
+curriculum_tags: [PhP2, PhC1, MHP1]
+slos: [1, 3, 2]
+difficulty_band: ST3
+paeds: false
+
+demographics:
+  age_value: 19
+  age_unit: years
+  sex: female
+  weight_kg: 58
+  pmh:
+    - 'Generalised anxiety disorder (GP-managed, no current psychiatric follow-up)'
+    - 'Migraine — uses paracetamol regularly'
+  medications:
+    - 'sertraline 50 mg OD (started 3 months ago)'
+    - 'paracetamol PRN'
+  allergies: ['NKDA']
+  social: |
+    Second-year English literature student. Lives in shared flat with
+    Mira. No regular alcohol; "two glasses of wine on a bad day".
+    Estranged from family for 6 months — won't say more.
+
+triage_category: 2
+initial_state: stable
+bay: majors
+
+vitals:
+  baseline:
+    hr: 88
+    rr: 16
+    spo2: 98
+    bp_sys: 116
+    bp_dia: 70
+    gcs: 15
+    temp_c: 36.6
+    bm: 5.4
+  deteriorating:
+    hr: 112
+    rr: 22
+    spo2: 96
+    bp_sys: 92
+    bp_dia: 58
+    gcs: 13
+    temp_c: 36.4
+    bm: 3.2
+  arrested:
+    hr: 0
+    rr: 0
+    spo2: 0
+    bp_sys: 0
+    bp_dia: 0
+    gcs: 3
+
+history:
+  - id: hx_paramedic
+    source: paramedic
+    topic: 'Full handover from the ambulance crew.'
+    supports: ['Staggered paracetamol overdose with potential acute liver failure']
+    response: |
+      "999 call from her housemate at 02:54. On scene 03:08. Chloe was
+      sitting on the bathroom floor, holding her abdomen. GCS 15.
+      Pulse 84 reg, BP 118/72, sats 99% air, BM 5.6. She tells us
+      she's taken 'some' paracetamol. Empty blister sleeves on the
+      tiles. The housemate counted 32 tablets gone (16 g). She says
+      Chloe's been low for weeks. We've put 16 G in the left ACF, no
+      treatment given en route except 250 mL saline. No vomit."
+
+  - id: hx_chloe_ingestion
+    source: patient
+    topic: 'Chloe — what did you take, and when?'
+    npc_voice: "Chloe doesn't look up. Her voice is small."
+    supports: ['Staggered paracetamol overdose with potential acute liver failure']
+    response: |
+      "I took eight at about ten last night. Then four more around
+      one. Then… I don't know, maybe twelve more, just before Mira
+      came in. I drank some wine. I didn't have anything else.
+      I don't really know why I'm here. I'm sorry."
+      (Tearful, holding her arms tightly across her abdomen.)
+
+  - id: hx_chloe_other_drugs
+    source: patient
+    topic: 'Any other tablets, recreational drugs, herbal supplements?'
+    prereq_history_ids: [hx_chloe_ingestion]
+    response: |
+      "Just my sertraline. I take it in the morning. I haven't taken
+      it today. No recreational drugs. No herbal stuff. Nothing
+      else, I promise."
+
+  - id: hx_chloe_intent
+    source: patient
+    topic: 'Help me understand — what was going through your mind tonight?'
+    prereq_history_ids: [hx_chloe_ingestion]
+    npc_voice: "She closes her eyes. A long pause."
+    supports: ['Self-poisoning with suicidal intent (clinical risk)']
+    branch_choices:
+      - id: compassionate
+        label: "Take your time. Whatever you tell me stays between us and the team looking after you."
+        npc_voice: "Her shoulders drop. She turns her face toward you for the first time."
+        rapport_delta: 2
+        response: |
+          "I planned it. For weeks. I just wanted it to stop —
+          the noise in my head. I knew about paracetamol from a
+          training module at work. I'm not sorry I did it. I'm
+          sorry Mira found me."
+      - id: clinical
+        label: "Was this an attempt to end your life, or to feel better?"
+        npc_voice: "(She blinks once. Eyes back on the ceiling.)"
+        rapport_delta: 0
+        response: |
+          "An attempt. I knew the dose. I took it in stages because
+          I kept being sick. Mira found me."
+      - id: deflecting
+        label: "Sounds like you've had a tough night. Lots of people do this and regret it."
+        npc_voice: "(She turns her face to the wall. The silence stretches.)"
+        rapport_delta: -2
+        response: |
+          "...Yeah. Tough night."
+    response: |
+      "I just wanted it to stop. The noise in my head. I planned to
+      take them all but I couldn't do it in one go, I kept being
+      sick. I'm not sorry I did it. I'm sorry Mira found me."
+
+  - id: hx_chloe_aftercare
+    source: patient
+    topic: '(quiet, after the intent disclosure) Is there anyone you want me to call?'
+    prereq_history_ids: [hx_chloe_intent]
+    min_rapport: 1
+    npc_voice: "She doesn't open her eyes. A long pause."
+    supports: ['Self-poisoning with suicidal intent (clinical risk)']
+    response: |
+      "Mira's outside. Don't call my mum yet. (Beat.) There's a
+      mentor — Sami, from the safeguarding team at work — they
+      know how to reach me. I'd rather they came than my mum.
+      Please. Not my mum."
+
+  - id: hx_housemate
+    source: family
+    topic: 'Speak to Mira in the relatives’ room.'
+    npc_voice: "Mira hasn't put the blister sleeves down. She's still wearing pyjamas."
+    supports: ['Staggered paracetamol overdose with potential acute liver failure']
+    branch_choices:
+      - id: compassionate
+        label: "Mira — sit down. Whatever you tell me now, you're not in trouble, and Chloe isn't either. What did you see?"
+        npc_voice: "Mira sits. The blister sleeves are still in her lap. She puts them on the table only when she starts talking."
+        rapport_delta: 2
+        response: |
+          "She bought the 32-pack from the corner shop last
+          Wednesday — I saw her with it and I asked her why and she
+          said it was for her headaches. She's been weird for two
+          weeks. Not eating. Crying at night through the wall. She
+          broke up with someone last month. I tried — I asked, three
+          times, I asked. She wouldn't talk to me. (Beat.) Tonight
+          I heard her throwing up at midnight, and again at half-two,
+          and that's when I went in. The packs were all popped out.
+          She told me she'd taken 'most of them, spread out'. I
+          dialled 999 immediately. (Pause.) I should have said
+          something earlier. I should have made her see someone."
+      - id: clinical
+        label: "How many did she take, over what time, and when did you find her?"
+        rapport_delta: 0
+        response: |
+          "Bought 32 last Wednesday. Tonight I heard her vomiting at
+          midnight and 02:30. Found her at 02:50 on the bathroom
+          floor — empty packs, all popped out. She said 'most of
+          them, spread out'. I called 999."
+      - id: investigative
+        label: "Mira — were you aware she was struggling? Did she tell anyone?"
+        npc_voice: "Mira looks down at the blister sleeves. Her hands tighten on them."
+        rapport_delta: -2
+        response: |
+          "I — yes. I knew she was struggling. I should have done
+          more. (Pause.) I'm sorry."
+    response: |
+      Mira reports a 2-week prodrome of low mood, anorexia and nocturnal
+      crying, a recent break-up, and tonight a witnessed pattern of
+      vomiting twice (midnight, 02:30) before she found Chloe on the
+      bathroom floor with empty blister packs. Chloe told her she had
+      taken 'most of them, spread out'. Mira called 999.
+
+  - id: hx_paeds_safeguarding
+    source: records
+    topic: 'Pull the medical / university records.'
+    prereq_history_ids: [hx_housemate]
+    response: |
+      "GP record: anxiety, sertraline started 3 months ago. One ED
+      attendance 6 months ago — 'low mood, vague suicidal ideation,
+      declined admission, signposted to university wellbeing service'.
+      No discharge summary from that visit beyond the IRMER form.
+      University wellbeing service: no contact in 4 months. Last
+      LFTs (6 weeks ago, pre-sertraline): all normal."
+
+  - id: hx_pregnancy
+    source: patient
+    topic: 'Any chance of pregnancy?'
+    response: |
+      "No. I have a coil. Last period was two weeks ago."
+
+  - id: hx_dnacpr
+    source: records
+    topic: 'Resus status / advance care planning?'
+    response: |
+      "No advance directive. No DNACPR. Next-of-kin listed: mother
+      (in Brighton, listed-as-estranged-since-November). Mira is
+      named as a contact on the university registration."
+
+examination:
+  - system: general
+    findings:
+      - { name: 'distress', value: 'mild — quiet, withdrawn, tearful', present: true }
+      - { name: 'pallor', value: 'mild, no jaundice yet', present: true }
+      - {
+          name: 'self-harm scars',
+          value: 'old, healed, linear on inner forearms',
+          present: true,
+          red_flag: true,
+          supports: ['Self-poisoning with suicidal intent (clinical risk)'],
+        }
+      - { name: 'jaundice', present: false, pertinent_negative: true }
+      - { name: 'asterixis', present: false, pertinent_negative: true }
+  - system: airway
+    findings:
+      - { name: 'airway', value: 'patent, own', present: true }
+      - { name: 'voice', value: 'normal', present: true }
+  - system: breathing
+    findings:
+      - { name: 'respiratory rate', value: '16/min' }
+      - { name: 'SpO2', value: '98% on air' }
+      - { name: 'auscultation', value: 'clear bilaterally' }
+  - system: circulation
+    findings:
+      - { name: 'heart rate', value: '88/min, sinus' }
+      - { name: 'blood pressure', value: '116/70 mmHg' }
+      - { name: 'capillary refill', value: '<2 seconds' }
+      - { name: 'peripheries', value: 'warm, well-perfused' }
+  - system: disability
+    findings:
+      - { name: 'GCS', value: '15 — alert, orientated' }
+      - { name: 'pupils', value: '3 mm, reactive bilaterally' }
+      - { name: 'glucose', value: '5.4 mmol/L' }
+  - system: abdomen
+    findings:
+      - { name: 'tenderness', value: 'mild epigastric / RUQ tenderness on palpation', present: true,
+          supports: ['Staggered paracetamol overdose with potential acute liver failure'] }
+      - { name: 'guarding', present: false, pertinent_negative: true }
+      - { name: 'liver edge', value: 'not palpable, no hepatomegaly', present: true }
+      - { name: 'bowel sounds', value: 'normal', present: true }
+  - system: psych
+    findings:
+      - { name: 'engagement', value: 'minimal eye contact, monosyllabic', present: true }
+      - { name: 'mood', value: 'tearful, withdrawn', present: true }
+      - {
+          name: 'suicidal ideation',
+          value: 'active, with stated intent at time of ingestion',
+          present: true,
+          red_flag: true,
+          supports: ['Self-poisoning with suicidal intent (clinical risk)'],
+        }
+      - { name: 'capacity', value: 'engaged with assessment, no overt psychotic features', present: true }
+
+investigations:
+  - id: ix_vbg
+    name: 'Venous blood gas + lactate'
+    category: gas
+    turnaround_min: 5
+    abnormal: true
+    result_summary: |
+      pH 7.36, pCO₂ 5.3 kPa, HCO₃ 22, BE −2.0, lactate 2.4, glucose 5.4.
+      (Mild lactate rise; near-normal acid–base — does not exclude OD.)
+    supports: ['Staggered paracetamol overdose with potential acute liver failure']
+
+  - id: ix_paracetamol_level
+    name: 'Serum paracetamol level (timed)'
+    category: blood
+    turnaround_min: 60
+    essential: true
+    abnormal: true
+    result_summary: |
+      Paracetamol 84 mg/L at 4 h post-LAST ingestion (claimed 02:30).
+      ⚠ STAGGERED OD — the Rumack-Matthew nomogram does NOT apply.
+      Treat with full NAC regardless of level (MHRA 2012, TOXBASE 2026).
+    supports: ['Staggered paracetamol overdose with potential acute liver failure']
+    sources:
+      - { type: toxbase, ref: 'TOXBASE Paracetamol monograph — staggered overdose section' }
+      - {
+          type: other,
+          ref: 'MHRA Drug Safety Update Sep 2012 — paracetamol IV NAC dose simplification',
+        }
+
+  - id: ix_salicylate_level
+    name: 'Serum salicylate level'
+    category: blood
+    turnaround_min: 45
+    abnormal: false
+    result_summary: |
+      Salicylate <100 mg/L (negative).
+      (Always co-test for salicylate in any deliberate self-poisoning.)
+
+  - id: ix_lfts
+    name: 'LFTs (ALT, AST, ALP, bilirubin, albumin)'
+    category: blood
+    turnaround_min: 60
+    essential: true
+    abnormal: false
+    result_summary: |
+      ALT 38 IU/L, AST 32, ALP 78, bilirubin 12 µmol/L, albumin 38 g/L.
+      Baseline LFTs normal — peak ALT rise typically 24-72 h
+      post-ingestion. Repeat at 12 and 24 hours.
+    supports: ['Staggered paracetamol overdose with potential acute liver failure']
+
+  - id: ix_coag
+    name: 'Coagulation screen (PT/INR, APTT)'
+    category: blood
+    turnaround_min: 60
+    essential: true
+    abnormal: false
+    result_summary: |
+      INR 1.1, APTT 28 s. Baseline. INR >2 by 24 h, or rising INR is
+      the most sensitive marker for paracetamol-induced acute liver
+      failure (King's College criteria).
+    supports: ['Staggered paracetamol overdose with potential acute liver failure']
+
+  - id: ix_fbc_ues
+    name: 'FBC + U&E'
+    category: blood
+    turnaround_min: 45
+    essential: true
+    abnormal: false
+    result_summary: |
+      Hb 132, WCC 7.4, plts 245. Na 138, K 4.0, urea 4.2, creatinine
+      62 (eGFR >90). No early AKI; recheck at 12 h.
+
+  - id: ix_glucose
+    name: 'Capillary blood glucose'
+    category: bedside
+    turnaround_min: 0
+    abnormal: false
+    result_summary: |
+      BM 5.4 mmol/L. (Hypoglycaemia is a late ALF sign — monitor q1h
+      while NAC is running and check at 12 / 24 h.)
+
+  - id: ix_paeds_urine_drug_screen
+    name: 'Urine drug screen + urine βhCG'
+    category: urine
+    turnaround_min: 30
+    abnormal: false
+    result_summary: |
+      Drug screen: SSRI positive (expected, sertraline). Cannabis
+      negative. Opiates negative. Cocaine negative. Benzos negative.
+      Urine βhCG: negative.
+
+  - id: ix_ecg
+    name: '12-lead ECG'
+    category: ecg
+    turnaround_min: 5
+    abnormal: false
+    result_summary: |
+      Sinus rhythm 88/min. PR 156 ms. QRS 90 ms. QTc 412 ms (normal).
+      No ST/T changes. (Important to rule out QT prolongation given
+      sertraline + ?co-ingestants.)
+
+differential:
+  - diagnosis: 'Staggered paracetamol overdose with potential acute liver failure'
+    likelihood: top
+    discriminator: |
+      Ingestion in two or more doses spanning >1 h, total >75 mg/kg
+      (Chloe ~16 g / 58 kg = 276 mg/kg — well above 75 mg/kg threshold).
+      Cannot use the Rumack-Matthew nomogram. Treat with full NAC
+      regardless of level.
+  - diagnosis: 'Acute (single-time) paracetamol overdose'
+    likelihood: must_not_miss
+    discriminator: |
+      Single ingestion at a defined time — would allow 4-hour
+      paracetamol level + nomogram. The trap here is mis-categorising
+      this as acute and waiting for the 'plot-able' level instead of
+      starting NAC.
+  - diagnosis: 'Mixed overdose (paracetamol + TCA / salicylate / opioid)'
+    likelihood: must_not_miss
+    discriminator: |
+      Always co-test salicylate and check ECG for QRS widening / QT
+      prolongation, and pupils / GCS for opioid pattern. Chloe is on
+      sertraline (SSRI) — note serotonin syndrome possibility,
+      especially with tramadol or other SSRIs.
+  - diagnosis: 'Acute viral hepatitis (A / B / E) with incidental tablet ingestion'
+    likelihood: worth_considering
+    discriminator: |
+      Pre-existing jaundice, transaminitis at presentation, hepatitis
+      serology positive. Chloe's baseline LFTs were normal 6 weeks
+      ago. Unlikely.
+  - diagnosis: "Wilson's disease / autoimmune hepatitis presenting acutely"
+    likelihood: unlikely
+    discriminator: |
+      Younger patient with new-onset liver failure — caeruloplasmin,
+      copper, ANA, ASMA on follow-up if LFTs derange and no clear
+      paracetamol exposure. Not the leading explanation here.
+  - diagnosis: 'Self-poisoning with suicidal intent (clinical risk)'
+    likelihood: top
+    discriminator: |
+      Stated intent at time of ingestion + history of self-harm scars
+      + worsening mood over weeks + no MH follow-up. This sits
+      alongside the medical diagnosis — both must be managed before
+      medical discharge (NICE NG225).
+
+working_diagnosis: 'Staggered paracetamol overdose with potential acute liver failure'
+
+management:
+  - id: mx_a_to_e
+    category: monitoring
+    name: 'ABCDE assessment + monitoring (continuous SpO2, ECG, NIBP every 15 min)'
+    must_do: true
+    resus_letter: A
+    sources:
+      - { type: rcem, ref: 'RCEM Best Practice — Paracetamol Overdose' }
+
+  - id: mx_iv_access_bloods
+    category: procedure
+    name: 'Two large-bore IV cannulae + bloods (paracetamol, salicylate, LFT, coag, FBC, U&E, glucose, gas, βhCG)'
+    must_do: true
+    resus_letter: C
+    detail: |
+      Send paracetamol level no earlier than 4 h post-last-ingestion
+      for documentation, but DO NOT wait for it to start NAC in a
+      staggered overdose.
+
+  - id: mx_iv_nac
+    category: drug
+    name: 'IV N-acetylcysteine (NAC) — SNAP regimen, start immediately'
+    must_do: true
+    resus_letter: C
+    drug:
+      amount: '100 mg/kg over 2 h, then 200 mg/kg over 10 h (SNAP simplified regimen)'
+      route: IV
+      frequency: 'continuous infusion (12 h total)'
+    detail: |
+      Adult dose. SNAP regimen (Scottish/New Antidote Protocol) is
+      simpler than the legacy 3-bag and reduces anaphylactoid
+      reactions. In staggered OD, start NAC regardless of paracetamol
+      level (MHRA Drug Safety Update Sep 2012; TOXBASE 2026).
+    sources:
+      - { type: toxbase, ref: 'TOXBASE Paracetamol monograph — staggered overdose section' }
+      - {
+          type: other,
+          ref: 'MHRA Drug Safety Update Sep 2012 — IV acetylcysteine treatment of paracetamol overdose',
+        }
+
+  - id: mx_pregnancy_test
+    category: monitoring
+    name: 'Send urine βhCG'
+    must_do: true
+
+  - id: mx_psych_assessment
+    category: communication
+    name: 'Refer for psychosocial assessment (NICE NG225) — liaison psychiatry or local mental health team'
+    must_do: true
+    detail: |
+      Every self-harm presentation receives a psychosocial assessment
+      before medical discharge. Treat compassionately; do not delay
+      the medical treatment while waiting for psych input.
+    sources:
+      - {
+          type: nice,
+          id: 'NG225',
+          ref: 'NICE NG225 Self-harm: assessment, management and preventing recurrence (Sep 2022)',
+        }
+
+  - id: mx_hepatology_referral
+    category: referral
+    name: 'Refer to hepatology / NPIS — discuss if INR >2.0 or rising at 12 h'
+    must_do: true
+    detail: |
+      Early hepatology liaison even before INR rises — they will
+      advise on King's College Hospital transfer if the patient meets
+      transplant criteria (pH <7.30 OR INR >6.5 + creatinine >300
+      + grade III–IV hepatic encephalopathy).
+    sources:
+      - { type: rcem, ref: 'RCEM Best Practice — Paracetamol Overdose' }
+
+  - id: mx_glucose_monitoring
+    category: monitoring
+    name: 'Hourly capillary glucose for 24 h (treat <4 mmol/L with 10% dextrose)'
+    must_do: true
+    detail: |
+      Hypoglycaemia is a late sign of fulminant hepatic failure.
+      It also occurs from glycogen depletion in starvation /
+      vomiting.
+
+  - id: mx_repeat_lfts_inr
+    category: monitoring
+    name: 'Repeat LFTs + INR + U&E at 12 h and 24 h'
+    must_do: true
+    detail: |
+      Peak ALT rise occurs 48–72 h. Trend INR — most sensitive
+      indicator of impending ALF.
+
+  - id: mx_iv_fluids
+    category: fluid
+    name: "IV maintenance crystalloid (Hartmann's 1 L over 8 h)"
+    must_do: false
+    resus_letter: C
+
+  - id: mx_antiemetic_ondansetron
+    category: drug
+    name: 'IV ondansetron 4 mg STAT for vomiting'
+    must_do: false
+    drug: { amount: '4 mg', route: IV, frequency: 'STAT, repeatable q8h' }
+    detail: |
+      Note: ondansetron can prolong QT — Chloe's ECG showed QTc 412
+      (normal), and a single dose is safe. Avoid if known long QT or
+      concurrent QT-prolonging drugs.
+
+  # ─── Distractors / examiner traps ─────────────────────────────────────────
+  - id: mx_wait_for_level
+    category: monitoring
+    name: 'Wait for the 4-hour paracetamol level before starting NAC'
+    must_not_do: true
+    gated_by_history: [hx_chloe_ingestion]
+    detail: |
+      ❌ TRAP. In staggered overdose the nomogram does not apply and
+      the level cannot tell you whether to treat. Starting NAC late
+      worsens outcome. (MHRA 2012, TOXBASE 2026.)
+    sources:
+      - {
+          type: other,
+          ref: 'MHRA Drug Safety Update Sep 2012 — paracetamol IV NAC indication',
+        }
+
+  - id: mx_activated_charcoal
+    category: drug
+    name: 'Activated charcoal 50 g PO'
+    must_not_do: true
+    drug: { amount: '50 g', route: PO, frequency: 'STAT' }
+    detail: |
+      ❌ Only useful within 1 h of ingestion. Last dose >1 h ago.
+      Risk of aspiration in a drowsy patient.
+    sources:
+      - { type: toxbase, ref: 'TOXBASE Paracetamol monograph — decontamination section' }
+
+  - id: mx_discharge_after_4h
+    category: disposition
+    name: 'Discharge once she is symptom-free at H+4'
+    must_not_do: true
+    detail: |
+      ❌ TRAP. Staggered OD ≠ acute OD. Even if she looks well, the
+      hepatic injury may not declare itself until 24–72 h. NICE NG225
+      also requires a psychosocial assessment before discharge —
+      cannot leave without it.
+    sources:
+      - { type: nice, id: 'NG225', ref: 'NICE NG225 §1.3 admission for assessment' }
+
+  - id: mx_stop_sertraline
+    category: drug
+    name: 'Stop the sertraline pending hepatology review'
+    must_not_do: true
+    detail: |
+      Not the ED's call. Sertraline is hepatically metabolised but
+      stopping abruptly causes discontinuation syndrome — flag for
+      the inpatient team / hepatology to weigh up.
+
+disposition_options:
+  - label: 'Admit medical / acute medicine with hepatology input + liaison psychiatry'
+    criteria: |
+      Staggered overdose >75 mg/kg + active suicidal intent. Continue
+      NAC, hourly glucose, 12/24-h LFT trend, psychosocial assessment,
+      then plan based on hepatology + psych recommendations.
+    appropriate: true
+    epilogue: "Sami from her safeguarding team arrives at 09:30. Her mum is not called yet. Chloe sleeps with the NAC running."
+  - label: 'Admit MAU for observation only — discharge once asymptomatic'
+    criteria: |
+      Misses the psychosocial assessment requirement and the
+      requirement to trend LFTs + INR at 12 / 24 h to detect ALF.
+    appropriate: false
+    epilogue: "Hepatology decline review without active management. At 14:00 her INR is 2.4."
+  - label: 'Discharge once medically stable with GP follow-up'
+    criteria: |
+      ❌ Inappropriate — staggered OD with active suicidal intent
+      cannot be safely discharged from ED. NICE NG225 mandates a
+      psychosocial assessment before discharge. Hepatic injury may
+      declare itself 24–72 h post-ingestion.
+    appropriate: false
+    epilogue: "She is back through the door at 21:00 with jaundice. Her ALT is 4,200."
+  - label: "Transfer to King's College Hospital liver unit now"
+    criteria: |
+      Premature without King's criteria met (pH <7.30 OR INR >6.5 +
+      creatinine >300 + grade III–IV hepatic encephalopathy). Early hepatology liaison is correct;
+      transfer is reserved for those who meet criteria, usually after
+      12–24 h of NAC.
+    appropriate: false
+    epilogue: "King's hepatology accepts the referral as advisory only. 'Get the NAC running first, then call us back at 12 hours.' The ambulance is stood down."
+
+state_machine:
+  states: [stable, deteriorating, arrested, admitted, discharged]
+  transitions:
+    - from: stable
+      to: deteriorating
+      trigger:
+        on: inaction_by
+        min: 12
+        required_actions: [mx_iv_nac]
+        note: |
+          NAC not started by H+12 — liver injury declares itself, INR
+          rises and patient deteriorates.
+    - from: stable
+      to: admitted
+      trigger:
+        on: action
+        action_id: mx_hepatology_referral
+        note: 'Hepatology accepted for medical admission with NAC and psychiatric review.'
+    - from: deteriorating
+      to: admitted
+      trigger:
+        on: action
+        action_id: mx_iv_nac
+        note: |
+          Even after early hepatic injury declares, NAC + hepatology
+          rescue the case — escalate to admission rather than abandon.
+    # M86 (Braintrust 06 audit): the deteriorating → arrested at min 18
+    # transition was removed. Paracetamol-induced fulminant hepatic
+    # failure is real but its arrest timescale is days, not 18 minutes
+    # of a single ED shift. The build's wall-clock was the wrong scale.
+    # Chloe can still progress through deteriorating-state-stays-
+    # deteriorating-until-NAC-and-hepatology rescue her (the existing
+    # deteriorating → admitted via mx_iv_nac transition), or sit in
+    # deteriorating to the end of shift — both outcomes credible.
+
+pearls:
+  - 'Staggered paracetamol OD = NAC regardless of level. The Rumack-Matthew nomogram only applies to a single acute ingestion at a known time. (MHRA Drug Safety Update Sep 2012; TOXBASE Paracetamol monograph 2026.)'
+  - 'SNAP regimen for IV NAC (100 mg/kg over 2 h, then 200 mg/kg over 10 h) replaced the legacy 3-bag protocol — same efficacy, fewer anaphylactoid reactions, simpler bag-changes.'
+  - "INR is the most sensitive marker of paracetamol-induced acute liver failure. Rising INR before bilirubin or transaminases climb — refer hepatology early."
+  - "King's College Hospital criteria for transplant referral: arterial pH <7.30 OR (INR >6.5 + creatinine >300 µmol/L + grade III–IV encephalopathy)."
+  - 'Every self-harm presentation receives a psychosocial assessment before medical discharge (NICE NG225). The medical and psychiatric pathways run in parallel, not in series.'
+  - 'Always co-send a salicylate level in deliberate self-poisoning — concealed mixed overdose is common.'
+
+pitfalls:
+  - "Treating staggered OD with the nomogram. A paracetamol level >4 h post-LAST ingestion in a staggered case tells you nothing about treatment threshold — start NAC."
+  - 'Discharging the symptom-free patient at H+4 because they "look well". The hepatic injury declares itself at 24-72 h.'
+  - 'Activated charcoal beyond the 1-hour window — aspiration risk in a drowsy patient with no benefit.'
+  - 'Forgetting the safeguarding piece. NICE NG225 makes the psychosocial assessment mandatory before discharge.'
+  - 'Misjudging dose-per-kilogram in a smaller patient. 16 g in a 58 kg patient is 276 mg/kg — well into hepatotoxic territory even before considering the staggered pattern.'
+
+sources:
+  - { type: toxbase, ref: 'TOXBASE Paracetamol monograph (May 2026 revision)' }
+  - {
+      type: other,
+      ref: 'MHRA Drug Safety Update Sep 2012 — paracetamol IV NAC indication',
+    }
+  - {
+      type: nice,
+      id: 'NG225',
+      ref: 'NICE NG225 Self-harm: assessment, management and preventing recurrence (Sep 2022)',
+    }
+  - { type: nice_cks, ref: 'NICE CKS Poisoning or overdose' }
+  - { type: rcem, ref: 'RCEM Best Practice — Paracetamol Overdose' }
+  - {
+      type: other,
+      ref: "King's College Hospital criteria for liver transplant in acute liver failure (O'Grady 1989, updated)",
+    }
+
+author_notes: |
+  This case sits at the intersection of toxicology and mental health.
+  The teaching pattern is twofold: (a) the staggered-vs-acute trap
+  (start NAC regardless of level when staggered), and (b) the
+  parallel medical + safeguarding pathway. Both must be addressed
+  before discharge.
+
+  Narrative hook for future arcs: Chloe's prior ED attendance for low
+  mood (6 months ago) and her estrangement from family pair her well
+  with a "missed safety-net" arc — could connect with a community
+  mental health crisis case, or a paediatric self-harm presentation
+  on the same shift to surface NICE NG225 themes systemically.

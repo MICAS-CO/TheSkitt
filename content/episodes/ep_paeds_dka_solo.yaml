@@ -1,0 +1,82 @@
+# Single-case 25-min shift around Amir Hassan — 8 y/o, first-
+# presentation paediatric DKA, severe (BSPED 2020 criteria). Teaching
+# axis is the paediatric-vs-adult dose-band trap, with cerebral-oedema
+# vigilance as the secondary theme.
+
+schema_version: 1
+id: ep_paeds_dka_solo
+title: 'Paediatric DKA — first presentation'
+
+learning_objectives:
+  - 'Apply BSPED 2020 paediatric DKA: 10 mL/kg saline bolus (NOT 20), 48-h deficit replacement (NOT 24 h), insulin 1 hour AFTER fluids (NOT concurrent), no insulin bolus, no bicarbonate.'
+  - 'Calculate severity (BSPED): pH <7.1 OR HCO3 <5 + ketones >3 = severe → PICU/HDU + hourly neuro obs for 24 h.'
+  - 'Recognise cerebral oedema as the leading paediatric DKA mortality cause (0.5–1%, peaks 4–12 h). Headache, falling GCS, bradycardia + hypertension → 3% hypertonic saline 2.5–5 mL/kg OR mannitol 0.5–1 g/kg.'
+  - 'Calculate corrected sodium (Na + 0.4 × (gluc − 5.5)) — falling during treatment is the cerebral-oedema warning.'
+  - 'Engage diabetes specialist nurse in ED for new-onset T1DM (reduces later DKA readmission rate).'
+
+curriculum_tags: [EnC2, GC3]
+difficulty_band: ST3
+shift_duration_min: 25
+
+focus_cases:
+  - case_paeds_dka_amir
+
+ambient_cases: []
+
+scheduled_events:
+  - id: ev_amir_vbg
+    type: results_back
+    t_min: 5
+    case_id: case_paeds_dka_amir
+    investigation_id: ix_vbg
+
+  - id: ev_amir_ues
+    type: results_back
+    t_min: 8
+    case_id: case_paeds_dka_amir
+    investigation_id: ix_fbc_ues
+
+  - id: ev_amir_hba1c
+    type: results_back
+    t_min: 12
+    case_id: case_paeds_dka_amir
+    investigation_id: ix_hba1c
+
+  - id: ev_amir_no_bolus_by_t6
+    type: deterioration_if_not_x_by_t
+    t_min: 6
+    case_id: case_paeds_dka_amir
+    required_action_ids: [mx_paeds_saline_bolus]
+    new_state: deteriorating
+
+  - id: ev_amir_no_insulin_by_t18
+    type: deterioration_if_not_x_by_t
+    t_min: 18
+    case_id: case_paeds_dka_amir
+    required_action_ids: [mx_paeds_insulin_1h_after]
+    new_state: deteriorating
+
+  - id: ev_picu_callback
+    type: lab_callback
+    t_min: 14
+    case_id: case_paeds_dka_amir
+    investigation_id: ix_vbg
+    urgent_finding: 'PICU on the line — bed available, awaiting confirmation of fluid + insulin protocol.'
+
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 20
+    severity: firm
+
+arcs: []
+
+author_notes: |
+  Single-case 25-min shift. Two parallel teaching axes:
+  (a) dose-band discipline (10 mL/kg, 48-h, insulin H+1, no bolus,
+  no bicarb) and (b) cerebral-oedema vigilance (hourly neuro obs,
+  corrected-Na monitoring).
+
+  The sequence-aware penalty (mx_paeds_insulin_1h_after has
+  prereq_action_ids: [mx_paeds_saline_bolus]) means starting
+  insulin before fluids triggers a sequence error — exactly the
+  BSPED-vs-JBDS-IP teaching point.

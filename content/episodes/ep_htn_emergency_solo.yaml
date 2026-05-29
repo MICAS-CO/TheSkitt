@@ -1,0 +1,101 @@
+# 20-min single-case shift built around Mr Oduya's hypertensive
+# emergency with encephalopathy + PRES + AKI. The shift's defining
+# tension is the **discipline** of the BP reduction — 10-25% in the
+# first hour, not aggressive. The traps surface the most-tempting
+# wrong moves (SL nifedipine, furosemide, oral discharge).
+
+schema_version: 1
+id: ep_htn_emergency_solo
+title: 'Hypertensive emergency — controlled BP reduction'
+
+learning_objectives:
+  - 'Distinguish hypertensive URGENCY from EMERGENCY: emergency requires end-organ damage (encephalopathy, ICH, MI, aortic dissection, AHF, AKI, eclampsia).'
+  - 'Apply the controlled BP reduction target: 10–25% in the first hour, MAP floor 100–110 in the first 24 h. Aggressive correction causes watershed infarcts.'
+  - 'Choose IV labetalol first-line (RCEM Learning / NICE NG136); GTN or nicardipine alternative; AVOID sublingual nifedipine and amlodipine (slow onset → dose stacking).'
+  - 'Recognise PRES (posterior reversible encephalopathy syndrome) on CT — reversible parieto-occipital subcortical vasogenic oedema with BP control.'
+  - 'Stage AKI by KDIGO creatinine ratio: 168/76 = 2.2× → Stage 2.'
+
+curriculum_tags: [CC3]
+difficulty_band: CT2
+shift_duration_min: 20
+
+focus_cases:
+  - case_htn_emergency_oduya
+
+ambient_cases: []
+
+scheduled_events:
+  # T+3 — wife joins from the corridor, explains the meds compliance story
+  - id: ev_oduya_wife
+    type: family_arrival
+    t_min: 3
+    case_id: case_htn_emergency_oduya
+    npc: 'Wife Esther — confirms he stopped his amlodipine + ramipril 3 weeks ago after GP told him to stop driving the bus.'
+
+  # T+5 — ECG back (LVH + strain)
+  - id: ev_oduya_ecg
+    type: results_back
+    t_min: 5
+    case_id: case_htn_emergency_oduya
+    investigation_id: ix_ecg
+
+  # T+7 — urine dip back: blood ++, protein +++, casts
+  - id: ev_oduya_urine
+    type: results_back
+    t_min: 7
+    case_id: case_htn_emergency_oduya
+    investigation_id: ix_urine_dip
+
+  # T+11 — bloods back: AKI Stage 2 + raised ACR
+  - id: ev_oduya_bloods
+    type: results_back
+    t_min: 11
+    case_id: case_htn_emergency_oduya
+    investigation_id: ix_bloods
+
+  # T+14 — CT head back: PRES pattern
+  - id: ev_oduya_ct
+    type: results_back
+    t_min: 14
+    case_id: case_htn_emergency_oduya
+    investigation_id: ix_ct_head
+
+  # T+17 — medical reg / HDU bed call (gates the admitted state)
+  - id: ev_oduya_medical_call
+    type: lab_callback
+    t_min: 17
+    case_id: case_htn_emergency_oduya
+    investigation_id: ix_ct_head
+    urgent_finding: "Medical reg: 'Got an HDU bed. Where's the labetalol infusion at? What's his MAP target for the next 24 h?'"
+
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 16
+    severity: gentle
+
+arcs: []
+
+author_notes: |
+  Solo Tier-2 shift focused on **discipline** rather than
+  aggressive correction. The shift's pivot is the controlled BP
+  reduction target — most trainees reflex to "get it below 140/90"
+  and miss the autoregulation-curve teaching point.
+
+  Pacing:
+  - T+0: walk-in triage with BP 226/132, headache, confusion,
+    blurred vision. Major's bay, not resus (initially stable).
+  - T+3: wife explains the meds compliance back-story (gap = 3
+    weeks).
+  - T+5: ECG confirms LV hypertrophy + strain pattern.
+  - T+7: urine dip + microscopy (RBC casts) — confirms vascular
+    glomerular injury.
+  - T+11: bloods confirm AKI Stage 2 + nephropathy-range ACR.
+  - T+14: CT head shows PRES pattern (no haemorrhage).
+  - T+17: medical reg accepts; HDU bed found.
+  - T+20: hard deadline — without IV labetalol + monitoring by
+    T+20 the encephalopathy progresses (case-level inaction_by
+    transition).
+
+  Inspiration: TheCase.Report S1E13. Player-facing citations
+  remain NICE NG136 + RCEM Learning + ESH 2023 + KDIGO 2012 +
+  Fugate Lancet Neurology 2015.

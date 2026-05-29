@@ -1,0 +1,98 @@
+# 20-min single-case shift built around Ms Okonkwo's massive PE. The
+# defining tension is the thrombolysis decision in a haemodynamically
+# unstable patient who's also 12 days post-laparoscopic surgery —
+# bleed risk on one side, shock mortality on the other. Bedside echo
+# vs CTPA pivot at T+5.
+
+schema_version: 1
+id: ep_pe_solo
+title: 'Massive PE — shock and the thrombolysis decision'
+
+learning_objectives:
+  - 'Apply pretest probability (Wells) to PE work-up — D-dimer is for LOW probability, not high.'
+  - 'Recognise high-risk (massive) PE on clinical grounds + bedside echo (RV:LV >1, McConnell, septal flattening) and start reperfusion without waiting for CTPA when the patient is too unstable to scan.'
+  - 'Manage obstructive shock: cautious fluid (≤500 mL), noradrenaline early, pre-induction pressor before any RSI.'
+  - 'Decide on systemic thrombolysis: balance shock mortality 25–50% against alteplase bleeding risk; engage senior + cardiology; consider catheter-directed alternative if absolute contraindication.'
+
+curriculum_tags: [ResC10, CP2]
+difficulty_band: ST3
+shift_duration_min: 20
+
+focus_cases:
+  - case_massive_pe_okonkwo
+
+ambient_cases: []
+
+scheduled_events:
+  # T+2 — Wells score scored at bedside
+  - id: ev_okonkwo_wells
+    type: results_back
+    t_min: 2
+    case_id: case_massive_pe_okonkwo
+    investigation_id: ix_wells
+
+  # T+5 — bedside POCUS findings (the cognitive pivot)
+  - id: ev_okonkwo_pocus
+    type: results_back
+    t_min: 5
+    case_id: case_massive_pe_okonkwo
+    investigation_id: ix_pocus
+
+  # T+8 — bloods including troponin + BNP back
+  - id: ev_okonkwo_bloods
+    type: results_back
+    t_min: 8
+    case_id: case_massive_pe_okonkwo
+    investigation_id: ix_bloods_trop_bnp
+
+  # T+10 — sister, husband arriving in relatives' room — consent conversation
+  - id: ev_okonkwo_family
+    type: family_arrival
+    t_min: 10
+    case_id: case_massive_pe_okonkwo
+    npc: "Sister Chika + husband Tunde — both at the relatives' room, consenting alongside the patient."
+
+  # T+13 — CTPA results return (if she was stable enough to go)
+  - id: ev_okonkwo_ctpa
+    type: results_back
+    t_min: 13
+    case_id: case_massive_pe_okonkwo
+    investigation_id: ix_ctpa
+
+  # T+15 — cardiology/PERT phone (if call activated)
+  - id: ev_okonkwo_pert_call
+    type: lab_callback
+    t_min: 15
+    case_id: case_massive_pe_okonkwo
+    investigation_id: ix_pocus
+    urgent_finding: 'Cardiology PERT lead: "We can take her for catheter-directed if you decide against systemic. What''s her bleeding risk?"'
+
+  - id: ev_bed_pressure
+    type: bed_manager_pressure
+    t_min: 17
+    severity: gentle
+
+arcs: []
+
+author_notes: |
+  Solo Tier-1 shift. Pacing:
+
+  - T+0: paramedic handover with the syncope + shock + S1Q3T3 ECG.
+  - T+2: Wells = 8 confirms high pretest probability.
+  - T+5: POCUS reveals RV strain + McConnell + DVT. The pivot — at
+    this point the diagnosis is bedside-confirmed and treatment can
+    begin even if she can't be moved to the scanner.
+  - T+8: troponin + BNP back, both raised — ESC high-risk
+    classification.
+  - T+10: family arrive. Consent conversation about thrombolysis
+    bleed risk vs shock mortality.
+  - T+13: CTPA (if she made it to the scanner) confirms bilateral
+    saddle.
+  - T+15: PERT lead phones for the catheter-vs-systemic call.
+  - T+15: hard deadline — without vasopressor + thrombolysis +
+    anticoagulation by T+15, RV failure progresses to cardiac arrest
+    (case-level inaction_by transition).
+
+  Inspiration: TheCase.Report S3E1 — VTE | PE in Pregnancy and
+  COVID-19 | VTE Prophylaxis. Player-facing citations remain NICE
+  NG158 + ESC 2019.
